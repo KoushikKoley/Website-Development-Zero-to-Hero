@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction — HTML Mastery</title>
+  <meta name="description" content="Welcome to HTML Mastery — a complete, beginner-to-expert guide to the HTML language. Learn what you'll study, the learning path, and how to get the most out of this project.">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #1e293b;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1200px 400px at 10% -10%, #3b82f6 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #7c3aed 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 64px 24px 80px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #f8fafc, #93c5fd, #c4b5fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 1.15rem;
+      color: #cbd5e1;
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px;
+      margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+    }
+    nav.toc {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+    nav.toc h2 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    nav.toc ol {
+      margin: 0;
+      padding-left: 18px;
+      list-style: decimal;
+    }
+    nav.toc ol li {
+      margin: 6px 0;
+      font-size: 0.95rem;
+    }
+    nav.toc a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    nav.toc a:hover {
+      color: var(--brand);
+      border-bottom-color: var(--brand);
+    }
+    main { min-width: 0; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px;
+      font-size: 1.7rem;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white;
+      font-size: 1rem;
+    }
+    section h3 {
+      margin: 22px 0 10px;
+      font-size: 1.2rem;
+      color: var(--ink);
+    }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff;
+      color: #1e3a8a;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 18px 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 {
+      margin: 0 0 8px;
+      color: var(--brand);
+      font-size: 1.05rem;
+    }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    /* Roadmap */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+    }
+    .step {
+      background: linear-gradient(180deg, #ffffff, #eef2ff);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      font-size: 0.78rem;
+      position: relative;
+    }
+    .step .n {
+      display: block;
+      width: 28px; height: 28px;
+      margin: 0 auto 8px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: white;
+      font-weight: 700;
+      line-height: 28px;
+    }
+    .step .t { font-weight: 600; color: var(--ink); }
+    .step .d { color: var(--ink-soft); display: block; margin-top: 4px; }
+    .step .time { display: block; margin-top: 8px; font-size: 0.7rem; color: var(--brand-2); font-weight: 600; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+    th { background: #f1f5f9; font-weight: 600; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px;
+      text-align: center;
+      color: var(--ink-soft);
+      background: #ffffff;
+    }
+    footer .nav {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto 12px;
+    }
+    footer a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .roadmap { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 0 · Getting Started</span>
+    <h1>Welcome to HTML Mastery</h1>
+    <p>A practical, project-driven journey from absolute beginner to confident expert. By the end you won't just <em>know</em> HTML — you'll think in it.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What This Project Is</a></li>
+        <li><a href="#who">Who This Is For</a></li>
+        <li><a href="#roadmap">Learning Roadmap</a></li>
+        <li><a href="#time">Time Investment</a></li>
+        <li><a href="#prereq">Prerequisites</a></li>
+        <li><a href="#outcomes">Learning Outcomes</a></li>
+        <li><a href="#how">How To Navigate</a></li>
+        <li><a href="#philosophy">Teaching Philosophy</a></li>
+        <li><a href="#next">Next Steps</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What This Project Is</h2>
+        <p><strong>HTML Mastery</strong> is a complete, self-paced curriculum for the most foundational technology on the web: the HyperText Markup Language. Every web page you have ever visited — every news article, every social feed, every online banking dashboard, every YouTube player — begins as an HTML document. Without HTML there is no web.</p>
+        <p>This project treats HTML not as a quick "tags and attributes" reference, but as a deep, living language with history, rules, content models, accessibility implications, and performance considerations. You will learn the <em>why</em> behind every element, not only the <em>how</em>.</p>
+        <p>Throughout the curriculum you will find:</p>
+        <div class="grid-2">
+          <div class="card"><h4>Annotated Examples</h4><p>Real, copy-pasteable code with line-by-line explanations and visual breakdowns.</p></div>
+          <div class="card"><h4>Hands-on Exercises</h4><p>Try-it-yourself challenges after every concept to lock knowledge in through practice.</p></div>
+          <div class="card"><h4>Pro Tips &amp; Pitfalls</h4><p>Hard-won lessons from production codebases, including browser quirks and accessibility gotchas.</p></div>
+          <div class="card"><h4>Real-world Use Cases</h4><p>Each element is framed in the context of the actual products you'll build one day.</p></div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Don't read passively. Open every example in a browser, modify it, break it, fix it. HTML is a tactile language — your fingers will learn it faster than your eyes.
+        </div>
+      </section>
+
+      <section id="who">
+        <h2><span class="num">2</span> Who This Is For</h2>
+        <p>HTML Mastery is designed to scale with you. The material is structured so that each section has something valuable whether you're writing your first tag or polishing your tenth production site.</p>
+        <table>
+          <thead>
+            <tr><th>You are…</th><th>Where to start</th><th>What you'll gain</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Complete beginner</strong></td>
+              <td>Section 0 → Section 1 → Section 2</td>
+              <td>Confidence to write valid HTML documents from scratch.</td>
+            </tr>
+            <tr>
+              <td><strong>Hobbyist / self-taught</strong></td>
+              <td>Skim Section 1, focus on Sections 5–9</td>
+              <td>Fix bad habits, learn semantic &amp; accessible patterns.</td>
+            </tr>
+            <tr>
+              <td><strong>Bootcamp graduate</strong></td>
+              <td>Section 7 (Semantic HTML), Section 9 (Best Practices)</td>
+              <td>Production-grade mental models, a11y, performance.</td>
+            </tr>
+            <tr>
+              <td><strong>Working developer</strong></td>
+              <td>Section 8 (Advanced), Section 11 (Reference)</td>
+              <td>Deep edge cases, spec details, interview prep.</td>
+            </tr>
+            <tr>
+              <td><strong>Teacher / mentor</strong></td>
+              <td>Use as a free curriculum for your students</td>
+              <td>Ready-to-teach lessons with examples and exercises.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't skip Sections 0 and 1 even if you "already know HTML". Many experienced developers are surprised to discover content models, the difference between void and empty elements, or why <code>&lt;section&gt;</code> is not always the right choice.
+        </div>
+      </section>
+
+      <section id="roadmap">
+        <h2><span class="num">3</span> Learning Roadmap</h2>
+        <p>The curriculum is organised into 12 sections, each building on the last. You can follow them in order for a structured journey, or jump directly to a topic you need. Here is the complete path:</p>
+        <div class="roadmap" aria-label="Learning roadmap">
+          <div class="step"><span class="n">0</span><span class="t">Getting Started</span><span class="d">Setup &amp; mindset</span><span class="time">~1 hr</span></div>
+          <div class="step"><span class="n">1</span><span class="t">HTML Fundamentals</span><span class="d">Tags, structure, attributes</span><span class="time">~3 hrs</span></div>
+          <div class="step"><span class="n">2</span><span class="t">Text Formatting</span><span class="d">Headings, lists, emphasis</span><span class="time">~3 hrs</span></div>
+          <div class="step"><span class="n">3</span><span class="t">Links &amp; Navigation</span><span class="d">Anchors, URLs, targets</span><span class="time">~3 hrs</span></div>
+          <div class="step"><span class="n">4</span><span class="t">Media &amp; Graphics</span><span class="d">Images, audio, video, SVG</span><span class="time">~4 hrs</span></div>
+          <div class="step"><span class="n">5</span><span class="t">Tables</span><span class="d">Tabular data, scope, a11y</span><span class="time">~2 hrs</span></div>
+          <div class="step"><span class="n">6</span><span class="t">Forms</span><span class="d">Inputs, validation, UX</span><span class="time">~5 hrs</span></div>
+          <div class="step"><span class="n">7</span><span class="t">Semantic HTML</span><span class="d">header, main, article, …</span><span class="time">~3 hrs</span></div>
+          <div class="step"><span class="n">8</span><span class="t">Advanced Features</span><span class="d">Templates, web components</span><span class="time">~4 hrs</span></div>
+          <div class="step"><span class="n">9</span><span class="t">Best Practices</span><span class="d">Performance, SEO, a11y</span><span class="time">~3 hrs</span></div>
+          <div class="step"><span class="n">10</span><span class="t">Projects</span><span class="d">Build real things</span><span class="time">~8 hrs</span></div>
+          <div class="step"><span class="n">11</span><span class="t">Reference</span><span class="d">Look-up tables &amp; cheatsheets</span><span class="time">ongoing</span></div>
+        </div>
+        <h3>Visual path</h3>
+        <pre><code>┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│ 0 Setup  │ →  │ 1 Basics │ →  │ 2 Text   │ →  │ 3 Links  │
+└──────────┘    └──────────┘    └──────────┘    └──────────┘
+                                                        ↓
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│ 11 Ref   │ ←  │ 10 Proj  │ ←  │ 9 Best   │ ←  │ 8 Adv.   │
+└──────────┘    └──────────┘    └──────────┘    └──────────┘
+                                                        ↑
+                  ┌──────────┐    ┌──────────┐    ┌──────────┐
+                  │ 4 Media  │ →  │ 5 Tables │ →  │ 6 Forms  │
+                  └──────────┘    └──────────┘    └──────────┘
+                                                        ↓
+                  ┌──────────┐
+                  │ 7 Semant │
+                  └──────────┘</code></pre>
+      </section>
+
+      <section id="time">
+        <h2><span class="num">4</span> Time Investment</h2>
+        <p>Be honest with yourself about your schedule. A little each day beats a marathon once a month. The table below estimates the time to reach each milestone if you study actively (typing code, not just reading).</p>
+        <table>
+          <thead>
+            <tr><th>Section</th><th>Reading</th><th>Practice</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0 · Getting Started</td><td>30 min</td><td>30 min</td><td>1 hr</td></tr>
+            <tr><td>1 · HTML Fundamentals</td><td>1.5 hr</td><td>1.5 hr</td><td>3 hr</td></tr>
+            <tr><td>2 · Text Formatting</td><td>1 hr</td><td>2 hr</td><td>3 hr</td></tr>
+            <tr><td>3 · Links &amp; Navigation</td><td>1 hr</td><td>2 hr</td><td>3 hr</td></tr>
+            <tr><td>4 · Media &amp; Graphics</td><td>1.5 hr</td><td>2.5 hr</td><td>4 hr</td></tr>
+            <tr><td>5 · Tables</td><td>1 hr</td><td>1 hr</td><td>2 hr</td></tr>
+            <tr><td>6 · Forms</td><td>2 hr</td><td>3 hr</td><td>5 hr</td></tr>
+            <tr><td>7 · Semantic HTML</td><td>1 hr</td><td>2 hr</td><td>3 hr</td></tr>
+            <tr><td>8 · Advanced Features</td><td>1.5 hr</td><td>2.5 hr</td><td>4 hr</td></tr>
+            <tr><td>9 · Best Practices</td><td>1 hr</td><td>2 hr</td><td>3 hr</td></tr>
+            <tr><td>10 · Projects</td><td>—</td><td>8 hr</td><td>8 hr</td></tr>
+            <tr><td><strong>Total to job-ready</strong></td><td colspan="2"></td><td><strong>~39 hr</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Spaced repetition works. Revisit each section's exercises 3 days, then 1 week, then 1 month after first exposure. You will remember ~80% more.
+        </div>
+      </section>
+
+      <section id="prereq">
+        <h2><span class="num">5</span> Prerequisites</h2>
+        <p>Good news: HTML has the lowest barrier of any web technology. You need nothing more than a computer, a text editor, and a browser — all of which you almost certainly already have. <strong>You do not need to know any programming.</strong> You do not need to know JavaScript, CSS, or a backend language. HTML is its own thing, and we'll start from absolute zero.</p>
+        <p>If you can:</p>
+        <ul>
+          <li>Save a file to a folder on your computer</li>
+          <li>Open a file by double-clicking it</li>
+          <li>Type on a keyboard at a comfortable pace</li>
+          <li>Use a web browser to visit a website</li>
+        </ul>
+        <p>…then you have every prerequisite needed to begin. The dedicated <a href="prerequisites.html">Prerequisites</a> page walks through optional-but-recommended tooling such as VS Code and the Live Server extension.</p>
+        <div class="callout exercise">
+          <strong>Try it yourself — 2 minutes</strong>
+          Right now, open your operating system's plain text editor (Notepad on Windows, TextEdit on macOS, gedit on Linux). Type <code>&lt;p&gt;Hello, web!&lt;/p&gt;</code>, save the file as <code>hello.html</code>, and double-click it. Congratulations — you just wrote and ran HTML.
+        </div>
+      </section>
+
+      <section id="outcomes">
+        <h2><span class="num">6</span> Learning Outcomes</h2>
+        <p>By completing this curriculum you will be able to:</p>
+        <div class="grid-2">
+          <div class="card"><h4>1. Author valid documents</h4><p>Write HTML5 that passes W3C validation and renders predictably across browsers.</p></div>
+          <div class="card"><h4>2. Choose correct elements</h4><p>Reach for the semantically right element rather than the closest-looking one.</p></div>
+          <div class="card"><h4>3. Build accessible UIs</h4><p>Make pages usable with screen readers, keyboards, and assistive tech from day one.</p></div>
+          <div class="card"><h4>4. Optimize for performance</h4><p>Apply loading hints, lazy attributes, and resource ordering techniques.</p></div>
+          <div class="card"><h4>5. Reason about content models</h4><p>Understand what can contain what — and why nesting matters for browsers and a11y.</p></div>
+          <div class="card"><h4>6. Ship real projects</h4><p>Build a portfolio-ready set of pages, forms, and components in Section 10.</p></div>
+        </div>
+      </section>
+
+      <section id="how">
+        <h2><span class="num">7</span> How To Navigate</h2>
+        <p>Every page in the project follows the same rhythm. Once you've seen one, you'll feel at home in all of them:</p>
+        <ol>
+          <li><strong>Concept</strong> — what a feature is, in plain English.</li>
+          <li><strong>Code example</strong> — minimal, runnable, annotated.</li>
+          <li><strong>Browser support note</strong> — when can you use it?</li>
+          <li><strong>Common mistakes</strong> — what beginners get wrong.</li>
+          <li><strong>Try it yourself</strong> — a small exercise to apply it.</li>
+          <li><strong>Next / Prev</strong> — navigation at the bottom of every page.</li>
+        </ol>
+        <p>Use the sticky sidebar on the left to jump within a page. Use the Prev/Next links at the bottom to follow the curated order, or browse the directory listing for any topic.</p>
+      </section>
+
+      <section id="philosophy">
+        <h2><span class="num">8</span> Teaching Philosophy</h2>
+        <p>This project is built on five convictions that shape every page:</p>
+        <div class="grid-2">
+          <div class="card"><h4>Spec-first</h4><p>We teach the WHATWG Living Standard, not a specific browser's behaviour — though we'll call out quirks when they matter.</p></div>
+          <div class="card"><h4>Accessibility by default</h4><p>Every example is screen-reader-friendly. A11y isn't a Section 9 topic; it's woven throughout.</p></div>
+          <div class="card"><h4>Practice over theory</h4><p>Reading about <code>&lt;form&gt;</code> is not the same as writing one. Expect exercises.</p></div>
+          <div class="card"><h4>Historical context</h4><p>Knowing why HTML4 looked the way it did makes HTML5's choices make sense.</p></div>
+          <div class="card"><h4>Cross-browser honesty</h4><p>We mention Safari and Firefox quirks where they bite.</p></div>
+          <div class="card"><h4>Long-term memory</h4><p>Spaced exercises, not cramming, build durable knowledge.</p></div>
+        </div>
+      </section>
+
+      <section id="next">
+        <h2><span class="num">9</span> Next Steps</h2>
+        <p>You're ready. Here's what to do now:</p>
+        <ol>
+          <li>Read <a href="how-to-use.html">How To Use This Project</a> for environment setup.</li>
+          <li>Confirm your machine is ready on the <a href="prerequisites.html">Prerequisites</a> page.</li>
+          <li>Dive into <a href="../01-HTML-Fundamentals/01-What-is-HTML/index.html">Section 1 · What is HTML</a>.</li>
+        </ol>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Bookmark the <a href="../11-Reference/index.html">Reference</a> section. You'll come back to it constantly once you start building.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="#">← Previous (start)</a>
+      <a href="how-to-use.html">Next: How To Use →</a>
+    </div>
+    <p>HTML Mastery — Section 0 · Getting Started · Introduction</p>
+  </footer>
+</body>
+</html>

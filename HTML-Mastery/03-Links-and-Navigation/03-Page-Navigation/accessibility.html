@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessible Links — HTML Mastery</title>
+  <meta name="description" content="Accessible HTML links: aria-current, focus styles with :focus-visible, link text best practices (no click here), skip links, distinguishing links from buttons, color contrast WCAG AA/AAA, screen reader announcements.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #16a34a 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    /* Contrast demo swatches */
+    .contrast-demo { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+    .contrast-swatch {
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      flex: 1 1 200px;
+      min-width: 200px;
+    }
+    .contrast-swatch.aa { background: #2563eb; color: white; border: 2px solid #1e40af; }
+    .contrast-swatch.aaa { background: #1e40af; color: white; border: 2px solid #1e3a8a; }
+    .contrast-swatch.fail { background: #93c5fd; color: white; }
+    .contrast-swatch .ratio { font-size: 0.85rem; opacity: 0.85; display: block; margin-top: 4px; }
+    /* Focus-visible demo */
+    .focus-demo a {
+      display: inline-block;
+      margin: 6px 10px 6px 0;
+      padding: 8px 14px;
+      color: var(--brand);
+      text-decoration: underline;
+      border-radius: 4px;
+    }
+    .focus-demo a:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+      background: #fef3c7;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.9 · A11y Links</span>
+    <h1>Accessible Links</h1>
+    <p>Accessibility isn't a feature — it's a baseline. Links are the most common interactive element on the web, and they're where most accessibility failures happen: vague "click here" text, missing focus styles, color-only differentiation. Get links right, and you've solved 80% of common a11y issues.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why">Why Link Accessibility Matters</a></li>
+        <li><a href="#link-text">Link Text Best Practices</a></li>
+        <li><a href="#aria-current">aria-current</a></li>
+        <li><a href="#focus">Focus Styles &amp; :focus-visible</a></li>
+        <li><a href="#skip-links">Skip Links</a></li>
+        <li><a href="#vs-buttons">Links vs Buttons</a></li>
+        <li><a href="#contrast">Color Contrast (WCAG)</a></li>
+        <li><a href="#sr">Screen Reader Announcements</a></li>
+        <li><a href="#external">External &amp; New-Tab Links</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why">
+        <h2><span class="num">1</span> Why Link Accessibility Matters</h2>
+        <p>Links are how users move through your site. If they're inaccessible, certain users can't navigate at all — they can't buy your product, read your content, or contact you. The legal and moral case is clear; the practical case is even simpler: accessible links benefit everyone.</p>
+        <ul>
+          <li><strong>Screen reader users</strong> navigate by tabbing through links and hearing only the link text — not surrounding context.</li>
+          <li><strong>Keyboard users</strong> need visible focus indicators to know where they are.</li>
+          <li><strong>Low-vision users</strong> need sufficient color contrast.</li>
+          <li><strong>Voice-control users</strong> say the visible link text to click it.</li>
+          <li><strong>Cognitive-load-sensitive users</strong> benefit from clear, descriptive labels.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          WCAG 2.1 AA is the legal standard in many jurisdictions (ADA in the US, EAA in the EU, AODA in Ontario). It's also the baseline Google Lighthouse audits against. Aim higher (AAA where reasonable) — but never below AA.
+        </div>
+      </section>
+
+      <section id="link-text">
+        <h2><span class="num">2</span> Link Text Best Practices</h2>
+        <p>The single most common accessibility mistake: vague link text. Screen reader users often pull up a "links list" — every link on the page, out of context. If your link text is "click here" or "read more", that list is useless.</p>
+        <h3>❌ Don't</h3>
+        <pre><code>&lt;!-- Vague, context-dependent --&gt;
+&lt;a href="/blog/post-1"&gt;Click here&lt;/a&gt;
+&lt;a href="/blog/post-2"&gt;Read more&lt;/a&gt;
+&lt;a href="/blog/post-3"&gt;Learn more&lt;/a&gt;
+&lt;a href="#"&gt;here&lt;/a&gt;
+&lt;a href="#"&gt;link&lt;/a&gt;</code></pre>
+        <h3>✅ Do</h3>
+        <pre><code>&lt;!-- Descriptive, self-contained --&gt;
+&lt;a href="/blog/css-grid"&gt;Understanding CSS Grid Layout&lt;/a&gt;
+&lt;a href="/blog/flexbox"&gt;Mastering Flexbox Patterns&lt;/a&gt;
+&lt;a href="/pricing"&gt;View pricing plans&lt;/a&gt;
+&lt;a href="/api/docs"&gt;Read the API documentation&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The "Read more" pattern is everywhere — and accessibility tools universally flag it. The fix: include context in the link, or use <code>aria-labelledby</code> / <code>aria-label</code> to extend it:
+          <pre style="margin-top: 10px;"><code>&lt;article&gt;
+  &lt;h3 id="post-1-title"&gt;Understanding CSS Grid&lt;/h3&gt;
+  &lt;p&gt;A deep dive into two-dimensional layout...&lt;/p&gt;
+  &lt;a href="/blog/css-grid" aria-labelledby="post-1-title"&gt;Read more&lt;/a&gt;
+&lt;/article&gt;</code></pre>
+          Now screen readers announce: "Understanding CSS Grid, link".
+        </div>
+        <h3>Other Link-Text Rules</h3>
+        <ul>
+          <li>Don't include the URL as the link text (e.g., "Click https://example.com/page" — say "Visit Example's page").</li>
+          <li>Avoid "http://" / "www." prefixes in visible text — they're noise.</li>
+          <li>Don't make the entire sentence a link. Link only the action/object.</li>
+          <li>Avoid ALL CAPS — many screen readers spell them out letter by letter.</li>
+          <li>Keep link text concise — under ~100 characters when possible.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip — Voice Control</strong>
+          Voice-control users (Dragon, Voice Control on Mac/iOS) say the visible link text to click. "Click Read more" fails when there are 5 "Read more" links on the page. "Click Understanding CSS Grid" works perfectly.
+        </div>
+      </section>
+
+      <section id="aria-current">
+        <h2><span class="num">3</span> <code>aria-current</code></h2>
+        <p>When the link points to the page the user is currently on, mark it with <code>aria-current="page"</code>. Screen readers announce "current page"; you can also use it as a CSS hook for styling.</p>
+        <pre><code>&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;style&gt;
+  nav a[aria-current="page"] {
+    background: var(--brand);
+    color: white;
+    font-weight: 600;
+  }
+&lt;/style&gt;</code></pre>
+        <p>The full deep dive is in <code>03-Page-Navigation/site-nav.html</code>.</p>
+      </section>
+
+      <section id="focus">
+        <h2><span class="num">4</span> Focus Styles &amp; <code>:focus-visible</code></h2>
+        <p>Keyboard users navigate with Tab. They need to see which element is currently focused — the focus ring is how. Removing the default outline is one of the worst accessibility crimes on the web.</p>
+        <h3>❌ Don't</h3>
+        <pre><code>/* Removes focus indicator entirely */
+a { outline: none; }
+
+/* Applies to mouse clicks too — ugly and unnecessary */
+a:focus { outline: none; }</code></pre>
+        <h3>✅ Do</h3>
+        <pre><code>/* Applies only when keyboard-navigating */
+a:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Mouse clicks don't show ring — but keyboard does */</code></pre>
+        <div class="demo-box focus-demo">
+          <p>Tab through these links to see the focus ring:</p>
+          <a href="#">First link</a>
+          <a href="#">Second link</a>
+          <a href="#">Third link</a>
+          <a href="#">Fourth link</a>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — :focus-visible vs :focus</strong>
+          <code>:focus</code> applies whenever the element has focus — including after a mouse click. <code>:focus-visible</code> applies only when the browser heuristically decides the user is keyboard-navigating. Always prefer <code>:focus-visible</code> for custom styles — mouse users won't see an ugly ring after clicking, but keyboard users still get one.
+        </div>
+        <h3>Make the Ring Visible</h3>
+        <p>The focus ring must have a contrast ratio of at least 3:1 against adjacent colors (WCAG 2.4.11 — Focus Appearance, in WCAG 2.2). Avoid thin outlines — 3px is the minimum recommended width.</p>
+      </section>
+
+      <section id="skip-links">
+        <h2><span class="num">5</span> Skip Links</h2>
+        <p>A skip link is the first focusable element on the page. Hidden until focused, it lets keyboard users jump directly to main content — bypassing long navigation menus.</p>
+        <pre><code>&lt;!-- First element in &lt;body&gt; --&gt;
+&lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+&lt;nav&gt;...long navigation...&lt;/nav&gt;
+
+&lt;main id="main"&gt;
+  &lt;h1&gt;Main content&lt;/h1&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 8px;
+    z-index: 1000;
+    background: var(--brand);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 0 0 8px 8px;
+    text-decoration: none;
+    transition: top 0.2s;
+  }
+  .skip-link:focus {
+    top: 0;
+  }
+&lt;/style&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — display: none</strong>
+          Using <code>display: none</code> or <code>visibility: hidden</code> makes the link unfocusable. Always use off-screen positioning (<code>top: -100px</code>) and reveal on <code>:focus</code>.
+        </div>
+        <p>WCAG 2.4.1 (Bypass Blocks) requires a way to skip repetitive navigation. Skip links are the simplest, most reliable solution.</p>
+      </section>
+
+      <section id="vs-buttons">
+        <h2><span class="num">6</span> Distinguishing Links from Buttons</h2>
+        <p>Both can be styled to look identical — but they have different semantics. Getting this wrong confuses screen reader users and breaks keyboard behavior.</p>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th>Link <code>&lt;a&gt;</code></th><th>Button <code>&lt;button&gt;</code></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Activation</td><td>Enter (also Ctrl/Cmd+Click, middle-click)</td><td>Enter or Spacebar</td></tr>
+            <tr><td>Cursor</td><td>Pointer</td><td>Pointer (if you style it)</td></tr>
+            <tr><td>Address bar URL</td><td>Updates with href</td><td>No URL change</td></tr>
+            <tr><td>Right-click → "Open in new tab"</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Bookmarkable</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Use case</td><td>Navigation</td><td>Action (toggle, submit, modal)</td></tr>
+          </tbody>
+        </table>
+        <h3>Decision Rule</h3>
+        <ul>
+          <li><strong>If clicking changes the URL</strong> → use <code>&lt;a href&gt;</code>.</li>
+          <li><strong>If clicking does an action</strong> (open modal, toggle, submit, fetch) → use <code>&lt;button&gt;</code>.</li>
+          <li><strong>If you're not sure</strong> → it's almost always a button.</li>
+        </ul>
+        <pre><code>&lt;!-- ✅ Link: navigation --&gt;
+&lt;a href="/products/123"&gt;View product&lt;/a&gt;
+
+&lt;-- ✅ Button: action --&gt;
+&lt;button type="button" onclick="openModal()"&gt;Quick view&lt;/button&gt;
+
+&lt;-- ✅ Button: form submit --&gt;
+&lt;button type="submit"&gt;Place order&lt;/button&gt;
+
+&lt;-- ❌ Wrong: link pretending to be a button --&gt;
+&lt;a href="#" onclick="openModal()"&gt;Quick view&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Many "link-styled-as-button" patterns use <code>href="#"</code> — which scrolls to top on click. Even with <code>preventDefault()</code>, screen readers announce "link" instead of "button". Use the right element.
+        </div>
+      </section>
+
+      <section id="contrast">
+        <h2><span class="num">7</span> Color Contrast (WCAG AA &amp; AAA)</h2>
+        <p>Link color must contrast with its background. WCAG defines two conformance levels:</p>
+        <table>
+          <thead>
+            <tr><th>Level</th><th>Contrast Ratio (normal text)</th><th>Contrast Ratio (large text, 18pt+)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>AA (minimum)</td><td>4.5:1</td><td>3:1</td></tr>
+            <tr><td>AAA (enhanced)</td><td>7:1</td><td>4.5:1</td></tr>
+          </tbody>
+        </table>
+        <div class="contrast-demo">
+          <div class="contrast-swatch aa">
+            AA pass: #2563eb on white
+            <span class="ratio">Ratio: 4.6:1 ✓</span>
+          </div>
+          <div class="contrast-swatch aaa">
+            AAA pass: #1e40af on white
+            <span class="ratio">Ratio: 8.6:1 ✓</span>
+          </div>
+          <div class="contrast-swatch fail">
+            Fail: #93c5fd on white
+            <span class="ratio">Ratio: 1.9:1 ✗</span>
+          </div>
+        </div>
+        <h3>Don't Rely on Color Alone</h3>
+        <p>Links must be distinguishable from non-link text — but not by color alone. Add underline, bold, or an icon. Colorblind users can't see "blue" as different from "black".</p>
+        <pre><code>/* ✅ Always underline links */
+a { text-decoration: underline; }
+
+/* ✅ Or use underline on hover at minimum */
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ✅ Differentiate visited */
+a:visited { color: #6b21a8; }</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Removing Underline</strong>
+          Many design systems remove underlines for aesthetic reasons. This is a known accessibility failure (WCAG 1.4.1). If you must remove underlines, ensure the link is still distinguishable by:
+          <ul>
+            <li>Strong color contrast vs body text AND background.</li>
+            <li>Bold weight.</li>
+            <li>Icon (e.g., ↗ for external links).</li>
+            <li>Background pill / button-like styling.</li>
+          </ul>
+          And always restore underline on hover and focus.
+        </div>
+      </section>
+
+      <section id="sr">
+        <h2><span class="num">8</span> Screen Reader Announcements</h2>
+        <p>Screen readers announce links based on their accessible name — which comes from the link text, or from <code>aria-label</code>/<code>aria-labelledby</code> if provided. The word "link" is added automatically.</p>
+        <h3>Icon-Only Links</h3>
+        <p>Icon-only links (e.g., social media icons in a footer) have no visible text — you must provide an accessible name:</p>
+        <pre><code>&lt;!-- ❌ Screen reader says just "link" --&gt;
+&lt;a href="/cart"&gt;&lt;svg&gt;...cart icon...&lt;/svg&gt;&lt;/a&gt;
+
+&lt;-- ✅ Option 1: aria-label --&gt;
+&lt;a href="/cart" aria-label="View shopping cart (3 items)"&gt;
+  &lt;svg aria-hidden="true"&gt;...cart icon...&lt;/svg&gt;
+&lt;/a&gt;
+
+&lt;-- ✅ Option 2: visually-hidden text --&gt;
+&lt;a href="/cart"&gt;
+  &lt;svg aria-hidden="true"&gt;...cart icon...&lt;/svg&gt;
+  &lt;span class="sr-only"&gt;View shopping cart (3 items)&lt;/span&gt;
+&lt;/a&gt;
+
+&lt;-- CSS for sr-only --&gt;
+&lt;style&gt;
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+&lt;/style&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always mark decorative icons <code>aria-hidden="true"</code> — otherwise screen readers may announce "image" alongside the link. Pair <code>aria-hidden</code> on the icon with <code>aria-label</code> (or visible text) on the link.
+        </div>
+        <h3>Avoid Redundant Announcements</h3>
+        <pre><code>&lt;!-- ❌ Redundant: announces "Cart link, link" --&gt;
+&lt;a href="/cart" aria-label="Cart link"&gt;...&lt;/a&gt;
+
+&lt;-- ✅ Clean: announces "Cart, link" --&gt;
+&lt;a href="/cart" aria-label="Cart"&gt;...&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="external">
+        <h2><span class="num">9</span> External &amp; New-Tab Links</h2>
+        <p>When a link opens in a new tab (<code>target="_blank"</code>), screen reader users benefit from knowing in advance. Add this info to the accessible name:</p>
+        <pre><code>&lt;!-- ✅ Visible text informs the user --&gt;
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;
+  Visit Example.com (opens in new tab)
+&lt;/a&gt;
+
+&lt;-- ✅ Or visually-hidden text + visible icon --&gt;
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;
+  Visit Example.com
+  &lt;svg aria-hidden="true" width="14" height="14"&gt;
+    &lt;path d="M7 17L17 7M17 7H7M17 7v10" /&gt;
+  &lt;/svg&gt;
+  &lt;span class="sr-only"&gt;(opens in new tab)&lt;/span&gt;
+&lt;/a&gt;
+
+&lt;-- ✅ Or aria-label --&gt;
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"
+   aria-label="Visit Example.com (opens in new tab)"&gt;
+  Visit Example.com ↗
+&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't surprise users with new tabs without warning. Some users (especially those with cognitive disabilities or screen reader users) find unexpected tab switches disorienting. Either:
+          <ul>
+            <li>Open in the same tab (default), or</li>
+            <li>Clearly indicate "opens in new tab" in text/icon.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Fix Vague Link Text</strong>
+          Rewrite these links with descriptive text: <code>"Click here to read about our pricing"</code>, <code>"Read more about the new feature"</code>, <code>"Link to the documentation"</code>. Each link should make sense out of context.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — aria-labelledby Pattern</strong>
+          Build a blog post card with a heading, excerpt, and "Read more" link. Use <code>aria-labelledby</code> to associate the "Read more" link with the heading — so screen readers announce the title.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Focus Ring</strong>
+          Style <code>:focus-visible</code> with a 3px outline that has 3px offset. Tab through your page — verify the ring is visible on every focusable element. Test that mouse clicks don't show the ring.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Icon-Only Link</strong>
+          Build a "Share to Twitter" icon link. The icon (SVG Twitter bird) is the only visible content. Add <code>aria-label="Share to Twitter"</code> and mark the SVG <code>aria-hidden="true"</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Contrast Audit</strong>
+          Use a contrast checker (WebAIM, Chrome DevTools "Inspect → Accessibility") to verify your link colors meet WCAG AA. If any fail, adjust the color until they pass.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Link vs Button Audit</strong>
+          Audit your existing project. Find every <code>&lt;a href="#"&gt;</code> and decide: should it be a button? Convert any that don't change the URL.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 7 — Skip Link</strong>
+          Add a skip link as the first focusable element on a page. Make it visually hidden until focused. Test by tabbing from the address bar — the link should slide into view.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>"Click here" / "Read more" link text</td><td>Meaningless out of context.</td><td>Use descriptive text; or <code>aria-labelledby</code> to extend.</td></tr>
+            <tr><td><code>outline: none</code> on links</td><td>Keyboard users can't see focus.</td><td>Style <code>:focus-visible</code>; never <code>outline: none</code>.</td></tr>
+            <tr><td>Removing underline without replacement</td><td>Color-only differentiation fails colorblind users.</td><td>Keep underline; or add bold/icon; restore on hover.</td></tr>
+            <tr><td>Icon-only link without <code>aria-label</code></td><td>Screen reader announces only "link".</td><td>Add <code>aria-label</code> + <code>aria-hidden</code> on icon.</td></tr>
+            <tr><td>Using <code>&lt;a href="#"&gt;</code> for actions</td><td>Wrong semantics; jumps to top; bad for SR.</td><td>Use <code>&lt;button&gt;</code>.</td></tr>
+            <tr><td>Missing <code>aria-current="page"</code></td><td>SR users don't know which page they're on.</td><td>Add it to nav links pointing to the current URL.</td></tr>
+            <tr><td>Low-contrast link colors</td><td>Fails WCAG AA; unreadable for low-vision users.</td><td>Verify ≥4.5:1 contrast; use darker shade.</td></tr>
+            <tr><td>New tab without indication</td><td>Disorienting for SR and cognitive users.</td><td>Add "(opens in new tab)" to link text or aria-label.</td></tr>
+            <tr><td>Redundant "link" in aria-label</td><td>"Cart link, link" is announced twice.</td><td>Drop "link" from aria-label.</td></tr>
+            <tr><td>Skip link with <code>display: none</code></td><td>Unfocusable; skip link never appears.</td><td>Off-screen positioning + <code>:focus</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Nav Menus</h4>
+            <p>Every nav item needs descriptive text + <code>aria-current="page"</code> + visible focus state.</p>
+          </div>
+          <div class="card">
+            <h4>Blog Cards</h4>
+            <p>Block-link pattern with "Read more" + <code>aria-labelledby</code> pointing to the post title.</p>
+          </div>
+          <div class="card">
+            <h4>Social Media Footer</h4>
+            <p>Icon-only links to Twitter, LinkedIn, etc. Each needs <code>aria-label="Follow us on X"</code>.</p>
+          </div>
+          <div class="card">
+            <h4>PDF Downloads</h4>
+            <p>Indicate PDF + file size in link text: "Annual Report 2024 (PDF, 2.4 MB)".</p>
+          </div>
+          <div class="card">
+            <h4>External Links</h4>
+            <p>Visual ↗ icon + <code>rel="noopener noreferrer external"</code> + <code>aria-label</code> indicating new tab.</p>
+          </div>
+          <div class="card">
+            <h4>Shopping Cart</h4>
+            <p>Icon + "Cart (3)" text + <code>aria-label="View shopping cart, 3 items"</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Legal Documents</h4>
+            <p>Skip links to skip to: Definitions, Your Rights, Contact, etc. Critical for ToS/Privacy pages.</p>
+          </div>
+          <div class="card">
+            <h4>Help / Support</h4>
+            <p>Inline links in help articles should have full context — not just "click here".</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li>Link text must be descriptive and self-contained — never "click here" or "read more".</li>
+          <li>Use <code>aria-current="page"</code> on the link to the current page.</li>
+          <li>Always style <code>:focus-visible</code> — never remove focus outlines.</li>
+          <li>Skip links (first focusable element) let keyboard users bypass repetitive nav.</li>
+          <li>Use <code>&lt;a href&gt;</code> for navigation; <code>&lt;button&gt;</code> for actions. Don't mix them up.</li>
+          <li>Color contrast: ≥4.5:1 for normal text (WCAG AA); ≥7:1 for AAA.</li>
+          <li>Don't rely on color alone to distinguish links — keep underlines.</li>
+          <li>Icon-only links need <code>aria-label</code>; mark icons <code>aria-hidden="true"</code>.</li>
+          <li>Indicate new-tab links in text or aria-label.</li>
+          <li>WCAG 2.1 AA is the legal baseline; aim higher where reasonable.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>WCAG 2.1 AA · ARIA 1.2</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="site-nav.html">← Previous: Site Navigation Patterns</a>
+      <a href="../04-Download-Links/download-attribute.html">Next: download Attribute →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Accessible Links</p>
+  </footer>
+</body>
+</html>

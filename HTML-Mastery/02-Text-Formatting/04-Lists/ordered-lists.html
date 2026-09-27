@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordered Lists &lt;ol&gt; — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML ordered lists: ol, li, start, reversed, and type attributes (1, a, A, i, I), nested ordered lists, when to use ol vs ul, and CSS counters for advanced numbering.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box ol { margin: 0 0 8px; }
+    .demo-box ol:last-child { margin-bottom: 0; }
+    .counter-demo {
+      list-style: none;
+      counter-reset: step;
+      padding: 0;
+    }
+    .counter-demo li {
+      counter-increment: step;
+      padding: 12px 16px 12px 60px;
+      position: relative;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+      border-radius: 8px;
+    }
+    .counter-demo li::before {
+      content: counter(step);
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.4 · Lists</span>
+    <h1>Ordered Lists <code>&lt;ol&gt;</code> &amp; <code>&lt;li&gt;</code></h1>
+    <p>When order matters — steps in a recipe, ranking, instructions, changelogs — reach for <code>&lt;ol&gt;</code>. The browser numbers items automatically, but with <code>start</code>, <code>reversed</code>, and <code>type</code> attributes you have full control. And CSS counters unlock entirely custom numbering schemes.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is an Ordered List?</a></li>
+        <li><a href="#syntax">Basic Syntax</a></li>
+        <li><a href="#type">The <code>type</code> Attribute</a></li>
+        <li><a href="#start">The <code>start</code> Attribute</a></li>
+        <li><a href="#reversed">The <code>reversed</code> Attribute</a></li>
+        <li><a href="#value">The <code>value</code> Attribute on <code>&lt;li&gt;</code></a></li>
+        <li><a href="#nested">Nested Ordered Lists</a></li>
+        <li><a href="#ol-vs-ul">When to Use <code>ol</code> vs <code>ul</code></a></li>
+        <li><a href="#css-counters">CSS Counters</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is an Ordered List?</h2>
+        <p>An ordered list represents a collection of items where the <strong>order is meaningful</strong> — instructions, steps, rankings, or sequences. The browser renders each item with a number (or letter) by default.</p>
+        <pre><code>&lt;ol&gt;
+  &lt;li&gt;Preheat the oven to 350°F.&lt;/li&gt;
+  &lt;li&gt;Mix flour and sugar.&lt;/li&gt;
+  &lt;li&gt;Bake for 30 minutes.&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="demo-box">
+          <ol>
+            <li>Preheat the oven to 350°F.</li>
+            <li>Mix flour and sugar.</li>
+            <li>Bake for 30 minutes.</li>
+          </ol>
+        </div>
+        <div class="callout">
+          <strong>Info</strong>
+          If you re-arrange the items in an <code>&lt;ol&gt;</code>, the meaning changes — that is the semantic test for "ordered". For a list where order is arbitrary (shopping list, feature list), use <code>&lt;ul&gt;</code>.
+        </div>
+      </section>
+
+      <section id="syntax">
+        <h2><span class="num">2</span> Basic Syntax</h2>
+        <p>Like <code>&lt;ul&gt;</code>, the only allowed direct children of <code>&lt;ol&gt;</code> are <code>&lt;li&gt;</code> elements. Each <code>&lt;li&gt;</code> can contain any flow content.</p>
+        <pre><code>&lt;ol&gt;
+  &lt;li&gt;Sign up for an account&lt;/li&gt;
+  &lt;li&gt;Verify your email address&lt;/li&gt;
+  &lt;li&gt;
+    Complete your profile:
+    &lt;ul&gt;
+      &lt;li&gt;Add a profile photo&lt;/li&gt;
+      &lt;li&gt;Write a short bio&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Start exploring!&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+      </section>
+
+      <section id="type">
+        <h2><span class="num">3</span> The <code>type</code> Attribute</h2>
+        <p>The <code>type</code> attribute changes the numbering style. Five values are supported:</p>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Style</th><th>Example</th><th>Use case</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>1</code> (default)</td><td>Decimal numbers</td><td>1, 2, 3</td><td>Most common; steps, rankings</td></tr>
+            <tr><td><code>a</code></td><td>Lowercase letters</td><td>a, b, c</td><td>Outline-style sub-items</td></tr>
+            <tr><td><code>A</code></td><td>Uppercase letters</td><td>A, B, C</td><td>Appendices, formal outlines</td></tr>
+            <tr><td><code>i</code></td><td>Lowercase Roman</td><td>i, ii, iii</td><td>Legal documents, prefaces</td></tr>
+            <tr><td><code>I</code></td><td>Uppercase Roman</td><td>I, II, III</td><td>Chapter numbers, formal</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;ol type="1"&gt;
+  &lt;li&gt;First item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ol type="A"&gt;
+  &lt;li&gt;Appendix A&lt;/li&gt;
+  &lt;li&gt;Appendix B&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ol type="i"&gt;
+  &lt;li&gt;Item one&lt;/li&gt;
+  &lt;li&gt;Item two&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="demo-box">
+          <ol type="1"><li>Decimal</li><li>Two</li></ol>
+          <ol type="a"><li>Lowercase a</li><li>Lowercase b</li></ol>
+          <ol type="A"><li>Uppercase A</li><li>Uppercase B</li></ol>
+          <ol type="i"><li>Roman i</li><li>Roman ii</li></ol>
+          <ol type="I"><li>Roman I</li><li>Roman II</li></ol>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Modern CSS also exposes <code>list-style-type</code> with the same values, plus many more (Japanese-formal, Georgian, Hebrew, etc.). The CSS approach is preferred for new code, but the <code>type</code> attribute still works and is more concise for simple cases.
+        </div>
+      </section>
+
+      <section id="start">
+        <h2><span class="num">4</span> The <code>start</code> Attribute</h2>
+        <p>The <code>start</code> attribute sets the starting number for the list. It accepts an integer regardless of the <code>type</code> — the browser converts it appropriately.</p>
+        <pre><code>&lt;ol start="5"&gt;
+  &lt;li&gt;Fifth step&lt;/li&gt;
+  &lt;li&gt;Sixth step&lt;/li&gt;
+  &lt;li&gt;Seventh step&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ol type="A" start="3"&gt;
+  &lt;li&gt;Starts at C&lt;/li&gt;
+  &lt;li&gt;Then D&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="demo-box">
+          <ol start="5">
+            <li>Fifth step</li>
+            <li>Sixth step</li>
+            <li>Seventh step</li>
+          </ol>
+          <ol type="A" start="3">
+            <li>Starts at C</li>
+            <li>Then D</li>
+          </ol>
+        </div>
+        <p>The <code>start</code> attribute is useful for splitting a list across multiple sections of a document while keeping the numbering continuous.</p>
+      </section>
+
+      <section id="reversed">
+        <h2><span class="num">5</span> The <code>reversed</code> Attribute</h2>
+        <p>The <code>reversed</code> attribute is a boolean: when present, the list counts down instead of up. Useful for countdowns, "top N" rankings, and changelogs.</p>
+        <pre><code>&lt;ol reversed&gt;
+  &lt;li&gt;First place (gold)&lt;/li&gt;
+  &lt;li&gt;Second place (silver)&lt;/li&gt;
+  &lt;li&gt;Third place (bronze)&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="demo-box">
+          <ol reversed>
+            <li>First place (gold)</li>
+            <li>Second place (silver)</li>
+            <li>Third place (bronze)</li>
+          </ol>
+        </div>
+        <p>Combine <code>reversed</code> with <code>start</code> to control the exact starting number:</p>
+        <pre><code>&lt;ol reversed start="10"&gt;
+  &lt;li&gt;Item 10&lt;/li&gt;
+  &lt;li&gt;Item 9&lt;/li&gt;
+  &lt;li&gt;Item 8&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="callout">
+          <strong>Info</strong>
+          <code>reversed</code> is a boolean attribute — its presence alone activates it. You do not need to write <code>reversed="true"</code>; just <code>reversed</code> is enough.
+        </div>
+      </section>
+
+      <section id="value">
+        <h2><span class="num">6</span> The <code>value</code> Attribute on <code>&lt;li&gt;</code></h2>
+        <p>Individual <code>&lt;li&gt;</code> elements can override their number with the <code>value</code> attribute. Subsequent items continue from that value.</p>
+        <pre><code>&lt;ol&gt;
+  &lt;li&gt;Item 1&lt;/li&gt;
+  &lt;li&gt;Item 2&lt;/li&gt;
+  &lt;li value="5"&gt;Item 5 (jumped)&lt;/li&gt;
+  &lt;li&gt;Item 6 (continues)&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="demo-box">
+          <ol>
+            <li>Item 1</li>
+            <li>Item 2</li>
+            <li value="5">Item 5 (jumped)</li>
+            <li>Item 6 (continues)</li>
+          </ol>
+        </div>
+        <p>This is useful when you want to "skip" steps in a tutorial or restart numbering in a continued list.</p>
+      </section>
+
+      <section id="nested">
+        <h2><span class="num">7</span> Nested Ordered Lists</h2>
+        <p>Nested <code>&lt;ol&gt;</code> elements create hierarchical numbering — perfect for outlines, legal documents, and technical specs.</p>
+        <pre><code>&lt;ol&gt;
+  &lt;li&gt;Introduction
+    &lt;ol type="a"&gt;
+      &lt;li&gt;Background&lt;/li&gt;
+      &lt;li&gt;Motivation&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Methodology
+    &lt;ol type="a"&gt;
+      &lt;li&gt;Data collection&lt;/li&gt;
+      &lt;li&gt;Analysis approach&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <div class="demo-box">
+          <ol>
+            <li>Introduction
+              <ol type="a">
+                <li>Background</li>
+                <li>Motivation</li>
+              </ol>
+            </li>
+            <li>Methodology
+              <ol type="a">
+                <li>Data collection</li>
+                <li>Analysis approach</li>
+              </ol>
+            </li>
+          </ol>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Mixing <code>type</code> values for different levels (e.g. 1, a, i) creates a clean academic outline. Many style guides including APA and MLA recommend this pattern.
+        </div>
+      </section>
+
+      <section id="ol-vs-ul">
+        <h2><span class="num">8</span> When to Use <code>ol</code> vs <code>ul</code></h2>
+        <table>
+          <thead>
+            <tr><th>Situation</th><th>Use</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Recipe steps</td><td><code>&lt;ol&gt;</code></td><td>Order matters for outcome</td></tr>
+            <tr><td>Shopping list</td><td><code>&lt;ul&gt;</code></td><td>Order is arbitrary</td></tr>
+            <tr><td>Top 10 movies</td><td><code>&lt;ol&gt;</code></td><td>Ranking = order</td></tr>
+            <tr><td>Feature list</td><td><code>&lt;ul&gt;</code></td><td>Order irrelevant</td></tr>
+            <tr><td>Tutorial steps</td><td><code>&lt;ol&gt;</code></td><td>Sequential</td></tr>
+            <tr><td>Tags / categories</td><td><code>&lt;ul&gt;</code></td><td>Set membership only</td></tr>
+            <tr><td>Navigation menu</td><td><code>&lt;ul&gt;</code></td><td>Order rarely meaningful</td></tr>
+            <tr><td>Tournament results</td><td><code>&lt;ol&gt;</code></td><td>Ranking</td></tr>
+            <tr><td>FAQ list</td><td><code>&lt;ul&gt;</code></td><td>Order doesn't matter</td></tr>
+            <tr><td>Changelog entries</td><td><code>&lt;ol&gt;</code></td><td>Chronological</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Ask yourself: "If I shuffle the items, does the meaning change?" If yes, use <code>&lt;ol&gt;</code>. If no, use <code>&lt;ul&gt;</code>.
+        </div>
+      </section>
+
+      <section id="css-counters">
+        <h2><span class="num">9</span> CSS Counters</h2>
+        <p>When the <code>type</code> and <code>start</code> attributes aren't enough, CSS counters let you build entirely custom numbering schemes — multi-level, with prefixes, suffixes, or special formatting.</p>
+        <h3>Basic counter</h3>
+        <pre><code>ol.custom {
+  list-style: none;
+  counter-reset: step;
+  padding-left: 0;
+}
+ol.custom li {
+  counter-increment: step;
+  padding: 12px 16px 12px 60px;
+  position: relative;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+  border-radius: 8px;
+}
+ol.custom li::before {
+  content: counter(step);
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}</code></pre>
+        <div class="demo-box">
+          <ol class="counter-demo">
+            <li>Sign up for an account</li>
+            <li>Verify your email address</li>
+            <li>Complete your profile</li>
+            <li>Start exploring!</li>
+          </ol>
+        </div>
+        <h3>Multi-level counters</h3>
+        <pre><code>ol.outline {
+  list-style: none;
+  counter-reset: section;
+  padding-left: 0;
+}
+ol.outline > li {
+  counter-increment: section;
+  margin-bottom: 8px;
+}
+ol.outline > li::before {
+  content: counter(section) ". ";
+  font-weight: 700;
+  color: var(--brand);
+}
+ol.outline ol {
+  list-style: none;
+  counter-reset: subsection;
+  padding-left: 24px;
+}
+ol.outline ol > li {
+  counter-increment: subsection;
+}
+ol.outline ol > li::before {
+  content: counter(section) "." counter(subsection) " ";
+  color: var(--brand-2);
+}</code></pre>
+        <p>This produces numbering like <code>1.</code>, <code>1.1</code>, <code>1.2</code>, <code>2.</code>, <code>2.1</code> — common in legal documents and technical specifications.</p>
+        <h3>Custom prefix and suffix</h3>
+        <pre><code>ol.steps li::before {
+  content: "Step " counter(step) ": ";
+  font-weight: 600;
+  color: var(--brand);
+}
+
+ol.chapters li::before {
+  content: "Chapter " counter(chapter) " — ";
+}</code></pre>
+        <div class="callout">
+          <strong>Info</strong>
+          CSS counters are powerful but come with one caveat: screen readers may not announce custom counter content consistently. For accessibility-critical content, consider adding visible text labels too.
+        </div>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">10</span> Real-World Examples</h2>
+        <h3>Tutorial steps</h3>
+        <pre><code>&lt;h2&gt;How to Install Node.js&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;Download the installer from nodejs.org.&lt;/li&gt;
+  &lt;li&gt;Run the installer and accept the license.&lt;/li&gt;
+  &lt;li&gt;Restart your terminal.&lt;/li&gt;
+  &lt;li&gt;Verify by running &lt;code&gt;node --version&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <h3>Top 5 ranking</h3>
+        <pre><code>&lt;h2&gt;Top 5 Programming Languages 2024&lt;/h2&gt;
+&lt;ol reversed start="5"&gt;
+  &lt;li&gt;TypeScript&lt;/li&gt;
+  &lt;li&gt;Python&lt;/li&gt;
+  &lt;li&gt;JavaScript&lt;/li&gt;
+  &lt;li&gt;Rust&lt;/li&gt;
+  &lt;li&gt;Go&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <h3>Legal outline</h3>
+        <pre><code>&lt;ol type="I"&gt;
+  &lt;li&gt;Definitions
+    &lt;ol type="A"&gt;
+      &lt;li&gt;"Party" refers to…&lt;/li&gt;
+      &lt;li&gt;"Service" refers to…&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Terms of Use
+    &lt;ol type="A"&gt;
+      &lt;li&gt;License grant&lt;/li&gt;
+      &lt;li&gt;Restrictions&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <h3>Continued list</h3>
+        <pre><code>&lt;h3&gt;Part 1&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;First step&lt;/li&gt;
+  &lt;li&gt;Second step&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;... some content ...&lt;/p&gt;
+
+&lt;h3&gt;Part 2&lt;/h3&gt;
+&lt;ol start="3"&gt;
+  &lt;li&gt;Third step&lt;/li&gt;
+  &lt;li&gt;Fourth step&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        <h3>Changelog</h3>
+        <pre><code>&lt;ol reversed&gt;
+  &lt;li&gt;&lt;strong&gt;v2.4.0&lt;/strong&gt; — Added dark mode support.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;v2.3.1&lt;/strong&gt; — Fixed login bug on Safari.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;v2.3.0&lt;/strong&gt; — Released new dashboard.&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">11</span> Accessibility</h2>
+        <ul>
+          <li>Screen readers announce <code>&lt;ol&gt;</code> as a list with N items, similar to <code>&lt;ul&gt;</code>.</li>
+          <li>Numbering is announced before each item ("1, item text").</li>
+          <li>When using CSS counters, the announcement may be inconsistent — consider adding visible text labels for accessibility-critical content.</li>
+          <li>If the order is purely visual (the items would still make sense shuffled), prefer <code>&lt;ul&gt;</code> to avoid implying false sequence.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For very long numbered lists (100+ items), add a "Skip to next section" link above the list. Screen-reader users will appreciate not having to navigate through all items.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">12</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Using <code>&lt;ol&gt;</code> when order doesn't matter</td>
+              <td>Implies a false sequence</td>
+              <td>Use <code>&lt;ul&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Hard-coding numbers in <code>&lt;li&gt;</code> text</td>
+              <td>Doesn't auto-renumber when items change</td>
+              <td>Let the browser number them</td>
+            </tr>
+            <tr>
+              <td>Nesting <code>&lt;ol&gt;</code> directly inside <code>&lt;ol&gt;</code></td>
+              <td>Invalid HTML</td>
+              <td>Wrap nested list in an <code>&lt;li&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>type</code> on academic outlines</td>
+              <td>Style guide requires specific numbering</td>
+              <td>Use <code>type="A"</code>, <code>type="i"</code>, etc.</td>
+            </tr>
+            <tr>
+              <td>Using <code>type</code> on <code>&lt;li&gt;</code></td>
+              <td>Not supported — <code>type</code> only on <code>&lt;ol&gt;</code></td>
+              <td>Set on parent <code>&lt;ol&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using CSS counters without visible text backup</td>
+              <td>Screen readers may miss the numbering</td>
+              <td>Add visible labels for critical content</td>
+            </tr>
+            <tr>
+              <td>Writing <code>reversed="true"</code></td>
+              <td>Boolean attribute; presence alone activates</td>
+              <td>Just use <code>reversed</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">13</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Recipe</strong>
+          Write a recipe with 6 numbered steps. After step 3, add an unordered sub-list of ingredients. Verify the numbering continues correctly.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Legal outline</strong>
+          Build a legal-style outline using nested <code>&lt;ol type="I"&gt;</code> and <code>&lt;ol type="A"&gt;</code> for two levels. Add at least 2 top-level items and 2 sub-items each.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Top 5 countdown</strong>
+          Build a "Top 5 movies of all time" list that counts down from 5 to 1. Use the <code>reversed</code> attribute. Verify it renders as 5, 4, 3, 2, 1.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — CSS counter timeline</strong>
+          Build a vertical timeline using CSS counters. Each step should display a circular numbered badge to the left, with content on the right. Add 4 steps with titles and descriptions.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Multi-level numbering</strong>
+          Recreate a technical specification outline with numbering like "1.", "1.1", "1.2", "2.", "2.1", "2.2" using CSS counters. No JavaScript allowed.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">14</span> Summary</h2>
+        <ul>
+          <li><code>&lt;ol&gt;</code> = ordered list, items where order is meaningful.</li>
+          <li>The <code>type</code> attribute: <code>1</code> (default), <code>a</code>, <code>A</code>, <code>i</code>, <code>I</code>.</li>
+          <li>The <code>start</code> attribute sets the starting number.</li>
+          <li>The <code>reversed</code> attribute counts down (boolean).</li>
+          <li>The <code>value</code> attribute on individual <code>&lt;li&gt;</code> overrides the number.</li>
+          <li>Nested <code>&lt;ol&gt;</code> must be inside an <code>&lt;li&gt;</code>.</li>
+          <li>Use <code>&lt;ul&gt;</code> when order is arbitrary; <code>&lt;ol&gt;</code> when it's meaningful.</li>
+          <li>CSS counters enable fully custom numbering schemes — but verify screen-reader behavior.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="unordered-lists.html">← Previous: Unordered Lists</a>
+      <a href="definition-lists.html">Next: Description Lists →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Ordered Lists</p>
+  </footer>
+</body>
+</html>

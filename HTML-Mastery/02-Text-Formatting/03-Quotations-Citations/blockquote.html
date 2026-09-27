@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockquote — HTML Mastery</title>
+  <meta name="description" content="Master the HTML blockquote element: cite attribute, nested quotes, CSS styling with borders and indentation, citation display with cite element, accessibility roles, and large pull-quote examples.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    /* Demo blockquote styles */
+    .demo-box blockquote {
+      margin: 1em 0;
+      padding: 12px 20px;
+      border-left: 4px solid var(--brand);
+      background: #f8fafc;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+    .demo-box blockquote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 0.9em;
+    }
+    .demo-box blockquote cite::before { content: "— "; }
+    .pull-quote {
+      font-size: 1.6rem;
+      line-height: 1.4;
+      font-weight: 600;
+      color: var(--ink);
+      border-left: none;
+      padding: 32px 48px;
+      text-align: center;
+      position: relative;
+      background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+      border-radius: 16px;
+    }
+    .pull-quote::before {
+      content: "\201C";
+      font-size: 4rem;
+      position: absolute;
+      top: 0;
+      left: 16px;
+      color: var(--brand);
+      opacity: 0.3;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.3 · Quotations &amp; Citations</span>
+    <h1>The <code>&lt;blockquote&gt;</code> Element</h1>
+    <p>The block-level quote. Used for long passages taken from another source. With the <code>cite</code> attribute, the <code>&lt;cite&gt;</code> child, and thoughtful CSS, a blockquote can become a powerful pull-quote, an academic citation, or a visual centerpiece.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is a Blockquote?</a></li>
+        <li><a href="#syntax">Basic Syntax</a></li>
+        <li><a href="#cite-attr">The <code>cite</code> Attribute</a></li>
+        <li><a href="#cite-element">Displaying the Source</a></li>
+        <li><a href="#nested">Nested Quotes</a></li>
+        <li><a href="#styling">Styling with CSS</a></li>
+        <li><a href="#pull-quotes">Pull-Quotes</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is a Blockquote?</h2>
+        <p>The <code>&lt;blockquote&gt;</code> element represents a <strong>section that is quoted from another source</strong>. It is a block-level element — by default it gets some left and right margin and indentation. Use it for longer quotations that span multiple lines or multiple paragraphs.</p>
+        <p>For short, inline quotations, use the <code>&lt;q&gt;</code> element instead (see the next page in this guide).</p>
+        <div class="callout">
+          <strong>Info</strong>
+          A general guideline: if the quote is short enough to fit naturally inside a paragraph (one or two sentences), use <code>&lt;q&gt;</code>. If it deserves its own visual block, use <code>&lt;blockquote&gt;</code>.
+        </div>
+      </section>
+
+      <section id="syntax">
+        <h2><span class="num">2</span> Basic Syntax</h2>
+        <pre><code>&lt;blockquote&gt;
+  &lt;p&gt;
+    The best way to predict the future is to invent it.
+  &lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+        <div class="demo-box">
+          <blockquote>
+            <p>The best way to predict the future is to invent it.</p>
+          </blockquote>
+        </div>
+        <p>The default browser styling is unglamorous — just left/right margin and italic font in some browsers. Real websites almost always override this with CSS.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always wrap the actual quote text in a <code>&lt;p&gt;</code> tag inside the <code>&lt;blockquote&gt;</code>. The blockquote itself can hold multiple paragraphs, lists, or other block content — it is a flow container, not a text container.
+        </div>
+      </section>
+
+      <section id="cite-attr">
+        <h2><span class="num">3</span> The <code>cite</code> Attribute</h2>
+        <p>The <code>cite</code> attribute on <code>&lt;blockquote&gt;</code> holds a <strong>URL pointing to the source document</strong>. It is machine-readable but not visible to users by default.</p>
+        <pre><code>&lt;blockquote cite="https://www.w3.org/TR/html/"&gt;
+  &lt;p&gt;
+    HTML is the World Wide Web's core markup language.
+  &lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+        <p>The <code>cite</code> attribute is great for SEO and for tools that want to follow the citation. But because it is invisible, you should usually also show the source visibly inside the quote using the <code>&lt;cite&gt;</code> element.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The <code>cite</code> attribute accepts only a URL. Do not put an author name, book title, or plain text in it. For visible attribution, use the <code>&lt;cite&gt;</code> element inside the blockquote.
+        </div>
+      </section>
+
+      <section id="cite-element">
+        <h2><span class="num">4</span> Displaying the Source</h2>
+        <p>To show the source visibly, place a <code>&lt;cite&gt;</code> element inside the blockquote (or after it). The <code>&lt;cite&gt;</code> element represents the title of the work being cited.</p>
+        <pre><code>&lt;blockquote cite="https://books.example.com/dune"&gt;
+  &lt;p&gt;
+    A beginning is the time for taking the most delicate care
+    that the balances are correct.
+  &lt;/p&gt;
+  &lt;footer&gt;
+    — &lt;cite&gt;Dune&lt;/cite&gt; by Frank Herbert, 1965
+  &lt;/footer&gt;
+&lt;/blockquote&gt;</code></pre>
+        <div class="demo-box">
+          <blockquote cite="https://books.example.com/dune">
+            <p>A beginning is the time for taking the most delicate care that the balances are correct.</p>
+            <cite>Dune by Frank Herbert, 1965</cite>
+          </blockquote>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          You can wrap the citation in a <code>&lt;footer&gt;</code> element inside the blockquote. This is semantic: the footer of a blockquote holds metadata about the quote, like the source and author.
+        </div>
+      </section>
+
+      <section id="nested">
+        <h2><span class="num">5</span> Nested Quotes</h2>
+        <p>When a blockquote itself contains a quote — either inline or another block — you can nest <code>&lt;q&gt;</code> or another <code>&lt;blockquote&gt;</code> inside it. The browser handles the typographic quote characters automatically.</p>
+        <pre><code>&lt;blockquote&gt;
+  &lt;p&gt;
+    In his speech, Dr. King declared:
+    &lt;q&gt;I have a dream that one day this nation will rise up
+       and live out the true meaning of its creed.&lt;/q&gt;
+  &lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+        <p>For deeply nested quotes, the browser alternates between double and single quote characters automatically:</p>
+        <pre><code>&lt;p&gt;
+  She said, &lt;q&gt;He told me, &lt;q&gt;I'll be there&lt;/q&gt; yesterday&lt;/q&gt;.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>She said, "He told me, 'I'll be there' yesterday".</p>
+        </div>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">6</span> Styling with CSS</h2>
+        <p>Almost no production website uses the default blockquote styling. Here are the most common patterns:</p>
+        <h3>Left border with indent</h3>
+        <pre><code>blockquote {
+  margin: 1.5em 0;
+  padding: 8px 24px;
+  border-left: 4px solid #2563eb;
+  background: #f8fafc;
+  color: #475569;
+  font-style: italic;
+}
+
+blockquote p { margin: 0 0 0.5em; }
+blockquote p:last-child { margin-bottom: 0; }
+
+blockquote cite {
+  display: block;
+  margin-top: 12px;
+  font-style: normal;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.9em;
+}
+blockquote cite::before { content: "— "; }</code></pre>
+        <h3>Centered card with quote marks</h3>
+        <pre><code>blockquote.card {
+  margin: 2em auto;
+  max-width: 600px;
+  padding: 32px 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  text-align: center;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #0f172a;
+}
+
+blockquote.card::before {
+  content: "\201C";  /* left double quote */
+  font-family: Georgia, serif;
+  font-size: 4rem;
+  color: #2563eb;
+  line-height: 0.5;
+  display: block;
+  margin-bottom: 8px;
+}</code></pre>
+        <h3>Two-tone gradient border</h3>
+        <pre><code>blockquote.gradient {
+  border: 0;
+  border-left: 5px solid;
+  border-image: linear-gradient(180deg, #2563eb, #7c3aed) 1;
+  background: linear-gradient(90deg, #f0fdf4 0%, transparent 100%);
+  padding: 16px 24px;
+}</code></pre>
+      </section>
+
+      <section id="pull-quotes">
+        <h2><span class="num">7</span> Pull-Quotes</h2>
+        <p>A pull-quote is a large, visually striking excerpt from the article, used as a design element to break up long text and draw attention to a key insight. Pull-quotes are not technically citations of an external source — they quote from the article itself — but they use <code>&lt;blockquote&gt;</code> for the visual treatment.</p>
+        <pre><code>&lt;blockquote class="pull-quote"&gt;
+  &lt;p&gt;The future of the web is being written by everyone, for everyone.&lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+        <blockquote class="pull-quote">
+          <p>The future of the web is being written by everyone, for everyone.</p>
+        </blockquote>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For pull-quotes that duplicate text from the article, consider adding <code>aria-hidden="true"</code> or wrapping with <code>role="presentation"</code> so screen readers do not announce the same passage twice.
+        </div>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">8</span> Accessibility</h2>
+        <ul>
+          <li>By default, <code>&lt;blockquote&gt;</code> has the implicit ARIA role of <code>blockquote</code> in newer accessibility APIs.</li>
+          <li>Some screen readers announce "blockquote" or "quoted" before reading the content.</li>
+          <li>The <code>cite</code> attribute (URL) is generally not announced — it is for machine consumption.</li>
+          <li>The visible <code>&lt;cite&gt;</code> element is announced as normal text.</li>
+        </ul>
+        <div class="callout">
+          <strong>Info</strong>
+          If you use <code>&lt;blockquote&gt;</code> purely for visual styling (e.g. indenting a non-quote block), add <code>role="presentation"</code> or <code>aria-hidden="true"</code> to avoid confusing screen-reader users. Better yet, use a <code>&lt;div&gt;</code> with CSS for visual-only indentation.
+        </div>
+        <h3>Adding a visible "Quote:" label</h3>
+        <pre><code>blockquote::before {
+  content: "Quote: ";
+  font-weight: 600;
+  color: var(--brand);
+}</code></pre>
+        <p>This pattern is overkill for most designs but useful in legal or academic contexts where the source distinction matters.</p>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">9</span> Real-World Examples</h2>
+        <h3>Academic citation</h3>
+        <pre><code>&lt;blockquote cite="https://doi.org/10.1000/182"&gt;
+  &lt;p&gt;
+    The Semantic Web is not a separate Web but an extension of the
+    current one, in which information is given well-defined meaning,
+    better enabling computers and people to work in cooperation.
+  &lt;/p&gt;
+  &lt;footer&gt;
+    — Tim Berners-Lee, James Hendler, Ora Lassila,
+    &lt;cite&gt;The Semantic Web&lt;/cite&gt;, Scientific American, 2001.
+    &lt;a href="https://doi.org/10.1000/182"&gt;DOI: 10.1000/182&lt;/a&gt;
+  &lt;/footer&gt;
+&lt;/blockquote&gt;</code></pre>
+        <h3>Customer testimonial</h3>
+        <pre><code>&lt;figure class="testimonial"&gt;
+  &lt;blockquote cite="https://example.com/case-study"&gt;
+    &lt;p&gt;
+      Switching to Acme cut our deployment time by 60%.
+      Our team ships features faster than ever.
+    &lt;/p&gt;
+  &lt;/blockquote&gt;
+  &lt;figcaption&gt;
+    — &lt;strong&gt;Jane Doe&lt;/strong&gt;, CTO at StartUp Inc.
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+        <h3>News article excerpt</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;City Council Approves New Park&lt;/h1&gt;
+  &lt;p&gt;After months of debate, the council voted 7-2 in favor…&lt;/p&gt;
+
+  &lt;blockquote&gt;
+    &lt;p&gt;
+      This park will be a gathering place for generations to come.
+      It represents our commitment to green space in every neighborhood.
+    &lt;/p&gt;
+    &lt;cite&gt;— Mayor Smith, in a press release&lt;/cite&gt;
+  &lt;/blockquote&gt;
+
+  &lt;p&gt;Construction is scheduled to begin in the spring…&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+        <h3>Multi-paragraph quote</h3>
+        <pre><code>&lt;blockquote cite="https://example.com/speech"&gt;
+  &lt;p&gt;We hold these truths to be self-evident, that all men are created equal…&lt;/p&gt;
+  &lt;p&gt;…that they are endowed by their Creator with certain unalienable Rights…&lt;/p&gt;
+  &lt;p&gt;…that among these are Life, Liberty and the pursuit of Happiness.&lt;/p&gt;
+  &lt;footer&gt;
+    — &lt;cite&gt;The Declaration of Independence&lt;/cite&gt;, 1776.
+  &lt;/footer&gt;
+&lt;/blockquote&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Putting text directly inside <code>&lt;blockquote&gt;</code></td>
+              <td>Loses paragraph semantics; some browsers render oddly</td>
+              <td>Wrap text in <code>&lt;p&gt;</code> inside</td>
+            </tr>
+            <tr>
+              <td>Using <code>cite</code> attribute for author name</td>
+              <td>Spec says URL only; not visible to user</td>
+              <td>Use <code>&lt;cite&gt;</code> element visibly inside</td>
+            </tr>
+            <tr>
+              <td><code>&lt;cite&gt;</code> for author instead of work title</td>
+              <td>Invalid HTML5; <code>&lt;cite&gt;</code> is for work titles</td>
+              <td>Use <code>&lt;span&gt;</code> or <code>&lt;b&gt;</code> for author name</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;blockquote&gt;</code> for indentation</td>
+              <td>Misleads screen readers; wrong semantics</td>
+              <td>Use <code>&lt;div&gt;</code> with CSS <code>margin-left</code></td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>cite</code> attribute on external quotes</td>
+              <td>Loses machine-readable source</td>
+              <td>Add <code>cite="URL"</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;blockquote&gt;</code> for inline short quotes</td>
+              <td>Block-level breaks paragraph flow</td>
+              <td>Use <code>&lt;q&gt;</code> for inline quotes</td>
+            </tr>
+            <tr>
+              <td>Pull-quotes that duplicate text without <code>aria-hidden</code></td>
+              <td>Screen reader reads same text twice</td>
+              <td>Add <code>aria-hidden="true"</code> or use <code>role="presentation"</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">11</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Cite a book</strong>
+          Find a memorable passage from a favorite book. Wrap it in <code>&lt;blockquote&gt;</code> with:
+          <ul>
+            <li>The actual quote wrapped in <code>&lt;p&gt;</code></li>
+            <li>A <code>cite</code> attribute with the book's URL (or a placeholder)</li>
+            <li>A <code>&lt;cite&gt;</code> element inside the blockquote with the book title</li>
+            <li>A footer with the author and year</li>
+          </ul>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build a testimonial card</strong>
+          Use a <code>&lt;figure&gt;</code> with <code>&lt;blockquote&gt;</code> and <code>&lt;figcaption&gt;</code> to build a customer testimonial. Style it as a card with a colored border, italic text, and a centered author name in the caption.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Pull-quote design</strong>
+          Write a 4-paragraph article. Insert a pull-quote between paragraphs 2 and 3 that repeats a sentence from the article. Add the <code>aria-hidden="true"</code> attribute so screen readers do not announce the duplicate.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Nested quotes</strong>
+          Write a paragraph that contains an inline quote (<code>&lt;q&gt;</code>) which itself contains another inline quote. Verify that the browser alternates between double and single quote characters correctly.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">12</span> Summary</h2>
+        <ul>
+          <li><code>&lt;blockquote&gt;</code> = block-level quotation from another source (or from the same article for pull-quotes).</li>
+          <li>Always wrap quote text in <code>&lt;p&gt;</code> inside <code>&lt;blockquote&gt;</code>.</li>
+          <li>The <code>cite</code> attribute holds a URL pointing to the source — invisible by default.</li>
+          <li>Use the <code>&lt;cite&gt;</code> element visibly inside (often inside a <code>&lt;footer&gt;</code>) for the source title.</li>
+          <li>Style with <code>border-left</code>, background, italic, or large pull-quote CSS.</li>
+          <li>For pull-quotes that duplicate article text, add <code>aria-hidden="true"</code>.</li>
+          <li>Never use <code>&lt;blockquote&gt;</code> just for visual indentation.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../02-Formatting-Elements/abbr-cite.html">← Previous: Abbr &amp; Cite</a>
+      <a href="q-element.html">Next: The q Element →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Blockquote</p>
+  </footer>
+</body>
+</html>

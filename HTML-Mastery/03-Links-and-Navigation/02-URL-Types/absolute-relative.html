@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absolute vs Relative URLs — HTML Mastery</title>
+  <meta name="description" content="Absolute URLs vs relative URLs: page.html, ./page.html, ../page.html, /page.html. When to use each, base href, SEO implications, portability. Complete decision guide.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #16a34a 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #f59e0b 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .tree {
+      background: #0f172a; color: #e2e8f0; border-radius: 12px;
+      padding: 20px 24px; font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85rem; overflow-x: auto; border: 1px solid #1e293b;
+      line-height: 1.8;
+    }
+    .tree .dir { color: #93c5fd; }
+    .tree .file { color: #86efac; }
+    .tree .indent { color: #475569; }
+    .tree .comment { color: #64748b; }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.4 · URL Types</span>
+    <h1>Absolute vs Relative URLs</h1>
+    <p>Every internal link on your site makes a choice: absolute (<code>https://example.com/page</code>) or relative (<code>page.html</code>, <code>./page</code>, <code>../page</code>, <code>/page</code>). Each style has tradeoffs in portability, SEO, performance, and developer experience. Let's settle it.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">The Two URL Families</a></li>
+        <li><a href="#absolute">Absolute URLs</a></li>
+        <li><a href="#relative">Relative URLs</a></li>
+        <li><a href="#flavors">Four Relative Flavors</a></li>
+        <li><a href="#resolution">How Resolution Works</a></li>
+        <li><a href="#base">The &lt;base&gt; Element</a></li>
+        <li><a href="#seo">SEO Implications</a></li>
+        <li><a href="#portability">Portability &amp; Migration</a></li>
+        <li><a href="#performance">Performance</a></li>
+        <li><a href="#decision">Decision Matrix</a></li>
+        <li><a href="#modern">Modern Best Practice</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> The Two URL Families</h2>
+        <p>A URL is "absolute" if it includes everything needed to locate the resource on its own: scheme (<code>https</code>), host (<code>example.com</code>), and (optionally) port. A URL is "relative" if it's missing some of those pieces and must be resolved against a "base URL" (usually the current page's URL).</p>
+        <table>
+          <thead>
+            <tr><th>URL</th><th>Type</th><th>Stands Alone?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>https://example.com/page</code></td><td>Absolute</td><td>Yes</td></tr>
+            <tr><td><code>//example.com/page</code></td><td>Protocol-relative (absolute-ish)</td><td>No — needs scheme</td></tr>
+            <tr><td><code>/page</code></td><td>Root-absolute (relative to domain root)</td><td>No — needs host</td></tr>
+            <tr><td><code>page.html</code></td><td>Relative (same dir)</td><td>No</td></tr>
+            <tr><td><code>./page.html</code></td><td>Relative (same dir, explicit)</td><td>No</td></tr>
+            <tr><td><code>../page.html</code></td><td>Relative (parent dir)</td><td>No</td></tr>
+            <tr><td><code>?page=2</code></td><td>Relative (modifies query only)</td><td>No</td></tr>
+            <tr><td><code>#section</code></td><td>Fragment only</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="absolute">
+        <h2><span class="num">2</span> Absolute URLs</h2>
+        <p>An absolute URL fully specifies the resource location. It works identically no matter where it's used — the same URL in a link, in an <code>&lt;img src&gt;</code>, in a CSS <code>url()</code>, or in an HTTP redirect will all resolve to the same destination.</p>
+        <pre><code>&lt;!-- Standard https absolute URL --&gt;
+&lt;a href="https://example.com/about"&gt;About&lt;/a&gt;
+&lt;a href="https://example.com/about?lang=en#team"&gt;Meet the team&lt;/a&gt;
+
+&lt;-- With port (development server) --&gt;
+&lt;a href="http://localhost:3000/admin"&gt;Dev admin&lt;/a&gt;
+
+&lt;-- Subdomain absolute --&gt;
+&lt;a href="https://blog.example.com/post-1"&gt;Read latest post&lt;/a&gt;</code></pre>
+        <h3>Pros of Absolute URLs</h3>
+        <ul>
+          <li><strong>Unambiguous</strong> — works the same regardless of where the link appears.</li>
+          <li><strong>SEO-friendly</strong> — Google can fully canonicalize the URL.</li>
+          <li><strong>Scraped/syndicated content</strong> — links still work when copied to other sites or RSS readers.</li>
+          <li><strong>Email-safe</strong> — links work in HTML emails, where there's no "current page".</li>
+        </ul>
+        <h3>Cons of Absolute URLs</h3>
+        <ul>
+          <li><strong>Verbose</strong> — repetitive for internal links.</li>
+          <li><strong>Harder to migrate</strong> — every link must be rewritten if the domain changes.</li>
+          <li><strong>Environment switching</strong> — links to <code>https://staging.example.com/...</code> must be changed for production.</li>
+        </ul>
+      </section>
+
+      <section id="relative">
+        <h2><span class="num">3</span> Relative URLs</h2>
+        <p>Relative URLs omit the scheme and host (and sometimes the path), relying on the current page's URL to fill in the gaps. They're shorter, more portable within a single site, and the standard for internal linking.</p>
+        <pre><code>&lt;!-- Same directory --&gt;
+&lt;a href="contact.html"&gt;Contact&lt;/a&gt;
+&lt;a href="./contact.html"&gt;Contact&lt;/a&gt;  &lt;!-- equivalent --&gt;
+
+&lt;-- Up one directory --&gt;
+&lt;a href="../index.html"&gt;Home&lt;/a&gt;
+
+&lt;-- Up two directories, then into /products/ --&gt;
+&lt;a href="../../products/widget.html"&gt;Widget&lt;/a&gt;
+
+&lt;-- Root-absolute (preferred for internal links) --&gt;
+&lt;a href="/products"&gt;All Products&lt;/a&gt;
+
+&lt;-- Modify only the query string --&gt;
+&lt;a href="?page=2"&gt;Next page&lt;/a&gt;
+
+&lt;-- Modify only the fragment --&gt;
+&lt;a href="#section-3"&gt;Jump to Section 3&lt;/a&gt;</code></pre>
+        <h3>Pros of Relative URLs</h3>
+        <ul>
+          <li><strong>Concise</strong> — shorter source code.</li>
+          <li><strong>Portable</strong> — works on <code>localhost</code>, <code>staging.</code>, <code>www.</code>, and bare domains without change.</li>
+          <li><strong>Migration-friendly</strong> — moving from <code>example.com</code> to <code>example.org</code> requires no link rewrites.</li>
+          <li><strong>HTTPS upgrade-friendly</strong> — relative URLs inherit the current scheme, avoiding mixed-content warnings.</li>
+        </ul>
+        <h3>Cons of Relative URLs</h3>
+        <ul>
+          <li><strong>Context-dependent</strong> — a link's destination depends on the page that contains it.</li>
+          <li><strong>Scraping risk</strong> — if your content is scraped or RSS-syndicated, relative links may break.</li>
+          <li><strong>Canonical ambiguity</strong> — Google may index <code>example.com/page</code> and <code>example.com/page/</code> separately if relative links are inconsistent.</li>
+        </ul>
+      </section>
+
+      <section id="flavors">
+        <h2><span class="num">4</span> Four Relative Flavors</h2>
+        <p>Relative URLs come in four distinct styles. Understanding the differences is critical:</p>
+        <table>
+          <thead>
+            <tr><th>Syntax</th><th>Name</th><th>Resolves To (current page: <code>/blog/2024/post.html</code>)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>page.html</code> or <code>./page.html</code></td><td>Same-directory relative</td><td><code>/blog/2024/page.html</code></td></tr>
+            <tr><td><code>../page.html</code></td><td>Parent-directory relative</td><td><code>/blog/page.html</code></td></tr>
+            <tr><td><code>/page.html</code></td><td>Root-absolute (a.k.a. absolute path)</td><td><code>/page.html</code></td></tr>
+            <tr><td><code>?key=value</code></td><td>Query-only relative</td><td><code>/blog/2024/post.html?key=value</code></td></tr>
+            <tr><td><code>#frag</code></td><td>Fragment-only relative</td><td><code>/blog/2024/post.html#frag</code></td></tr>
+            <tr><td><code>page.html#frag</code></td><td>Path + fragment</td><td><code>/blog/2024/page.html#frag</code></td></tr>
+          </tbody>
+        </table>
+        <h3>The <code>./</code> Prefix</h3>
+        <p><code>./page.html</code> is identical to <code>page.html</code>. The <code>./</code> explicitly says "current directory". It's useful in two cases:</p>
+        <ul>
+          <li>When you want to disambiguate from a fragment: <code>./about</code> vs <code>#about</code>.</li>
+          <li>When working with bundlers or web frameworks that interpret the leading character differently.</li>
+        </ul>
+        <h3>The <code>../</code> Prefix</h3>
+        <p>Each <code>../</code> moves one directory up. Multiple <code>../../../</code> chains are hard to read and prone to error. Prefer root-absolute (<code>/path</code>) over deep relative paths.</p>
+        <div class="callout warn">
+          <strong>Common Mistake — Trailing Slash Matters</strong>
+          <code>/blog/</code> and <code>/blog</code> are different URLs in the eyes of the browser. <code>/blog</code> with no trailing slash usually 301-redirects to <code>/blog/</code>. If you link relatively from <code>/blog/</code> vs <code>/blog</code>, your relative paths resolve differently:
+          <ul>
+            <li>From <code>/blog/</code> + relative <code>post.html</code> → <code>/blog/post.html</code> ✓</li>
+            <li>From <code>/blog</code> + relative <code>post.html</code> → <code>/post.html</code> ✗ (probably a 404)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="resolution">
+        <h2><span class="num">5</span> How Resolution Works</h2>
+        <p>The browser resolves every relative URL by walking up from the current page's URL. Here's the algorithm in plain English:</p>
+        <ol>
+          <li>Take the base URL (current page URL, or the <code>&lt;base href&gt;</code> if set).</li>
+          <li>Drop the fragment and query string.</li>
+          <li>If the relative URL starts with <code>/</code>, replace the entire path.</li>
+          <li>If it starts with <code>../</code>, drop the last path segment; repeat for each <code>../</code>.</li>
+          <li>If it starts with <code>./</code> or no prefix, append to the current path's directory.</li>
+          <li>Append any new query string or fragment.</li>
+        </ol>
+        <h3>Worked Example</h3>
+        <p>Current page: <code>https://shop.example.com/blog/2024/09/css-grid.html</code></p>
+        <table>
+          <thead>
+            <tr><th>href</th><th>Resolves To</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>flexbox.html</code></td><td><code>https://shop.example.com/blog/2024/09/flexbox.html</code></td></tr>
+            <tr><td><code>./flexbox.html</code></td><td><code>https://shop.example.com/blog/2024/09/flexbox.html</code></td></tr>
+            <tr><td><code>../08/new-features.html</code></td><td><code>https://shop.example.com/blog/2024/08/new-features.html</code></td></tr>
+            <tr><td><code>../../archive.html</code></td><td><code>https://shop.example.com/blog/archive.html</code></td></tr>
+            <tr><td><code>/products</code></td><td><code>https://shop.example.com/products</code></td></tr>
+            <tr><td><code>?print=1</code></td><td><code>https://shop.example.com/blog/2024/09/css-grid.html?print=1</code></td></tr>
+            <tr><td><code>#comments</code></td><td><code>https://shop.example.com/blog/2024/09/css-grid.html#comments</code></td></tr>
+            <tr><td><code>//cdn.example.com/img.png</code></td><td><code>https://cdn.example.com/img.png</code> (protocol-relative)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="base">
+        <h2><span class="num">6</span> The <code>&lt;base&gt;</code> Element</h2>
+        <p>The <code>&lt;base&gt;</code> element in the <code>&lt;head&gt;</code> overrides the default base URL for all relative URLs on the page. It's powerful but rarely needed — and easy to misuse.</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;base href="https://cdn.example.com/v1/"&gt;
+  &lt;!-- All relative URLs now resolve against cdn.example.com/v1/ --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;img src="logo.png"&gt;  &lt;!-- loads from https://cdn.example.com/v1/logo.png --&gt;
+  &lt;a href="about.html"&gt;About&lt;/a&gt;  &lt;!-- navigates to https://cdn.example.com/v1/about.html --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>Attributes</h3>
+        <ul>
+          <li><code>href</code> — the base URL (required for URL resolution).</li>
+          <li><code>target</code> — default <code>target</code> for all links on the page (legacy, discouraged).</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake — Base Breaks In-Page Links</strong>
+          If you set <code>&lt;base href="https://cdn.example.com/"&gt;</code>, then <code>&lt;a href="#section"&gt;</code> no longer scrolls within the page — it navigates to <code>https://cdn.example.com/#section</code>. Same for <code>&lt;a href="page.html"&gt;</code>. Use <code>&lt;base&gt;</code> cautiously; most modern sites don't need it.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If you must use <code>&lt;base&gt;</code>, also use root-absolute URLs (<code>/section</code>) for in-page navigation. That way they resolve against the actual domain, not the base.
+        </div>
+      </section>
+
+      <section id="seo">
+        <h2><span class="num">7</span> SEO Implications</h2>
+        <p>Google treats absolute and relative URLs the same in principle — both are followed and pass link equity. But there are practical SEO differences:</p>
+        <h3>Canonical URL Clarity</h3>
+        <p>If your site is accessible at <code>example.com</code>, <code>www.example.com</code>, <code>https://</code>, and <code>http://</code>, relative URLs work on all variants — but Google may index each as a separate URL. Use the <code>&lt;link rel="canonical"&gt;</code> tag to declare the canonical version:</p>
+        <pre><code>&lt;link rel="canonical" href="https://www.example.com/blog/post-1"&gt;</code></pre>
+        <h3>Scraping &amp; Syndication</h3>
+        <p>If your content is republished (RSS, partner sites, AI training data), absolute URLs preserve your links. Relative URLs may break or be replaced.</p>
+        <h3>Crawl Efficiency</h3>
+        <p>Googlebot follows both absolute and relative URLs equally. The crawler doesn't care.</p>
+        <table>
+          <thead>
+            <tr><th>Concern</th><th>Absolute</th><th>Relative</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Crawlability</td><td>✓</td><td>✓</td></tr>
+            <tr><td>Canonical clarity</td><td>Strong — explicit</td><td>Weak — relies on <code>rel="canonical"</code></td></tr>
+            <tr><td>Scraped content survives</td><td>✓</td><td>✗</td></tr>
+            <tr><td>Domain migration</td><td>✗ Every link must be rewritten</td><td>✓ Just update the domain</td></tr>
+            <tr><td>Dev/staging/prod parity</td><td>✗ Hard-coded domain</td><td>✓ Identical across environments</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="portability">
+        <h2><span class="num">8</span> Portability &amp; Migration</h2>
+        <p>Imagine migrating your blog from <code>blog.example.com</code> to <code>example.com/blog</code>:</p>
+        <ul>
+          <li><strong>Absolute URLs</strong>: every internal link must be rewritten. Thousands of edits, or a build script that knows the old/new domain.</li>
+          <li><strong>Root-absolute URLs</strong>: <code>/blog/post-1</code> works on both, assuming paths line up.</li>
+          <li><strong>Same-dir relative URLs</strong>: works automatically, as long as file structure is preserved.</li>
+        </ul>
+        <p>For static sites, GitHub Pages, Netlify, Vercel deploys, and dev/staging parity, relative or root-absolute is the safer choice.</p>
+        <div class="callout tip">
+          <strong>Pro Tip — Use Build Tools for Absolute</strong>
+          If you prefer absolute URLs for SEO but want portability, use a build variable: <code>href="{process.env.SITE_URL}/blog/post-1"</code>. Your dev environment uses <code>http://localhost:3000</code>, production uses <code>https://example.com</code>. This is what Next.js, Hugo, Eleventy, and most SSGs do by default.
+        </div>
+      </section>
+
+      <section id="performance">
+        <h2><span class="num">9</span> Performance Considerations</h2>
+        <p>URL choice has minor performance implications:</p>
+        <ul>
+          <li><strong>URL length</strong>: shorter URLs save bytes in HTML. Relative saves the most.</li>
+          <li><strong>Preconnect opportunities</strong>: absolute URLs to third-party origins let you <code>&lt;link rel="preconnect"&gt;</code> early.</li>
+          <li><strong>Resource hints</strong>: <code>preconnect</code>, <code>dns-prefetch</code>, <code>preload</code> need absolute URLs to specific origins.</li>
+        </ul>
+        <pre><code>&lt;!-- In &lt;head&gt;: warm up the connection before the browser needs it --&gt;
+&lt;link rel="preconnect" href="https://cdn.example.com"&gt;
+&lt;link rel="dns-prefetch" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin&gt;</code></pre>
+        <p>The deep dive on resource-hint <code>rel</code> tokens is in <code>04-Download-Links/link-types.html</code>.</p>
+      </section>
+
+      <section id="decision">
+        <h2><span class="num">10</span> Decision Matrix</h2>
+        <table>
+          <thead>
+            <tr><th>Link Type</th><th>Recommended Style</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>External sites (other domains)</td><td>Absolute</td><td>No choice — must specify scheme + host.</td></tr>
+            <tr><td>Internal site navigation (homepage, /about, /contact)</td><td>Root-absolute (<code>/about</code>)</td><td>Portable across environments; concise.</td></tr>
+            <tr><td>Internal pages with query string</td><td>Root-absolute (<code>/search?q=shoes</code>)</td><td>Same as above; explicit.</td></tr>
+            <tr><td>In-page fragments</td><td>Fragment-only (<code>#section</code>)</td><td>Concise; works regardless of base URL.</td></tr>
+            <tr><td>Sibling documents (rare in modern apps)</td><td>Same-dir relative (<code>page.html</code>)</td><td>Useful for static sites with no router.</td></tr>
+            <tr><td>Email campaigns, RSS feeds</td><td>Absolute</td><td>Links must work outside your site context.</td></tr>
+            <tr><td>Open Graph / canonical / hreflang</td><td>Absolute</td><td>Required by spec for these meta tags.</td></tr>
+            <tr><td>Assets (CSS, JS, images, fonts)</td><td>Root-absolute (<code>/assets/img.png</code>)</td><td>Concise; works from any page on the site.</td></tr>
+            <tr><td>Third-party assets (CDNs)</td><td>Absolute</td><td>No choice.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="modern">
+        <h2><span class="num">11</span> Modern Best Practice</h2>
+        <p>For most modern web projects (Next.js, Astro, Eleventy, Hugo, plain static HTML), the recommendation is:</p>
+        <ol>
+          <li>Use <strong>root-absolute</strong> URLs (<code>/about</code>) for internal navigation.</li>
+          <li>Use <strong>absolute</strong> URLs for <code>&lt;link rel="canonical"&gt;</code>, Open Graph, hreflang, sitemaps.</li>
+          <li>Use <strong>absolute</strong> URLs for any external link.</li>
+          <li>Use <strong>fragment-only</strong> (<code>#section</code>) for in-page anchors.</li>
+          <li>Avoid deep relative paths (<code>../../../</code>) — they're hard to read and fragile.</li>
+          <li>Avoid protocol-relative URLs (<code>//example.com</code>) — use explicit <code>https://</code>.</li>
+          <li>Don't use <code>&lt;base&gt;</code> unless you have a specific reason — it breaks fragment links and surprises maintainers.</li>
+        </ol>
+        <div class="callout tip">
+          <strong>Pro Tip — Use Absolute with Site URL Variable</strong>
+          In a static site generator or framework, define <code>SITE_URL</code> as a config value. Templates output <code>href="{{ SITE_URL }}/blog/post-1"</code>. Dev uses <code>http://localhost:3000</code>; prod uses <code>https://example.com</code>. Best of both worlds: SEO-friendly absolute URLs and full environment portability.
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Resolve These URLs</strong>
+          Current page: <code>https://shop.example.com/blog/2024/09/post-1.html</code>. Resolve each:
+          <ol>
+            <li><code>post-2.html</code></li>
+            <li><code>../post-2.html</code></li>
+            <li><code>/blog/post-2.html</code></li>
+            <li><code>../../post-2.html</code></li>
+            <li><code>//shop.example.com/post-2.html</code></li>
+          </ol>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Convert a Site</strong>
+          You have a static site at <code>/home/user/mysite/</code> with index.html, about.html, and a <code>blog/</code> subdir with post.html. Convert all internal links from absolute (<code>https://example.com/...</code>) to root-absolute (<code>/...</code>). Verify nothing breaks when deployed to <code>https://staging.example.com/</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — &lt;base&gt; Pitfall</strong>
+          Create a page with <code>&lt;base href="https://cdn.example.com/v1/"&gt;</code> in the head. Add: (a) an <code>&lt;img src="logo.png"&gt;</code> that loads from the CDN, (b) an in-page <code>&lt;a href="#top"&gt;</code> link. Click the in-page link — observe that it navigates to the CDN. Fix it without removing the <code>&lt;base&gt;</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Trailing Slash Trap</strong>
+          Set up two pages: <code>/dir/</code> (with trailing slash, serves index) and <code>/dir</code> (without, also serves index — your server treats them as equivalent). Put a relative link <code>&lt;a href="page.html"&gt;</code> on each. Verify that one resolves to <code>/dir/page.html</code> and the other to <code>/page.html</code>. Add <code>&lt;link rel="canonical"&gt;</code> to fix SEO duplication.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Build-Tool Pattern</strong>
+          In a templating language of your choice (Handlebars, Jinja, EJS), set up a <code>site_url</code> variable. Write a partial that outputs <code>&lt;a href="{{ site_url }}/about"&gt;</code>. Configure <code>site_url</code> differently for dev (<code>http://localhost:3000</code>) and prod (<code>https://example.com</code>).
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">13</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>../</code> more than twice</td><td>Hard to read, fragile to file moves.</td><td>Use root-absolute <code>/path</code>.</td></tr>
+            <tr><td>Protocol-relative <code>//</code></td><td>Risky on <code>file://</code>; legacy.</td><td>Use explicit <code>https://</code>.</td></tr>
+            <tr><td><code>&lt;base href&gt;</code> with fragment links</td><td>In-page links break, navigate to base URL.</td><td>Don't use <code>&lt;base&gt;</code>; or use root-absolute paths.</td></tr>
+            <tr><td>Mixing trailing slashes inconsistently</td><td>Causes SEO duplicate content.</td><td>Pick a convention; 301-redirect the other; use <code>rel="canonical"</code>.</td></tr>
+            <tr><td>Hard-coding dev URLs (<code>localhost:3000</code>) in links</td><td>Won't work in production.</td><td>Use relative/root-absolute or env-variable-driven absolute.</td></tr>
+            <tr><td>Hard-coding production URL in dev source</td><td>Dev clicks go to prod, breaking tests.</td><td>Same fix.</td></tr>
+            <tr><td>Absolute URLs in emails without tracking</td><td>UTM parameters lost if user forwards.</td><td>Embed tracking server-side, not in URL.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">14</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Static Sites (GitHub Pages, Netlify)</h4>
+            <p>Root-absolute (<code>/about</code>) is the standard. Deploy to multiple domains without changes.</p>
+          </div>
+          <div class="card">
+            <h4>Next.js / React Router</h4>
+            <p>Frameworks use root-absolute under the hood: <code>&lt;Link href="/about"&gt;</code>. Absolute URLs only for SEO meta tags.</p>
+          </div>
+          <div class="card">
+            <h4>WordPress</h4>
+            <p>Default behavior: absolute URLs in database. Site URL change = mass search/replace. Use a plugin like "Better Search Replace" to migrate.</p>
+          </div>
+          <div class="card">
+            <h4>Email HTML</h4>
+            <p>Always absolute. Email clients strip context; relative URLs silently fail.</p>
+          </div>
+          <div class="card">
+            <h4>Canonical Tags</h4>
+            <p>Must be absolute per Google's spec: <code>&lt;link rel="canonical" href="https://example.com/page"&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Open Graph</h4>
+            <p><code>og:url</code>, <code>og:image</code> must be absolute. Otherwise scrapers (Facebook, Slack) won't render previews.</p>
+          </div>
+          <div class="card">
+            <h4>RSS Feeds</h4>
+            <p>Always absolute — feed readers extract content脱离 your site context.</p>
+          </div>
+          <div class="card">
+            <h4>PDF Generation</h4>
+            <p>When generating PDFs from HTML, internal links should be absolute (or use relative links relative to the PDF's source URL).</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">15</span> Summary</h2>
+        <ul>
+          <li>Absolute URLs include scheme + host; relative URLs omit them and resolve against the current page.</li>
+          <li>Four relative flavors: same-dir (<code>page.html</code>), parent (<code>../page.html</code>), root-absolute (<code>/page.html</code>), query-only (<code>?key=value</code>).</li>
+          <li><code>./page.html</code> ≡ <code>page.html</code>; both resolve to same directory.</li>
+          <li>Trailing slashes matter: <code>/blog</code> vs <code>/blog/</code> differ for relative resolution.</li>
+          <li><code>&lt;base&gt;</code> overrides the base URL — but breaks fragment links; avoid in modern sites.</li>
+          <li>For internal links, prefer root-absolute (<code>/about</code>) — portable and concise.</li>
+          <li>For canonical, Open Graph, RSS, emails, and external sites — use absolute.</li>
+          <li>Use a build-time <code>SITE_URL</code> variable for absolute URLs in templated sites.</li>
+          <li>Avoid deep <code>../../../</code> paths and protocol-relative <code>//</code> URLs.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>URL spec: RFC 3986</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../01-Anchor-Tag/target-rel.html">← Previous: target &amp; rel</a>
+      <a href="fragments.html">Next: Fragment Identifiers →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Absolute vs Relative URLs</p>
+  </footer>
+</body>
+</html>

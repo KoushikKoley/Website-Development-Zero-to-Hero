@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internal Page Navigation — HTML Mastery</title>
+  <meta name="description" content="Internal page navigation patterns: same-page anchors, table of contents, sticky nav, scroll spy concept without JS, skip links, in-page navigation UX best practices.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #2563eb 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #7c3aed 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+      scroll-margin-top: 90px;
+    }
+    section:target { animation: highlight 1.5s ease-out; }
+    @keyframes highlight {
+      0% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.4); }
+      100% { box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    /* Sticky nav demo */
+    .sticky-nav-demo {
+      position: relative;
+      border: 2px solid var(--brand);
+      border-radius: 10px;
+      height: 220px;
+      overflow-y: auto;
+      background: white;
+    }
+    .sticky-nav-demo .sticky-nav {
+      position: sticky;
+      top: 0;
+      background: var(--brand);
+      color: white;
+      padding: 10px 16px;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+    .sticky-nav-demo .sticky-nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .sticky-nav-demo .sticky-nav a:hover { background: rgba(255,255,255,0.2); }
+    .sticky-nav-demo .content { padding: 16px 20px; }
+    .sticky-nav-demo .content section { box-shadow: none; border: 1px solid var(--line); margin-bottom: 12px; padding: 12px 16px; border-radius: 8px; }
+    /* Scroll spy demo - pure CSS using :target */
+    .scrollspy-demo {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+    .scrollspy-demo .spy-nav a {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .scrollspy-demo .spy-nav a:hover { background: #eef2ff; color: var(--brand); }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .scrollspy-demo { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.7 · Internal Nav</span>
+    <h1>Internal Page Navigation</h1>
+    <p>Long-form pages — docs, articles, one-pager landings — need to help users find content quickly without scrolling endlessly. Same-page anchors, sticky TOCs, scroll-spy indicators, and skip links combine into a great in-page navigation experience.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is Internal Navigation?</a></li>
+        <li><a href="#anchors">Same-Page Anchors</a></li>
+        <li><a href="#toc">Table of Contents Pattern</a></li>
+        <li><a href="#sticky-nav">Sticky In-Page Nav</a></li>
+        <li><a href="#scroll-spy">Scroll Spy Concept</a></li>
+        <li><a href="#skip-links">Skip Links for Keyboard Users</a></li>
+        <li><a href="#reading-progress">Reading Progress</a></li>
+        <li><a href="#ux">In-Page Navigation UX</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is Internal Navigation?</h2>
+        <p>Internal navigation refers to links and UI elements that move users around within a <em>single page</em>, rather than loading a new URL. The web's most common internal navigation tool is the fragment link (<code>&lt;a href="#section"&gt;</code>), but the pattern extends to sticky navs, scroll-spy indicators, skip links, and reading-progress bars.</p>
+        <p>This is most useful on long pages: documentation, blog posts, terms-of-service, one-page marketing sites, and tutorials. Without internal nav, users scroll aimlessly and miss content. With it, they can jump, orient, and re-orient quickly.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Internal navigation isn't just convenience — it's accessibility. Screen reader users navigate by headings and landmarks; keyboard users tab through links. Providing an in-page TOC and skip links makes your content usable for everyone.
+        </div>
+      </section>
+
+      <section id="anchors">
+        <h2><span class="num">2</span> Same-Page Anchors</h2>
+        <p>The foundation of internal navigation is the fragment link — covered in detail in <code>02-URL-Types/fragments.html</code>. Here's the quick pattern:</p>
+        <pre><code>&lt;!-- Table of contents --&gt;
+&lt;nav class="toc"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="#intro"&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#setup"&gt;Setup&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#usage"&gt;Usage&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#faq"&gt;FAQ&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;-- Content sections with matching ids --&gt;
+&lt;section id="intro"&gt;
+  &lt;h2&gt;Introduction&lt;/h2&gt;
+  &lt;p&gt;...&lt;/p&gt;
+&lt;/section&gt;
+
+&lt;section id="setup"&gt;
+  &lt;h2&gt;Setup&lt;/h2&gt;
+  &lt;p&gt;...&lt;/p&gt;
+&lt;/section&gt;
+&lt;!-- etc --&gt;</code></pre>
+        <p>With <code>scroll-behavior: smooth</code> and <code>scroll-padding-top: 80px</code> (for sticky header clearance), this gives users a one-click jump experience — no JavaScript required.</p>
+      </section>
+
+      <section id="toc">
+        <h2><span class="num">3</span> Table of Contents Pattern</h2>
+        <p>The TOC pattern displays a structured list of section links. Common variants:</p>
+        <h3>Static Sidebar TOC</h3>
+        <p>Used on docs sites (MDN, Stripe). Sits in the left or right rail, sticky-positioned. Each link is a fragment.</p>
+        <pre><code>&lt;nav class="toc" aria-label="Table of contents"&gt;
+  &lt;h2&gt;Contents&lt;/h2&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="#intro"&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#setup"&gt;Setup&lt;/a&gt;
+      &lt;ol&gt;
+        &lt;li&gt;&lt;a href="#setup-prereq"&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#setup-install"&gt;Installation&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#setup-config"&gt;Configuration&lt;/a&gt;&lt;/li&gt;
+      &lt;/ol&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href="#usage"&gt;Usage&lt;/a&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+
+&lt;style&gt;
+  nav.toc {
+    position: sticky; top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+  }
+&lt;/style&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use a nested <code>&lt;ol&gt;</code> for sub-sections to reflect hierarchy. The browser default numbering (<code>1.1</code>, <code>1.2</code>, <code>1.3</code>) gives readers context about the document's structure at a glance.
+        </div>
+        <h3>Top-of-Page TOC</h3>
+        <p>For shorter pages (1,500-3,000 words), a top TOC is often enough — no sticky sidebar needed.</p>
+        <pre><code>&lt;header&gt;
+  &lt;h1&gt;Understanding CSS Grid&lt;/h1&gt;
+  &lt;nav class="toc" aria-label="On this page"&gt;
+    &lt;h2&gt;On this page&lt;/h2&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="#anatomy"&gt;Anatomy of a Grid&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#containers"&gt;Grid Containers&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#items"&gt;Grid Items&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#examples"&gt;Examples&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+        <h3>Auto-Generated TOCs</h3>
+        <p>Most static site generators auto-generate TOCs from headings:</p>
+        <ul>
+          <li><strong>Markdown</strong>: <code>[TOC]</code> or via <code>rehype-slug</code> + <code>rehype-autolink-headings</code>.</li>
+          <li><strong>Hugo</strong>: <code>{{ .TableOfContents }}</code></li>
+          <li><strong>Eleventy</strong>: <code>eleventy-plugin-toc</code></li>
+          <li><strong>Docsify/Docusaurus</strong>: built-in</li>
+        </ul>
+      </section>
+
+      <section id="sticky-nav">
+        <h2><span class="num">4</span> Sticky In-Page Nav</h2>
+        <p>For long pages, a sticky TOC stays visible as the user scrolls. The simplest implementation is <code>position: sticky; top: 16px;</code>.</p>
+        <div class="sticky-nav-demo">
+          <div class="sticky-nav">
+            <a href="#d-intro">Intro</a>
+            <a href="#d-setup">Setup</a>
+            <a href="#d-usage">Usage</a>
+            <a href="#d-faq">FAQ</a>
+          </div>
+          <div class="content">
+            <section id="d-intro"><h4>Intro</h4><p>Some intro content. Scroll this demo box to see the sticky nav stay at the top.</p><p style="height:60px;"></p></section>
+            <section id="d-setup"><h4>Setup</h4><p>Setup content here.</p><p style="height:60px;"></p></section>
+            <section id="d-usage"><h4>Usage</h4><p>Usage content here.</p><p style="height:60px;"></p></section>
+            <section id="d-faq"><h4>FAQ</h4><p>FAQ content here.</p><p style="height:60px;"></p></section>
+          </div>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — Sticky Overlap</strong>
+          Sticky navs cover content when you click a fragment link — the target scrolls under the nav. Always pair sticky nav with <code>scroll-padding-top: 80px</code> on <code>&lt;html&gt;</code> (or <code>scroll-margin-top: 80px</code> on sections).
+        </div>
+      </section>
+
+      <section id="scroll-spy">
+        <h2><span class="num">5</span> Scroll Spy Concept (Without JS)</h2>
+        <p>Scroll spy = the TOC highlights the section the user is currently reading. The full version requires JS (<code>IntersectionObserver</code>), but a pure-CSS approximation uses <code>:target</code>:</p>
+        <pre><code>&lt;style&gt;
+  .spy-nav a { color: var(--ink); }
+  /* Highlight the active section's TOC link */
+  #sec1:target ~ .spy-nav a[href="#sec1"],
+  #sec2:target ~ .spy-nav a[href="#sec2"],
+  #sec3:target ~ .spy-nav a[href="#sec3"] {
+    background: var(--brand);
+    color: white;
+  }
+&lt;/style&gt;</code></pre>
+        <p>This only highlights while the section is "targeted" (after a click) — not while scrolling. For true scroll-spy behavior, JS is required:</p>
+        <pre><code>// Modern scroll-spy with IntersectionObserver
+const sections = document.querySelectorAll("section[id]");
+const navLinks = document.querySelectorAll(".spy-nav a");
+
+const observer = new IntersectionObserver(entries =&gt; {
+  entries.forEach(entry =&gt; {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(link =&gt; {
+        link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+      });
+    }
+  });
+}, { rootMargin: "-80px 0px -70% 0px" }); // account for sticky nav
+
+sections.forEach(s =&gt; observer.observe(s));</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The <code>rootMargin: "-80px 0px -70% 0px"</code> trick makes the "active" zone begin 80px from the top (clearing your sticky nav) and end 70% down — meaning the section becomes "active" when its top is near the top of the viewport.
+        </div>
+      </section>
+
+      <section id="skip-links">
+        <h2><span class="num">6</span> Skip Links for Keyboard Users</h2>
+        <p>A skip link is the first focusable element on a page — a hidden-then-shown-on-focus link that lets keyboard users jump past repetitive navigation to the main content.</p>
+        <pre><code>&lt;!-- First element in &lt;body&gt; --&gt;
+&lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+&lt;nav&gt;...long navigation...&lt;/nav&gt;
+
+&lt;main id="main"&gt;
+  &lt;h1&gt;Page content starts here&lt;/h1&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .skip-link {
+    position: absolute;
+    top: -100px; left: 0;
+    background: var(--brand); color: white;
+    padding: 12px 20px; z-index: 1000;
+    text-decoration: none; border-radius: 0 0 8px 0;
+    transition: top 0.2s;
+  }
+  .skip-link:focus { top: 0; }
+&lt;/style&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Hidden Skip Links</strong>
+          Never use <code>display: none</code> or <code>visibility: hidden</code> on skip links — they become unfocusable. Use <code>position: absolute; top: -100px;</code> and reveal on <code>:focus</code>.
+        </div>
+        <p>Additional skip links to consider:</p>
+        <ul>
+          <li><strong>Skip to navigation</strong>: useful for screen reader users landing in main content.</li>
+          <li><strong>Skip to footer</strong>: legal pages, contact info.</li>
+          <li><strong>Skip to search</strong>: large e-commerce sites.</li>
+          <li><strong>Skip to next section</strong>: in long-form articles.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          WCAG 2.1 SC 2.4.1 (Bypass Blocks) requires a way to skip repetitive content. Skip links are the simplest compliance solution and benefit every keyboard user, not just screen reader users.
+        </div>
+      </section>
+
+      <section id="reading-progress">
+        <h2><span class="num">7</span> Reading Progress Indicators</h2>
+        <p>A top progress bar shows users how far they've read. Pure JS, but lightweight:</p>
+        <pre><code>&lt;div class="reading-progress" aria-hidden="true"&gt;&lt;/div&gt;
+
+&lt;style&gt;
+  .reading-progress {
+    position: fixed; top: 0; left: 0;
+    height: 4px; width: 0%;
+    background: var(--brand);
+    z-index: 1000;
+    transition: width 0.1s;
+  }
+&lt;/style&gt;
+
+&lt;script&gt;
+  const progress = document.querySelector(".reading-progress");
+  window.addEventListener("scroll", () =&gt; {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const scrolled = window.scrollY / scrollable * 100;
+    progress.style.width = scrolled + "%";
+  });
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Mark progress bars <code>aria-hidden="true"</code> — they're decorative. Screen reader users get progress through heading navigation instead.
+        </div>
+      </section>
+
+      <section id="ux">
+        <h2><span class="num">8</span> In-Page Navigation UX Best Practices</h2>
+        <table>
+          <thead>
+            <tr><th>Practice</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TOC link text matches section heading</td><td>Predictable; user knows what they'll get.</td></tr>
+            <tr><td>Highlight current section in TOC</td><td>Orient users; scroll-spy.</td></tr>
+            <tr><td>Use <code>&lt;nav aria-label="..."&gt;</code></td><td>Screen readers announce "navigation" region.</td></tr>
+            <tr><td>Limit TOC depth to 2-3 levels</td><td>Deeper nesting becomes unwieldy.</td></tr>
+            <tr><td>Use <code>scroll-behavior: smooth</code></td><td>Visual feedback that something happened.</td></tr>
+            <tr><td>Respect <code>prefers-reduced-motion</code></td><td>Disable smooth scroll for motion-sensitive users.</td></tr>
+            <tr><td>Sticky nav should not cover content</td><td>Use <code>scroll-padding-top</code> / <code>scroll-margin-top</code>.</td></tr>
+            <tr><td>Provide "back to top" link at bottom</td><td>Quick way back to TOC.</td></tr>
+            <tr><td>Make headings visible permalink targets</td><td>Hover <code>#</code> icon; click to copy URL with fragment.</td></tr>
+            <tr><td>Test with keyboard only</td><td>Tab through TOC; Enter to jump. Verify focus.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Static TOC</strong>
+          Create a long-form article (1,500+ words) with 5 sections. Add a TOC at the top with fragment links. Apply <code>scroll-behavior: smooth</code>. Verify jumping works without JavaScript.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Sticky Sidebar TOC</strong>
+          Move the TOC into a sticky left sidebar (260px wide). On mobile (&lt; 900px), collapse it to the top. Test on both viewport sizes.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Skip Link</strong>
+          Add a "Skip to main content" link as the first focusable element on your page. Use <code>position: absolute; top: -100px;</code> hidden until focused. Test by tabbing from the address bar.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Reading Progress Bar</strong>
+          Add a fixed-position progress bar at the top of the page. Use JS to update its width based on scroll position. Add <code>aria-hidden="true"</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Scroll Spy with IntersectionObserver</strong>
+          Implement scroll spy: as the user scrolls through sections, the corresponding TOC link gets an "active" class (e.g., bold + colored background). Use the <code>IntersectionObserver</code> snippet from this page.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Permalink Hover Pattern</strong>
+          Add a hover-visible <code>#</code> icon next to each section heading. Clicking it copies <code>pageURL#section-id</code> to the clipboard using the Clipboard API. Show a toast confirming the copy.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Duplicate IDs</td><td>Fragment jumps to wrong section.</td><td>Validate HTML; ensure IDs are unique.</td></tr>
+            <tr><td>Sticky nav covers section on jump</td><td>Section title hidden under nav.</td><td><code>scroll-padding-top</code> on <code>html</code>.</td></tr>
+            <tr><td>TOC link text doesn't match heading</td><td>Confuses users about destination.</td><td>Match TOC text exactly to heading.</td></tr>
+            <tr><td>Skip link uses <code>display: none</code></td><td>Becomes unfocusable.</td><td>Use off-screen positioning + <code>:focus</code>.</td></tr>
+            <tr><td>Smooth scroll without reduced-motion respect</td><td>Causes motion sickness.</td><td>Media query override.</td></tr>
+            <tr><td>TOC without <code>&lt;nav aria-label&gt;</code></td><td>Screen readers can't distinguish from page nav.</td><td>Add <code>aria-label="Table of contents"</code>.</td></tr>
+            <tr><td>TOC deeper than 3 levels</td><td>Unreadable; confusing.</td><td>Cap at 2 levels; flatten or split the page.</td></tr>
+            <tr><td>Auto-scroll-spy without throttling</td><td>Performance: scroll handler fires too often.</td><td>Use <code>IntersectionObserver</code> or debounce.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Documentation Sites</h4>
+            <p>MDN, Stripe, React docs: sticky left TOC + scroll-spy active highlighting. Gold-standard pattern.</p>
+          </div>
+          <div class="card">
+            <h4>One-Pager Marketing</h4>
+            <p>Restaurant/hotel/agency sites: nav links scroll to #features, #pricing, #contact.</p>
+          </div>
+          <div class="card">
+            <h4>Long-Form Articles</h4>
+            <p>Medium, Substack, NYT: TOC at top, section anchors for sharing.</p>
+          </div>
+          <div class="card">
+            <h4>Legal/Terms Pages</h4>
+            <p>Privacy policies, ToS: TOC with skip-link to "What we collect", "Your rights", etc.</p>
+          </div>
+          <div class="card">
+            <h4>Recipe Blogs</h4>
+            <p>"Jump to recipe" skip-link past the long story intro — universally appreciated UX.</p>
+          </div>
+          <div class="card">
+            <h4>Course Platforms</h4>
+            <p>Lesson navigation: previous/next + section TOC + progress indicator.</p>
+          </div>
+          <div class="card">
+            <h4>API Reference</h4>
+            <p>Stripe API docs: side TOC, every method is a fragment, deep-linkable.</p>
+          </div>
+          <div class="card">
+            <h4>Wiki/Glossary</h4>
+            <p>Alphabetical index that scrolls to definitions; Wikipedia uses this for glossary pages.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">12</span> Summary</h2>
+        <ul>
+          <li>Internal navigation helps users find content within a single page — essential for long-form pages.</li>
+          <li>Same-page anchors (<code>#id</code>) are the foundation; pair with <code>scroll-behavior: smooth</code>.</li>
+          <li>Table of contents pattern: nested <code>&lt;ol&gt;</code> of fragment links, sticky-positioned on long pages.</li>
+          <li>Scroll spy highlights the active section in the TOC; JS with <code>IntersectionObserver</code> is the modern approach.</li>
+          <li>Skip links are the first focusable element — let keyboard users bypass repetitive nav (WCAG 2.4.1).</li>
+          <li>Reading progress bars give visual feedback; mark them <code>aria-hidden="true"</code>.</li>
+          <li>Always handle sticky-nav overlap with <code>scroll-padding-top</code> or <code>scroll-margin-top</code>.</li>
+          <li>Respect <code>prefers-reduced-motion</code> when using smooth scrolling.</li>
+          <li>Always label TOC nav: <code>&lt;nav aria-label="Table of contents"&gt;</code>.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>CSSOM View Module · IntersectionObserver</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../02-URL-Types/special-schemes.html">← Previous: Special URL Schemes</a>
+      <a href="site-nav.html">Next: Site Navigation Patterns →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Internal Page Navigation</p>
+  </footer>
+</body>
+</html>

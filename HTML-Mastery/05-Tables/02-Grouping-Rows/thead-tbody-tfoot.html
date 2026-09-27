@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>thead, tbody, tfoot — Semantic Row Grouping — HTML Mastery</title>
+  <meta name="description" content="Master thead, tbody, and tfoot: the three semantic row-grouping elements for HTML tables. Learn how they enable repeat headers on print, sticky headers, distinct styling hooks, source order (tfoot CAN come before tbody in HTML5), and the default browser behavior.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box .live-table { border-collapse: collapse; width: 100%; }
+    .demo-box .live-table th, .demo-box .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-box .live-table thead th { background: #1e293b; color: white; }
+    .demo-box .live-table tbody tr:nth-child(even) td { background: #f8fafc; }
+    .demo-box .live-table tfoot td { background: #fef3c7; font-weight: 600; border-top: 2px solid #0f172a; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 4</span>
+    <h1><code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;tfoot&gt;</code></h1>
+    <p>The three semantic row-grouping elements. They make tables printable (with repeating headers), screen-reader-friendly, and infinitely more styleable. Plus a tiny HTML5 surprise: <code>&lt;tfoot&gt;</code> can come <em>before</em> <code>&lt;tbody&gt;</code> in source.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why-grouping">Why group rows?</a></li>
+        <li><a href="#thead">The &lt;thead&gt; element</a></li>
+        <li><a href="#tbody">The &lt;tbody&gt; element</a></li>
+        <li><a href="#tfoot">The &lt;tfoot&gt; element</a></li>
+        <li><a href="#source-order">Source order surprise</a></li>
+        <li><a href="#print-repeat">Print: repeat headers</a></li>
+        <li><a href="#sticky-headers">Sticky headers</a></li>
+        <li><a href="#styling-hooks">Styling hooks</a></li>
+        <li><a href="#full-example">Full example</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why-grouping">
+        <h2><span class="num">1</span> Why group rows?</h2>
+        <p>Without grouping elements, a table is just a flat sequence of <code>&lt;tr&gt;</code> elements. The browser (and CSS, JavaScript, and screen readers) has no semantic way to distinguish "header rows" from "body rows" from "summary rows".</p>
+        <p>The three row-grouping elements solve this:</p>
+        <div class="grid-3">
+          <div class="card">
+            <h4>&lt;thead&gt;</h4>
+            <p>"Table head" — wraps the header row(s). One per table. Browsers repeat this on every printed page.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;tbody&gt;</h4>
+            <p>"Table body" — wraps the data rows. There can be more than one <code>&lt;tbody&gt;</code> per table for sub-grouping.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;tfoot&gt;</h4>
+            <p>"Table foot" — wraps summary/total rows. Renders at the bottom; one per table.</p>
+          </div>
+        </div>
+        <div class="callout info">
+          <strong>Why it matters</strong>
+          Grouping gives you semantic hooks for CSS (style the whole <code>&lt;tbody&gt;</code> at once), JavaScript ("select all rows in <code>&lt;tbody&gt;</code>"), and accessibility (screen readers announce section boundaries). It also unlocks print-mode header repetition.
+        </div>
+      </section>
+
+      <section id="thead">
+        <h2><span class="num">2</span> The <code>&lt;thead&gt;</code> element</h2>
+        <p><code>&lt;thead&gt;</code> wraps one or more header rows. It must contain at least one <code>&lt;tr&gt;</code>, and that row should contain <code>&lt;th&gt;</code> cells (not <code>&lt;td&gt;</code>).</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Quarterly Sales&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Quarter&lt;/th&gt;
+      &lt;th scope="col"&gt;Revenue&lt;/th&gt;
+      &lt;th scope="col"&gt;Growth&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;!-- data rows --&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <p>Rules:</p>
+        <ul>
+          <li>Only one <code>&lt;thead&gt;</code> per table.</li>
+          <li>Must come <em>before</em> any <code>&lt;tbody&gt;</code> or <code>&lt;tfoot&gt;</code> in source.</li>
+          <li>Cells inside should typically be <code>&lt;th&gt;</code> — using <code>&lt;td&gt;</code> is allowed but semantically odd.</li>
+        </ul>
+      </section>
+
+      <section id="tbody">
+        <h2><span class="num">3</span> The <code>&lt;tbody&gt;</code> element</h2>
+        <p><code>&lt;tbody&gt;</code> wraps the main data rows. Unlike <code>&lt;thead&gt;</code> and <code>&lt;tfoot&gt;</code>, you can have <strong>multiple <code>&lt;tbody&gt;</code> elements</strong> in a single table — useful for sub-grouping data by category:</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Employee Directory&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th scope="col"&gt;Name&lt;/th&gt;&lt;th scope="col"&gt;Role&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Ada Lovelace&lt;/td&gt;&lt;td&gt;Engineer&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Alan Turing&lt;/td&gt;&lt;td&gt;Engineer&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Grace Hopper&lt;/td&gt;&lt;td&gt;Manager&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Linus Torvalds&lt;/td&gt;&lt;td&gt;Manager&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The implicit <code>&lt;tbody&gt;</code>: if you write a table with <code>&lt;tr&gt;</code> rows directly inside <code>&lt;table&gt;</code> (no explicit <code>&lt;tbody&gt;</code>), the browser automatically wraps them in a <code>&lt;tbody&gt;</code> in the DOM. You can verify this in DevTools. CSS selectors like <code>tbody td</code> will work even when you didn't write the <code>&lt;tbody&gt;</code> tag.
+        </div>
+      </section>
+
+      <section id="tfoot">
+        <h2><span class="num">4</span> The <code>&lt;tfoot&gt;</code> element</h2>
+        <p><code>&lt;tfoot&gt;</code> wraps summary rows — totals, averages, footnotes. Visually rendered at the bottom of the table regardless of where it appears in source.</p>
+        <pre><code>&lt;tfoot&gt;
+  &lt;tr&gt;
+    &lt;th scope="row"&gt;Total&lt;/th&gt;
+    &lt;td&gt;$162,100&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tfoot&gt;</code></pre>
+        <p>Rules:</p>
+        <ul>
+          <li>One <code>&lt;tfoot&gt;</code> per table (you can technically nest more, but it's invalid and bad practice).</li>
+          <li>Rendered at the bottom of the table in all modern browsers — even if you place it before <code>&lt;tbody&gt;</code> in source.</li>
+          <li>Commonly used for column totals or summary statistics.</li>
+        </ul>
+      </section>
+
+      <section id="source-order">
+        <h2><span class="num">5</span> Source order surprise</h2>
+        <p>Here's an HTML5 fact most developers miss: <code>&lt;tfoot&gt;</code> can come <strong>before</strong> <code>&lt;tbody&gt;</code> in the source code, and the browser will still render it at the bottom of the table.</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Sales Summary&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th scope="col"&gt;Region&lt;/th&gt;&lt;th scope="col"&gt;Revenue&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;Total&lt;/th&gt;&lt;td&gt;$1.2M&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tfoot&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;North&lt;/th&gt;&lt;td&gt;$450K&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;South&lt;/th&gt;&lt;td&gt;$750K&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <p>Why would you do this? Performance — the browser can start rendering the footer before the entire body is downloaded. In HTML4, this was actually required. In HTML5, both orders are valid.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Some developers write <code>&lt;tfoot&gt;</code> <em>after</em> <code>&lt;tbody&gt;</code> because it reads naturally. That's fine — both orders are valid HTML5. But mixing styles inconsistently across a codebase causes confusion. Pick one and stick with it.
+        </div>
+      </section>
+
+      <section id="print-repeat">
+        <h2><span class="num">6</span> Print: repeating headers</h2>
+        <p>When a long table spans multiple printed pages, the browser automatically repeats the <code>&lt;thead&gt;</code> on every page. Without <code>&lt;thead&gt;</code>, the header is printed only once on page 1, and the user has no context for the data on later pages.</p>
+        <div class="demo-box">
+          <div class="demo-label">Print preview behavior (try printing this page!)</div>
+          <table class="live-table">
+            <caption>Long Data Table — Header Repeats When Printed</caption>
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Order Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1001</td><td>Alice Johnson</td><td>$234.50</td></tr>
+              <tr><td>1002</td><td>Bob Smith</td><td>$89.99</td></tr>
+              <tr><td>1003</td><td>Carol Davies</td><td>$1,250.00</td></tr>
+              <tr><td>1004</td><td>Dan Brown</td><td>$45.20</td></tr>
+              <tr><td>1005</td><td>Eve Martinez</td><td>$678.34</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Total</th>
+                <td colspan="2">$2,298.03</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p>To test: open your browser's print preview (Ctrl/Cmd+P). On a table too long to fit one printed page, the header row should reappear at the top of each new page.</p>
+      </section>
+
+      <section id="sticky-headers">
+        <h2><span class="num">7</span> Sticky headers with <code>&lt;thead&gt;</code></h2>
+        <p>One of the most common UI patterns: a long scrollable table whose header row sticks to the top of the viewport. This is trivial with <code>&lt;thead&gt;</code> + CSS <code>position: sticky</code>:</p>
+        <pre><code>.scroll-table-wrap { height: 240px; overflow-y: auto; }
+.scroll-table thead th {
+  position: sticky;
+  top: 0;
+  background: #1e293b;   /* opaque! */
+  color: white;
+  z-index: 1;            /* keep above body cells */
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The <code>background</code> must be opaque — otherwise the body cells show through as you scroll. The <code>z-index</code> is required because sticky elements create a new stacking context.
+        </div>
+      </section>
+
+      <section id="styling-hooks">
+        <h2><span class="num">8</span> Styling hooks</h2>
+        <p>The row-group elements give you targeted CSS hooks without needing extra classes:</p>
+        <pre><code>table { border-collapse: collapse; width: 100%; }
+
+thead th {
+  background: #1e293b; color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px;
+}
+
+tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Zebra striping — only body rows */
+tbody tr:nth-child(even) td { background: #f8fafc; }
+
+/* Hover state — only body rows */
+tbody tr:hover td { background: #eff6ff; }
+
+tfoot td {
+  background: #fef3c7;     /* amber tint */
+  font-weight: 600;
+  border-top: 2px solid #0f172a;
+  padding: 12px;
+}</code></pre>
+        <p>Notice how <code>tbody tr:hover</code> excludes the header and footer from the hover effect — exactly what you want. Without <code>&lt;tbody&gt;</code>, you'd need <code>:not(:first-child):not(:last-child)</code> gymnastics.</p>
+      </section>
+
+      <section id="full-example">
+        <h2><span class="num">9</span> Full example — all three groups</h2>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Coffee Shop Sales — Q1 2025&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Month&lt;/th&gt;
+      &lt;th scope="col"&gt;Latte&lt;/th&gt;
+      &lt;th scope="col"&gt;Espresso&lt;/th&gt;
+      &lt;th scope="col"&gt;Total&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;January&lt;/th&gt;
+      &lt;td&gt;420&lt;/td&gt;
+      &lt;td&gt;310&lt;/td&gt;
+      &lt;td&gt;730&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;February&lt;/th&gt;
+      &lt;td&gt;380&lt;/td&gt;
+      &lt;td&gt;290&lt;/td&gt;
+      &lt;td&gt;670&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;March&lt;/th&gt;
+      &lt;td&gt;510&lt;/td&gt;
+      &lt;td&gt;360&lt;/td&gt;
+      &lt;td&gt;870&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Quarter Total&lt;/th&gt;
+      &lt;td&gt;1,310&lt;/td&gt;
+      &lt;td&gt;960&lt;/td&gt;
+      &lt;td&gt;2,270&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tfoot&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output — styled header/body/footer</div>
+          <table class="live-table">
+            <caption>Coffee Shop Sales — Q1 2025</caption>
+            <thead>
+              <tr><th scope="col">Month</th><th scope="col">Latte</th><th scope="col">Espresso</th><th scope="col">Total</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">January</th><td>420</td><td>310</td><td>730</td></tr>
+              <tr><th scope="row">February</th><td>380</td><td>290</td><td>670</td></tr>
+              <tr><th scope="row">March</th><td>510</td><td>360</td><td>870</td></tr>
+            </tbody>
+            <tfoot>
+              <tr><th scope="row">Quarter Total</th><td>1,310</td><td>960</td><td>2,270</td></tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Putting <code>&lt;td&gt;</code> directly inside <code>&lt;thead&gt;</code></td><td>Invalid HTML. Browsers may auto-wrap or move cells.</td><td>Always wrap header cells in a <code>&lt;tr&gt;</code>.</td></tr>
+            <tr><td>Multiple <code>&lt;thead&gt;</code> elements</td><td>Invalid HTML. Only one allowed.</td><td>Merge them, or use multiple <code>&lt;tbody&gt;</code> sections instead.</td></tr>
+            <tr><td>Forgetting <code>&lt;tbody&gt;</code> when styling body cells</td><td>CSS targeting <code>tbody td</code> may behave unexpectedly because the browser auto-inserts <code>&lt;tbody&gt;</code>.</td><td>Browser's auto-insertion usually works. But be explicit for clarity.</td></tr>
+            <tr><td>Using <code>&lt;tr&gt;</code> directly inside <code>&lt;table&gt;</code> alongside <code>&lt;thead&gt;</code></td><td>The stray <code>&lt;tr&gt;</code> gets auto-wrapped in an implicit <code>&lt;tbody&gt;</code>, breaking intended grouping.</td><td>Place all body rows inside an explicit <code>&lt;tbody&gt;</code>.</td></tr>
+            <tr><td>Transparent sticky header background</td><td>Body cells bleed through the sticky <code>&lt;thead&gt;</code> on scroll.</td><td>Set an opaque <code>background</code> and a <code>z-index</code>.</td></tr>
+            <tr><td>Putting <code>&lt;caption&gt;</code> after <code>&lt;thead&gt;</code></td><td>Invalid HTML — caption must come first.</td><td>Caption goes immediately after <code>&lt;table&gt;</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Group a table</strong>
+          Take any simple table you have and wrap its header row in <code>&lt;thead&gt;</code>, body rows in <code>&lt;tbody&gt;</code>, and add a totals row in <code>&lt;tfoot&gt;</code>. Verify the footer renders at the bottom.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Sticky header</strong>
+          Build a table with at least 15 body rows. Wrap it in a scrollable container with <code>height: 200px; overflow-y: auto;</code> and apply <code>position: sticky; top: 0;</code> to <code>thead th</code>. Don't forget the opaque background!
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Test source order</strong>
+          Create two identical tables. In the first, place <code>&lt;tfoot&gt;</code> after <code>&lt;tbody&gt;</code>. In the second, place <code>&lt;tfoot&gt;</code> before <code>&lt;tbody&gt;</code>. Confirm both render identically.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Print preview</strong>
+          Create a long table with 40+ rows that won't fit on one printed page. Add <code>&lt;thead&gt;</code>. Open Print Preview and verify the header repeats on every page.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Opera</span>
+          <span class="pill yes">All mobile browsers</span>
+          <span class="pill yes">Print: header repetition — supported all</span>
+          <span class="pill yes">position: sticky on thead — supported all</span>
+        </div>
+        <p>All three elements have been supported since the very beginning of HTML 4 (1997). Print-mode header repetition and sticky positioning on <code>&lt;thead&gt;</code> work in every modern browser.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Financial tables</h4>
+            <p>Income statements with headers, line items in body, totals (revenue, expenses, net income) in footer.</p>
+          </div>
+          <div class="card">
+            <h4>Admin data tables</h4>
+            <p>Sortable columns with sticky headers, summary statistics in <code>&lt;tfoot&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Shopping carts</h4>
+            <p>Line items in body, subtotal/tax/shipping/total in footer.</p>
+          </div>
+          <div class="card">
+            <h4>Invoices</h4>
+            <p>Items in <code>&lt;tbody&gt;</code>, "Total Due" in <code>&lt;tfoot&gt;</code> with distinct background color.</p>
+          </div>
+          <div class="card">
+            <h4>Sports results</h4>
+            <p>Sticky header rows in long league tables that scroll. Repeated headers when printed.</p>
+          </div>
+          <div class="card">
+            <h4>Reports / dashboards</h4>
+            <p>Multi-section data tables with several <code>&lt;tbody&gt;</code> blocks, each preceded by a section row.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../01-Table-Structure/caption.html">← Previous: Caption</a>
+    <a class="next" href="colgroup-col.html">Next: colgroup &amp; col →</a>
+  </footer>
+</body>
+</html>

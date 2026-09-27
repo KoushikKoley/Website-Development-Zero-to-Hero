@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Types — &lt;link rel&gt; in &lt;head&gt; — HTML Mastery</title>
+  <meta name="description" content="Specialized link types via &lt;link rel&gt; in HTML &lt;head&gt;: stylesheet, icon, canonical, alternate, preload, prefetch, preconnect, dns-prefetch, manifest, search. SEO and performance implications.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #2563eb 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+      word-break: break-all;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .rel-token {
+      display: inline-block;
+      background: var(--brand);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85rem;
+      margin: 2px 0;
+    }
+    .rel-perf { background: var(--success); }
+    .rel-seo { background: var(--accent); color: var(--ink); }
+    .rel-meta { background: var(--brand-2); }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.11 · &lt;link rel&gt;</span>
+    <h1>Link Types — <code>&lt;link rel&gt;</code> in <code>&lt;head&gt;</code></h1>
+    <p>Most links live in <code>&lt;body&gt;</code>, but the <code>&lt;head&gt;</code> is full of invisible <code>&lt;link&gt;</code> tags that shape performance, SEO, and behavior: stylesheets, icons, canonical URLs, hreflang alternates, preconnect, preload, prefetch, manifest. They're the unsung heroes of the document.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What &lt;link rel&gt; Does</a></li>
+        <li><a href="#categories">Token Categories</a></li>
+        <li><a href="#stylesheet">stylesheet</a></li>
+        <li><a href="#icon">icon (favicon)</a></li>
+        <li><a href="#canonical">canonical</a></li>
+        <li><a href="#alternate">alternate &amp; hreflang</a></li>
+        <li><a href="#preload">preload</a></li>
+        <li><a href="#prefetch">prefetch</a></li>
+        <li><a href="#preconnect">preconnect &amp; dns-prefetch</a></li>
+        <li><a href="#manifest">manifest (PWA)</a></li>
+        <li><a href="#search">search (OpenSearch)</a></li>
+        <li><a href="#other">Other Tokens</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What <code>&lt;link rel&gt;</code> Does</h2>
+        <p>The <code>&lt;link&gt;</code> element lives in the <code>&lt;head&gt;</code> and references external resources. The <code>rel</code> attribute (relationship) tells the browser what the resource is for — a stylesheet, an icon, a canonical URL, a performance hint, etc.</p>
+        <pre><code>&lt;head&gt;
+  &lt;!-- Stylesheet --&gt;
+  &lt;link rel="stylesheet" href="/css/main.css"&gt;
+
+  &lt;-- Favicon --&gt;
+  &lt;link rel="icon" href="/favicon.ico"&gt;
+
+  &lt;-- Canonical URL for SEO --&gt;
+  &lt;link rel="canonical" href="https://example.com/article"&gt;
+
+  &lt;-- Preconnect to a third-party origin --&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+
+  &lt;-- Preload a critical font --&gt;
+  &lt;link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin&gt;
+
+  &lt;-- PWA manifest --&gt;
+  &lt;link rel="manifest" href="/manifest.json"&gt;
+&lt;/head&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          All <code>&lt;link rel&gt;</code> attributes use the same vocabulary as <code>&lt;a rel&gt;</code> on anchors. The difference: <code>&lt;link&gt;</code> is in the <code>&lt;head&gt;</code> and references document-level resources; <code>&lt;a&gt;</code> is in the <code>&lt;body&gt;</code> and creates visible hyperlinks.
+        </div>
+      </section>
+
+      <section id="categories">
+        <h2><span class="num">2</span> Token Categories</h2>
+        <p>The 20+ recognized <code>rel</code> tokens fall into three categories:</p>
+        <table>
+          <thead>
+            <tr><th>Category</th><th>Tokens</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Resources</strong></td>
+              <td>
+                <span class="rel-token">stylesheet</span>
+                <span class="rel-token">icon</span>
+                <span class="rel-token">manifest</span>
+                <span class="rel-token">preload</span>
+                <span class="rel-token">prefetch</span>
+                <span class="rel-token">preconnect</span>
+                <span class="rel-token">dns-prefetch</span>
+                <span class="rel-token">modulepreload</span>
+              </td>
+              <td>Load assets, hint performance, prepare connections.</td>
+            </tr>
+            <tr>
+              <td><strong>SEO</strong></td>
+              <td>
+                <span class="rel-token rel-seo">canonical</span>
+                <span class="rel-token rel-seo">alternate</span>
+                <span class="rel-token rel-seo">amphtml</span>
+                <span class="rel-token rel-seo">shortlink</span>
+              </td>
+              <td>Tell search engines about page relationships and canonical URLs.</td>
+            </tr>
+            <tr>
+              <td><strong>Meta</strong></td>
+              <td>
+                <span class="rel-token rel-meta">author</span>
+                <span class="rel-token rel-meta">help</span>
+                <span class="rel-token rel-meta">license</span>
+                <span class="rel-token rel-meta">next</span>
+                <span class="rel-token rel-meta">prev</span>
+                <span class="rel-token rel-meta">search</span>
+                <span class="rel-token rel-meta">pingback</span>
+                <span class="rel-token rel-meta">webmention</span>
+              </td>
+              <td>Semantic metadata about the page's relationships.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="stylesheet">
+        <h2><span class="num">3</span> <span class="rel-token">stylesheet</span></h2>
+        <p>The most common <code>rel</code> value — loads a CSS file and applies it to the page.</p>
+        <pre><code>&lt;link rel="stylesheet" href="/css/main.css"&gt;
+
+&lt;-- With media query (loads only when matching) --&gt;
+&lt;link rel="stylesheet" href="/css/print.css" media="print"&gt;
+&lt;link rel="stylesheet" href="/css/mobile.css" media="(max-width: 768px)"&gt;
+
+&lt;-- Print + screen combined --&gt;
+&lt;link rel="stylesheet" href="/css/responsive.css" media="screen, print"&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip — Render-Blocking</strong>
+          <code>&lt;link rel="stylesheet"&gt;</code> is render-blocking by default — the browser won't paint the page until the CSS loads. For non-critical CSS, use <code>media="print"</code> swap, or load via JS, or use <code>rel="preload" as="style" onload="this.rel='stylesheet'"</code>.
+        </div>
+        <pre><code>&lt;!-- Lazy-load non-critical CSS without blocking render --&gt;
+&lt;link rel="preload" href="/non-critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'"&gt;
+&lt;noscript&gt;&lt;link rel="stylesheet" href="/non-critical.css"&gt;&lt;/noscript&gt;</code></pre>
+      </section>
+
+      <section id="icon">
+        <h2><span class="num">4</span> <span class="rel-token">icon</span> (Favicon)</h2>
+        <p>Specifies the favicon — the small icon shown in browser tabs, bookmarks, and home-screen shortcuts.</p>
+        <pre><code>&lt;!-- Modern SVG favicon (preferred for high-DPI) --&gt;
+&lt;link rel="icon" href="/favicon.svg" type="image/svg+xml"&gt;
+
+&lt;-- PNG favicons for various sizes --&gt;
+&lt;link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"&gt;
+
+&lt;-- Apple touch icon (home screen on iOS) --&gt;
+&lt;link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"&gt;
+
+&lt;-- Web app manifest icon (Android/Chrome home screen) --&gt;
+&lt;link rel="manifest" href="/manifest.json"&gt;
+
+&lt;-- Legacy .ico fallback --&gt;
+&lt;link rel="shortcut icon" href="/favicon.ico"&gt;
+
+&lt;-- Theme color for mobile browser chrome --&gt;
+&lt;meta name="theme-color" content="#2563eb"&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For best cross-device support, provide: SVG (high-DPI), 32×32 PNG (standard), 180×180 PNG (Apple touch), 192×192 + 512×512 PNG (in manifest.json for Android), and a <code>.ico</code> fallback. Tools like <a href="https://realfavicongenerator.net/" target="_blank" rel="noopener noreferrer">realfavicongenerator.net</a> generate them all.
+        </div>
+      </section>
+
+      <section id="canonical">
+        <h2><span class="num">5</span> <span class="rel-token rel-seo">canonical</span></h2>
+        <p>Tells search engines: "this URL is the master version of this page". Prevents duplicate-content penalties when the same content is accessible at multiple URLs (e.g., with/without trailing slash, with/without query params, www vs non-www).</p>
+        <pre><code>&lt;!-- Always use an absolute URL --&gt;
+&lt;link rel="canonical" href="https://example.com/blog/css-grid"&gt;
+
+&lt;-- On paginated lists, canonicalize each page to itself --&gt;
+&lt;link rel="canonical" href="https://example.com/blog?page=2"&gt;
+
+&lt;-- On print/mobile variants, point to the desktop version --&gt;
+&lt;link rel="canonical" href="https://example.com/blog/css-grid"&gt;
+&lt;!-- (don't point every variant to the first page — that hides subsequent content from Google) --&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Self-Canonicalization Done Wrong</strong>
+          Every page should canonicalize to itself (or its master version), not to the homepage. Don't use <code>rel="canonical"</code> to consolidate distinct content pages — Google will just ignore the directive. Use 301 redirects for true duplicates.
+        </div>
+      </section>
+
+      <section id="alternate">
+        <h2><span class="num">6</span> <span class="rel-token rel-seo">alternate</span> &amp; <code>hreflang</code></h2>
+        <p>Tells search engines about alternative versions of the page: translations, mobile/desktop, RSS feeds.</p>
+        <h3>Translations (hreflang)</h3>
+        <pre><code>&lt;!-- English (canonical) --&gt;
+&lt;link rel="alternate" hreflang="en" href="https://example.com/en/about"&gt;
+
+&lt;-- French --&gt;
+&lt;link rel="alternate" hreflang="fr" href="https://example.com/fr/a-propos"&gt;
+
+&lt;-- Spanish --&gt;
+&lt;link rel="alternate" hreflang="es" href="https://example.com/es/acerca"&gt;
+
+&lt;-- Simplified Chinese --&gt;
+&lt;link rel="alternate" hreflang="zh-Hans" href="https://example.com/zh-Hans/about"&gt;
+
+&lt;-- x-default: the default for users whose locale doesn't match --&gt;
+&lt;link rel="alternate" hreflang="x-default" href="https://example.com/en/about"&gt;</code></pre>
+        <p>Google uses these to serve the right language version in search results.</p>
+        <h3>RSS / Atom Feeds</h3>
+        <pre><code>&lt;link rel="alternate" type="application/rss+xml"
+      title="Example Blog RSS Feed"
+      href="/feed.xml"&gt;
+
+&lt;link rel="alternate" type="application/atom+xml"
+      title="Example Blog Atom Feed"
+      href="/atom.xml"&gt;</code></pre>
+        <p>Browsers display an RSS icon in the address bar when they find these.</p>
+        <h3>Mobile / Desktop Variants</h3>
+        <pre><code>&lt;!-- On desktop page, link to mobile --&gt;
+&lt;link rel="alternate" media="only screen and (max-width: 768px)"
+      href="https://m.example.com/page"&gt;
+
+&lt;-- On mobile page, link back to desktop --&gt;
+&lt;link rel="canonical" href="https://www.example.com/page"&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Incomplete hreflang</strong>
+          If you list French and Spanish alternates but no English, Google can't pair them. Always include the canonical version itself + an <code>hreflang="x-default"</code> fallback. Test with Google Search Console's International Targeting report.
+        </div>
+      </section>
+
+      <section id="preload">
+        <h2><span class="num">7</span> <span class="rel-token rel-perf">preload</span></h2>
+        <p>High-priority fetch for resources needed on the current page. Use it to start downloading critical assets earlier than the browser would otherwise discover them.</p>
+        <pre><code>&lt;!-- Preload a critical font --&gt;
+&lt;link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin&gt;
+
+&lt;-- Preload a critical CSS file (loaded but not yet applied) --&gt;
+&lt;link rel="preload" href="/css/critical.css" as="style"&gt;
+
+&lt;-- Preload a hero image --&gt;
+&lt;link rel="preload" href="/img/hero.webp" as="image"&gt;
+
+&lt;-- Preload a JS module --&gt;
+&lt;link rel="modulepreload" href="/js/app.js"&gt;
+
+&lt;-- Preload a video --&gt;
+&lt;link rel="preload" href="/video/intro.mp4" as="video"&gt;</code></pre>
+        <p>The <code>as</code> attribute is required — it tells the browser the resource type so it can set proper headers and use the right cache.</p>
+        <table>
+          <thead>
+            <tr><th><code>as</code> value</th><th>Resource Type</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>audio</code></td><td>Audio files</td></tr>
+            <tr><td><code>document</code></td><td>Iframes</td></tr>
+            <tr><td><code>embed</code></td><td>Plugin embeds</td></tr>
+            <tr><td><code>fetch</code></td><td>fetch() or XHR</td></tr>
+            <tr><td><code>font</code></td><td>Web fonts</td></tr>
+            <tr><td><code>image</code></td><td>Images</td></tr>
+            <tr><td><code>object</code></td><td>Plugin objects</td></tr>
+            <tr><td><code>script</code></td><td>JS files</td></tr>
+            <tr><td><code>style</code></td><td>CSS files</td></tr>
+            <tr><td><code>track</code></td><td>WebVTT files</td></tr>
+            <tr><td><code>video</code></td><td>Video files</td></tr>
+            <tr><td><code>worker</code></td><td>Web workers</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake — Preload Everything</strong>
+          Preloading too many resources can backfire: it competes for bandwidth with render-critical requests. Reserve <code>preload</code> for things the page actually needs ASAP — the LCP image, the main font, critical CSS. Measure with Lighthouse or WebPageTest first.
+        </div>
+      </section>
+
+      <section id="prefetch">
+        <h2><span class="num">8</span> <span class="rel-token rel-perf">prefetch</span></h2>
+        <p>Low-priority fetch for resources likely needed on the <em>next</em> navigation. The browser fetches the resource in idle time and caches it.</p>
+        <pre><code>&lt;!-- Prefetch the next likely page --&gt;
+&lt;link rel="prefetch" href="/next-article.html"&gt;
+
+&lt;-- Prefetch an image likely to appear next --&gt;
+&lt;link rel="prefetch" href="/img/next-hero.webp" as="image"&gt;
+
+&lt;-- Prefetch a JS bundle for the next page --&gt;
+&lt;link rel="prefetch" href="/js/checkout.js" as="script"&gt;</code></pre>
+        <h3>Speculation Rules (Modern Alternative)</h3>
+        <p>Chrome now supports <code>&lt;script type="speculationrules"&gt;</code> for smarter prefetching and even prerendering of likely-next pages:</p>
+        <pre><code>&lt;script type="speculationrules"&gt;
+{
+  "prefetch": [
+    {"urls": ["/next-article.html", "/pricing.html"]}
+  ]
+}
+&lt;/script&gt;
+
+&lt;-- Or prerender (full page render in background) --&gt;
+&lt;script type="speculationrules"&gt;
+{
+  "prerender": [
+    {"where": {"href_matches": "/next-article.html"}}
+  ]
+}
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>prefetch</code> for likely-next pages (links visible in the viewport, "next" pagination). It can give near-instant page loads. But be mindful of mobile data costs — some users pay per MB. Consider <code>Save-Data</code> header detection.
+        </div>
+      </section>
+
+      <section id="preconnect">
+        <h2><span class="num">9</span> <span class="rel-token rel-perf">preconnect</span> &amp; <span class="rel-token rel-perf">dns-prefetch</span></h2>
+        <p>Warm up the connection to a third-party origin before you actually fetch from it. Saves DNS lookup + TCP handshake + TLS negotiation — can save 100-300ms.</p>
+        <pre><code>&lt;!-- Full preconnect (DNS + TCP + TLS) --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+
+&lt;-- DNS-only prefetch (lighter; for low-priority origins) --&gt;
+&lt;link rel="dns-prefetch" href="https://analytics.example.com"&gt;
+&lt;link rel="dns-prefetch" href="https://cdn.example.com"&gt;</code></pre>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>What It Does</th><th>When to Use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>preconnect</code></td><td>DNS + TCP + TLS handshake</td><td>Origins you'll fetch from soon (fonts, CDN, API).</td></tr>
+            <tr><td><code>dns-prefetch</code></td><td>DNS lookup only</td><td>Origins you might fetch from (analytics, tracking pixels).</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake — Too Many preconnects</strong>
+          Each open connection costs browser resources. Limit to 3-4 critical origins. Beyond that, you're wasting memory and may slow down other fetches.
+        </div>
+      </section>
+
+      <section id="manifest">
+        <h2><span class="num">10</span> <span class="rel-token">manifest</span> (PWA)</h2>
+        <p>Links to a Web App Manifest JSON file — enables "Add to Home Screen" and PWA installation.</p>
+        <pre><code>&lt;link rel="manifest" href="/manifest.json"&gt;</code></pre>
+        <p>The manifest itself:</p>
+        <pre><code>{
+  "name": "Acme App",
+  "short_name": "Acme",
+  "description": "Manage your Acme widgets.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For full PWA installability, also serve a Service Worker (registered via JS). The manifest alone enables "Add to Home Screen", but a service worker enables offline functionality — both are required for the install prompt.
+        </div>
+      </section>
+
+      <section id="search">
+        <h2><span class="num">11</span> <span class="rel-token rel-meta">search</span> (OpenSearch)</h2>
+        <p>Tells browsers your site has a search engine they can add to the browser's search bar.</p>
+        <pre><code>&lt;link rel="search"
+      type="application/opensearchdescription+xml"
+      title="Example Search"
+      href="/opensearch.xml"&gt;</code></pre>
+        <p>The OpenSearch description XML:</p>
+        <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"&gt;
+  &lt;ShortName&gt;Example Search&lt;/ShortName&gt;
+  &lt;Description&gt;Search example.com&lt;/Description&gt;
+  &lt;Url type="text/html"
+       template="https://example.com/search?q={searchTerms}"/&gt;
+&lt;/OpenSearchDescription&gt;</code></pre>
+      </section>
+
+      <section id="other">
+        <h2><span class="num">12</span> Other Tokens</h2>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>author</code></td><td>Link to author bio</td><td><code>&lt;link rel="author" href="/authors/jane"&gt;</code></td></tr>
+            <tr><td><code>help</code></td><td>Help documentation</td><td><code>&lt;link rel="help" href="/help/getting-started"&gt;</code></td></tr>
+            <tr><td><code>license</code></td><td>License link</td><td><code>&lt;link rel="license" href="https://creativecommons.org/licenses/by/4.0/"&gt;</code></td></tr>
+            <tr><td><code>next</code> / <code>prev</code></td><td>Pagination</td><td><code>&lt;link rel="next" href="/article?page=3"&gt;</code></td></tr>
+            <tr><td><code>pingback</code></td><td>Pingback server URL</td><td>WordPress auto-notifies linked sites</td></tr>
+            <tr><td><code>webmention</code></td><td>Modern replacement for pingback</td><td>IndieWeb notifications</td></tr>
+            <tr><td><code>shortlink</code></td><td>Short URL for the page</td><td>Bit.ly-style short URL</td></tr>
+            <tr><td><code>amphtml</code></td><td>AMP version of the page</td><td><code>&lt;link rel="amphtml" href="/article.amp.html"&gt;</code></td></tr>
+            <tr><td><code>apple-touch-icon</code></td><td>iOS home-screen icon</td><td>180×180 PNG</td></tr>
+            <tr><td><code>apple-touch-startup-image</code></td><td>iOS splash screen</td><td>For "Add to Home Screen" PWA</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">13</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Complete &lt;head&gt;</strong>
+          Build a page with a complete <code>&lt;head&gt;</code>: charset, viewport, title, description, favicon (multiple sizes), stylesheet, canonical, theme-color, and Open Graph tags. Verify with a HTML validator and Lighthouse SEO audit.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — hreflang Setup</strong>
+          Build a multilingual page with three translations (English, French, Spanish). Add <code>rel="alternate" hreflang="..."</code> for each (including x-default). Validate with Google Search Console's International Targeting.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Performance Hints</strong>
+          Add <code>preconnect</code> for two origins (e.g., fonts.googleapis.com and a CDN). Add <code>preload</code> for a hero image and a critical font. Measure with Lighthouse — your "Reduce preconnect" score should improve.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — PWA Manifest</strong>
+          Create a <code>manifest.json</code> with name, icons, theme color, and display mode. Link it via <code>&lt;link rel="manifest"&gt;</code>. Test in Chrome DevTools → Application → Manifest.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — RSS Auto-Discovery</strong>
+          Add an RSS feed link to your page using <code>&lt;link rel="alternate" type="application/rss+xml"&gt;</code>. Visit in Firefox — the RSS icon should appear in the address bar.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Lazy-Load Non-Critical CSS</strong>
+          Take a render-blocking stylesheet and convert it to a non-blocking preload pattern (using the <code>onload="this.rel='stylesheet'"</code> trick). Measure First Contentful Paint improvement.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">14</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Relative URL in <code>canonical</code></td><td>Google requires absolute URLs.</td><td>Always use <code>https://example.com/...</code>.</td></tr>
+            <tr><td>Missing <code>crossorigin</code> on font preload</td><td>Font fetch is anonymous; preload fails without <code>crossorigin</code>.</td><td>Add <code>crossorigin</code> attribute.</td></tr>
+            <tr><td>Too many <code>preconnect</code>s</td><td>Each open connection costs resources.</td><td>Limit to 3-4 critical origins.</td></tr>
+            <tr><td>Preloading resources not used on page</td><td>Wastes bandwidth.</td><td>Only preload what the current page actually uses.</td></tr>
+            <tr><td>Incomplete hreflang set</td><td>Google can't pair alternates.</td><td>Include canonical language + <code>x-default</code>.</td></tr>
+            <tr><td>Missing favicon variations</td><td>Low-quality icons on iOS/Android.</td><td>Provide SVG, PNG (multiple sizes), Apple touch icon, .ico.</td></tr>
+            <tr><td>Render-blocking CSS in <code>&lt;head&gt;</code></td><td>Delays First Paint.</td><td>Inline critical CSS; lazy-load non-critical.</td></tr>
+            <tr><td>Using <code>dns-prefetch</code> when <code>preconnect</code> needed</td><td>Misses TCP+TLS warm-up.</td><td>Use <code>preconnect</code> for high-priority origins.</td></tr>
+            <tr><td>Manifest without service worker</td><td>Not installable as PWA.</td><td>Register a service worker too.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">15</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>SEO-Optimized Pages</h4>
+            <p>Canonical + hreflang alternates + Open Graph + Twitter Card. Standard for any content site.</p>
+          </div>
+          <div class="card">
+            <h4>Performance-First Sites</h4>
+            <p>preconnect to fonts/CDN/API origins + preload critical font/hero image. Standard for e-commerce and news.</p>
+          </div>
+          <div class="card">
+            <h4>Progressive Web Apps</h4>
+            <p>manifest.json + service worker + theme-color + apple-touch-icon. Enables installable, offline-capable web apps.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-Language Sites</h4>
+            <p>hreflang alternates for every supported language. Critical for international SEO (Wikipedia, Booking, Airbnb).</p>
+          </div>
+          <div class="card">
+            <h4>Blogs with RSS</h4>
+            <p><code>rel="alternate" type="application/rss+xml"</code> for feed discovery. Standard for any content site.</p>
+          </div>
+          <div class="card">
+            <h4>Favicon Optimization</h4>
+            <p>Multiple favicon sizes + Apple touch icon + maskable PWA icon. Generated with realfavicongenerator.net.</p>
+          </div>
+          <div class="card">
+            <h4>WordPress</h4>
+            <p>Auto-generates: canonical, shortlink, prev/next, pingback, alternate (RSS), wlwmanifest.</p>
+          </div>
+          <div class="card">
+            <h4>Speculation Rules</h4>
+            <p>Modern sites use <code>&lt;script type="speculationrules"&gt;</code> to prerender the most-likely next page for instant navigation.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">16</span> Summary</h2>
+        <ul>
+          <li><code>&lt;link rel&gt;</code> in <code>&lt;head&gt;</code> references document-level resources without visible hyperlinks.</li>
+          <li>Resources: <code>stylesheet</code>, <code>icon</code>, <code>manifest</code>, <code>preload</code>, <code>prefetch</code>, <code>preconnect</code>, <code>dns-prefetch</code>, <code>modulepreload</code>.</li>
+          <li>SEO: <code>canonical</code> (always absolute), <code>alternate</code> + <code>hreflang</code> for translations, <code>amphtml</code> for AMP.</li>
+          <li>Meta: <code>author</code>, <code>help</code>, <code>license</code>, <code>next</code>/<code>prev</code>, <code>search</code>, <code>pingback</code>.</li>
+          <li><code>preload</code> = high-priority for current page; <code>prefetch</code> = low-priority for next page.</li>
+          <li><code>preconnect</code> warms full connection; <code>dns-prefetch</code> is DNS-only.</li>
+          <li>Always include <code>crossorigin</code> when preloading fonts.</li>
+          <li>Provide multiple favicon sizes for cross-device support.</li>
+          <li>PWA install requires manifest + service worker.</li>
+          <li>Modern alternative to prefetch: speculation rules in Chrome.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>HTML Living Standard · Resource Hints W3C</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="download-attribute.html">← Previous: download Attribute</a>
+      <a href="email-tel-links.html">Next: Email &amp; Phone Links →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Link Types</p>
+  </footer>
+</body>
+</html>

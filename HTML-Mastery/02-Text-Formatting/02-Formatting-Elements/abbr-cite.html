@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abbr, Cite, Dfn, Address — HTML Mastery</title>
+  <meta name="description" content="Complete reference for abbr, cite, dfn, and address HTML elements. Learn when to use abbreviations, citations, definition terms, and contact info with accessibility, semantic, and real-world examples.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box abbr[title] { border-bottom: 1px dotted; cursor: help; text-decoration: none; }
+    .demo-box address { font-style: italic; color: var(--ink-soft); }
+    .demo-box dfn { font-style: italic; font-weight: 600; }
+    .demo-box cite { font-style: italic; }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.2 · Formatting Elements</span>
+    <h1><code>&lt;abbr&gt;</code> · <code>&lt;cite&gt;</code> · <code>&lt;dfn&gt;</code> · <code>&lt;address&gt;</code></h1>
+    <p>Four elements that mark up the meta-information of prose: abbreviations and their expansions, citations of creative works, the defining instance of a term, and contact information. Each one tells machines and readers "this isn't just text — it carries a specific role."</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Quick Comparison</a></li>
+        <li><a href="#abbr">abbr — Abbreviation</a></li>
+        <li><a href="#abbr-attrs">The title Attribute</a></li>
+        <li><a href="#abbr-patterns">Abbreviation Patterns</a></li>
+        <li><a href="#cite">cite — Citation</a></li>
+        <li><a href="#dfn">dfn — Definition Term</a></li>
+        <li><a href="#dfn-dfn">Linked Definitions</a></li>
+        <li><a href="#address">address — Contact Info</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Quick Comparison</h2>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Default look</th><th>Semantic meaning</th><th>Key attribute</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;abbr&gt;</code></td><td>No change (often dotted underline)</td><td>Abbreviation or acronym</td><td><code>title</code> (expansion)</td></tr>
+            <tr><td><code>&lt;cite&gt;</code></td><td>Italic</td><td>Title of a creative work</td><td>—</td></tr>
+            <tr><td><code>&lt;dfn&gt;</code></td><td>Italic</td><td>Defining instance of a term</td><td><code>title</code> (the definition)</td></tr>
+            <tr><td><code>&lt;address&gt;</code></td><td>Italic, block-level</td><td>Contact information</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="abbr">
+        <h2><span class="num">2</span> <code>&lt;abbr&gt;</code> — Abbreviation</h2>
+        <p>The <code>&lt;abbr&gt;</code> element represents an <strong>abbreviation or acronym</strong>. Providing a <code>title</code> attribute with the full expansion allows browsers and assistive tech to show the full form on hover or to announce it.</p>
+        <pre><code>&lt;p&gt;
+  The &lt;abbr title="World Wide Web Consortium"&gt;W3C&lt;/abbr&gt;
+  is the main international standards organization for the World Wide Web.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>The <abbr title="World Wide Web Consortium">W3C</abbr> is the main international standards organization for the World Wide Web.</p>
+          <p><small>Hover over "W3C" to see the tooltip.</small></p>
+        </div>
+        <h3>Acronyms vs initialisms</h3>
+        <p>Technically, an <em>acronym</em> is pronounced as a word (NASA, NATO, laser), while an <em>initialism</em> is pronounced letter by letter (FBI, HTML, CPU). The HTML spec uses <code>&lt;abbr&gt;</code> for both. The obsolete <code>&lt;acronym&gt;</code> element was removed in HTML5.</p>
+        <pre><code>&lt;!-- Acronyms (pronounced as words) --&gt;
+&lt;abbr title="National Aeronautics and Space Administration"&gt;NASA&lt;/abbr&gt;
+&lt;abbr title="Light Amplification by Stimulated Emission of Radiation"&gt;laser&lt;/abbr&gt;
+
+&lt;!-- Initialisms (pronounced letter by letter) --&gt;
+&lt;abbr title="Federal Bureau of Investigation"&gt;FBI&lt;/abbr&gt;
+&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;</code></pre>
+      </section>
+
+      <section id="abbr-attrs">
+        <h2><span class="num">3</span> The <code>title</code> Attribute</h2>
+        <p>The <code>title</code> attribute provides the full expansion of the abbreviation. Browsers display it as a tooltip on hover, and screen readers may announce it instead of (or in addition to) the abbreviated form.</p>
+        <pre><code>&lt;p&gt;
+  The meeting starts at &lt;abbr title="Post Meridiem (afternoon)"&gt;PM&lt;/abbr&gt;
+  or &lt;abbr title="Ante Meridiem (morning)"&gt;AM&lt;/abbr&gt;.
+&lt;/p&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Define an abbreviation only on its first occurrence in a document. Repeating the <code>title</code> on every instance clutters the markup. After the first definition, subsequent uses can be plain text.
+        </div>
+        <h3>Styling abbr</h3>
+        <p>Many sites add a subtle dotted underline to indicate the abbreviation is hoverable:</p>
+        <pre><code>abbr[title] {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+/* Optional: only style abbrs that actually have a title */
+abbr[title]:hover::after {
+  content: " (" attr(title) ")";
+  font-size: 0.85em;
+  color: var(--ink-soft);
+}</code></pre>
+      </section>
+
+      <section id="abbr-patterns">
+        <h2><span class="num">4</span> Abbreviation Patterns</h2>
+        <h3>First-occurrence pattern</h3>
+        <pre><code>&lt;p&gt;
+  &lt;abbr title="Application Programming Interface"&gt;API&lt;/abbr&gt;
+  design is hard. A good API lets developers build quickly.
+  The best APIs feel invisible.
+&lt;/p&gt;
+&lt;!-- Subsequent uses are plain "API" --&gt;</code></pre>
+        <h3>Inline expansion</h3>
+        <p>For very important terms, expand the abbreviation in prose on first use:</p>
+        <pre><code>&lt;p&gt;
+  We use a Content Delivery Network (CDN) to cache assets globally.
+  The &lt;abbr title="Content Delivery Network"&gt;CDN&lt;/abbr&gt;
+  reduces latency for users in distant regions.
+&lt;/p&gt;</code></pre>
+        <h3>Common abbreviations reference</h3>
+        <table>
+          <thead>
+            <tr><th>Abbr</th><th>Expansion</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>HTML</td><td>HyperText Markup Language</td></tr>
+            <tr><td>CSS</td><td>Cascading Style Sheets</td></tr>
+            <tr><td>JS</td><td>JavaScript</td></tr>
+            <tr><td>API</td><td>Application Programming Interface</td></tr>
+            <tr><td>URL</td><td>Uniform Resource Locator</td></tr>
+            <tr><td>HTTP</td><td>HyperText Transfer Protocol</td></tr>
+            <tr><td>CEO</td><td>Chief Executive Officer</td></tr>
+            <tr><td>PhD</td><td>Doctor of Philosophy</td></tr>
+            <tr><td>etc.</td><td>et cetera (Latin: "and the rest")</td></tr>
+            <tr><td>e.g.</td><td>exempli gratia (Latin: "for example")</td></tr>
+            <tr><td>i.e.</td><td>id est (Latin: "that is")</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="cite">
+        <h2><span class="num">5</span> <code>&lt;cite&gt;</code> — Citation</h2>
+        <p>The <code>&lt;cite&gt;</code> element represents the <strong>title of a creative work</strong>: a book, a film, a song, an article, a painting, a TV show, a legal case, a video game, etc. It renders in italic by default.</p>
+        <pre><code>&lt;p&gt;
+  My favorite novel is &lt;cite&gt;Dune&lt;/cite&gt; by Frank Herbert.
+&lt;/p&gt;
+
+&lt;p&gt;
+  In the film &lt;cite&gt;Blade Runner&lt;/cite&gt;, the protagonist…
+&lt;/p&gt;
+
+&lt;p&gt;
+  As Smith notes in &lt;cite&gt;The Wealth of Nations&lt;/cite&gt;,
+  markets tend toward equilibrium.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>My favorite novel is <cite>Dune</cite> by Frank Herbert.</p>
+          <p>In the film <cite>Blade Runner</cite>, the protagonist…</p>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The HTML5 spec changed <code>&lt;cite&gt;</code> to mark only the <em>title of the work</em>, not the author or person. Wrapping a person's name in <code>&lt;cite&gt;</code> is invalid HTML5. Use a regular <code>&lt;span&gt;</code> or <code>&lt;b&gt;</code> for author names.
+        </div>
+        <h3>What counts as a "creative work"?</h3>
+        <ul>
+          <li>Books, novels, plays, poems</li>
+          <li>Movies, TV shows, web series</li>
+          <li>Songs, albums, symphonies</li>
+          <li>Articles, blog posts, news stories</li>
+          <li>Paintings, sculptures, photographs</li>
+          <li>Video games, board games</li>
+          <li>Legal cases (<cite>Brown v. Board of Education</cite>)</li>
+          <li>Software, websites, apps</li>
+        </ul>
+      </section>
+
+      <section id="dfn">
+        <h2><span class="num">6</span> <code>&lt;dfn&gt;</code> — Definition Term</h2>
+        <p>The <code>&lt;dfn&gt;</code> element represents the <strong>defining instance of a term</strong>. The defining instance is the first time a term is introduced and defined in a document. Browsers render it in italic.</p>
+        <pre><code>&lt;p&gt;
+  A &lt;dfn&gt;webhook&lt;/dfn&gt; is an HTTP callback that fires when
+  an event occurs in a system.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>A <dfn>webhook</dfn> is an HTTP callback that fires when an event occurs in a system.</p>
+        </div>
+        <h3>Definition with explicit term</h3>
+        <p>If the <code>&lt;dfn&gt;</code> contains a nested element like <code>&lt;abbr&gt;</code>, the innermost element is taken as the term being defined:</p>
+        <pre><code>&lt;p&gt;
+  &lt;dfn&gt;&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;&lt;/dfn&gt;
+  is the standard markup language for documents on the web.
+&lt;/p&gt;</code></pre>
+        <h3>Definition with <code>title</code> attribute</h3>
+        <p>If you add a <code>title</code> attribute to <code>&lt;dfn&gt;</code>, its value is the term being defined (useful when the term differs from the visible text):</p>
+        <pre><code>&lt;p&gt;
+  The &lt;dfn title="API endpoint"&gt;URL pattern&lt;/dfn&gt;
+  defines where an API can be reached.
+&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="dfn-dfn">
+        <h2><span class="num">7</span> Linked Definitions</h2>
+        <p>The canonical pattern: give your <code>&lt;dfn&gt;</code> an <code>id</code>, then any later reference to that term links back to it with <code>&lt;a href="#fragment"&gt;</code>. This is exactly how glossaries, Wikipedia, and technical docs work.</p>
+        <pre><code>&lt;p&gt;
+  A &lt;dfn id="def-webhook"&gt;webhook&lt;/dfn&gt; is an HTTP callback
+  that fires when an event occurs.
+&lt;/p&gt;
+
+&lt;p&gt;
+  To configure a &lt;a href="#def-webhook"&gt;webhook&lt;/a&gt;,
+  visit the Settings → Integrations page.
+&lt;/p&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          This pattern — defining a term once with <code>&lt;dfn&gt;</code>, then linking subsequent mentions to it — is the most powerful yet underused feature of <code>&lt;dfn&gt;</code>. It creates a built-in glossary system with no JavaScript.
+        </div>
+      </section>
+
+      <section id="address">
+        <h2><span class="num">8</span> <code>&lt;address&gt;</code> — Contact Information</h2>
+        <p>The <code>&lt;address&gt;</code> element represents <strong>contact information for a person, people, or organization</strong>. It is intended for the author or owner of the current document (or article, if scoped to an <code>&lt;article&gt;</code>).</p>
+        <pre><code>&lt;footer&gt;
+  &lt;address&gt;
+    Written by &lt;a href="mailto:ada@example.com"&gt;Ada Lovelace&lt;/a&gt;.&lt;br&gt;
+    Visit my blog at &lt;a href="https://ada.example.com"&gt;ada.example.com&lt;/a&gt;.&lt;br&gt;
+    London, United Kingdom
+  &lt;/address&gt;
+&lt;/footer&gt;</code></pre>
+        <div class="demo-box">
+          <address>
+            Written by <a href="mailto:ada@example.com">Ada Lovelace</a>.<br>
+            Visit my blog at <a href="https://ada.example.com">ada.example.com</a>.<br>
+            London, United Kingdom
+          </address>
+        </div>
+        <h3>What <code>&lt;address&gt;</code> is for</h3>
+        <ul>
+          <li>Email addresses</li>
+          <li>Phone numbers</li>
+          <li>Physical / mailing addresses</li>
+          <li>Website URLs of the contact</li>
+          <li>Social media handles</li>
+          <li>Any combination of the above</li>
+        </ul>
+        <h3>What <code>&lt;address&gt;</code> is NOT for</h3>
+        <ul>
+          <li>Arbitrary postal addresses (use <code>&lt;p&gt;</code> with <code>&lt;br&gt;</code>)</li>
+          <li>Customer support addresses unrelated to the document author</li>
+          <li>Page footer copyright text</li>
+          <li>Map locations or directions</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Despite the name, <code>&lt;address&gt;</code> is not a generic container for any postal address. It is specifically for contact information about the document or article author. For a customer's shipping address, use a regular paragraph.
+        </div>
+        <h3>Nested inside an article</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Why Static Sites Are Faster&lt;/h1&gt;
+  &lt;p&gt;...&lt;/p&gt;
+  &lt;address&gt;By Jane Doe, &lt;a href="mailto:jane@example.com"&gt;jane@example.com&lt;/a&gt;&lt;/address&gt;
+&lt;/article&gt;</code></pre>
+        <p>When scoped inside an <code>&lt;article&gt;</code>, the <code>&lt;address&gt;</code> represents the contact info for the author of <em>that article</em>, not the entire page.</p>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">9</span> Real-World Examples</h2>
+        <h3>Glossary entry</h3>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;&lt;dfn id="def-api"&gt;API&lt;/dfn&gt;&lt;/dt&gt;
+  &lt;dd&gt;
+    &lt;abbr title="Application Programming Interface"&gt;API&lt;/abbr&gt;:
+    a set of rules for building software applications.
+  &lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>Article with citations</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;The State of Web Performance&lt;/h1&gt;
+  &lt;p&gt;
+    As noted in &lt;cite&gt;High Performance Web Sites&lt;/cite&gt;
+    by Steve Souders, 80% of page load time is spent on the front end.
+  &lt;/p&gt;
+  &lt;p&gt;
+    The &lt;abbr title="World Wide Web Consortium"&gt;W3C&lt;/abbr&gt;
+    has published guidelines on this topic.
+  &lt;/p&gt;
+&lt;/article&gt;</code></pre>
+        <h3>Document footer with contact info</h3>
+        <pre><code>&lt;footer&gt;
+  &lt;address&gt;
+    &lt;a href="/about"&gt;The Editorial Team&lt;/a&gt;&lt;br&gt;
+    &lt;a href="mailto:editor@example.com"&gt;editor@example.com&lt;/a&gt;&lt;br&gt;
+    Phone: +1 (555) 123-4567
+  &lt;/address&gt;
+&lt;/footer&gt;</code></pre>
+        <h3>Math reference with linked terms</h3>
+        <pre><code>&lt;p&gt;
+  A &lt;dfn id="def-prime"&gt;prime number&lt;/dfn&gt; is a natural number
+  greater than 1 with exactly two divisors: 1 and itself.
+&lt;/p&gt;
+&lt;p&gt;
+  The largest known &lt;a href="#def-prime"&gt;prime number&lt;/a&gt;
+  has over 24 million digits.
+&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">10</span> Accessibility</h2>
+        <ul>
+          <li><code>&lt;abbr title="..."&gt;</code> — Screen readers may read the <code>title</code> instead of the abbreviation. NVDA users can configure this behavior. Always provide a <code>title</code> for clarity.</li>
+          <li><code>&lt;cite&gt;</code> — Typically no special announcement, but the italic styling carries visual weight.</li>
+          <li><code>&lt;dfn&gt;</code> — Some screen readers announce "definition" or "term".</li>
+          <li><code>&lt;address&gt;</code> — Most screen readers announce "contact information for the author".</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For crucial abbreviations (legal, medical, technical), expand the term in prose on first use, then use <code>&lt;abbr title="..."&gt;</code> for subsequent occurrences. This way both sighted and screen-reader users get the full picture.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;cite&gt;</code> on an author name</td>
+              <td>Invalid HTML5; author ≠ title of work</td>
+              <td>Use <code>&lt;span&gt;</code> or <code>&lt;b&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;acronym&gt;</code></td>
+              <td>Removed in HTML5; obsolete</td>
+              <td>Use <code>&lt;abbr&gt;</code> for both acronyms and initialisms</td>
+            </tr>
+            <tr>
+              <td>Repeating <code>title</code> on every abbreviation occurrence</td>
+              <td>Clutters markup; tooltips everywhere</td>
+              <td>Define once on first use; plain text after</td>
+            </tr>
+            <tr>
+              <td><code>&lt;address&gt;</code> for arbitrary postal addresses</td>
+              <td>Wrong semantics; misleading for assistive tech</td>
+              <td>Use <code>&lt;p&gt;</code> with <code>&lt;br&gt;</code></td>
+            </tr>
+            <tr>
+              <td><code>&lt;dfn&gt;</code> on every mention of a term</td>
+              <td><code>&lt;dfn&gt;</code> is for the defining instance only</td>
+              <td>Use plain text or link to the <code>&lt;dfn&gt;</code> for later mentions</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;cite&gt;</code> for inline quotes</td>
+              <td>Citation is the source title, not the quote text</td>
+              <td>Use <code>&lt;q&gt;</code> or <code>&lt;blockquote&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>title</code> on <code>&lt;abbr&gt;</code> for non-abbreviation text</td>
+              <td>Misleads screen readers and search engines</td>
+              <td>Use <code>&lt;span title="..."&gt;</code> for general tooltips</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Define abbreviations</strong>
+          Take a paragraph from a technical article you have written. Mark up at least three abbreviations with <code>&lt;abbr title="..."&gt;</code>. Verify the tooltips appear on hover.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build a glossary</strong>
+          Create a glossary section with three definitions using <code>&lt;dfn&gt;</code> (with <code>id</code> attributes). Then write a separate paragraph that uses each term in a sentence, linking each occurrence to its definition.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Cite your sources</strong>
+          Write a one-paragraph book review. Wrap the book title in <code>&lt;cite&gt;</code>. Cite at least two other works (films, songs, articles) using <code>&lt;cite&gt;</code> as well.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Page footer</strong>
+          Build a complete footer with an <code>&lt;address&gt;</code> element containing an author name, email link, website link, and physical location. Use <code>&lt;br&gt;</code> for line breaks within the address.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li><code>&lt;abbr&gt;</code> = abbreviation or acronym; use <code>title</code> attribute for the full expansion.</li>
+          <li>Define an abbreviation only on its first occurrence in a document.</li>
+          <li><code>&lt;cite&gt;</code> = title of a creative work (book, film, song, article). Never for author names.</li>
+          <li><code>&lt;dfn&gt;</code> = the defining instance of a term. Add an <code>id</code> so later mentions can link back.</li>
+          <li><code>&lt;address&gt;</code> = contact information for the document/article author. Not a generic postal address.</li>
+          <li>The obsolete <code>&lt;acronym&gt;</code> element was removed; use <code>&lt;abbr&gt;</code> for both acronyms and initialisms.</li>
+          <li>For multilingual abbreviations, add <code>lang</code> attributes for correct pronunciation.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="sub-sup-code-kbd.html">← Previous: Sub/Sup/Code</a>
+      <a href="../03-Quotations-Citations/blockquote.html">Next: Blockquote →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Abbr/Cite</p>
+  </footer>
+</body>
+</html>

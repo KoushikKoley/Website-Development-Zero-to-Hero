@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strong, Bold, Emphasis &amp; Italic — HTML Mastery</title>
+  <meta name="description" content="Understand the semantic difference between strong, b, em, and i in HTML. Learn when to use importance vs stylistic offset, stress emphasis vs idiomatic voice, with examples across languages.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #dc2626 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.2 · Formatting Elements</span>
+    <h1><code>&lt;strong&gt;</code> · <code>&lt;b&gt;</code> · <code>&lt;em&gt;</code> · <code>&lt;i&gt;</code></h1>
+    <p>Four elements, two visual effects (bold and italic), four very different meanings. Pick the right one and your page becomes accessible, SEO-friendly, and machine-readable. Pick wrong and you leave information on the table.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">The Four Elements</a></li>
+        <li><a href="#strong">strong — Importance</a></li>
+        <li><a href="#b">b — Stylistic Offset</a></li>
+        <li><a href="#em">em — Stress Emphasis</a></li>
+        <li><a href="#i">i — Idiomatic Voice</a></li>
+        <li><a href="#matrix">Decision Matrix</a></li>
+        <li><a href="#nested">Nesting &amp; Combined Use</a></li>
+        <li><a href="#languages">Examples Across Languages</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#styling">Styling Tips</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> The Four Elements</h2>
+        <p>HTML provides four elements that map onto two visual effects. Two of them carry semantic meaning; the other two are purely stylistic. Choosing the right one matters because screen readers, search engines, and other tools rely on the meaning.</p>
+        <div class="grid-4">
+          <div class="card">
+            <h4>&lt;strong&gt;</h4>
+            <p>Importance. Bold by default. Screen reader may emphasize.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;b&gt;</h4>
+            <p>Stylistic bold without importance. Used for keywords, product names.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;em&gt;</h4>
+            <p>Stress emphasis. Italic by default. Changes sentence meaning.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;i&gt;</h4>
+            <p>Alternate voice / idiomatic text. Italic by default. Taxonomy, foreign terms.</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Default look</th><th>Semantic meaning</th><th>When NOT to use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;strong&gt;</code></td><td>Bold</td><td>Important, urgent, serious</td><td>Just for visual boldness</td></tr>
+            <tr><td><code>&lt;b&gt;</code></td><td>Bold</td><td>None (stylistic only)</td><td>If the text is truly important — use <code>&lt;strong&gt;</code></td></tr>
+            <tr><td><code>&lt;em&gt;</code></td><td>Italic</td><td>Stress emphasis</td><td>For book titles — use <code>&lt;cite&gt;</code></td></tr>
+            <tr><td><code>&lt;i&gt;</code></td><td>Italic</td><td>Alternate voice, technical term, foreign phrase</td><td>For emphasis — use <code>&lt;em&gt;</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="strong">
+        <h2><span class="num">2</span> <code>&lt;strong&gt;</code> — Importance</h2>
+        <p>The <code>&lt;strong&gt;</code> element indicates that its contents are of <strong>strong importance, seriousness, or urgency</strong>. Browsers render it as bold by default, but the meaning goes beyond visual weight.</p>
+        <pre><code>&lt;p&gt;
+  &lt;strong&gt;Warning:&lt;/strong&gt; Deleting your account cannot be undone.
+&lt;/p&gt;
+
+&lt;p&gt;
+  You must &lt;strong&gt;verify your email&lt;/strong&gt; before signing in.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p><strong>Warning:</strong> Deleting your account cannot be undone.</p>
+          <p>You must <strong>verify your email</strong> before signing in.</p>
+        </div>
+        <h3>Nesting <code>&lt;strong&gt;</code> inside <code>&lt;strong&gt;</code></h3>
+        <p>Nesting increases the level of importance. The outer marks something as important; the inner marks it as even more important. Some browsers and screen readers increase the visual emphasis accordingly.</p>
+        <pre><code>&lt;p&gt;
+  &lt;strong&gt;Do not&lt;strong&gt; ever&lt;/strong&gt; share your password.&lt;/strong&gt;
+&lt;/p&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>&lt;strong&gt;</code> for content the reader must not miss: warnings, deadlines, must-do requirements. For "highlighted keyword" use cases (like product names in marketing copy), prefer <code>&lt;b&gt;</code> or <code>&lt;mark&gt;</code>.
+        </div>
+      </section>
+
+      <section id="b">
+        <h2><span class="num">3</span> <code>&lt;b&gt;</code> — Stylistic Offset</h2>
+        <p>The <code>&lt;b&gt;</code> element draws attention to text for <em>utilitarian purposes</em> without conveying extra importance. It is the "stylistic bold" — useful when you want bold text but the content is not more important than its surroundings.</p>
+        <h3>Common use cases</h3>
+        <ul>
+          <li>Article lead-in keywords ("In <b>summary</b>…")</li>
+          <li>Product names in marketing copy</li>
+          <li>The first word in a list item that acts as a label</li>
+          <li>Document abstract keywords</li>
+        </ul>
+        <pre><code>&lt;p&gt;
+  &lt;b&gt;Ingredients:&lt;/b&gt; flour, sugar, eggs, butter.
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;b&gt;Acme X100&lt;/b&gt; headphones deliver 40-hour battery life.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p><b>Ingredients:</b> flour, sugar, eggs, butter.</p>
+          <p><b>Acme X100</b> headphones deliver 40-hour battery life.</p>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          In HTML 4, <code>&lt;b&gt;</code> meant simply "bold". In HTML5 it was redefined as "stylistic offset without importance". If the text genuinely matters, use <code>&lt;strong&gt;</code>. Reserve <code>&lt;b&gt;</code> for keywords, product names, and lead-in labels.
+        </div>
+      </section>
+
+      <section id="em">
+        <h2><span class="num">4</span> <code>&lt;em&gt;</code> — Stress Emphasis</h2>
+        <p>The <code>&lt;em&gt;</code> element represents <strong>stress emphasis</strong> — the kind of emphasis that would change the meaning of a spoken sentence. Saying the emphasized word louder or with a different pitch.</p>
+        <pre><code>&lt;p&gt;Call me &lt;em&gt;later&lt;/em&gt;.&lt;/p&gt;      &lt;!-- not now --&gt;
+&lt;p&gt;&lt;em&gt;Call&lt;/em&gt; me later.&lt;/p&gt;      &lt;!-- don't text me --&gt;
+&lt;p&gt;Call &lt;em&gt;me&lt;/em&gt; later.&lt;/p&gt;      &lt;!-- not her --&gt;</code></pre>
+        <div class="demo-box">
+          <p>Call me <em>later</em>.</p>
+          <p><em>Call</em> me later.</p>
+          <p>Call <em>me</em> later.</p>
+        </div>
+        <p>Notice how each version implies a different spoken emphasis, and therefore a slightly different meaning. That is the power of <code>&lt;em&gt;</code>.</p>
+        <h3>Nesting <code>&lt;em&gt;</code></h3>
+        <p>Nested <code>&lt;em&gt;</code> elements indicate greater levels of stress. Browsers typically render the inner element with normal weight (counteracting the italic) to maintain readability while still conveying stress.</p>
+        <pre><code>&lt;p&gt;I &lt;em&gt;really&lt;em&gt; really&lt;/em&gt; need&lt;/em&gt; this done.&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="i">
+        <h2><span class="num">5</span> <code>&lt;i&gt;</code> — Idiomatic / Alternate Voice</h2>
+        <p>The <code>&lt;i&gt;</code> element represents text in an <strong>alternate voice or mood</strong>, or otherwise offset from normal prose. Common cases:</p>
+        <ul>
+          <li>Taxonomic designations (<i>Escherichia coli</i>)</li>
+          <li>Foreign phrases (<i>je ne sais quoi</i>)</li>
+          <li>Internal monologue or thought</li>
+          <li>Ship names (<i>HMS Beagle</i>)</li>
+          <li>Technical terms being introduced</li>
+        </ul>
+        <pre><code>&lt;p&gt;
+  The bacterium &lt;i&gt;Escherichia coli&lt;/i&gt; is commonly
+  found in the lower intestine.
+&lt;/p&gt;
+
+&lt;p&gt;
+  She had a certain &lt;i lang="fr"&gt;je ne sais quoi&lt;/i&gt;.
+&lt;/p&gt;
+
+&lt;p&gt;
+  Darwin sailed on the &lt;i&gt;HMS Beagle&lt;/i&gt; in 1831.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>The bacterium <i>Escherichia coli</i> is commonly found in the lower intestine.</p>
+          <p>She had a certain <i lang="fr">je ne sais quoi</i>.</p>
+          <p>Darwin sailed on the <i>HMS Beagle</i> in 1831.</p>
+        </div>
+        <div class="callout">
+          <strong>Info</strong>
+          When using <code>&lt;i&gt;</code> for a foreign phrase, always add the <code>lang</code> attribute so screen readers and translation tools handle it correctly.
+        </div>
+      </section>
+
+      <section id="matrix">
+        <h2><span class="num">6</span> Decision Matrix</h2>
+        <table>
+          <thead>
+            <tr><th>You want…</th><th>Use</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Bold for "you must read this"</td><td><code>&lt;strong&gt;</code></td><td>Conveys importance</td></tr>
+            <tr><td>Bold for a keyword or label</td><td><code>&lt;b&gt;</code></td><td>Visual only, no importance</td></tr>
+            <tr><td>Italic that changes spoken meaning</td><td><code>&lt;em&gt;</code></td><td>Conveys stress emphasis</td></tr>
+            <tr><td>Italic for a foreign phrase</td><td><code>&lt;i lang="xx"&gt;</code></td><td>Alternate voice</td></tr>
+            <tr><td>Italic for a scientific name</td><td><code>&lt;i&gt;</code></td><td>Taxonomic convention</td></tr>
+            <tr><td>Italic for a book or film title</td><td><code>&lt;cite&gt;</code></td><td>Semantically a citation</td></tr>
+            <tr><td>Italic for a thought/inner monologue</td><td><code>&lt;i&gt;</code></td><td>Alternate voice</td></tr>
+            <tr><td>Bold + italic for urgent emphasis</td><td><code>&lt;strong&gt;&lt;em&gt;</code></td><td>Combines importance + stress</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="nested">
+        <h2><span class="num">7</span> Nesting &amp; Combined Use</h2>
+        <p>These elements can be nested to combine meanings. The most common combinations:</p>
+        <pre><code>&lt;!-- Important AND emphasized --&gt;
+&lt;p&gt;You &lt;strong&gt;&lt;em&gt;must&lt;/em&gt;&lt;/strong&gt; read the contract.&lt;/p&gt;
+
+&lt;!-- A foreign phrase that is also important --&gt;
+&lt;p&gt;Remember the phrase &lt;strong&gt;&lt;i lang="la"&gt;carpe diem&lt;/i&gt;&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;!-- A keyword label with an emphasized sub-part --&gt;
+&lt;p&gt;&lt;b&gt;Price:&lt;/b&gt; the &lt;em&gt;final&lt;/em&gt; cost is $99.&lt;/p&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When nesting <code>&lt;strong&gt;</code> inside <code>&lt;em&gt;</code> or vice versa, order them so the outermost matches the broader meaning. Usually <code>&lt;strong&gt;</code> wraps <code>&lt;em&gt;</code>, since importance is the larger category.
+        </div>
+      </section>
+
+      <section id="languages">
+        <h2><span class="num">8</span> Examples Across Languages</h2>
+        <h3>English</h3>
+        <pre><code>&lt;p&gt;The &lt;strong&gt;deadline&lt;/strong&gt; is &lt;em&gt;tomorrow&lt;/em&gt;.&lt;/p&gt;</code></pre>
+        <h3>French</h3>
+        <pre><code>&lt;p lang="fr"&gt;La &lt;strong&gt;date limite&lt;/strong&gt; est &lt;em&gt;demain&lt;/em&gt;.&lt;/p&gt;</code></pre>
+        <h3>Spanish</h3>
+        <pre><code>&lt;p lang="es"&gt;La &lt;strong&gt;fecha límite&lt;/strong&gt; es &lt;em&gt;mañana&lt;/em&gt;.&lt;/p&gt;</code></pre>
+        <h3>Arabic (RTL)</h3>
+        <pre><code>&lt;p dir="rtl" lang="ar"&gt;الموعد النهائي &lt;strong&gt;غدا&lt;/strong&gt;.&lt;/p&gt;</code></pre>
+        <h3>Chinese (no plural/spaces)</h3>
+        <pre><code>&lt;p lang="zh"&gt;截止日期是&lt;strong&gt;明天&lt;/strong&gt;。&lt;/p&gt;</code></pre>
+        <h3>Japanese</h3>
+        <pre><code>&lt;p lang="ja"&gt;締め切りは&lt;strong&gt;明日&lt;/strong&gt;です。&lt;/p&gt;</code></pre>
+        <div class="callout">
+          <strong>Info</strong>
+          Bold and italic styling works across languages, but be aware: in CJK scripts, "italic" often doesn't have a natural equivalent and may fall back to a different font. Test your design across languages.
+        </div>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">9</span> Accessibility</h2>
+        <p>Screen readers handle these elements differently:</p>
+        <ul>
+          <li><code>&lt;strong&gt;</code> — Some screen readers (NVDA, JAWS) increase voice pitch or volume slightly to convey importance. This behavior is configurable by the user.</li>
+          <li><code>&lt;em&gt;</code> — Most screen readers apply stress to emphasized words, similar to spoken emphasis.</li>
+          <li><code>&lt;b&gt;</code> and <code>&lt;i&gt;</code> — No semantic meaning is announced. They are purely visual.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't rely on bold/italic alone to convey meaning. If a warning is critical, mark it with <code>&lt;strong&gt;</code>, not just <code>&lt;b&gt;</code>. And never use color changes alone as the only signal — always pair with semantic markup.
+        </div>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">10</span> Styling Tips</h2>
+        <p>Most projects leave the defaults alone — bold and italic are universally understood. But you can refine them:</p>
+        <pre><code>strong, b {
+  font-weight: 700;   /* slightly bolder than default 600 */
+}
+
+em, i {
+  font-style: italic;
+}
+
+/* Use a different weight for emphasized text inside strong */
+strong em, strong i { font-weight: 600; }
+
+/* Reset italic for CJK where italic doesn't render well */
+:lang(zh) i, :lang(ja) i, :lang(ko) i {
+  font-style: normal;
+  font-weight: 600;     /* use weight instead */
+  color: #7c3aed;
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For uppercase headings like <code>SECTION 1</code>, you may want to disable the default bold on <code>&lt;b&gt;</code> so it inherits normal weight: <code>h2 b { font-weight: inherit; }</code>.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Using <code>&lt;b&gt;</code> for warnings</td>
+              <td>No semantic importance; screen readers skip</td>
+              <td>Use <code>&lt;strong&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;i&gt;</code> for emphasis</td>
+              <td>No stress meaning announced</td>
+              <td>Use <code>&lt;em&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;em&gt;</code> for book titles</td>
+              <td>Book titles aren't stress emphasis</td>
+              <td>Use <code>&lt;cite&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;span style="font-weight:bold"&gt;</code></td>
+              <td>Loses semantic info; harder to style consistently</td>
+              <td>Use <code>&lt;strong&gt;</code> or <code>&lt;b&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Nesting <code>&lt;b&gt;</code> inside <code>&lt;strong&gt;</code> redundantly</td>
+              <td>Double-bold adds nothing</td>
+              <td>Pick one</td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>lang</code> on foreign <code>&lt;i&gt;</code></td>
+              <td>Wrong pronunciation; translation tools confused</td>
+              <td>Add <code>lang="xx"</code></td>
+            </tr>
+            <tr>
+              <td>Using bold/italic alone for meaning</td>
+              <td>Color-blind &amp; low-vision users miss it</td>
+              <td>Pair with <code>&lt;strong&gt;</code>/<code>&lt;em&gt;</code> or icons</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Pick the right element</strong>
+          For each sentence below, choose <code>&lt;strong&gt;</code>, <code>&lt;b&gt;</code>, <code>&lt;em&gt;</code>, or <code>&lt;i&gt;</code>:
+          <ul>
+            <li>"The bacterium <em>Staphylococcus aureus</em>…" — italicize the Latin name</li>
+            <li>"You must submit by Friday" — emphasize "must"</li>
+            <li>"<b>Price:</b> $99" — bold label, no extra importance</li>
+            <li>"The ship <i>Endeavour</i> set sail in 1768" — italic ship name</li>
+            <li>"<strong>Warning:</strong> high voltage" — important warning</li>
+          </ul>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Rewrite bad markup</strong>
+          Rewrite this snippet using the correct semantic elements:
+          <pre><code>&lt;p&gt;
+  &lt;span style="font-weight:bold"&gt;Note:&lt;/span&gt;
+  The book &lt;span style="font-style:italic"&gt;Dune&lt;/span&gt;
+  was written by Frank Herbert. You &lt;span style="font-weight:bold"&gt;must&lt;/span&gt;
+  read it before next week.
+&lt;/p&gt;</code></pre>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Multilingual page</strong>
+          Create a paragraph with one <code>&lt;i&gt;</code> element containing a foreign phrase with the correct <code>lang</code> attribute. Add a <code>&lt;strong&gt;</code> emphasis and an <code>&lt;em&gt;</code> stress. Test in a screen reader.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li><code>&lt;strong&gt;</code> = importance, urgency, seriousness. Bold by default.</li>
+          <li><code>&lt;b&gt;</code> = stylistic bold for keywords/labels, no importance.</li>
+          <li><code>&lt;em&gt;</code> = stress emphasis that changes spoken meaning. Italic by default.</li>
+          <li><code>&lt;i&gt;</code> = alternate voice: foreign terms, taxonomic names, ship names, thoughts.</li>
+          <li>Screen readers may add pitch/volume changes for <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code>, but not for <code>&lt;b&gt;</code>/<code>&lt;i&gt;</code>.</li>
+          <li>For book and film titles, use <code>&lt;cite&gt;</code> instead of <code>&lt;i&gt;</code>.</li>
+          <li>Always add <code>lang</code> when using <code>&lt;i&gt;</code> for foreign phrases.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../01-Headings-Paragraphs/line-breaks-hr.html">← Previous: Line Breaks &amp; HR</a>
+      <a href="mark-small-s.html">Next: Mark, Small &amp; S →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Strong/Em</p>
+  </footer>
+</body>
+</html>

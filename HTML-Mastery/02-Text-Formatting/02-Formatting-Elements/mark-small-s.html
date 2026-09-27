@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark, Small, S, Del, Ins — HTML Mastery</title>
+  <meta name="description" content="The complete guide to mark, small, s, del, and ins HTML elements. Learn semantic differences, accessibility, and real-world examples for search highlighting, legal text, and edits.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #facc15 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box mark { background: #fef08a; padding: 0 2px; border-radius: 2px; }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.2 · Formatting Elements</span>
+    <h1><code>&lt;mark&gt;</code> · <code>&lt;small&gt;</code> · <code>&lt;s&gt;</code> · <code>&lt;del&gt;</code> · <code>&lt;ins&gt;</code></h1>
+    <p>Five elements that mark up the edges of meaning: highlighted text, side comments, things no longer true, things removed, things added. Each carries a distinct semantic signal for users, search engines, and assistive tech.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Quick Comparison</a></li>
+        <li><a href="#mark">mark — Highlight</a></li>
+        <li><a href="#small">small — Side Comments</a></li>
+        <li><a href="#s">s — No Longer Accurate</a></li>
+        <li><a href="#del">del — Deleted Text</a></li>
+        <li><a href="#ins">ins — Inserted Text</a></li>
+        <li><a href="#del-ins-pairs">Pairing del &amp; ins</a></li>
+        <li><a href="#attributes">Attributes: cite &amp; datetime</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Quick Comparison</h2>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Default look</th><th>Semantic meaning</th><th>Typical use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;mark&gt;</code></td><td>Yellow background</td><td>Highlighted / relevant in context</td><td>Search match, current section anchor</td></tr>
+            <tr><td><code>&lt;small&gt;</code></td><td>Smaller font</td><td>Side comment, fine print</td><td>Disclaimer, copyright, terms</td></tr>
+            <tr><td><code>&lt;s&gt;</code></td><td>Strikethrough</td><td>No longer accurate / relevant</td><td>Sold-out items, corrected typos</td></tr>
+            <tr><td><code>&lt;del&gt;</code></td><td>Strikethrough</td><td>Deleted from a previous version</td><td>Edit tracking, diffs</td></tr>
+            <tr><td><code>&lt;ins&gt;</code></td><td>Underline</td><td>Added in a new version</td><td>Edit tracking, diffs</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>&lt;s&gt;</code> and <code>&lt;del&gt;</code> look identical (both strike through text) but mean different things. <code>&lt;s&gt;</code> = "this is no longer accurate." <code>&lt;del&gt;</code> = "this was deleted in an edit." Pick the right one for the right context.
+        </div>
+      </section>
+
+      <section id="mark">
+        <h2><span class="num">2</span> <code>&lt;mark&gt;</code> — Highlight</h2>
+        <p>The <code>&lt;mark&gt;</code> element represents text that is <strong>marked or highlighted for reference or notation</strong> due to its relevance in a particular context. Browsers render it with a yellow background by default, mimicking a highlighter pen.</p>
+        <h3>Use case 1: Search results highlighting</h3>
+        <pre><code>&lt;p&gt;
+  Your search for "&lt;mark&gt;coffee&lt;/mark&gt;" returned 12 results.
+  The &lt;mark&gt;coffee&lt;/mark&gt; shop on 5th Avenue is open until 9 PM.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>Your search for "<mark>coffee</mark>" returned 12 results. The <mark>coffee</mark> shop on 5th Avenue is open until 9 PM.</p>
+        </div>
+        <h3>Use case 2: Quotation highlighting</h3>
+        <p>When you quote a passage and want to draw attention to a specific part, wrap it in <code>&lt;mark&gt;</code>. This signals "the highlighter is mine, not in the original."</p>
+        <pre><code>&lt;blockquote&gt;
+  &lt;p&gt;
+    The most important thing is to &lt;mark&gt;never stop questioning&lt;/mark&gt;.
+  &lt;/p&gt;
+  &lt;cite&gt;Albert Einstein&lt;/cite&gt;
+&lt;/blockquote&gt;</code></pre>
+        <h3>Use case 3: Active section in a TOC</h3>
+        <pre><code>&lt;nav&gt;
+  &lt;a href="#intro"&gt;Introduction&lt;/a&gt;
+  &lt;a href="#main"&gt;&lt;mark&gt;Main Content&lt;/mark&gt;&lt;/a&gt;  &lt;!-- current section --&gt;
+  &lt;a href="#footer"&gt;Footer&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>&lt;mark&gt;</code> is perfect for client-side search highlighting. Run a regex on text content and wrap matches in <code>&lt;mark&gt;</code> — the default yellow style is already perfect, or override with CSS for theme matching.
+        </div>
+      </section>
+
+      <section id="small">
+        <h2><span class="num">3</span> <code>&lt;small&gt;</code> — Side Comments</h2>
+        <p>The <code>&lt;small&gt;</code> element represents <strong>side comments</strong>: small print, disclaimers, caveats, or copyright. Browsers render it one size smaller than surrounding text.</p>
+        <pre><code>&lt;p&gt;
+  Free shipping on orders over $50.
+  &lt;small&gt;Offer expires December 31. See terms.&lt;/small&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;small&gt;© 2024 Acme Inc. All rights reserved.&lt;/small&gt;
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>Free shipping on orders over $50. <small>Offer expires December 31. See terms.</small></p>
+          <p><small>© 2024 Acme Inc. All rights reserved.</small></p>
+        </div>
+        <div class="callout">
+          <strong>Info</strong>
+          In HTML 4, <code>&lt;small&gt;</code> meant "smaller font". In HTML5 it was redefined as "side comments / fine print". The visual default is the same but the semantic meaning is now clear: use it for legal disclaimers, terms, copyright, attribution, and caveats — not just for shrinking any text.
+        </div>
+        <h3>Common uses</h3>
+        <ul>
+          <li>Copyright and attribution lines</li>
+          <li>Disclaimer text below product prices ("plus tax")</li>
+          <li>"Terms apply" notes</li>
+          <li>Last-updated timestamps in sidebars</li>
+          <li>Caveats after a fact or claim</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't use <code>&lt;small&gt;</code> to make body text smaller for visual reasons. That's a job for CSS. <code>&lt;small&gt;</code> is for content that is genuinely a side comment.
+        </div>
+      </section>
+
+      <section id="s">
+        <h2><span class="num">4</span> <code>&lt;s&gt;</code> — No Longer Accurate</h2>
+        <p>The <code>&lt;s&gt;</code> element represents text that is <strong>no longer accurate or no longer relevant</strong>. It renders as strikethrough. Use it when something has been corrected or superseded but you want to keep the original visible for context.</p>
+        <pre><code>&lt;p&gt;
+  The meeting is on &lt;s&gt;Monday&lt;/s&gt; Tuesday at 3 PM.
+&lt;/p&gt;
+
+&lt;p&gt;
+  Price: &lt;s&gt;$99&lt;/s&gt; $79 (limited time)
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>The meeting is on <s>Monday</s> Tuesday at 3 PM.</p>
+          <p>Price: <s>$99</s> $79 (limited time)</p>
+        </div>
+        <h3><code>&lt;s&gt;</code> vs <code>&lt;del&gt;</code></h3>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th><code>&lt;s&gt;</code></th><th><code>&lt;del&gt;</code></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Visual</td><td>Strikethrough</td><td>Strikethrough</td></tr>
+            <tr><td>Meaning</td><td>No longer accurate / relevant</td><td>Removed in an edit / revision</td></tr>
+            <tr><td>Has <code>datetime</code>?</td><td>No</td><td>Yes</td></tr>
+            <tr><td>Has <code>cite</code>?</td><td>No</td><td>Yes</td></tr>
+            <tr><td>Use case</td><td>Sale price, corrected fact</td><td>Document edit tracking</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For e-commerce sale prices, use <code>&lt;s&gt;</code>: "the original price is no longer the active price." For documents that are tracked for edits, use <code>&lt;del&gt;</code>: "this text was removed in revision X."
+        </div>
+      </section>
+
+      <section id="del">
+        <h2><span class="num">5</span> <code>&lt;del&gt;</code> — Deleted Text</h2>
+        <p>The <code>&lt;del&gt;</code> element represents a <strong>removal from a document</strong>. It is intended for tracking edits — when you want to show that text was deleted in a revision, pair it with <code>&lt;ins&gt;</code> for the replacement.</p>
+        <pre><code>&lt;p&gt;
+  The committee voted to change the bylaws: membership fees
+  will be &lt;del&gt;$25 per year&lt;/del&gt; &lt;ins&gt;$30 per year&lt;/ins&gt;
+  effective January 1.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>The committee voted to change the bylaws: membership fees will be <del>$25 per year</del> <ins>$30 per year</ins> effective January 1.</p>
+        </div>
+        <p><code>&lt;del&gt;</code> supports two attributes for tracking edits:</p>
+        <ul>
+          <li><code>cite</code> — URL of a document explaining the change</li>
+          <li><code>datetime</code> — Timestamp of the change (ISO 8601 format)</li>
+        </ul>
+        <pre><code>&lt;p&gt;
+  &lt;del cite="/changelog/v2.1" datetime="2024-03-15T10:00:00Z"&gt;
+    The store is open 9-5 daily.
+  &lt;/del&gt;
+  &lt;ins cite="/changelog/v2.1" datetime="2024-03-15T10:00:00Z"&gt;
+    The store is open 8-8 daily.
+  &lt;/ins&gt;
+&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="ins">
+        <h2><span class="num">6</span> <code>&lt;ins&gt;</code> — Inserted Text</h2>
+        <p>The <code>&lt;ins&gt;</code> element represents an <strong>addition to a document</strong>. Renders with an underline by default. Like <code>&lt;del&gt;</code>, it supports <code>cite</code> and <code>datetime</code> attributes.</p>
+        <pre><code>&lt;p&gt;
+  Please review the updated terms. &lt;ins&gt;New: accounts inactive for
+  12 months will be archived.&lt;/ins&gt;
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>Please review the updated terms. <ins>New: accounts inactive for 12 months will be archived.</ins></p>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't use <code>&lt;ins&gt;</code> for visual underlines on regular text — that's the job of CSS <code>text-decoration: underline</code>. <code>&lt;ins&gt;</code> carries semantic meaning: "this was added in an edit." Also, don't use <code>&lt;u&gt;</code> for underlines either, since users confuse it with links. Use CSS.
+        </div>
+      </section>
+
+      <section id="del-ins-pairs">
+        <h2><span class="num">7</span> Pairing del &amp; ins</h2>
+        <p>The most common pattern is to wrap a deletion and an insertion together to show a "before/after" edit. This is exactly how wiki "diffs" and tracked-change views work.</p>
+        <pre><code>&lt;p&gt;
+  The deadline has been moved from
+  &lt;del&gt;March 1&lt;/del&gt; &lt;ins&gt;March 15&lt;/ins&gt;.
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;del&gt;All employees must wear suits.&lt;/del&gt;
+  &lt;ins&gt;Business casual attire is permitted.&lt;/ins&gt;
+&lt;/p&gt;</code></pre>
+        <h3>Block-level edits</h3>
+        <p><code>&lt;del&gt;</code> and <code>&lt;ins&gt;</code> are unusual: they can wrap either inline text or block-level content. This makes them perfect for tracking whole-paragraph changes.</p>
+        <pre><code>&lt;del datetime="2024-04-01"&gt;
+  &lt;p&gt;The product will launch in Q2 2024.&lt;/p&gt;
+&lt;/del&gt;
+&lt;ins datetime="2024-04-01"&gt;
+  &lt;p&gt;The product will launch in Q3 2024.&lt;/p&gt;
+&lt;/ins&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When tracking changes for legal or compliance reasons, always include the <code>datetime</code> attribute in ISO 8601 format. This creates a machine-readable audit trail.
+        </div>
+      </section>
+
+      <section id="attributes">
+        <h2><span class="num">8</span> Attributes: cite &amp; datetime</h2>
+        <p>Only <code>&lt;del&gt;</code> and <code>&lt;ins&gt;</code> support these attributes. They are ignored on <code>&lt;mark&gt;</code>, <code>&lt;small&gt;</code>, and <code>&lt;s&gt;</code>.</p>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Format</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>cite</code></td><td>URL</td><td>Link to changelog or source explaining the edit</td><td><code>cite="/changelog/v2"</code></td></tr>
+            <tr><td><code>datetime</code></td><td>ISO 8601</td><td>Timestamp of the change</td><td><code>datetime="2024-03-15T10:00Z"</code></td></tr>
+          </tbody>
+        </table>
+        <h3>ISO 8601 date formats</h3>
+        <pre><code>datetime="2024-03-15"                  &lt;!-- date only --&gt;
+datetime="2024-03-15T10:00"             &lt;!-- date + time, local --&gt;
+datetime="2024-03-15T10:00:00Z"        &lt;!-- date + time, UTC --&gt;
+datetime="2024-03-15T10:00:00-05:00"   &lt;!-- date + time, with offset --&gt;</code></pre>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">9</span> Real-World Examples</h2>
+        <h3>Search results with highlighting</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h3&gt;Result 1 of 12&lt;/h3&gt;
+  &lt;p&gt;
+    The best &lt;mark&gt;coffee&lt;/mark&gt; in town is at Brew &amp; Co.
+    Their &lt;mark&gt;coffee&lt;/mark&gt; beans are roasted daily.
+  &lt;/p&gt;
+  &lt;small&gt;Last updated: 2024-03-12&lt;/small&gt;
+&lt;/article&gt;</code></pre>
+        <h3>Sale price display</h3>
+        <pre><code>&lt;p class="price"&gt;
+  &lt;s&gt;$99.99&lt;/s&gt; &lt;strong&gt;$74.99&lt;/strong&gt;
+  &lt;small&gt;Sale ends Friday. Limit 2 per customer.&lt;/small&gt;
+&lt;/p&gt;</code></pre>
+        <h3>Legal edit tracking</h3>
+        <pre><code>&lt;p&gt;
+  &lt;del datetime="2024-01-15T00:00:00Z" cite="/tos/v2-changes"&gt;
+    We may share your data with partners.
+  &lt;/del&gt;
+  &lt;ins datetime="2024-01-15T00:00:00Z" cite="/tos/v2-changes"&gt;
+    We will never sell your personal data.
+  &lt;/ins&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;small&gt;Effective January 15, 2024. &lt;a href="/tos/v2-changes"&gt;View changelog&lt;/a&gt;.&lt;/small&gt;&lt;/p&gt;</code></pre>
+        <h3>Recipe correction</h3>
+        <pre><code>&lt;p&gt;
+  Bake at &lt;s&gt;350°F&lt;/s&gt; &lt;ins&gt;375°F&lt;/ins&gt; for 25 minutes.
+  &lt;small&gt;Updated 2024-02-01 after reader feedback.&lt;/small&gt;
+&lt;/p&gt;</code></pre>
+        <h3>Article highlight with citation</h3>
+        <pre><code>&lt;blockquote&gt;
+  &lt;p&gt;
+    The single most important thing is to
+    &lt;mark&gt;treat others as you would want to be treated&lt;/mark&gt;.
+  &lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">10</span> Accessibility</h2>
+        <ul>
+          <li><code>&lt;mark&gt;</code> — Most screen readers do not announce "highlighted" by default. If the highlight conveys meaning (e.g. a search match), consider adding <code>aria-label</code> or a visual indicator nearby.</li>
+          <li><code>&lt;small&gt;</code> — No semantic announcement; purely visual size change.</li>
+          <li><code>&lt;s&gt;</code> — Some screen readers announce "strikethrough" or read the text with reduced emphasis. Behavior varies.</li>
+          <li><code>&lt;del&gt;</code> — Typically announced as "deleted" or "removed".</li>
+          <li><code>&lt;ins&gt;</code> — Typically announced as "inserted" or "added".</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          If the visual styling alone conveys critical meaning (e.g. strike-through indicates "do not use this option"), add a text label too. Relying on strikethrough alone will fail for low-vision users.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>&lt;del&gt;</code> for sale prices</td><td>Implies document edit, not price change</td><td>Use <code>&lt;s&gt;</code></td></tr>
+            <tr><td>Using <code>&lt;s&gt;</code> for tracked edits</td><td>No timestamp/citation support</td><td>Use <code>&lt;del&gt;</code> with <code>datetime</code></td></tr>
+            <tr><td>Using <code>&lt;ins&gt;</code> for visual underline</td><td>Implies insertion; users may expect edit</td><td>Use CSS <code>text-decoration</code></td></tr>
+            <tr><td>Using <code>&lt;small&gt;</code> to shrink body text</td><td>Misleads about purpose; screen readers ignore</td><td>Use CSS <code>font-size</code></td></tr>
+            <tr><td>Highlighting without <code>&lt;mark&gt;</code></td><td>Loses semantic relevance signal</td><td>Use <code>&lt;mark&gt;</code> for highlights</td></tr>
+            <tr><td>Forgetting <code>datetime</code> on tracked edits</td><td>No machine-readable audit trail</td><td>Always add ISO 8601 timestamp</td></tr>
+            <tr><td>Striking through a long sentence for a typo</td><td>Hard to read; visually noisy</td><td>Just correct it; or wrap only the changed word</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Sale page</strong>
+          Build a product card showing:
+          <ul>
+            <li>A product name</li>
+            <li>An original price struck through, and a sale price in bold</li>
+            <li>A small-print disclaimer about offer expiry</li>
+          </ul>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Changelog entry</strong>
+          Write a one-paragraph "changelog" entry using <code>&lt;del&gt;</code> and <code>&lt;ins&gt;</code> with <code>cite</code> and <code>datetime</code> attributes. Change a date and a fee. Add a small "View full changelog" link.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Search highlighter</strong>
+          Write a paragraph that mentions "coffee" three times. Wrap each occurrence in <code>&lt;mark&gt;</code>. Override the default yellow with a CSS class that gives the highlight a pink background. Verify it looks readable.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Pick the right element</strong>
+          Match each scenario to one of <code>mark</code>, <code>small</code>, <code>s</code>, <code>del</code>, <code>ins</code>:
+          <ul>
+            <li>A "Last updated" timestamp in a sidebar</li>
+            <li>A corrected typo where the original should remain visible</li>
+            <li>A search-match highlight in search results</li>
+            <li>An inserted sentence in a legal revision with a date</li>
+            <li>A price drop shown on a product card</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li><code>&lt;mark&gt;</code> = relevant in current context (yellow highlight). Use for search matches and active TOC items.</li>
+          <li><code>&lt;small&gt;</code> = side comment / fine print (smaller text). Use for disclaimers, copyright, caveats.</li>
+          <li><code>&lt;s&gt;</code> = no longer accurate (strikethrough). Use for corrected facts and sale prices.</li>
+          <li><code>&lt;del&gt;</code> = removed in an edit (strikethrough). Supports <code>cite</code> and <code>datetime</code>.</li>
+          <li><code>&lt;ins&gt;</code> = added in an edit (underline). Supports <code>cite</code> and <code>datetime</code>.</li>
+          <li>Always include <code>datetime</code> in ISO 8601 format on tracked edits.</li>
+          <li><code>&lt;del&gt;</code> and <code>&lt;ins&gt;</code> can wrap block content as well as inline text.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 5 (2014)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="strong-em.html">← Previous: Strong &amp; Em</a>
+      <a href="sub-sup-code-kbd.html">Next: Sub, Sup, Code, Kbd →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Mark/Small/S</p>
+  </footer>
+</body>
+</html>

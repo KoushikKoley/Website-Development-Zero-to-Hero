@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metadata &amp; the &lt;meta&gt; Tag — HTML Mastery</title>
+  <meta name="description" content="Everything about HTML meta tags: charset, viewport, description, keywords, author, robots, http-equiv, refresh, theme-color, Open Graph, and Twitter Cards. 15+ examples.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #7c3aed 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.2 · Document Structure</span>
+    <h1>Metadata &amp; the <code>&lt;meta&gt;</code> Tag</h1>
+    <p>The invisible information layer of every web page: character encoding, viewport, SEO, social previews, browser chrome colours, and more. 15+ examples.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is Metadata?</a></li>
+        <li><a href="#charset">Character Encoding</a></li>
+        <li><a href="#viewport">Viewport</a></li>
+        <li><a href="#description">Description &amp; Keywords</a></li>
+        <li><a href="#author">Author &amp; Generator</a></li>
+        <li><a href="#robots">Robots</a></li>
+        <li><a href="#equiv">http-equiv</a></li>
+        <li><a href="#refresh">Refresh &amp; Redirect</a></li>
+        <li><a href="#theme">Theme Color</a></li>
+        <li><a href="#og">Open Graph</a></li>
+        <li><a href="#twitter">Twitter Cards</a></li>
+        <li><a href="#other">Lesser-Known Metas</a></li>
+        <li><a href="#order">Order Matters</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is Metadata?</h2>
+        <p><strong>Metadata</strong> is data <em>about</em> the document. It lives in the <code>&lt;head&gt;</code> and is not rendered as visible content. The <code>&lt;meta&gt;</code> element is the workhorse — a void element that carries name/value pairs.</p>
+        <p>The general form is one of two patterns:</p>
+        <pre><code>&lt;!-- Pattern 1: name + content --&gt;
+&lt;meta name="description" content="A description of the page."&gt;
+
+&lt;!-- Pattern 2: http-equiv + content (acts like an HTTP header) --&gt;
+&lt;meta http-equiv="refresh" content="30"&gt;
+
+&lt;!-- Pattern 3: charset (special) --&gt;
+&lt;meta charset="UTF-8"&gt;
+
+&lt;!-- Pattern 4: property + content (Open Graph etc.) --&gt;
+&lt;meta property="og:title" content="My Page"&gt;</code></pre>
+      </section>
+
+      <section id="charset">
+        <h2><span class="num">2</span> Character Encoding (charset)</h2>
+        <p>The single most important meta tag. Declares how the bytes in your file map to characters.</p>
+        <pre><code>&lt;meta charset="UTF-8"&gt;</code></pre>
+        <p>Without it, browsers guess. They usually guess wrong for non-ASCII characters — é, ñ, 漢, emoji — and your page fills with <code>â€™</code> garbage.</p>
+        <p>Rules:</p>
+        <ul>
+          <li>Use UTF-8. Always. It supports every character in every language.</li>
+          <li>Place it within the first 1024 bytes of the file (the spec recommends it be in the first 512).</li>
+          <li>It should be the first child of <code>&lt;head&gt;</code>.</li>
+          <li>Only one <code>&lt;meta charset&gt;</code> per document.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          If you save your HTML file with one encoding (say, UTF-8) but declare a different charset in the meta tag (say, ISO-8859-1), characters will render wrong. Make sure your editor saves as UTF-8 — most do by default.
+        </div>
+      </section>
+
+      <section id="viewport">
+        <h2><span class="num">3</span> Viewport</h2>
+        <p>Controls how the page is sized on mobile devices. Without it, mobile browsers shrink a desktop layout to fit a 980px-wide virtual viewport, making text unreadably small.</p>
+        <pre><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
+        <p>Breaking down the <code>content</code> value:</p>
+        <ul>
+          <li><code>width=device-width</code> — make the layout viewport equal to the device's physical width.</li>
+          <li><code>initial-scale=1.0</code> — start at 100% zoom.</li>
+          <li>Optional: <code>maximum-scale=5</code> — limit zoom out.</li>
+          <li>Optional: <code>user-scalable=no</code> — disable pinch zoom. <strong>Don't do this</strong>; it's an accessibility violation.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Setting <code>user-scalable=no</code> or <code>maximum-scale=1.0</code> prevents users with low vision from zooming. The WCAG accessibility guidelines explicitly forbid this. Just don't.
+        </div>
+      </section>
+
+      <section id="description">
+        <h2><span class="num">4</span> Description &amp; Keywords</h2>
+        <h3>Description</h3>
+        <pre><code>&lt;meta name="description" content="A complete, beginner-to-expert guide to HTML. Learn structure, semantics, forms, accessibility, and best practices with hands-on exercises."&gt;</code></pre>
+        <p>The description is what Google shows under your title in search results (usually). It is the second-most-important meta tag for SEO after the <code>&lt;title&gt;</code>.</p>
+        <p>Rules:</p>
+        <ul>
+          <li>Keep it under ~155 characters (Google truncates longer).</li>
+          <li>Write for humans — it's the elevator pitch for your page.</li>
+          <li>Include the primary keyword naturally.</li>
+          <li>One per page. Each page should have a unique description.</li>
+        </ul>
+        <h3>Keywords</h3>
+        <pre><code>&lt;meta name="keywords" content="html, html5, learn html, web development"&gt;</code></pre>
+        <p><strong>Google ignores the keywords meta tag entirely</strong>. It was abused so heavily in the 2000s that search engines dropped it. Bing also ignores it. You can include it for historical completeness or internal tooling, but it has zero SEO value.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Don't waste time on the keywords meta. Spend that time writing a better description.
+        </div>
+      </section>
+
+      <section id="author">
+        <h2><span class="num">5</span> Author &amp; Generator</h2>
+        <pre><code>&lt;meta name="author" content="Jane Doe"&gt;
+&lt;meta name="generator" content="Hugo 0.110.0"&gt;
+&lt;meta name="application-name" content="MyApp"&gt;
+&lt;meta name="copyright" content="© 2024 Acme Inc."&gt;</code></pre>
+        <p>These are informational. <code>generator</code> is often auto-added by CMSes like WordPress. <code>author</code> is occasionally used by search engines or readers. None affect ranking.</p>
+      </section>
+
+      <section id="robots">
+        <h2><span class="num">6</span> Robots</h2>
+        <p>The <code>robots</code> meta tag tells search engines what to do with the page.</p>
+        <pre><code>&lt;!-- Index this page and follow its links (default) --&gt;
+&lt;meta name="robots" content="index, follow"&gt;
+
+&lt;!-- Don't index, don't follow links --&gt;
+&lt;meta name="robots" content="noindex, nofollow"&gt;
+
+&lt;!-- Index but don't follow links --&gt;
+&lt;meta name="robots" content="index, nofollow"&gt;
+
+&lt;!-- Don't index but follow links (useful for thin pages) --&gt;
+&lt;meta name="robots" content="noindex, follow"&gt;
+
+&lt;!-- Don't show a cached copy in results --&gt;
+&lt;meta name="robots" content="noarchive"&gt;
+
+&lt;!-- Don't use this page to create a snippet --&gt;
+&lt;meta name="robots" content="nosnippet"&gt;
+
+&lt;!-- Limit snippet to 50 characters --&gt;
+&lt;meta name="robots" content="max-snippet:50"&gt;
+
+&lt;!-- Don't index images on this page --&gt;
+&lt;meta name="robots" content="noimageindex"&gt;</code></pre>
+        <p>Common values: <code>index</code>, <code>noindex</code>, <code>follow</code>, <code>nofollow</code>, <code>noarchive</code>, <code>nosnippet</code>, <code>noimageindex</code>, <code>unavailable_after</code>.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The robots meta is a request, not a command. Major search engines respect it, but rogue bots ignore it. Don't rely on <code>noindex</code> to hide sensitive data — protect it with authentication instead.
+        </div>
+      </section>
+
+      <section id="equiv">
+        <h2><span class="num">7</span> http-equiv</h2>
+        <p>The <code>http-equiv</code> attribute lets a meta tag act like an HTTP response header. The browser treats the content value as if the server had sent it in the response headers.</p>
+        <pre><code>&lt;!-- Force standards mode in old IE (modern IE ignores) --&gt;
+&lt;meta http-equiv="X-UA-Compatible" content="IE=edge"&gt;
+
+&lt;!-- Declare content security policy --&gt;
+&lt;meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:;"&gt;
+
+&lt;!-- Set a cookie (deprecated; prefer Set-Cookie header) --&gt;
+&lt;meta http-equiv="Set-Cookie" content="session=abc123; Path=/; HttpOnly"&gt;
+
+&lt;!-- Default style (for &lt;link rel="alternate stylesheet"&gt;) --&gt;
+&lt;meta http-equiv="default-style" content="preferred-theme"&gt;
+
+&lt;!-- Content type (rare in HTML5, since charset does this) --&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;</code></pre>
+      </section>
+
+      <section id="refresh">
+        <h2><span class="num">8</span> Refresh &amp; Redirect</h2>
+        <p>The <code>refresh</code> directive tells the browser to reload the page or redirect to a new URL after a delay.</p>
+        <pre><code>&lt;!-- Refresh this page every 60 seconds (e.g. live scores) --&gt;
+&lt;meta http-equiv="refresh" content="60"&gt;
+
+&lt;!-- Redirect to /new-page after 5 seconds --&gt;
+&lt;meta http-equiv="refresh" content="5; url=/new-page/"&gt;
+
+&lt;!-- Immediate redirect (0 second delay) --&gt;
+&lt;meta http-equiv="refresh" content="0; url=/login/"&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Meta refresh is generally a bad pattern:
+          <ul>
+            <li>It's slow — users see the original page flash before redirect.</li>
+            <li>It breaks the browser's Back button.</li>
+            <li>Search engines prefer server-side 301/302 redirects.</li>
+          </ul>
+          Use a server-side redirect whenever possible. Meta refresh is a fallback only.
+        </div>
+      </section>
+
+      <section id="theme">
+        <h2><span class="num">9</span> Theme Color</h2>
+        <p>Tints the browser chrome (address bar, status bar) on mobile devices. Lovely for branded mobile web apps.</p>
+        <pre><code>&lt;meta name="theme-color" content="#2563eb"&gt;
+
+&lt;!-- Adaptive: dark mode-aware --&gt;
+&lt;meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"&gt;
+&lt;meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)"&gt;
+
+&lt;!-- Also: color-scheme lets the browser pick default form control colors --&gt;
+&lt;meta name="color-scheme" content="dark light"&gt;</code></pre>
+        <p>Supported in Chrome on Android, Samsung Internet, and Edge. Not supported in iOS Safari (Apple doesn't tint the chrome).</p>
+      </section>
+
+      <section id="og">
+        <h2><span class="num">10</span> Open Graph (Facebook, LinkedIn, etc.)</h2>
+        <p>Open Graph tags (the <code>og:</code> prefix, originally from Facebook) control how your page appears when shared on social media. They are <strong>essential</strong> for any page you expect to be linked.</p>
+        <pre><code>&lt;!-- Required: title, type, image, url --&gt;
+&lt;meta property="og:title" content="How to Bake Sourdough Bread"&gt;
+&lt;meta property="og:type" content="article"&gt;
+&lt;meta property="og:url" content="https://example.com/blog/sourdough"&gt;
+&lt;meta property="og:image" content="https://example.com/img/sourdough.jpg"&gt;
+&lt;meta property="og:image:width" content="1200"&gt;
+&lt;meta property="og:image:height" content="630"&gt;
+&lt;meta property="og:image:alt" content="A loaf of fresh sourdough bread on a wooden board"&gt;
+
+&lt;!-- Optional but recommended --&gt;
+&lt;meta property="og:description" content="A step-by-step guide to baking sourdough at home."&gt;
+&lt;meta property="og:site_name" content="Example Bakery"&gt;
+&lt;meta property="og:locale" content="en_US"&gt;
+&lt;meta property="og:locale:alternate" content="fr_FR"&gt;
+
+&lt;!-- For articles specifically --&gt;
+&lt;meta property="article:published_time" content="2024-03-15T08:00:00Z"&gt;
+&lt;meta property="article:author" content="Jane Doe"&gt;
+&lt;meta property="article:section" content="Baking"&gt;
+&lt;meta property="article:tag" content="bread"&gt;
+&lt;meta property="article:tag" content="sourdough"&gt;</code></pre>
+        <h3>Recommended image size</h3>
+        <p>1200 × 630 pixels. Larger images are cropped; smaller images look bad. Use JPEG for photos, PNG for graphics.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Test your Open Graph tags with the <a href="https://developers.facebook.com/tools/debug/" target="_blank" rel="noopener">Facebook Sharing Debugger</a> and <a href="https://www.linkedin.com/post-inspector/" target="_blank" rel="noopener">LinkedIn Post Inspector</a> before publishing. Both will fetch your tags and show you the preview card.
+        </div>
+      </section>
+
+      <section id="twitter">
+        <h2><span class="num">11</span> Twitter Cards</h2>
+        <p>Twitter has its own meta tags for richer previews. They overlap with Open Graph; Twitter will fall back to OG if Twitter tags are missing.</p>
+        <pre><code>&lt;meta name="twitter:card" content="summary_large_image"&gt;
+&lt;meta name="twitter:site" content="@examplebakery"&gt;
+&lt;meta name="twitter:creator" content="@janedoe"&gt;
+&lt;meta name="twitter:title" content="How to Bake Sourdough Bread"&gt;
+&lt;meta name="twitter:description" content="A step-by-step guide."&gt;
+&lt;meta name="twitter:image" content="https://example.com/img/sourdough.jpg"&gt;
+&lt;meta name="twitter:image:alt" content="A loaf of sourdough on a wooden board"&gt;</code></pre>
+        <p>Card types: <code>summary</code> (small square image), <code>summary_large_image</code> (large featured image), <code>player</code> (for video/audio), <code>app</code> (mobile app).</p>
+      </section>
+
+      <section id="other">
+        <h2><span class="num">12</span> Lesser-Known Metas</h2>
+        <pre><code>&lt;!-- Prevent referer leak when leaving your site --&gt;
+&lt;meta name="referrer" content="no-referrer"&gt;
+&lt;meta name="referrer" content="origin-when-cross-origin"&gt;
+
+&lt;!-- Format detection: stop iOS from auto-linking phone numbers --&gt;
+&lt;meta name="format-detection" content="telephone=no"&gt;
+
+&lt;!-- Apple touch icon (iOS home screen icon) --&gt;
+&lt;link rel="apple-touch-icon" href="/apple-touch-icon.png"&gt;
+&lt;link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png"&gt;
+
+&lt;!-- iOS web app capabilities --&gt;
+&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;
+&lt;meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"&gt;
+&lt;meta name="apple-mobile-web-app-title" content="MyApp"&gt;
+
+&lt;!-- Android PWA manifest (better in a manifest.json file) --&gt;
+&lt;link rel="manifest" href="/manifest.webmanifest"&gt;
+
+&lt;!-- Windows tile (legacy, for IE11 pinned sites) --&gt;
+&lt;meta name="application-name" content="MyApp"&gt;
+&lt;meta name="msapplication-TileColor" content="#2563eb"&gt;
+&lt;meta name="msapplication-square150x150logo" content="/mstile-150.png"&gt;
+
+&lt;!-- Pinned site color in Windows --&gt;
+&lt;meta name="msapplication-navbutton-color" content="#2563eb"&gt;
+
+&lt;!-- Disable automatic detection of email-style links on iOS --&gt;
+&lt;meta name="format-detection" content="address=no"&gt;
+
+&lt;!-- Page expiry (cache control hint, prefer HTTP headers) --&gt;
+&lt;meta http-equiv="Expires" content="Wed, 21 Oct 2025 07:28:00 GMT"&gt;
+
+&lt;!-- Inline JSON-LD structured data (better SEO) --&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Bake Sourdough Bread",
+  "author": { "@type": "Person", "name": "Jane Doe" }
+}
+&lt;/script&gt;</code></pre>
+      </section>
+
+      <section id="order">
+        <h2><span class="num">13</span> Order Matters</h2>
+        <p>The HTML5 spec says the page's character encoding declaration must appear within the first 1024 bytes — so <code>&lt;meta charset&gt;</code> should be the first child of <code>&lt;head&gt;</code>. Beyond that, the order is mostly aesthetic. A sensible order:</p>
+        <pre><code>&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Page Title — Site Name&lt;/title&gt;
+  &lt;meta name="description" content="..."&gt;
+
+  &lt;!-- Performance hints first --&gt;
+  &lt;link rel="preconnect" href="https://cdn.example.com"&gt;
+  &lt;link rel="preload" as="image" href="/hero.jpg"&gt;
+
+  &lt;!-- Stylesheets --&gt;
+  &lt;link rel="stylesheet" href="/styles.css"&gt;
+
+  &lt;!-- Icons --&gt;
+  &lt;link rel="icon" href="/favicon.ico"&gt;
+  &lt;link rel="apple-touch-icon" href="/apple-touch-icon.png"&gt;
+
+  &lt;!-- Social sharing --&gt;
+  &lt;meta property="og:title" content="..."&gt;
+  &lt;meta property="og:image" content="..."&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+
+  &lt;!-- Robots --&gt;
+  &lt;meta name="robots" content="index, follow"&gt;
+
+  &lt;!-- Theme color --&gt;
+  &lt;meta name="theme-color" content="#2563eb"&gt;
+
+  &lt;!-- Deferred JS --&gt;
+  &lt;script src="/app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">14</span> Common Mistakes</h2>
+        <table>
+          <thead><tr><th>Mistake</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td>Forgetting <code>&lt;meta charset&gt;</code></td><td>Add <code>&lt;meta charset="UTF-8"&gt;</code> as the first child of <code>&lt;head&gt;</code>.</td></tr>
+            <tr><td>Forgetting viewport</td><td>Pages look tiny on mobile. Always add the viewport meta.</td></tr>
+            <tr><td>Description over 160 chars</td><td>Google truncates. Keep it 50–155.</td></tr>
+            <tr><td>Using <code>keywords</code> meta for SEO</td><td>It does nothing. Remove it.</td></tr>
+            <tr><td>OG image missing</td><td>Pages share without a preview image. Always set <code>og:image</code>.</td></tr>
+            <tr><td>Theme color too saturated</td><td>A bright red address bar is jarring. Pick a brand-appropriate colour.</td></tr>
+            <tr><td>Multiple <code>charset</code> metas</td><td>Invalid. Only one allowed.</td></tr>
+            <tr><td>Using meta refresh for redirects</td><td>Use server-side 301 redirects instead.</td></tr>
+            <tr><td>Setting <code>user-scalable=no</code></td><td>Accessibility violation. Never set it.</td></tr>
+            <tr><td>Putting meta tags in <code>&lt;body&gt;</code></td><td>Move to <code>&lt;head&gt;</code>.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout exercise">
+          <strong>Try it yourself — 15 minutes</strong>
+          Create a page called <code>meta-practice.html</code> with all of the following:
+          <ol>
+            <li>A charset meta.</li>
+            <li>A viewport meta.</li>
+            <li>A title and description.</li>
+            <li>An Open Graph image (use any image URL — even <code>https://placehold.co/1200x630</code>).</li>
+            <li>A Twitter Card meta.</li>
+            <li>A theme-color matching your brand.</li>
+            <li>A robots meta set to <code>noindex</code>.</li>
+          </ol>
+          Save the page. View Source to verify. Then test the OG tags with the <a href="https://www.opengraph.xyz/" target="_blank" rel="noopener">OpenGraph.xyz</a> preview tool.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="html-head-body.html">← Previous: html / head / body</a>
+      <a href="../03-Elements-and-Tags/syntax.html">Next: Element Syntax →</a>
+    </div>
+    <p>HTML Mastery — Section 1.2 · Document Structure · Metadata</p>
+  </footer>
+</body>
+</html>

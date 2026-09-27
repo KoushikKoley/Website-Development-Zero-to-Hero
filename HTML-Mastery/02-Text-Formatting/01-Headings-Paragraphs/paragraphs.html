@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paragraphs &lt;p&gt; — HTML Mastery</title>
+  <meta name="description" content="Master the HTML paragraph element: when to use it, default spacing, CSS control, why you cannot nest paragraphs, br vs p, blank-line handling, and RTL/bidi support with dir.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #16a34a 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box p { margin: 0 0 1em; }
+    .demo-box p:last-child { margin-bottom: 0; }
+    .rtl-demo { direction: rtl; text-align: right; }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.1 · Text Formatting</span>
+    <h1>The Paragraph <code>&lt;p&gt;</code> Element</h1>
+    <p>The most frequently used element on the web — a single tag that carries the body of human language. Learn when to use it, how it spaces itself, and the surprising rules that govern what it can contain.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is a Paragraph?</a></li>
+        <li><a href="#syntax">Syntax &amp; Anatomy</a></li>
+        <li><a href="#spacing">Default Spacing</a></li>
+        <li><a href="#css">Controlling Spacing with CSS</a></li>
+        <li><a href="#nesting">Why You Cannot Nest Paragraphs</a></li>
+        <li><a href="#br-vs-p"><code>&lt;br&gt;</code> vs <code>&lt;p&gt;</code></a></li>
+        <li><a href="#blank-lines">Blank Lines &amp; Whitespace</a></li>
+        <li><a href="#rtl">RTL &amp; Bidi Support</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is a Paragraph?</h2>
+        <p>The <code>&lt;p&gt;</code> element represents a <strong>block-level paragraph of text</strong>. It is the default container for prose content and is one of the original elements from HTML 1.0 (1993). Semantically, a paragraph groups sentences that share a single idea or topic.</p>
+        <p>Browsers render <code>&lt;p&gt;</code> as a block: it takes the full available width, and the next element appears below it on a new line. Vertical space (margin) is added above and below by default so that consecutive paragraphs are visually separated.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Think of <code>&lt;p&gt;</code> as a "thought unit" — when the topic shifts, start a new paragraph. This matches how readers scan text on the web.
+        </div>
+      </section>
+
+      <section id="syntax">
+        <h2><span class="num">2</span> Syntax &amp; Anatomy</h2>
+        <p>A paragraph has an opening <code>&lt;p&gt;</code> tag, phrasing content inside, and a closing <code>&lt;/p&gt;</code> tag. It accepts all global attributes (<code>class</code>, <code>id</code>, <code>lang</code>, <code>dir</code>, <code>style</code>, <code>title</code>, data-* attributes, ARIA attributes).</p>
+        <pre><code>&lt;p class="lead" lang="en"&gt;
+  The quick brown fox jumps over the lazy dog.
+&lt;/p&gt;</code></pre>
+        <h3>The closing tag is technically optional — but always write it</h3>
+        <p>HTML5 says you may omit <code>&lt;/p&gt;</code> because the parser automatically closes a paragraph when it encounters a block-level element such as <code>&lt;h2&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;div&gt;</code>, or another <code>&lt;p&gt;</code>. In practice, always write the closing tag — it makes your code easier to read, edit, and validate.</p>
+        <pre><code>&lt;!-- Valid HTML5, but discouraged --&gt;
+&lt;p&gt;First paragraph.
+&lt;p&gt;Second paragraph.
+
+&lt;!-- Preferred --&gt;
+&lt;p&gt;First paragraph.&lt;/p&gt;
+&lt;p&gt;Second paragraph.&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="spacing">
+        <h2><span class="num">3</span> Default Spacing</h2>
+        <p>The browser's user-agent stylesheet applies roughly <code>margin: 1em 0</code> to every paragraph. This vertical margin is what creates the visible gap between paragraphs.</p>
+        <div class="demo-box">
+          <p>This is the first paragraph. Notice the empty space above and below — that is the default margin applied by the browser.</p>
+          <p>This is the second paragraph. The two paragraphs are separated by 1em of vertical margin on each side, which collapses to a single 1em gap.</p>
+        </div>
+        <div class="callout">
+          <strong>Info</strong>
+          Adjacent vertical margins <em>collapse</em>: two paragraphs with <code>margin: 1em 0</code> each are separated by 1em, not 2em. The larger margin wins.
+        </div>
+      </section>
+
+      <section id="css">
+        <h2><span class="num">4</span> Controlling Spacing with CSS</h2>
+        <p>Almost every design system overrides the default paragraph margin. The most common pattern is to remove top margin and keep a bottom margin, so the first paragraph in a container sits flush against its parent.</p>
+        <pre><code>p {
+  margin: 0 0 1.25em 0;
+  line-height: 1.7;
+  max-width: 65ch;       /* optimal line length for reading */
+  color: #1f2937;
+}
+
+/* Tighter spacing inside tight UI regions */
+.card p { margin-bottom: 0.75em; }
+
+/* First paragraph after a heading: no extra top margin */
+h2 + p { margin-top: 0; }
+
+/* Drop cap on the first paragraph of an article */
+article &gt; p:first-of-type::first-letter {
+  font-size: 3.5rem;
+  float: left;
+  line-height: 0.9;
+  padding: 0.05em 0.1em 0 0;
+  color: #2563eb;
+  font-weight: 700;
+}</code></pre>
+        <h3>The <code>65ch</code> rule</h3>
+        <p>Reading research shows the optimal line length is roughly 45–75 characters. Setting <code>max-width: 65ch</code> on paragraphs makes long-form text much more comfortable to read on wide screens.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For accessibility, never set <code>line-height</code> below <code>1.4</code> on body text. Dyslexic and low-vision readers benefit from <code>1.6</code>–<code>1.8</code>.
+        </div>
+      </section>
+
+      <section id="nesting">
+        <h2><span class="num">5</span> Why You Cannot Nest Paragraphs</h2>
+        <p>A <code>&lt;p&gt;</code> element's content model is <em>phrasing content only</em>. That means it may contain text and inline elements like <code>&lt;strong&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;code&gt;</code>, <code>&lt;br&gt;</code>, and <code>&lt;span&gt;</code> — but <strong>not</strong> other block elements, including other paragraphs.</p>
+        <p>If you write a paragraph inside a paragraph, the parser silently closes the outer one for you:</p>
+        <pre><code>&lt;!-- What you wrote --&gt;
+&lt;p&gt;Outer paragraph
+  &lt;p&gt;Inner paragraph&lt;/p&gt;
+&lt;/p&gt;
+
+&lt;!-- How the browser parses it --&gt;
+&lt;p&gt;Outer paragraph&lt;/p&gt;
+&lt;p&gt;Inner paragraph&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;   &lt;!-- empty paragraph from the stray &lt;/p&gt; --&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Nesting a <code>&lt;div&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;blockquote&gt;</code>, or another <code>&lt;p&gt;</code> inside a paragraph is invalid HTML and produces unpredictable DOM trees. Use <code>&lt;div&gt;</code> as the outer container instead.
+        </div>
+        <h3>Want a "paragraph with a sub-block"? Use <code>&lt;div&gt;</code></h3>
+        <pre><code>&lt;div class="card"&gt;
+  &lt;p&gt;Main text…&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Sub-item one&lt;/li&gt;
+    &lt;li&gt;Sub-item two&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+      </section>
+
+      <section id="br-vs-p">
+        <h2><span class="num">6</span> <code>&lt;br&gt;</code> vs <code>&lt;p&gt;</code></h2>
+        <p>Many beginners hit <code>&lt;br&gt;</code> twice to create paragraph spacing. This is wrong. <code>&lt;br&gt;</code> is for a <em>line break within the same paragraph</em> (e.g. postal addresses or poetry), not for separating paragraphs.</p>
+        <table>
+          <thead>
+            <tr><th>Use <code>&lt;p&gt;</code>…</th><th>Use <code>&lt;br&gt;</code>…</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>When the new block of text is a different idea or topic</td>
+              <td>When the line break is part of the same thought (address, poem, lyrics)</td>
+            </tr>
+            <tr>
+              <td>For all body copy and prose</td>
+              <td>Inside <code>&lt;p&gt;</code>, <code>&lt;address&gt;</code>, or <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code></td>
+            </tr>
+            <tr>
+              <td>When you want consistent, semantic spacing</td>
+              <td>When CSS margins alone cannot express the desired structure</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- WRONG: stacking &lt;br&gt; for spacing --&gt;
+&lt;p&gt;First paragraph.&lt;br&gt;&lt;br&gt;Second paragraph.&lt;/p&gt;
+
+&lt;!-- RIGHT --&gt;
+&lt;p&gt;First paragraph.&lt;/p&gt;
+&lt;p&gt;Second paragraph.&lt;/p&gt;
+
+&lt;!-- RIGHT use of br: postal address --&gt;
+&lt;address&gt;
+  Ada Lovelace&lt;br&gt;
+  123 Analytical Engine Way&lt;br&gt;
+  London, UK
+&lt;/address&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using <code>&lt;br&gt;&lt;br&gt;</code> to add space is a classic beginner anti-pattern. It breaks screen-reader pronunciation, creates unpredictable spacing, and ignores CSS. Use margins on real paragraphs.
+        </div>
+      </section>
+
+      <section id="blank-lines">
+        <h2><span class="num">7</span> Blank Lines &amp; Whitespace</h2>
+        <p>HTML collapses all whitespace (spaces, tabs, newlines) inside a paragraph into a single space when rendering. You can put one space or fifty line breaks in your source — the output is identical.</p>
+        <pre><code>&lt;!-- Source: many spaces --&gt;
+&lt;p&gt;Hello          there&lt;/p&gt;
+&lt;!-- Renders as: "Hello there" --&gt;
+
+&lt;!-- Source: multiple lines --&gt;
+&lt;p&gt;Roses are red,
+   Violets are blue,&lt;/p&gt;
+&lt;!-- Renders as: "Roses are red, Violets are blue," --&gt;</code></pre>
+        <h3>Preserving whitespace with <code>white-space</code></h3>
+        <p>If you need to preserve newlines (e.g. ASCII art, code samples), use the CSS <code>white-space</code> property or the <code>&lt;pre&gt;</code> element.</p>
+        <pre><code>.preserve {
+  white-space: pre;       /* preserve newlines and spaces */
+  white-space: pre-wrap; /* preserve, but wrap long lines */
+  white-space: pre-line; /* collapse spaces, preserve newlines */
+}</code></pre>
+        <h3>The non-breaking space <code>&amp;nbsp;</code></h3>
+        <p>Use <code>&amp;nbsp;</code> when you want to prevent a line break between two words (e.g. "10&nbsp;kg", "Chapter&nbsp;3").</p>
+        <pre><code>&lt;p&gt;Water boils at 100&amp;nbsp;°C at sea level.&lt;/p&gt;
+&lt;p&gt;See Chapter&amp;nbsp;5 for details.&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="rtl">
+        <h2><span class="num">8</span> RTL &amp; Bidi Support</h2>
+        <p>For languages written right-to-left — Arabic, Hebrew, Persian, Urdu — set <code>dir="rtl"</code> on the paragraph (or the <code>&lt;html&gt;</code> root). The <code>dir</code> attribute tells the browser to reverse the inline direction so text flows correctly.</p>
+        <div class="demo-box rtl-demo" lang="ar">
+          <p>مرحبا بالعالم! هذه فقرة تجريبية باللغة العربية.</p>
+        </div>
+        <pre><code>&lt;!-- A single RTL paragraph in an otherwise LTR page --&gt;
+&lt;p dir="rtl" lang="ar"&gt;مرحبا بالعالم!&lt;/p&gt;
+
+&lt;!-- Set the whole document to RTL --&gt;
+&lt;html lang="ar" dir="rtl"&gt;
+
+&lt;!-- Auto direction (useful for user-generated content) --&gt;
+&lt;p dir="auto"&gt;...user comment...&lt;/p&gt;</code></pre>
+        <h3>Direction values</h3>
+        <ul>
+          <li><code>ltr</code> — left-to-right (default, English, Spanish, Chinese…)</li>
+          <li><code>rtl</code> — right-to-left (Arabic, Hebrew, Persian…)</li>
+          <li><code>auto</code> — browser chooses based on first strong-directional character</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always pair <code>dir</code> with the matching <code>lang</code> attribute. Screen readers use <code>lang</code> to pick the correct pronunciation engine — without it, an Arabic paragraph might be read aloud with an English voice.
+        </div>
+        <h3>The <code>&lt;bdo&gt;</code> element for forced override</h3>
+        <p>For rare cases where you need to forcibly reverse character order (e.g. displaying mixed-direction text), use <code>&lt;bdo dir="rtl"&gt;</code>:</p>
+        <pre><code>&lt;p&gt;The word &lt;bdo dir="rtl"&gt;Hello&lt;/bdo&gt; rendered RTL.&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">9</span> Real-World Examples</h2>
+        <h3>Lead paragraph</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Mars Mission Launches Successfully&lt;/h1&gt;
+  &lt;p class="lead"&gt;
+    After a two-day delay caused by weather, the Perseverance
+    rover lifted off from Cape Canaveral at 7:50 AM EDT Thursday,
+    beginning a seven-month journey to the red planet.
+  &lt;/p&gt;
+  &lt;p&gt;The Atlas V rocket performed flawlessly…&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+        <h3>Disclaimer with smaller text</h3>
+        <pre><code>&lt;p&gt;
+  &lt;small&gt;
+    Prices shown exclude taxes and shipping. Offers expire
+    December 31, 2024. See &lt;a href="/terms"&gt;full terms&lt;/a&gt;.
+  &lt;/small&gt;
+&lt;/p&gt;</code></pre>
+        <h3>Multilingual paragraph</h3>
+        <pre><code>&lt;p&gt;
+  The French word for "hello" is
+  &lt;span lang="fr"&gt;bonjour&lt;/span&gt;,
+  and the Japanese greeting is
+  &lt;span lang="ja"&gt;こんにちは&lt;/span&gt;.
+&lt;/p&gt;</code></pre>
+        <h3>Paragraph with inline quote and citation</h3>
+        <pre><code>&lt;p&gt;
+  As Ada Lovelace once wrote,
+  &lt;q&gt;The analytical engine weaves algebraic patterns
+     just as the Jacquard loom weaves flowers and leaves.&lt;/q&gt;
+  Her note appeared in &lt;cite&gt;Sketch of the Analytical Engine&lt;/cite&gt; (1843).
+&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;br&gt;&lt;br&gt;</code> for paragraph spacing</td>
+              <td>Breaks screen readers, unpredictable spacing</td>
+              <td>Use separate <code>&lt;p&gt;</code> elements</td>
+            </tr>
+            <tr>
+              <td>Nesting <code>&lt;div&gt;</code> inside <code>&lt;p&gt;</code></td>
+              <td>Invalid HTML, parser closes <code>&lt;p&gt;</code> early</td>
+              <td>Use <code>&lt;div&gt;</code> as the outer container</td>
+            </tr>
+            <tr>
+              <td>Missing closing <code>&lt;/p&gt;</code> tag</td>
+              <td>Works in browsers but breaks maintenance &amp; validation</td>
+              <td>Always write the closing tag</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;p&gt;</code> for non-prose (button, image gallery)</td>
+              <td>Misleading semantics; block elements inside are invalid</td>
+              <td>Use <code>&lt;div&gt;</code>, <code>&lt;figure&gt;</code>, or <code>&lt;section&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Setting <code>line-height: 1</code></td>
+              <td>Lines overlap; very hard to read</td>
+              <td>Use <code>1.5</code>–<code>1.7</code> for body text</td>
+            </tr>
+            <tr>
+              <td>Long unbroken lines (no max-width)</td>
+              <td>Hard to read on wide screens</td>
+              <td>Set <code>max-width: 65ch</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&amp;nbsp;</code> for indentation</td>
+              <td>Brittle, ignores CSS, hurts translation</td>
+              <td>Use <code>padding-left</code> or <code>text-indent</code></td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>lang</code> on foreign-language paragraphs</td>
+              <td>Screen reader uses wrong voice</td>
+              <td>Add <code>lang="xx"</code> to the paragraph</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">11</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Rewrite the bad markup</strong>
+          Rewrite the snippet below so it is valid, semantic, and uses proper paragraph spacing instead of <code>&lt;br&gt;</code>.
+          <pre><code>&lt;p&gt;Welcome to my site.&lt;br&gt;&lt;br&gt;
+   &lt;div&gt;Here is a featured product:&lt;/div&gt;
+   &lt;p&gt;It only costs $9.99&lt;/p&gt;
+&lt;/p&gt;</code></pre>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Add a drop cap</strong>
+          Style the first paragraph of any article with a large drop-cap first letter using the <code>::first-letter</code> pseudo-element. Make the letter 3.5rem, blue, and floated left.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Multilingual page</strong>
+          Build a tiny page with three paragraphs: one in English, one in Arabic (with <code>dir="rtl"</code>), and one in Japanese. Verify that each <code>&lt;p&gt;</code> has the correct <code>lang</code> attribute. Bonus: open your page in a screen reader and listen to the pronunciation switch.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">12</span> Summary</h2>
+        <ul>
+          <li><code>&lt;p&gt;</code> is the block element for prose — one paragraph per idea.</li>
+          <li>Default browser margin is ~1em vertical; override with CSS for predictable spacing.</li>
+          <li>Paragraphs can only contain phrasing content — never nest block elements.</li>
+          <li>Use <code>&lt;p&gt;</code> for paragraph breaks, <code>&lt;br&gt;</code> only for line breaks within the same thought.</li>
+          <li>Whitespace collapses — use <code>white-space</code> CSS or <code>&lt;pre&gt;</code> to preserve it.</li>
+          <li>For RTL languages, set <code>dir="rtl"</code> and the matching <code>lang</code>.</li>
+          <li>Always write the closing <code>&lt;/p&gt;</code> tag, even though it is optional.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 1.0 (1993)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="headings.html">← Previous: Headings</a>
+      <a href="line-breaks-hr.html">Next: Line Breaks &amp; HR →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Paragraphs</p>
+  </footer>
+</body>
+</html>

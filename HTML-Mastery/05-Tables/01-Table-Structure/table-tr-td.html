@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Structure — table, tr, td — HTML Mastery</title>
+  <meta name="description" content="Master the foundation of HTML tables: the table, tr (table row) and td (table data cell) elements. Learn default browser styling, when NOT to use tables for layout, accessibility concerns, and build a real 3-column product table from scratch.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    /* Rendered demo table */
+    .demo-box table { margin: 0; }
+    .demo-box.bare td, .demo-box.bare th { border: none; }
+    .demo-box.bare table { border-collapse: separate; border-spacing: 2px; }
+    .demo-box.bare td { background: #eef2ff; padding: 6px 10px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.no { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .anatomy {
+      background: #0b1020; color: #e2e8f0; padding: 18px;
+      border-radius: 12px; font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.9rem; line-height: 1.9; overflow-x: auto;
+    }
+    .anatomy .tag { color: #f472b6; }
+    .anatomy .attr { color: #fbbf24; }
+    .anatomy .val { color: #86efac; }
+    .anatomy .comment { color: #64748b; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe; transition: background 0.2s;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 1</span>
+    <h1>Table Structure: <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, <code>&lt;td&gt;</code></h1>
+    <p>The three foundational elements of every HTML table. Learn how rows and cells nest, what the browser does by default, and the cardinal sin of using tables for layout.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why-tables">Why tables exist</a></li>
+        <li><a href="#anatomy">Anatomy of a table</a></li>
+        <li><a href="#table-element">The &lt;table&gt; element</a></li>
+        <li><a href="#tr-element">The &lt;tr&gt; element</a></li>
+        <li><a href="#td-element">The &lt;td&gt; element</a></li>
+        <li><a href="#browser-defaults">Default browser styling</a></li>
+        <li><a href="#first-table">Your first 3-column table</a></li>
+        <li><a href="#not-for-layout">Never use tables for layout</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why-tables">
+        <h2><span class="num">1</span> Why tables exist</h2>
+        <p>HTML tables were introduced in HTML 2.0 (1995) for one purpose: to display <strong>tabular data</strong> — information that naturally lives in a grid of rows and columns. Think spreadsheets, price lists, train schedules, sports results, comparison charts, financial reports.</p>
+        <p>The element model is simple but powerful: a <code>&lt;table&gt;</code> contains one or more <code>&lt;tr&gt;</code> rows, each of which contains one or more <code>&lt;td&gt;</code> cells. The browser takes care of computing column widths, row heights, and alignment so you don't have to.</p>
+        <div class="callout info">
+          <strong>Definition</strong>
+          <em>Tabular data</em> is data where each row represents one record and each column represents one attribute of that record. If you can describe your data as "a list of things, each with the same set of properties", you have tabular data.
+        </div>
+      </section>
+
+      <section id="anatomy">
+        <h2><span class="num">2</span> Anatomy of a table</h2>
+        <p>The minimal valid table has three nested elements:</p>
+        <div class="anatomy"><span class="tag">&lt;table&gt;</span>
+  <span class="tag">&lt;tr&gt;</span>
+    <span class="tag">&lt;td&gt;</span>Cell A<span class="tag">&lt;/td&gt;</span>
+    <span class="tag">&lt;td&gt;</span>Cell B<span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;/tr&gt;</span>
+  <span class="tag">&lt;tr&gt;</span>
+    <span class="tag">&lt;td&gt;</span>Cell C<span class="tag">&lt;/td&gt;</span>
+    <span class="tag">&lt;td&gt;</span>Cell D<span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;/tr&gt;</span>
+<span class="tag">&lt;/table&gt;</span> <span class="comment">&lt;!-- 2 rows × 2 columns --&gt;</span></div>
+        <p>The hierarchy is strict: you cannot place a <code>&lt;td&gt;</code> directly inside <code>&lt;table&gt;</code> without a <code>&lt;tr&gt;</code> wrapper, and you cannot place text directly inside <code>&lt;table&gt;</code>. The browser may auto-correct malformed markup, but the result is unpredictable.</p>
+        <div class="grid-3">
+          <div class="card">
+            <h4>&lt;table&gt;</h4>
+            <p>The container. Represents the entire grid. Block-level. No default border.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;tr&gt;</h4>
+            <p>"Table Row". A horizontal slice of the table. Cannot hold text directly — only cells.</p>
+          </div>
+          <div class="card">
+            <h4>&lt;td&gt;</h4>
+            <p>"Table Data". A single cell. Holds the actual content: text, images, even other tables.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="table-element">
+        <h2><span class="num">3</span> The <code>&lt;table&gt;</code> element</h2>
+        <p>The <code>&lt;table&gt;</code> element is the root container. It establishes a grid context in which its descendant rows and cells are laid out by a special <em>table layout algorithm</em>, distinct from normal CSS block-and-inline flow.</p>
+        <h3>Useful attributes</h3>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Purpose</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>border</code></td><td>Legacy border thickness</td><td>Deprecated for styling. Use CSS <code>border</code> instead.</td></tr>
+            <tr><td><code>cellpadding</code></td><td>Padding inside cells</td><td>Deprecated. Use CSS <code>padding</code> on <code>td</code>.</td></tr>
+            <tr><td><code>cellspacing</code></td><td>Space between cells</td><td>Deprecated. Use CSS <code>border-spacing</code>.</td></tr>
+            <tr><td><code>width</code></td><td>Table width</td><td>Deprecated. Use CSS <code>width</code>.</td></tr>
+            <tr><td><code>summary</code></td><td>Accessibility description</td><td>Deprecated in HTML5. Use <code>&lt;caption&gt;</code> or <code>&lt;figcaption&gt;</code> instead.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Never write <code>&lt;table border="1" cellpadding="8"&gt;</code> in modern code. These presentational attributes are deprecated in HTML5 and were always a maintainability nightmare — they mix structure with style. Use the CSS equivalents shown above.
+        </div>
+      </section>
+
+      <section id="tr-element">
+        <h2><span class="num">4</span> The <code>&lt;tr&gt;</code> element</h2>
+        <p>A <code>&lt;tr&gt;</code> ("table row") groups horizontally adjacent cells into a single row. The browser determines the row's height as the maximum of all its cells' contents. Every <code>&lt;tr&gt;</code> must live directly inside a <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, or <code>&lt;tfoot&gt;</code>.</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;                   &lt;!-- Row 1 --&gt;
+    &lt;td&gt;Apple&lt;/td&gt;
+    &lt;td&gt;Banana&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;                   &lt;!-- Row 2 --&gt;
+    &lt;td&gt;Cherry&lt;/td&gt;
+    &lt;td&gt;Date&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <p>A <code>&lt;tr&gt;</code> has very few meaningful attributes in modern HTML. The old <code>bgcolor</code>, <code>align</code>, and <code>valign</code> attributes are all deprecated — target rows with CSS (<code>tr:nth-child(even)</code>, classes, or <code>data-*</code>) instead.</p>
+      </section>
+
+      <section id="td-element">
+        <h2><span class="num">5</span> The <code>&lt;td&gt;</code> element</h2>
+        <p><code>&lt;td&gt;</code> ("table data") is the workhorse — a single cell that holds content. It can contain almost anything: text, links, images, lists, even nested tables (though nesting tables is usually a design smell).</p>
+        <h3>Important attributes</h3>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>colspan</code></td><td>Cell spans N columns</td><td><code>&lt;td colspan="2"&gt;</code></td></tr>
+            <tr><td><code>rowspan</code></td><td>Cell spans N rows</td><td><code>&lt;td rowspan="3"&gt;</code></td></tr>
+            <tr><td><code>headers</code></td><td>IDs of associated header cells (a11y)</td><td><code>&lt;td headers="q1-total"&gt;</code></td></tr>
+            <tr><td><code>abbr</code></td><td>Abbreviated form for screen readers</td><td><code>&lt;td abbr="USD"&gt;US Dollars&lt;/td&gt;</code></td></tr>
+          </tbody>
+        </table>
+        <p><code>colspan</code> and <code>rowspan</code> are covered in depth in the <a href="../02-Grouping-Rows/rowspan-colspan.html">Rowspan &amp; Colspan lesson</a>. For now, focus on plain cells.</p>
+      </section>
+
+      <section id="browser-defaults">
+        <h2><span class="num">6</span> Default browser styling</h2>
+        <p>If you write a table with no CSS, every browser renders it the same minimal way:</p>
+        <ul>
+          <li><strong>No border</strong> — cells touch each other invisibly.</li>
+          <li><strong>Cell padding is zero</strong> — text butts up against the cell edge.</li>
+          <li><strong>No background</strong> — transparent.</li>
+          <li><strong>Auto width</strong> — columns size to their widest content.</li>
+          <li><strong>Left-aligned</strong> horizontally, <strong>middle-aligned</strong> vertically.</li>
+          <li><strong>border-collapse: separate</strong> — cells have a small gap you cannot see without borders.</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Rendered with NO CSS</div>
+          <table>
+            <tr><td>Apple</td><td>$1.20</td><td>In stock</td></tr>
+            <tr><td>Banana</td><td>$0.50</td><td>In stock</td></tr>
+            <tr><td>Cherry</td><td>$3.99</td><td>Sold out</td></tr>
+          </table>
+        </div>
+        <p>It's bare-bones ugly. The very first thing every developer does is add <code>border-collapse: collapse</code> and borders. We'll do that in the next example, then explore full styling in the <a href="../03-Accessible-Tables/styling-tables.html">Styling Tables lesson</a>.</p>
+      </section>
+
+      <section id="first-table">
+        <h2><span class="num">7</span> Your first 3-column table</h2>
+        <p>Let's build a small product table from scratch, adding just enough CSS to be readable. Notice we use <code>scope="col"</code> on the header cells — we'll explain why in the <a href="th-scope.html">TH &amp; Scope lesson</a>.</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Top-selling fruit this week&lt;/caption&gt;
+  &lt;tr&gt;
+    &lt;th scope="col"&gt;Product&lt;/th&gt;
+    &lt;th scope="col"&gt;Price&lt;/th&gt;
+    &lt;th scope="col"&gt;Stock&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Apple&lt;/td&gt;
+    &lt;td&gt;$1.20&lt;/td&gt;
+    &lt;td&gt;128 in stock&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Banana&lt;/td&gt;
+    &lt;td&gt;$0.50&lt;/td&gt;
+    &lt;td&gt;240 in stock&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Cherry&lt;/td&gt;
+    &lt;td&gt;$3.99&lt;/td&gt;
+    &lt;td&gt;Sold out&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;style&gt;
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+&lt;/style&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output</div>
+          <table style="border-collapse: collapse; width: 100%;">
+            <caption style="caption-side: top; text-align: left; font-weight: 600; padding: 6px 0;">Top-selling fruit this week</caption>
+            <tr>
+              <th scope="col" style="border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; background: #f1f5f9;">Product</th>
+              <th scope="col" style="border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; background: #f1f5f9;">Price</th>
+              <th scope="col" style="border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; background: #f1f5f9;">Stock</th>
+            </tr>
+            <tr><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">Apple</td><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">$1.20</td><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">128 in stock</td></tr>
+            <tr><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">Banana</td><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">$0.50</td><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">240 in stock</td></tr>
+            <tr><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">Cherry</td><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">$3.99</td><td style="border: 1px solid #cbd5e1; padding: 8px 12px;">Sold out</td></tr>
+          </table>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Note how the <code>&lt;caption&gt;</code> is the <em>first child</em> of <code>&lt;table&gt;</code>. That's mandatory. Putting it elsewhere means browsers may silently move it (or ignore it). More on <code>&lt;caption&gt;</code> in the dedicated <a href="caption.html">Caption lesson</a>.
+        </div>
+      </section>
+
+      <section id="not-for-layout">
+        <h2><span class="num">8</span> Never use tables for layout</h2>
+        <p>In the late 1990s and early 2000s, before CSS was powerful enough, developers abused tables to create multi-column page layouts: header on top, sidebar on the left, content on the right, footer on the bottom. <strong>This practice is dead and you must not revive it.</strong></p>
+        <h3>Why table layouts are harmful</h3>
+        <table>
+          <thead>
+            <tr><th>Problem</th><th>Explanation</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Accessibility disaster</td><td>Screen readers announce the page linearly. A table layout forces a visually-impaired user to navigate meaningless "row/column" semantics instead of headings, regions, and landmarks.</td></tr>
+            <tr><td>Rigid</td><td>You cannot reorder columns responsively without rewriting the markup. A CSS Grid or Flexbox layout reflows with one media query.</td></tr>
+            <tr><td>Slow rendering</td><td>Browsers must compute the entire table before painting. Modern layout engines are much faster for non-table layouts.</td></tr>
+            <tr><td>SEO penalty</td><td>Search engines expect content order to follow the document outline. Table layouts scramble the reading order.</td></tr>
+            <tr><td>Maintenance pain</td><td>Nested tables-within-tables-within-tables ("table soup") were the original "spaghetti markup". You will cry.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Hard rule</strong>
+          Use <code>&lt;table&gt;</code> only for tabular data. Use CSS Grid, Flexbox, or Multi-column layout for visual page structure. <em>No exceptions.</em>
+        </div>
+        <div class="demo-box">
+          <div class="demo-label">Wrong (don't do this)</div>
+          <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td colspan="2"&gt;Header&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Sidebar&lt;/td&gt;
+    &lt;td&gt;Main content&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        </div>
+        <div class="demo-box">
+          <div class="demo-label">Right (use CSS Grid)</div>
+          <pre><code>&lt;div class="layout"&gt;
+  &lt;header&gt;Header&lt;/header&gt;
+  &lt;aside&gt;Sidebar&lt;/aside&gt;
+  &lt;main&gt;Main content&lt;/main&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  .layout { display: grid;
+    grid-template-areas: "header header" "sidebar main";
+    grid-template-columns: 200px 1fr; }
+  header { grid-area: header; }
+  aside  { grid-area: sidebar; }
+  main   { grid-area: main; }
+&lt;/style&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it breaks</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Putting <code>&lt;td&gt;</code> directly inside <code>&lt;table&gt;</code></td><td>Invalid HTML; browser may auto-insert a <code>&lt;tr&gt;</code> in unexpected places.</td><td>Always wrap cells in <code>&lt;tr&gt;</code>.</td></tr>
+            <tr><td>Using <code>border="1"</code>, <code>cellpadding</code>, <code>cellspacing</code></td><td>Deprecated presentational attributes. Hard to override with CSS.</td><td>Use CSS properties on <code>table</code>, <code>th</code>, <code>td</code>.</td></tr>
+            <tr><td>Ragged rows (varying cell counts)</td><td>Browser must guess where columns go; layout shifts.</td><td>Every row should have the same number of cells (counting spans).</td></tr>
+            <tr><td>Using tables for layout</td><td>Breaks accessibility, responsiveness, and SEO.</td><td>Use CSS Grid or Flexbox.</td></tr>
+            <tr><td>Forgetting <code>&lt;caption&gt;</code> or headers</td><td>Screen reader users can't understand the table's purpose.</td><td>Add <code>&lt;caption&gt;</code> and use <code>&lt;th scope&gt;</code>.</td></tr>
+            <tr><td>Whitespace between <code>&lt;td&gt;</code> tags</td><td>Whitespace inside cells collapses, but stray text nodes between cells can confuse the parser.</td><td>Keep cell content inside <code>&lt;td&gt;</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Build a 3-column table</strong>
+          Create a table of three countries with columns: Country, Capital, Population. Add 4 rows. Use only <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, and <code>&lt;td&gt;</code> for now — we'll add headers in the next lesson.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Add minimal CSS</strong>
+          Take your Exercise 1 table and add: <code>border-collapse: collapse</code>, a 1px border around cells, 8px padding, and a light gray background on every other row using <code>tr:nth-child(even) td</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Spot the layout-table smell</strong>
+          Find a 1998-era website (use the Wayback Machine if needed) and identify three places where tables were used purely for visual layout. Describe how you would rebuild each one with CSS Grid or Flexbox.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Predictable rows</strong>
+          Without running it, predict what this malformed table will render as. Then test your prediction:
+          <pre><code>&lt;table&gt;
+  &lt;tr&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;B&lt;/td&gt;
+  &lt;tr&gt;&lt;td&gt;C&lt;/td&gt;&lt;td&gt;D&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <p><code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, and <code>&lt;td&gt;</code> are some of the oldest elements in HTML. They work everywhere — every browser, every screen reader, every rendering engine.</p>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Opera</span>
+          <span class="pill yes">All mobile browsers</span>
+          <span class="pill yes">Screen readers (NVDA, JAWS, VoiceOver)</span>
+        </div>
+        <p>The only "support" caveat is that the deprecated presentational attributes (<code>border</code>, <code>cellpadding</code>, <code>cellspacing</code>) still render visually in most browsers — but they are marked deprecated in the HTML spec and may be removed. Don't rely on them.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Product comparison</h4>
+            <p>Feature-by-feature comparison of two or more products (e.g., phone specs, SaaS plans). The natural fit for tabular data.</p>
+          </div>
+          <div class="card">
+            <h4>Financial statements</h4>
+            <p>Income statements, balance sheets, cash-flow tables — built on <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, and number-aligned cells.</p>
+          </div>
+          <div class="card">
+            <h4>Schedules</h4>
+            <p>Train timetables, class schedules, conference agendas. Often use <code>rowspan</code>/<code>colspan</code> to merge cells.</p>
+          </div>
+          <div class="card">
+            <h4>Admin dashboards</h4>
+            <p>User lists, order logs, server metrics tables in admin panels. Frequently paired with sortable columns via JS.</p>
+          </div>
+          <div class="card">
+            <h4>Sports results</h4>
+            <p>League tables, scoreboards, fixtures. Cells often contain both text and small images (team crests).</p>
+          </div>
+          <div class="card">
+            <h4>Pricing tables</h4>
+            <p>Side-by-side subscription tiers with checkmarks/crosses per feature. Often styled as cards on mobile.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../../04-Media-and-Graphics/04-SVG-Canvas/svg-vs-canvas.html">← Previous: SVG vs Canvas</a>
+    <a class="next" href="th-scope.html">Next: TH &amp; Scope →</a>
+  </footer>
+</body>
+</html>

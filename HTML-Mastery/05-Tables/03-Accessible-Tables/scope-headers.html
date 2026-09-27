@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scope &amp; Headers — Deep Table Accessibility — HTML Mastery</title>
+  <meta name="description" content="Deep accessibility for HTML tables: scope (row/col/rowgroup/colgroup) vs headers/id for complex tables. When to use which, screen reader testing patterns, WCAG 2.1 AA requirements, and the four-cell rule that decides the right approach.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box .live-table { border-collapse: collapse; width: 100%; }
+    .demo-box .live-table th, .demo-box .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-box .live-table thead th { background: #1e293b; color: white; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.limited { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 7</span>
+    <h1>Scope &amp; Headers: Deep Accessibility</h1>
+    <p>Two complementary techniques for accessible tables. <code>scope</code> handles 90% of tables. The <code>headers</code>+<code>id</code> approach handles the gnarliest complex tables. Learn the decision rule, WCAG 2.1 AA requirements, and how to test with real screen readers.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#recap">Recap: why table a11y matters</a></li>
+        <li><a href="#scope-vs-headers">Two techniques compared</a></li>
+        <li><a href="#when-scope">When scope is enough</a></li>
+        <li><a href="#when-headers">When you need headers/id</a></li>
+        <li><a href="#decision-rule">The decision rule</a></li>
+        <li><a href="#scope-recap">scope recap</a></li>
+        <li><a href="#headers-example">headers/id full example</a></li>
+        <li><a href="#wcag">WCAG 2.1 AA requirements</a></li>
+        <li><a href="#testing">Screen reader testing</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="recap">
+        <h2><span class="num">1</span> Recap: why table a11y matters</h2>
+        <p>From the <a href="../01-Table-Structure/th-scope.html">TH &amp; Scope lesson</a> you know that <code>scope</code> is the basic accessibility mechanism for tables. This lesson goes deeper: what to do when <code>scope</code> alone isn't enough, and how to verify your tables actually work for real users with assistive technology.</p>
+        <div class="callout info">
+          <strong>Why this lesson exists</strong>
+          Complex tables — those with more than one header row, or with both row and column headers — sometimes need the <code>headers</code>+<code>id</code> approach to give screen reader users an unambiguous mapping of every data cell to its headers.
+        </div>
+      </section>
+
+      <section id="scope-vs-headers">
+        <h2><span class="num">2</span> Two techniques compared</h2>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th><code>scope</code></th><th><code>headers</code> + <code>id</code></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>How it works</td><td>Header cell declares which cells it covers (row/col/rowgroup/colgroup)</td><td>Each data cell lists (by ID) which headers describe it</td></tr>
+            <tr><td>Authoring effort</td><td>Low — one attribute per header</td><td>High — ID every header, list IDs on every cell</td></tr>
+            <tr><td>Browser/screen reader support</td><td>Universal in modern tools</td><td>Universal, including older tools</td></tr>
+            <tr><td>Maintainability</td><td>Easy — change header, done</td><td>Hard — must update every cell's <code>headers</code> list if headers change</td></tr>
+            <tr><td>Best for</td><td>Simple tables, single header row/column, grouped headers</td><td>Complex tables with 3+ header levels, irregular layouts, multi-axis data</td></tr>
+            <tr><td>WCAG 2.1 compliance</td><td>Sufficient for SC 1.3.1 (simple/medium tables)</td><td>Sufficient for all tables including most complex</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="when-scope">
+        <h2><span class="num">3</span> When <code>scope</code> is enough</h2>
+        <p>Use <code>scope</code> when:</p>
+        <ul>
+          <li>The table has one header row at the top, or one header column at the left, or both.</li>
+          <li>Grouped headers exist but only one level of grouping (e.g., "Q1" spanning Jan+Feb, with month sub-headers below).</li>
+          <li>Every data cell can be unambiguously associated with one row header and one column header (or column group).</li>
+        </ul>
+        <p>This covers ~90% of real-world tables: pricing comparisons, simple schedules, admin lists, financial summaries.</p>
+        <pre><code>&lt;!-- scope handles this fine --&gt;
+&lt;th scope="col"&gt;Name&lt;/th&gt;
+&lt;th scope="col"&gt;Email&lt;/th&gt;
+&lt;th scope="row"&gt;Ada Lovelace&lt;/th&gt;
+&lt;td&gt;ada@example.com&lt;/td&gt;</code></pre>
+      </section>
+
+      <section id="when-headers">
+        <h2><span class="num">4</span> When you need <code>headers</code>/<code>id</code></h2>
+        <p>Reach for <code>headers</code>+<code>id</code> when:</p>
+        <ul>
+          <li>The table has more than two header levels (e.g., year → quarter → month).</li>
+          <li>A single data cell is described by more than two headers (e.g., a cell at the intersection of a row header, a column header, AND a sub-column header).</li>
+          <li>The layout is irregular — headers in the middle of the table, or headers on multiple sides (top + left + bottom).</li>
+          <li>You're targeting very old screen readers that don't fully support <code>scope</code> (rare today, but relevant in some enterprise environments).</li>
+        </ul>
+        <p>The pattern: give every <code>&lt;th&gt;</code> an <code>id</code>, and on every <code>&lt;td&gt;</code> use the <code>headers</code> attribute to list space-separated IDs of the headers that describe it.</p>
+      </section>
+
+      <section id="decision-rule">
+        <h2><span class="num">5</span> The decision rule</h2>
+        <div class="callout tip">
+          <strong>The four-cell rule</strong>
+          Imagine any data cell in your table. Can you point to <em>exactly one row header</em> and <em>exactly one column header</em> (or column group) that describe it, with no ambiguity? If yes, use <code>scope</code>. If you need to point to a third or fourth header, or the mapping varies by cell, use <code>headers</code>+<code>id</code>.
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Use scope</h4>
+            <p>Single header row + single header column. Or one level of grouped headers. ~90% of tables.</p>
+          </div>
+          <div class="card">
+            <h4>Use headers/id</h4>
+            <p>Multi-level headers (year→quarter→month), irregular layouts, cells needing 3+ headers. ~10% of tables.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="scope-recap">
+        <h2><span class="num">6</span> <code>scope</code> recap</h2>
+        <p>Quick reference for the four <code>scope</code> values, with examples:</p>
+        <pre><code>&lt;!-- Column header --&gt;
+&lt;th scope="col"&gt;Price&lt;/th&gt;
+
+&lt;!-- Row header --&gt;
+&lt;th scope="row"&gt;Apple&lt;/th&gt;
+
+&lt;!-- Header spanning multiple columns --&gt;
+&lt;th scope="colgroup" colspan="2"&gt;Q1 2025&lt;/th&gt;
+
+&lt;!-- Header spanning multiple rows --&gt;
+&lt;th scope="rowgroup" rowspan="3"&gt;Hardware&lt;/th&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always pair <code>scope="colgroup"</code> with <code>colspan</code>, and <code>scope="rowgroup"</code> with <code>rowspan</code>. The browser/screen reader knows the group extent from the span attribute. Without it, the group is unbounded and confusing.
+        </div>
+      </section>
+
+      <section id="headers-example">
+        <h2><span class="num">7</span> <code>headers</code>+<code>id</code> full example</h2>
+        <p>Here's a complex sales table with two header levels (year → quarter) plus a row header. <code>scope</code> alone can't unambiguously map cells because of the nested headers.</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Regional Sales by Year and Quarter&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th id="region" rowspan="2"&gt;Region&lt;/th&gt;
+      &lt;th id="y2023" colspan="2"&gt;2023&lt;/th&gt;
+      &lt;th id="y2024" colspan="2"&gt;2024&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th id="q1-2023" headers="y2023"&gt;Q1&lt;/th&gt;
+      &lt;th id="q2-2023" headers="y2023"&gt;Q2&lt;/th&gt;
+      &lt;th id="q1-2024" headers="y2024"&gt;Q1&lt;/th&gt;
+      &lt;th id="q2-2024" headers="y2024"&gt;Q2&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th id="north" scope="row"&gt;North&lt;/th&gt;
+      &lt;td headers="north y2023 q1-2023"&gt;$1.2M&lt;/td&gt;
+      &lt;td headers="north y2023 q2-2023"&gt;$1.4M&lt;/td&gt;
+      &lt;td headers="north y2024 q1-2024"&gt;$1.5M&lt;/td&gt;
+      &lt;td headers="north y2024 q2-2024"&gt;$1.7M&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th id="south" scope="row"&gt;South&lt;/th&gt;
+      &lt;td headers="south y2023 q1-2023"&gt;$0.9M&lt;/td&gt;
+      &lt;td headers="south y2023 q2-2023"&gt;$1.1M&lt;/td&gt;
+      &lt;td headers="south y2024 q1-2024"&gt;$1.3M&lt;/td&gt;
+      &lt;td headers="south y2024 q2-2024"&gt;$1.5M&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output — complex headers with id/headers</div>
+          <table class="live-table">
+            <caption style="text-align:left; font-weight:600; padding:6px 0;">Regional Sales by Year and Quarter</caption>
+            <thead>
+              <tr>
+                <th id="region" rowspan="2">Region</th>
+                <th id="y2023" colspan="2" style="text-align:center;">2023</th>
+                <th id="y2024" colspan="2" style="text-align:center;">2024</th>
+              </tr>
+              <tr>
+                <th id="q1-2023">Q1</th>
+                <th id="q2-2023">Q2</th>
+                <th id="q1-2024">Q1</th>
+                <th id="q2-2024">Q2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th id="north" scope="row">North</th><td>$1.2M</td><td>$1.4M</td><td>$1.5M</td><td>$1.7M</td></tr>
+              <tr><th id="south" scope="row">South</th><td>$0.9M</td><td>$1.1M</td><td>$1.3M</td><td>$1.5M</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>When a screen reader announces the cell "$1.5M" (row 1, column 4), it should say: <em>"North, 2024, Q1, $1.5M"</em>. The <code>headers</code> list <code>north y2024 q1-2024</code> ensures that mapping.</p>
+        <div class="callout warn">
+          <strong>Maintenance cost</strong>
+          Adding/removing a column in this pattern requires updating IDs on every header cell and every data cell's <code>headers</code> attribute. For this reason, prefer <code>scope</code> wherever possible.
+        </div>
+      </section>
+
+      <section id="wcag">
+        <h2><span class="num">8</span> WCAG 2.1 AA requirements</h2>
+        <p>The relevant WCAG 2.1 success criteria:</p>
+        <table>
+          <thead>
+            <tr><th>SC</th><th>Title</th><th>Level</th><th>What it requires</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1.3.1</td><td>Info and Relationships</td><td>A</td><td>Row/column relationships in tables must be programmatically determinable. <code>scope</code> or <code>headers</code> satisfies this.</td></tr>
+            <tr><td>2.4.6</td><td>Headings and Labels</td><td>AA</td><td>Table headers and captions must be descriptive, not generic.</td></tr>
+            <tr><td>1.3.2</td><td>Meaningful Sequence</td><td>A</td><td>The reading order of table cells must match the visual layout.</td></tr>
+            <tr><td>4.1.2</td><td>Name, Role, Value</td><td>A</td><td>Tables must expose their name (caption), role (table), and state to assistive tech.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Section 508 / EN 301 549</strong>
+          Both US federal and EU public-sector accessibility standards incorporate WCAG 2.1 AA. Tables without proper headers fail compliance and may be legally inaccessible for government services.
+        </div>
+      </section>
+
+      <section id="testing">
+        <h2><span class="num">9</span> Screen reader testing</h2>
+        <p>The only way to truly verify table accessibility is to test with real screen readers. Free options:</p>
+        <div class="grid-3">
+          <div class="card">
+            <h4>NVDA (Windows, free)</h4>
+            <p>Most popular free screen reader. Press <kbd>T</kbd> to jump between tables, <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+arrows to navigate cells.</p>
+          </div>
+          <div class="card">
+            <h4>VoiceOver (Mac, built-in)</h4>
+            <p>Toggle with <kbd>Cmd</kbd>+<kbd>F5</kbd>. Use <kbd>VO</kbd>+<kbd>Cmd</kbd>+<kbd>T</kbd> to jump to next table, arrows to navigate cells.</p>
+          </div>
+          <div class="card">
+            <h4>TalkBack (Android)</h4>
+            <p>Built into Android. Touch navigation by gesture — explore by touch and hear cell + headers announced.</p>
+          </div>
+        </div>
+        <h3>What to listen for</h3>
+        <ul>
+          <li>When you enter the table, the caption is announced.</li>
+          <li>Each cell announces its row header and column header before its value.</li>
+          <li>Grouped headers announce the parent group, then the sub-header, then the value.</li>
+          <li>Empty cells say "blank" rather than nothing (which can confuse users).</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Also use the browser's Accessibility tree (DevTools → Elements → Accessibility tab). It shows the computed accessible name and role of every element. If your <code>&lt;th&gt;</code> doesn't have a name in the tree, screen readers won't see it either.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Impact</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>headers</code>/<code>id</code> on simple tables</td><td>Over-engineered. Hard to maintain.</td><td>Use <code>scope</code> for tables with one row + one column header.</td></tr>
+            <tr><td>Using <code>scope</code> on complex tables that need <code>headers</code></td><td>Screen readers mis-announce cells in irregular layouts.</td><td>Switch to <code>headers</code>+<code>id</code> when cells have 3+ headers.</td></tr>
+            <tr><td>Reusing IDs across tables</td><td><code>headers</code> matches wrong cells.</td><td>Make IDs unique across the entire document.</td></tr>
+            <tr><td>Forgetting <code>headers</code> on the <code>&lt;th&gt;</code> itself</td><td>Nested headers don't chain properly.</td><td>Sub-headers should reference their parent group via <code>headers</code>.</td></tr>
+            <tr><td>Empty cells with no <code>headers</code> mapping</td><td>Screen reader skips, breaking the layout.</td><td>Include empty <code>&lt;td&gt;&lt;/td&gt;</code> or use <code>abbr</code> to clarify.</td></tr>
+            <tr><td>Using <code>abbr</code> for abbreviations without explanation</td><td><code>abbr</code> on <code>&lt;th&gt;</code> should be a short form for screen readers.</td><td>Use <code>abbr</code> as a label that fits a single announcement, not full text.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Add IDs and headers</strong>
+          Take the year/quarter sales table above. Rebuild it without <code>headers</code>/<code>id</code> using only <code>scope</code>. Test in NVDA or VoiceOver. Compare how cells are announced. Notice the difference in clarity.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Decision drill</strong>
+          For each of these tables, decide: scope or headers/id?
+          <ul>
+            <li>A pricing comparison with 3 plans (single header row).</li>
+            <li>A monthly calendar with weekdays as columns and weeks as rows.</li>
+            <li>A multi-year sales report with year → quarter → month headers.</li>
+            <li>An exam scores table with student name + subject as row headers.</li>
+          </ul>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — DevTools accessibility tree</strong>
+          Build a small table with <code>scope</code>. Open Chrome/Firefox DevTools → Elements → Accessibility tab. Find the <code>&lt;td&gt;</code> and verify its accessible name includes the associated header text.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Screen reader test</strong>
+          Install NVDA (Windows) or enable VoiceOver (Mac). Build a complex table with the <code>headers</code>+<code>id</code> approach. Navigate cell-by-cell using arrow keys. Verify each cell announces the correct headers.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome / Edge — full a11y tree</span>
+          <span class="pill yes">Firefox — full</span>
+          <span class="pill yes">Safari + VoiceOver — full</span>
+          <span class="pill yes">NVDA — full scope + headers</span>
+          <span class="pill yes">JAWS — full</span>
+          <span class="pill yes">TalkBack — full</span>
+          <span class="pill limited">Very old screen readers (pre-2010) — prefer headers/id</span>
+        </div>
+        <p>Modern assistive technology supports both <code>scope</code> and <code>headers</code>+<code>id</code> fully. The choice today is about authoring efficiency and table complexity, not compatibility.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Multi-year reports</h4>
+            <p>Year → quarter → month nested headers in financial dashboards. Each cell needs all three headers.</p>
+          </div>
+          <div class="card">
+            <h4>Cross-tabulated data</h4>
+            <p>Statistical tables with row and column headers on multiple sides. Common in census data.</p>
+          </div>
+          <div class="card">
+            <h4>Schedule matrices</h4>
+            <p>Conference agendas with day → track → session. Each cell is described by all three.</p>
+          </div>
+          <div class="card">
+            <h4>Government data</h4>
+            <p>Public-sector compliance tables. Section 508 mandates explicit accessibility for all tables.</p>
+          </div>
+          <div class="card">
+            <h4>Scientific tables</h4>
+            <p>Lab results with experiment → sample → measurement header hierarchy.</p>
+          </div>
+          <div class="card">
+            <h4>Educational materials</h4>
+            <p>Online textbooks with multi-level data tables for visually impaired students.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../02-Grouping-Rows/rowspan-colspan.html">← Previous: rowspan &amp; colspan</a>
+    <a class="next" href="styling-tables.html">Next: Styling Tables →</a>
+  </footer>
+</body>
+</html>

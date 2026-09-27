@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Special URL Schemes — mailto, tel, sms, data, blob — HTML Mastery</title>
+  <meta name="description" content="Special URL schemes in HTML: mailto:, tel:, sms:, data:, blob: URLs. Syntax, parameters (subject, body, cc, bcc), security concerns, real-world examples for click-to-call, click-to-email, generated downloads.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+      word-break: break-all;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .scheme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 16px 0; }
+    .scheme-card {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .scheme-card .scheme-name {
+      display: inline-block;
+      background: var(--brand);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2, .grid-3, .scheme-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.6 · Special Schemes</span>
+    <h1>Special URL Schemes</h1>
+    <p>Beyond <code>http:</code> and <code>https:</code>, browsers understand a family of special URL schemes that trigger native apps, generate downloads, and embed files inline. <code>mailto:</code>, <code>tel:</code>, <code>sms:</code>, <code>data:</code>, <code>blob:</code> — each has its own syntax and security profile.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Schemes Overview</a></li>
+        <li><a href="#mailto">mailto: Scheme</a></li>
+        <li><a href="#tel">tel: Scheme</a></li>
+        <li><a href="#sms">sms: Scheme</a></li>
+        <li><a href="#data">data: URLs</a></li>
+        <li><a href="#blob">blob: URLs</a></li>
+        <li><a href="#other">Other Schemes</a></li>
+        <li><a href="#security">Security Concerns</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Schemes Overview</h2>
+        <p>The first part of any URL — before <code>://</code> or <code>:</code> — is the scheme. Most web links use <code>https</code>, but browsers also recognize a handful of "special" schemes that don't fetch a resource. Instead, they trigger a native app action, generate content inline, or reference in-memory blobs.</p>
+        <div class="scheme-grid">
+          <div class="scheme-card">
+            <span class="scheme-name">mailto:</span>
+            <p>Opens the user's email client with a pre-filled message. Supports multiple recipients, subject, body, cc, bcc.</p>
+          </div>
+          <div class="scheme-card">
+            <span class="scheme-name">tel:</span>
+            <p>Opens the dialer (mobile) or calling app (desktop). Should always use E.164 international format with <code>+</code>.</p>
+          </div>
+          <div class="scheme-card">
+            <span class="scheme-name">sms:</span>
+            <p>Opens the SMS app with a recipient (and optionally body). Syntax varies by platform.</p>
+          </div>
+          <div class="scheme-card">
+            <span class="scheme-name">data:</span>
+            <p>Embeds small resources (text, images, files) directly in the URL. Useful for tiny images, generated downloads.</p>
+          </div>
+          <div class="scheme-card">
+            <span class="scheme-name">blob:</span>
+            <p>References an in-memory <code>Blob</code> object created by JavaScript. Used for large generated files, video streaming.</p>
+          </div>
+          <div class="scheme-card">
+            <span class="scheme-name">javascript:</span>
+            <p>Executes JS in the location bar context. <strong>Deprecated and insecure</strong> — avoid in modern code.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mailto">
+        <h2><span class="num">2</span> <code>mailto:</code> Scheme</h2>
+        <p>Clicking a <code>mailto:</code> link opens the visitor's default email client with one or more fields pre-filled. The format is:</p>
+        <pre><code>mailto:recipient@example.com[,recipient2@example.com]*[?key=value&amp;key=value]</code></pre>
+        <h3>Parameters</h3>
+        <table>
+          <thead>
+            <tr><th>Parameter</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>(none, before <code>?</code>)</td><td>One or more comma-separated "to" addresses</td><td><code>mailto:a@x.com,b@x.com</code></td></tr>
+            <tr><td><code>subject</code></td><td>Pre-fills the Subject line</td><td><code>?subject=Hello</code></td></tr>
+            <tr><td><code>body</code></td><td>Pre-fills the message body</td><td><code>?body=Just%20saying%20hi</code></td></tr>
+            <tr><td><code>cc</code></td><td>Carbon-copy recipients</td><td><code>?cc=boss@x.com</code></td></tr>
+            <tr><td><code>bcc</code></td><td>Blind-carbon-copy recipients</td><td><code>?bcc=audit@x.com</code></td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Simple --&gt;
+&lt;a href="mailto:hello@example.com"&gt;Email us&lt;/a&gt;
+
+&lt;-- Multiple recipients --&gt;
+&lt;a href="mailto:alice@example.com,bob@example.com"&gt;Email both&lt;/a&gt;
+
+&lt;-- With cc and bcc --&gt;
+&lt;a href="mailto:hello@example.com?cc=sales@example.com&amp;bcc=archive@example.com"&gt;
+  Contact us (cc sales, bcc archive)
+&lt;/a&gt;
+
+&lt;-- With subject and body (URL-encoded) --&gt;
+&lt;a href="mailto:hello@example.com?subject=Order%20%2312345&amp;body=Hi%20team%2C%0A%0AMy%20order%20has%20not%20arrived."&gt;
+  Report order issue
+&lt;/a&gt;</code></pre>
+        <div class="demo-box">
+          <a href="mailto:nobody@example.com?subject=Hello%20from%20HTML%20Mastery&body=I%20just%20learned%20about%20mailto%20links%21%0A%0ARegards%2C%0AReader" style="color: var(--brand);">✉️ Click to compose an email →</a>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — URL Encoding</strong>
+          Spaces, ampersands, and newlines must be percent-encoded:
+          <ul>
+            <li>Space → <code>%20</code></li>
+            <li>Line break → <code>%0D%0A</code> (CRLF)</li>
+            <li><code>&amp;</code> → <code>%26</code></li>
+            <li><code>=</code> → <code>%3D</code></li>
+            <li><code>?</code> → <code>%3F</code></li>
+            <li><code>#</code> → <code>%23</code></li>
+          </ul>
+          Otherwise the email client will misparse the parameters. Use <code>encodeURIComponent()</code> in JS to do this safely.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — Multiple Recipients</strong>
+          For multiple <code>to</code> recipients, separate with commas (no spaces). For multiple <code>cc</code> or <code>bcc</code> recipients, the same applies:
+          <code>?cc=a@x.com,b@x.com,c@x.com</code>
+        </div>
+        <h3>mailto: Limitations</h3>
+        <ul>
+          <li><strong>No attachments</strong>: you can't attach files via <code>mailto:</code>. Use a form + server-side mailer instead.</li>
+          <li><strong>No HTML body</strong>: only plain text. HTML email requires server-side rendering.</li>
+          <li><strong>Spam risk</strong>: emails scraped from <code>mailto:</code> links end up on spam lists. Consider using a contact form, or obfuscate with JS.</li>
+          <li><strong>No reliable "send"</strong>: the user can edit/cancel the email before sending. Don't use <code>mailto:</code> for transactional emails that must be sent.</li>
+        </ul>
+      </section>
+
+      <section id="tel">
+        <h2><span class="num">3</span> <code>tel:</code> Scheme</h2>
+        <p>On mobile devices — and increasingly on desktops with calling apps (FaceTime, Skype, Teams) — <code>tel:</code> opens the dialer with a number pre-filled. The user still has to tap "Call".</p>
+        <h3>E.164 Format</h3>
+        <p>Always use international E.164 format: starts with <code>+</code>, followed by country code, then national number. No spaces, dashes, or parentheses in the <code>tel:</code> value (though display text can format them).</p>
+        <pre><code>&lt;!-- US number: +1 (800) 555-1234 --&gt;
+&lt;a href="tel:+18005551234"&gt;+1 (800) 555-1234&lt;/a&gt;
+
+&lt;-- Display formatted, tel: in E.164 --&gt;
+&lt;a href="tel:+18005551234"&gt;Call (800) 555-1234&lt;/a&gt;
+
+&lt;-- UK number: +44 20 7183 8750 --&gt;
+&lt;a href="tel:+442071838750"&gt;+44 20 7183 8750&lt;/a&gt;
+
+&lt;-- Japan: +81 3-1234-5678 --&gt;
+&lt;a href="tel:+81312345678"&gt;+81 3-1234-5678&lt;/a&gt;
+
+&lt;-- With extension (pause) --&gt;
+&lt;a href="tel:+18005551234,1234"&gt;Call support, ext. 1234&lt;/a&gt;
+&lt;-- The comma tells the dialer to wait 2 seconds, then dial 1234. --&gt;
+
+&lt;-- With "wait" (w) — dialer prompts user --&gt;
+&lt;a href="tel:+18005551234;1234"&gt;Call with confirmation&lt;/a&gt;</code></pre>
+        <div class="demo-box">
+          <a href="tel:+18005551234" style="color: var(--brand);">📞 +1 (800) 555-1234</a>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — Local Numbers Without <code>+</code></strong>
+          A Tokyo office number written as <code>tel:03-1234-5678</code> will dial correctly only for callers in Japan. A visitor from abroad using <code>tel:03-1234-5678</code> will fail (or dial a wrong number). Always use <code>tel:+81312345678</code>.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — Always Display the Number</strong>
+          Even with a clickable <code>tel:</code> link, show the human-readable number visibly. Users may want to write it down or call from a different phone. Don't hide the number behind "Click here to call".
+        </div>
+      </section>
+
+      <section id="sms">
+        <h2><span class="num">4</span> <code>sms:</code> Scheme</h2>
+        <p>Opens the SMS app with a recipient pre-filled (and optionally a message body). Support is uneven — iOS and Android use different syntax for the body parameter.</p>
+        <pre><code>&lt;!-- Open SMS app with number filled --&gt;
+&lt;a href="sms:+18005551234"&gt;Text us&lt;/a&gt;
+
+&lt;-- iOS: pre-fill body with &amp;body= --&gt;
+&lt;a href="sms:+18005551234&amp;body=OPTIN"&gt;Text OPTIN to subscribe&lt;/a&gt;
+
+&lt;-- Android (historical): pre-fill body with ?body= --&gt;
+&lt;a href="sms:+18005551234?body=OPTIN"&gt;Text OPTIN to subscribe&lt;/a&gt;
+
+&lt;-- Multiple recipients (commas, no spaces) --&gt;
+&lt;a href="sms:+18005551234,+18005555678"&gt;Text both&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Inconsistent Cross-Platform Syntax</strong>
+          There's no universal syntax for the body parameter. iOS uses <code>&amp;body=</code>; Android historically used <code>?body=</code>. The WHATWG spec says <code>?body=</code>, but iOS still requires <code>&amp;body=</code>. Feature-detect or live with the inconsistency. For maximum reliability, link just the number and put the message in the link text: "Text 'OPTIN' to 800-555-1234".
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — Modern WhatsApp / Telegram Deep Links</strong>
+          Many messaging apps have their own URL schemes:
+          <ul>
+            <li><code>https://wa.me/18005551234?text=Hello</code> — WhatsApp</li>
+            <li><code>https://t.me/share/url?url=...&amp;text=...</code> — Telegram</li>
+            <li><code>sgnl://signal.me/#p/+18005551234</code> — Signal</li>
+          </ul>
+          These are more reliable than <code>sms:</code> across platforms.
+        </div>
+      </section>
+
+      <section id="data">
+        <h2><span class="num">5</span> <code>data:</code> URLs</h2>
+        <p>The <code>data:</code> scheme lets you embed small resources — text, images, audio, generated files — directly in the URL itself. The browser doesn't make an HTTP request; the content is decoded from the URL.</p>
+        <h3>Syntax</h3>
+        <pre><code>data:[&lt;mediatype&gt;][;base64],&lt;data&gt;</code></pre>
+        <ul>
+          <li><strong>mediatype</strong>: MIME type like <code>text/plain</code>, <code>image/png</code>, <code>application/pdf</code>. Defaults to <code>text/plain;charset=US-ASCII</code>.</li>
+          <li><strong>;base64</strong>: optional; indicates the data is base64-encoded.</li>
+          <li><strong>data</strong>: the actual content (URL-encoded if not base64).</li>
+        </ul>
+        <h3>Examples</h3>
+        <pre><code>&lt;!-- Plain text --&gt;
+&lt;a href="data:text/plain;charset=utf-8,Hello%20World" download="hello.txt"&gt;
+  Download hello.txt
+&lt;/a&gt;
+
+&lt;-- HTML --&gt;
+&lt;a href="data:text/html;charset=utf-8,&lt;h1&gt;Hi&lt;/h1&gt;"&gt;Open HTML&lt;/a&gt;
+
+&lt;-- Tiny PNG (base64) --&gt;
+&lt;img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" alt="1x1 red pixel"&gt;
+
+&lt;-- Generated CSV download --&gt;
+&lt;a href="data:text/csv;charset=utf-8,Name,Email%0Aalice,alice@x.com%0Abob,bob@x.com"
+   download="contacts.csv"&gt;
+  Download CSV
+&lt;/a&gt;
+
+&lt;-- Inline SVG --&gt;
+&lt;img src="data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;circle cx='50' cy='50' r='40' fill='red'/&gt;&lt;/svg&gt;" alt="red circle"&gt;</code></pre>
+        <div class="demo-box">
+          <a href="data:text/plain;charset=utf-8,Hello%20from%20HTML%20Mastery%21%0AThis%20file%20was%20generated%20from%20a%20data%3A%20URL." download="generated-note.txt" style="color: var(--brand);">⬇ Download a text file generated from a data: URL</a>
+        </div>
+        <h3>When to Use data: URLs</h3>
+        <ul>
+          <li>Tiny images (1x1 tracking pixels, small icons) — saves HTTP requests.</li>
+          <li>CSS background-image for tiny decorative patterns.</li>
+          <li>Generated downloads (CSV, JSON, text files) — when the content is small.</li>
+          <li>Inline SVG icons used once.</li>
+        </ul>
+        <h3>When NOT to Use data: URLs</h3>
+        <ul>
+          <li>Large files — base64 encoding inflates size by ~33%, and the URL is cached as part of HTML (no separate cache).</li>
+          <li>Top-level navigation — Firefox blocks <code>data:</code> URLs from loading as top-level documents for security.</li>
+          <li>Files that change frequently — can't be cached independently.</li>
+          <li>Files over ~4KB — some browsers limit URL length.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake — Security: Top-Level data: Navigation</strong>
+          Firefox blocks top-level navigation to <code>data:</code> URLs (e.g., <code>&lt;a href="data:text/html,..."&gt;</code>) since 2017. Chrome did the same in 2021. This prevents phishing attacks where a malicious <code>data:</code> URL impersonates a real site. Use <code>data:</code> only for inline resources (images, downloads) — never for navigation.
+        </div>
+      </section>
+
+      <section id="blob">
+        <h2><span class="num">6</span> <code>blob:</code> URLs</h2>
+        <p>Created by JavaScript, <code>blob:</code> URLs reference in-memory <code>Blob</code> objects. They're used for large generated files, video streaming, image uploads preview, and more.</p>
+        <pre><code>&lt;!-- Generate a CSV file in JS and offer it as a download --&gt;
+&lt;a id="download-link"&gt;Download generated CSV&lt;/a&gt;
+
+&lt;script&gt;
+  const csv = "Name,Email\nalice,alice@x.com\nbob,bob@x.com";
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.getElementById("download-link");
+  link.href = url;
+  link.download = "contacts.csv";
+
+  // Important: revoke when no longer needed
+  link.addEventListener("click", () =&gt; {
+    setTimeout(() =&gt; URL.revokeObjectURL(url), 1000);
+  });
+&lt;/script&gt;</code></pre>
+        <h3>Why blob: vs data:?</h3>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th>data:</th><th>blob:</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Encoding overhead</td><td>~33% (base64)</td><td>None — raw bytes</td></tr>
+            <tr><td>Lifetime</td><td>As long as URL exists</td><td>Until <code>revokeObjectURL()</code> or page unload</td></tr>
+            <tr><td>Size limits</td><td>Browser-dependent (~2MB typical)</td><td>Available memory</td></tr>
+            <tr><td>Cacheable</td><td>Yes (with URL)</td><td>No (in-memory)</td></tr>
+            <tr><td>Created by</td><td>Anyone (just text)</td><td>JavaScript only</td></tr>
+            <tr><td>Use case</td><td>Tiny static files</td><td>Large generated files, streaming</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip — Always Revoke blob: URLs</strong>
+          Each <code>URL.createObjectURL()</code> holds the Blob in memory until revoked. Long-running apps that create many blob URLs (e.g., photo galleries) will leak memory. Always call <code>URL.revokeObjectURL(url)</code> when done — typically after the download completes or the element is removed from the DOM.
+        </div>
+        <h3>Streaming Video with MediaSource + blob:</h3>
+        <p>Video players (YouTube, Netflix) use <code>MediaSource</code> + <code>blob:</code> URLs to stream video chunks:</p>
+        <pre><code>const mediaSource = new MediaSource();
+const video = document.querySelector("video");
+video.src = URL.createObjectURL(mediaSource);
+
+mediaSource.addEventListener("sourceopen", () =&gt; {
+  const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.4d401e"');
+  // ... append video chunks to sourceBuffer ...
+});</code></pre>
+      </section>
+
+      <section id="other">
+        <h2><span class="num">7</span> Other Schemes You'll Encounter</h2>
+        <table>
+          <thead>
+            <tr><th>Scheme</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>https:</code></td><td>Standard web navigation</td><td><code>https://example.com</code></td></tr>
+            <tr><td><code>http:</code></td><td>Unencrypted web (avoid)</td><td><code>http://intranet.local</code></td></tr>
+            <tr><td><code>ftp:</code></td><td>File Transfer Protocol (legacy)</td><td><code>ftp://files.example.com</code></td></tr>
+            <tr><td><code>file:</code></td><td>Local filesystem</td><td><code>file:///home/user/doc.html</code></td></tr>
+            <tr><td><code>ws:</code> / <code>wss:</code></td><td>WebSocket protocol</td><td><code>wss://chat.example.com/socket</code></td></tr>
+            <tr><td><code>javascript:</code></td><td>Execute JS in URL context (deprecated)</td><td><code>javascript:void(0)</code> — AVOID</td></tr>
+            <tr><td><code>whatsapp:</code>, <code>tg:</code>, <code>skype:</code></td><td>Deep-link to native messaging apps</td><td><code>whatsapp://send?text=Hello</code></td></tr>
+            <tr><td><code>geo:</code></td><td>Open maps app at coordinates</td><td><code>geo:37.7749,-122.4194</code></td></tr>
+            <tr><td><code>intent:</code> (Android)</td><td>Android Intent deep-link</td><td>App-specific</td></tr>
+            <tr><td><code>itms-apps:</code></td><td>iOS App Store</td><td><code>itms-apps://apps.apple.com/app/id123</code></td></tr>
+            <tr><td><code>market:</code></td><td>Google Play Store</td><td><code>market://details?id=com.example.app</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="security">
+        <h2><span class="num">8</span> Security Concerns</h2>
+        <h3>1. Phishing via <code>data:</code> URLs</h3>
+        <p>A malicious <code>data:text/html</code> URL can render a fake login form. Modern browsers block top-level navigation to <code>data:</code> URLs to prevent this.</p>
+        <h3>2. Spam Harvesting via <code>mailto:</code></h3>
+        <p>Email scrapers crawl websites for <code>mailto:</code> links. Common defenses:</p>
+        <ul>
+          <li>Use a contact form instead.</li>
+          <li>Obfuscate the address with JS: store as <code>data-user="hello" data-domain="example.com"</code> and reconstruct on click.</li>
+          <li>Display as "hello [at] example [dot] com" — humans understand, scrapers miss.</li>
+        </ul>
+        <pre><code>&lt;!-- JS-based email obfuscation --&gt;
+&lt;a href="#" data-user="hello" data-domain="example.com"
+   onclick="this.href='mailto:'+this.dataset.user+'@'+this.dataset.domain"&gt;
+  Email us
+&lt;/a&gt;</code></pre>
+        <h3>3. <code>tel:</code> Premium Rate Fraud</h3>
+        <p>Malicious sites may auto-dial premium-rate numbers via <code>tel:</code>. Mobile OSes now require user confirmation before dialing — but always display the number visibly so users can verify.</p>
+        <h3>4. <code>javascript:</code> URLs = XSS Vector</h3>
+        <p>Any time you accept user input and put it into a <code>href</code>, you risk XSS. Always sanitize URLs — only allow <code>https:</code>, <code>mailto:</code>, <code>tel:</code>, and known-safe schemes. Block <code>javascript:</code> entirely.</p>
+        <pre><code>function sanitizeUrl(url) {
+  try {
+    const u = new URL(url);
+    if (['https:', 'mailto:', 'tel:', 'sms:'].includes(u.protocol)) return url;
+    return '#';
+  } catch { return '#'; }
+}</code></pre>
+        <h3>5. Blob: URL Lifetimes</h3>
+        <p>Blob URLs persist for the page's lifetime. If a malicious script can grab a blob URL, it can access the underlying data (e.g., user-uploaded files). Use Content Security Policy to mitigate.</p>
+        <div class="callout warn">
+          <strong>Common Mistake — CSP Without <code>blob:</code> Allowance</strong>
+          If you set <code>Content-Security-Policy: default-src 'self'</code>, blob URLs for media will be blocked. Add <code>blob:</code> explicitly where needed: <code>media-src 'self' blob:</code>.
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Email with Body</strong>
+          Build a mailto link to <code>support@yoursite.com</code> with subject "Bug report" and a body containing two paragraphs. URL-encode all special characters. Verify it opens in your email client with the fields pre-filled.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — International Phone</strong>
+          Write a clickable phone link for a Berlin office: <code>+49 30 12345678</code>. The display text should be in German format; the <code>tel:</code> value should be E.164.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Generated CSV via data: URL</strong>
+          Create a link that downloads a CSV file with three rows of fake contact data. Use a <code>data:text/csv</code> URL with the <code>download</code> attribute. Verify the file opens correctly in a spreadsheet.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Blob URL Download</strong>
+          Write JavaScript that builds a JSON object, converts it to a Blob, creates a <code>blob:</code> URL, and offers it as a download via an <code>&lt;a download&gt;</code>. Revoke the URL after the click.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — URL Sanitizer</strong>
+          Write a JavaScript function <code>sanitizeUrl(input)</code> that returns the URL if it uses a safe scheme (<code>https</code>, <code>mailto</code>, <code>tel</code>, <code>sms</code>) or <code>'#'</code> otherwise. Test with malicious inputs like <code>javascript:alert(1)</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — WhatsApp Deep Link</strong>
+          Build a "Share on WhatsApp" button that opens WhatsApp with the current page URL pre-filled as the message. Use the <code>https://wa.me/</code> scheme. Test on mobile (it should open the WhatsApp app).
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Unencoded spaces in mailto body</td><td>Body truncates at first space.</td><td>Use <code>%20</code> for spaces, <code>%0D%0A</code> for newlines.</td></tr>
+            <tr><td><code>tel:</code> without <code>+</code></td><td>Fails for international callers.</td><td>Always use E.164 format.</td></tr>
+            <tr><td>SMS body parameter wrong per platform</td><td>iOS vs Android differ on <code>?body=</code> vs <code>&amp;body=</code>.</td><td>Link just the number; put message in link text.</td></tr>
+            <tr><td>Top-level <code>data:text/html</code> navigation</td><td>Blocked by modern browsers (security).</td><td>Use only for inline resources (images, downloads).</td></tr>
+            <tr><td>Large files as data: URLs</td><td>~33% size inflation; no separate cache.</td><td>Use blob: URLs or serve as a file.</td></tr>
+            <tr><td>Forget to revoke <code>blob:</code> URLs</td><td>Memory leak in long-running apps.</td><td>Call <code>URL.revokeObjectURL()</code> after use.</td></tr>
+            <tr><td>Raw email in <code>mailto:</code></td><td>Scraped by spammers.</td><td>Obfuscate with JS or use a contact form.</td></tr>
+            <tr><td><code>javascript:</code> URLs in user-generated links</td><td>XSS vulnerability.</td><td>Sanitize URLs; only allow safe schemes.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Click-to-Call CTAs</h4>
+            <p>Restaurants, clinics, plumbers: phone numbers rendered as <code>tel:</code> links. Critical for mobile conversions.</p>
+          </div>
+          <div class="card">
+            <h4>Contact Forms Backup</h4>
+            <p>Even with a contact form, a <code>mailto:</code> link in the footer is a fallback for users who prefer their email client.</p>
+          </div>
+          <div class="card">
+            <h4>SMS Opt-In</h4>
+            <p>"Text JOIN to 12345" prompts: a <code>sms:</code> link pre-fills the message. Common in marketing.</p>
+          </div>
+          <div class="card">
+            <h4>Generated Reports</h4>
+            <p>Browser-based tools (filters, charts, formatters) generate CSV/JSON and offer download via <code>blob:</code> URLs.</p>
+          </div>
+          <div class="card">
+            <h4>In-Line Tiny Images</h4>
+            <p>1x1 tracking pixels, small icons, decorative SVG patterns — embedded as <code>data:</code> URLs to save HTTP requests.</p>
+          </div>
+          <div class="card">
+            <h4>Streaming Media</h4>
+            <p>YouTube, Netflix use <code>MediaSource</code> + <code>blob:</code> URLs to stream video chunks adaptively.</p>
+          </div>
+          <div class="card">
+            <h4>Share Buttons</h4>
+            <p>WhatsApp, Telegram, Signal deep links enable one-tap sharing — cross-platform reach.</p>
+          </div>
+          <div class="card">
+            <h4>Map Deep Links</h4>
+            <p><code>geo:</code> URLs open Google/Apple Maps at coordinates — useful for store locators and event pages.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">12</span> Summary</h2>
+        <ul>
+          <li><code>mailto:</code> opens email clients; supports subject, body, cc, bcc — all URL-encoded.</li>
+          <li><code>tel:</code> opens dialers; always use E.164 format with <code>+</code> and country code.</li>
+          <li><code>sms:</code> opens SMS apps; body parameter syntax varies between iOS and Android.</li>
+          <li><code>data:</code> URLs embed small files inline; use only for images and small downloads — never top-level navigation.</li>
+          <li><code>blob:</code> URLs reference in-memory Blobs; perfect for large generated files and streaming. Always revoke when done.</li>
+          <li><code>javascript:</code> URLs are deprecated and insecure — use buttons instead.</li>
+          <li>Always URL-encode special characters in scheme parameters.</li>
+          <li>Sanitize user-input URLs to prevent XSS — only allow known-safe schemes.</li>
+          <li>Consider privacy (email scraping) and platform differences (SMS body syntax) when choosing schemes.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>WHATWG URL Standard</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="fragments.html">← Previous: Fragment Identifiers</a>
+      <a href="../03-Page-Navigation/internal-nav.html">Next: Internal Page Navigation →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Special URL Schemes</p>
+  </footer>
+</body>
+</html>

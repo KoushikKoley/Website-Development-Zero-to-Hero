@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prerequisites — HTML Mastery</title>
+  <meta name="description" content="The honest list of what you need before learning HTML: basic computer literacy, a text editor, and a browser. No prior coding experience required.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 {
+      font-size: 0.8rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px;
+    }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .checklist { list-style: none; padding: 0; margin: 14px 0; }
+    .checklist li {
+      padding: 12px 16px 12px 48px; position: relative;
+      background: #f8fafc; border: 1px solid var(--line);
+      border-radius: 10px; margin-bottom: 8px;
+    }
+    .checklist li::before {
+      content: "☐"; position: absolute; left: 16px; top: 8px;
+      font-size: 1.4rem; color: var(--brand);
+    }
+    .checklist li.done::before { content: "☑"; color: var(--success); }
+    .checklist li.done { opacity: 0.65; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav {
+      display: flex; justify-content: space-between;
+      max-width: 1200px; margin: 0 auto 12px;
+    }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 0 · Getting Started</span>
+    <h1>Prerequisites</h1>
+    <p>You do not need to know how to program. You need only three things: a computer, a text editor, and a browser. This page confirms what you have and helps you install what you don't.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#honest">The Honest Truth</a></li>
+        <li><a href="#literacy">Computer Literacy</a></li>
+        <li><a href="#editor">Text Editor</a></li>
+        <li><a href="#browser">Web Browser</a></li>
+        <li><a href="#tools">Tools To Install</a></li>
+        <li><a href="#verify">Verify Your Setup</a></li>
+        <li><a href="#nice">Nice-to-Haves</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="honest">
+        <h2><span class="num">1</span> The Honest Truth</h2>
+        <p>If you can read this page, you can learn HTML. There are no math prerequisites, no programming prerequisites, no CS degree required. The barrier to entry is among the lowest in technology — yet the ceiling is genuinely high. You can be productive in an afternoon and still be discovering new things a decade later.</p>
+        <p>What you <em>do</em> need is the willingness to type code, observe what happens, and not be afraid to break things. HTML is forgiving — the browser will almost always render something, even from broken markup. That forgiveness is a feature, not a bug: it lets you experiment freely.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If you've ever used a word processor and clicked a "Bold" or "Italic" button, you already understand the concept of marking up text. HTML is the same idea, just typed out as plain-text tags instead of clicked in a toolbar.
+        </div>
+      </section>
+
+      <section id="literacy">
+        <h2><span class="num">2</span> Computer Literacy</h2>
+        <p>HTML assumes a small but real set of basic computer skills. Below is what you should be comfortable with before continuing. If any item feels unfamiliar, spend 30 minutes on a YouTube tutorial before proceeding.</p>
+        <ul class="checklist">
+          <li class="done"><strong>Save a file.</strong> Use Save As, choose a folder, give the file a name with an extension like <code>.html</code>.</li>
+          <li class="done"><strong>Open a file by double-clicking.</strong> This launches the file's default handler (browser for <code>.html</code>).</li>
+          <li class="done"><strong>Navigate folders.</strong> Use Finder (macOS), Explorer (Windows), or your file manager of choice.</li>
+          <li class="done"><strong>Use a keyboard comfortably.</strong> No specific speed required, but you should find typing tolerable.</li>
+          <li class="done"><strong>Use copy, cut, paste.</strong> <span class="kbd">Ctrl</span>/<span class="kbd">⌘</span>+<span class="kbd">C</span>/<span class="kbd">X</span>/<span class="kbd">V</span>.</li>
+          <li class="done"><strong>Switch windows.</strong> <span class="kbd">Alt</span>+<span class="kbd">Tab</span> (Windows/Linux) or <span class="kbd">⌘</span>+<span class="kbd">Tab</span> (macOS).</li>
+          <li><strong>Open a terminal.</strong> Optional but useful. We'll cover the minimum commands you need.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't confuse "I'm not technical" with "I can't do this". "Technical" is a skill you build, not a personality trait. Everyone who writes code started not knowing how to write code.
+        </div>
+      </section>
+
+      <section id="editor">
+        <h2><span class="num">3</span> A Text Editor</h2>
+        <p>HTML is plain text. You can write it in any editor that saves plain text — Notepad, TextEdit, gedit, Nano, Vim. But a proper code editor gives you syntax highlighting, autocompletion, and live previews that will save you hours.</p>
+        <div class="grid-2">
+          <div class="card"><h4>VS Code</h4><p>Free, open-source, industry standard. Recommended for this curriculum.</p></div>
+          <div class="card"><h4>Sublime Text</h4><p>Fast, lightweight. Free evaluation; license for long-term use.</p></div>
+          <div class="card"><h4>JetBrains WebStorm</h4><p>Powerful IDE. Free for students; paid otherwise.</p></div>
+          <div class="card"><h4>Cursor</h4><p>VS Code fork with built-in AI. Good if you already use AI assistance.</p></div>
+          <div class="card"><h4>Neovim / Emacs</h4><p>For terminal lovers. Steeper learning curve; unmatched once mastered.</p></div>
+          <div class="card"><h4>Replit / StackBlitz</h4><p>Browser-based. Zero install; great for trying things on a phone or tablet.</p></div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Whichever editor you choose, learn its keyboard shortcuts for: comment toggle, duplicate line, move line up/down, multi-cursor. These five shortcuts double your editing speed.
+        </div>
+      </section>
+
+      <section id="browser">
+        <h2><span class="num">4</span> A Web Browser</h2>
+        <p>Any modern browser works. For development we recommend two installed side by side so you can cross-check rendering. See <a href="how-to-use.html#browsers">How To Use → Browser Choice</a> for details.</p>
+        <table>
+          <thead><tr><th>Browser</th><th>Engine</th><th>Recommended role</th></tr></thead>
+          <tbody>
+            <tr><td>Chrome / Edge</td><td>Blink / Chromium</td><td>Primary dev browser</td></tr>
+            <tr><td>Firefox Developer Edition</td><td>Gecko</td><td>Secondary, with deep a11y tools</td></tr>
+            <tr><td>Safari (macOS only)</td><td>WebKit</td><td>Cross-test for iOS / iPadOS users</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="tools">
+        <h2><span class="num">5</span> Tools To Install</h2>
+        <p>Here is the minimum toolset to install before starting Section 1. All are free.</p>
+        <h3>Required</h3>
+        <ul class="checklist">
+          <li><strong>Visual Studio Code</strong> — download from <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a>. Available for Windows, macOS, Linux.</li>
+          <li><strong>VS Code extension: Live Server</strong> — open VS Code → Extensions (the squares icon in the sidebar, or <span class="kbd">Ctrl</span>/<span class="kbd">⌘</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span>) → search "Live Server" by Ritwick Dey → Install.</li>
+          <li><strong>A modern browser</strong> — Chrome, Edge, Firefox, or Safari. Already installed on most systems.</li>
+        </ul>
+        <h3>Strongly Recommended</h3>
+        <ul class="checklist">
+          <li><strong>VS Code extension: Prettier</strong> — formats your code on save.</li>
+          <li><strong>VS Code extension: Auto Rename Tag</strong> — keeps opening and closing tags in sync when you rename one.</li>
+          <li><strong>VS Code extension: HTMLHint</strong> — inline HTML linting.</li>
+          <li><strong>Browser extension: Web Developer</strong> — adds a toolbar with one-click validation, outlining, and inspector shortcuts.</li>
+        </ul>
+        <h3>Optional (advanced)</h3>
+        <ul class="checklist">
+          <li><strong>Git</strong> — version control, so you can save snapshots of your work. Download from <a href="https://git-scm.com/" target="_blank" rel="noopener">git-scm.com</a>.</li>
+          <li><strong>Node.js LTS</strong> — needed for some tooling later in the curriculum. Download from <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a>.</li>
+          <li><strong>A free GitHub account</strong> — to back up your projects and share them.</li>
+        </ul>
+      </section>
+
+      <section id="verify">
+        <h2><span class="num">6</span> Verify Your Setup</h2>
+        <p>Let's confirm everything works. Do these steps in order:</p>
+        <ol class="checklist">
+          <li>Create a new folder called <code>html-mastery</code> somewhere easy to find, like your Desktop.</li>
+          <li>Open VS Code → File → Open Folder → select <code>html-mastery</code>.</li>
+          <li>Inside the folder, create a new file called <code>hello.html</code>.</li>
+          <li>Type the following exactly:</li>
+        </ol>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Setup Test&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Hello, HTML!&lt;/h1&gt;
+  &lt;p&gt;If you can read this in the browser, your setup is complete.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <ol start="5" class="checklist">
+          <li>Save the file (<span class="kbd">Ctrl</span>/<span class="kbd">⌘</span>+<span class="kbd">S</span>).</li>
+          <li>Right-click in the editor → <strong>Open with Live Server</strong>. (Or click "Go Live" in the VS Code status bar at the bottom.)</li>
+          <li>Your default browser should open to <code>http://127.0.0.1:5500/hello.html</code> showing your heading and paragraph.</li>
+        </ol>
+        <div class="callout exercise">
+          <strong>Try it yourself — 2 minutes</strong>
+          Change the <code>&lt;h1&gt;</code> text to something personal ("Hi, my name is …"). Save. Watch the browser refresh automatically. If it did, Live Server is working.
+        </div>
+      </section>
+
+      <section id="nice">
+        <h2><span class="num">7</span> Nice-to-Haves</h2>
+        <p>Not required, but they make the journey smoother:</p>
+        <div class="grid-2">
+          <div class="card"><h4>A second monitor</h4><p>Editor on one screen, browser on the other. The single biggest quality-of-life upgrade for web work.</p></div>
+          <div class="card"><h4>A notebook</h4><p>Paper, not digital. Sketch DOM trees, jot mnemonics. Writing by hand reinforces memory.</p></div>
+          <div class="card"><h4>A coffee / tea ritual</h4><p>Anything that signals to your brain: "this is study time."</p></div>
+          <div class="card"><h4>An accountability partner</h4><p>Someone else learning HTML too. Compare exercises weekly.</p></div>
+          <div class="card"><h4>Color contrast checker</h4><p>The WebAIM Contrast Checker browser extension. Helps with accessibility lessons later.</p></div>
+          <div class="card"><h4>MDN bookmark</h4><p>Pin <a href="https://developer.mozilla.org/" target="_blank" rel="noopener">developer.mozilla.org</a>. You'll visit it constantly.</p></div>
+        </div>
+      </section>
+
+      <section id="faq">
+        <h2><span class="num">8</span> Frequently Asked Questions</h2>
+        <h3>Do I need to know CSS or JavaScript first?</h3>
+        <p>No. HTML is independent. You can build a complete, useful page with HTML alone. CSS (styling) and JavaScript (interactivity) come later, in separate curricula.</p>
+        <h3>I have a Chromebook / iPad / phone. Can I still learn?</h3>
+        <p>Yes. Use <a href="https://replit.com/" target="_blank" rel="noopener">Replit</a> or <a href="https://stackblitz.com/" target="_blank" rel="noopener">StackBlitz</a> in your browser — no install needed. The experience is more cramped than a laptop, but workable.</p>
+        <h3>My computer is 10 years old. Will it work?</h3>
+        <p>Yes. VS Code and a browser run on hardware from 2014 onward. If your machine is older, use a cloud editor like Replit.</p>
+        <h3>Do I need to pay for anything?</h3>
+        <p>No. Everything in this curriculum is free. VS Code, browsers, the W3C validator, MDN — all free.</p>
+        <h3>How fast should I go?</h3>
+        <p>Slowly enough to do every exercise, fast enough to maintain momentum. 30 focused minutes a day beats 5 hours on Saturday. Aim for daily contact.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Keep a "learning journal" file (<code>journal.md</code>) in your project folder. Each day, write 3 bullet points: one thing you learned, one thing that confused you, one thing you want to look up tomorrow. This compounds.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="how-to-use.html">← Previous: How To Use</a>
+      <a href="../01-HTML-Fundamentals/01-What-is-HTML/index.html">Next: What Is HTML →</a>
+    </div>
+    <p>HTML Mastery — Section 0 · Getting Started · Prerequisites</p>
+  </footer>
+</body>
+</html>

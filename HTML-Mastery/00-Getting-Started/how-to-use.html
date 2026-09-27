@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How To Use This Project — HTML Mastery</title>
+  <meta name="description" content="A practical guide to getting the most out of HTML Mastery: opening files, recommended reading order, doing exercises, using browser dev tools, validating your HTML, and joining communities.">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #16a34a 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: #cbd5e1;
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px;
+      margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+    }
+    nav.toc {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+    nav.toc h2 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      margin: 0 0 12px;
+    }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px;
+      font-size: 1.7rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .steps { counter-reset: step; padding: 0; list-style: none; }
+    .steps li {
+      counter-increment: step;
+      position: relative;
+      padding: 16px 18px 16px 56px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute; left: 14px; top: 14px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .kbd {
+      display: inline-block;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.85em;
+      color: var(--ink);
+    }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+    th { background: #f1f5f9; font-weight: 600; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav {
+      display: flex; justify-content: space-between;
+      max-width: 1200px; margin: 0 auto 12px;
+    }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 0 · Getting Started</span>
+    <h1>How To Use This Project</h1>
+    <p>A 15-minute orientation that will make every subsequent hour three times more productive. Set up your environment, learn the reading rhythm, and meet your dev tools.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#open">Opening Files</a></li>
+        <li><a href="#order">Reading Order</a></li>
+        <li><a href="#exercises">Doing Exercises</a></li>
+        <li><a href="#devtools">Browser Dev Tools</a></li>
+        <li><a href="#validator">Validating HTML</a></li>
+        <li><a href="#vscode">VS Code Setup</a></li>
+        <li><a href="#browsers">Browser Choice</a></li>
+        <li><a href="#community">Joining Communities</a></li>
+        <li><a href="#workflow">Your Daily Workflow</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="open">
+        <h2><span class="num">1</span> Opening Files</h2>
+        <p>This project is a collection of static <code>.html</code> files. They will open in any browser on any operating system without a server. There are three common ways to open them:</p>
+        <div class="grid-2">
+          <div class="card"><h4>Double-click</h4><p>Open the file's folder in your OS file manager and double-click. The file opens with your default browser using the <code>file://</code> protocol. Great for reading.</p></div>
+          <div class="card"><h4>Drag &amp; drop</h4><p>Drag the <code>.html</code> file onto an open browser window. Useful when your default browser differs from the one you develop in.</p></div>
+          <div class="card"><h4>Live Server (recommended)</h4><p>The VS Code Live Server extension serves the file over <code>http://127.0.0.1:5500/</code> and auto-refreshes on save. Covered in detail below.</p></div>
+          <div class="card"><h4>CLI</h4><p>Run <code>python -m http.server</code> or <code>npx serve</code> inside the project folder for a quick local server.</p></div>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Some features (like <code>fetch()</code> of local JSON, ES modules, or video with captions) won't work over <code>file://</code> due to browser security rules. Get in the habit of using Live Server for everything.
+        </div>
+      </section>
+
+      <section id="order">
+        <h2><span class="num">2</span> Recommended Reading Order</h2>
+        <p>The curriculum is sequential — each section assumes you've internalised the previous one. If you skip ahead, you'll encounter terms you haven't been taught yet. Here is the canonical path:</p>
+        <ol class="steps">
+          <li><strong>Section 0 — Getting Started</strong> (this section). Finish the three pages here before moving on.</li>
+          <li><strong>Section 1 — HTML Fundamentals.</strong> What HTML is, document structure, elements, attributes. The most important section; do not skim.</li>
+          <li><strong>Section 2 — Text Formatting.</strong> Headings, paragraphs, lists, emphasis, quotes, code blocks.</li>
+          <li><strong>Section 3 — Links &amp; Navigation.</strong> Anchors, URLs, target attributes, email links, download links.</li>
+          <li><strong>Section 4 — Media &amp; Graphics.</strong> Images, picture, audio, video, iframes, SVG, canvas.</li>
+          <li><strong>Section 5 — Tables.</strong> Tabular data with proper semantics and accessibility.</li>
+          <li><strong>Section 6 — Forms.</strong> Inputs, labels, validation, accessibility, and UX patterns.</li>
+          <li><strong>Section 7 — Semantic HTML.</strong> <code>header</code>, <code>main</code>, <code>article</code>, <code>nav</code>, <code>aside</code>, <code>footer</code>, headings.</li>
+          <li><strong>Section 8 — Advanced Features.</strong> Templates, web components, custom elements, dialog, popover.</li>
+          <li><strong>Section 9 — Best Practices.</strong> Performance, SEO, accessibility, progressive enhancement.</li>
+          <li><strong>Section 10 — Projects.</strong> Build a personal site, a portfolio, a documentation page, and a multi-step form.</li>
+          <li><strong>Section 11 — Reference.</strong> Cheatsheets and element lists for daily lookup.</li>
+        </ol>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">3</span> Doing Exercises</h2>
+        <p>Every page ends with one or more <span class="callout exercise" style="display:inline-block;padding:2px 8px;">Try it yourself</span> blocks. These are not optional. Reading about a <code>&lt;form&gt;</code> is not the same as typing one. The exercises are designed to be doable in 5–15 minutes each.</p>
+        <h3>How to make the most of exercises</h3>
+        <ul>
+          <li><strong>Type the code by hand.</strong> Don't copy-paste. The act of typing — and the small typos you'll make and fix — is where learning happens.</li>
+          <li><strong>Break it on purpose.</strong> After you get a working example, deliberately remove a tag, misspell an attribute, or nest things wrongly. Watch what the browser does. This builds a mental model of error recovery.</li>
+          <li><strong>Keep an "experiments" folder.</strong> A junk drawer of <code>test1.html</code>, <code>form-playground.html</code>, etc. Refer back to it later.</li>
+          <li><strong>Solve before peeking.</strong> If an exercise shows a solution, try it yourself first. Only reveal the answer when you're stuck for 10+ minutes.</li>
+        </ul>
+        <div class="callout exercise">
+          <strong>Try it yourself — 5 minutes</strong>
+          Create a file called <code>first-exercise.html</code>. Reproduce this exact structure from memory:
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;My First Exercise&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;I did it!&lt;/h1&gt;
+  &lt;p&gt;Typed by hand.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          Open it in your browser. Modify the <code>&lt;h1&gt;</code> text, save, refresh. Notice the instant feedback loop — that's the magic of web development.
+        </div>
+      </section>
+
+      <section id="devtools">
+        <h2><span class="num">4</span> Browser Dev Tools</h2>
+        <p>Every modern browser ships with a powerful set of developer tools. They are your X-ray vision into the page. Open them now in any browser with:</p>
+        <table>
+          <thead><tr><th>OS</th><th>Chrome / Edge</th><th>Firefox</th><th>Safari</th></tr></thead>
+          <tbody>
+            <tr><td>Windows / Linux</td><td><span class="kbd">F12</span> or <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">I</span></td><td><span class="kbd">F12</span> or <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">I</span></td><td>—</td></tr>
+            <tr><td>macOS</td><td><span class="kbd">⌘</span>+<span class="kbd">⌥</span>+<span class="kbd">I</span></td><td><span class="kbd">⌘</span>+<span class="kbd">⌥</span>+<span class="kbd">I</span></td><td><span class="kbd">⌘</span>+<span class="kbd">⌥</span>+<span class="kbd">I</span> (enable in Settings → Advanced → Show Develop menu first)</td></tr>
+            <tr><td>Right-click any element →</td><td colspan="3"><strong>Inspect</strong> — opens DevTools focused on that element.</td></tr>
+          </tbody>
+        </table>
+        <h3>The five panels you'll use most</h3>
+        <div class="grid-2">
+          <div class="card"><h4>Elements</h4><p>Live, editable DOM tree. Click an element to see its computed styles, accessibility properties, and event listeners. Edit HTML/CSS in place and see results instantly.</p></div>
+          <div class="card"><h4>Console</h4><p>Run JavaScript, see errors and warnings. <code>console.log($0)</code> logs the currently-inspected element.</p></div>
+          <div class="card"><h4>Network</h4><p>See every file the page requested — HTML, CSS, JS, images — with timing and size. Invaluable for performance work.</p></div>
+          <div class="card"><h4>Application</h4><p>Inspect storage: localStorage, sessionStorage, cookies, service workers. Essential for forms and progressive web apps.</p></div>
+          <div class="card"><h4>Lighthouse</h4><p>One-click audit for performance, accessibility, best practices, and SEO. Run it on every project you build.</p></div>
+          <div class="card"><h4>Accessibility panel</h4><p>See the accessibility tree, ARIA attributes, and contrast issues. Found under Elements → Accessibility in Chrome and Firefox.</p></div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          In the Elements panel, click the <strong>:hov</strong> button to force <code>:hover</code>, <code>:focus</code>, <code>:active</code> states without actually triggering them. Critical for testing keyboard and touch UX.
+        </div>
+      </section>
+
+      <section id="validator">
+        <h2><span class="num">5</span> Validating Your HTML</h2>
+        <p>Valid HTML is HTML that conforms to the WHATWG / W3C specification. Validity is not the same as correctness — but invalid HTML is almost always wrong, and browsers' error-recovery behaviour is unpredictable. Validate early, validate often.</p>
+        <h3>Three ways to validate</h3>
+        <ol>
+          <li><strong>The W3C Validator.</strong> Visit <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a> and paste your HTML, upload a file, or give a URL. The gold standard.</li>
+          <li><strong>Browser extension.</strong> Install the "Web Developer" browser extension to validate with one click from any page.</li>
+          <li><strong>VS Code extensions.</strong> <code>HTMLHint</code> and <code>vscode-htmlhint</code> flag issues inline as you type.</li>
+        </ol>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't treat the validator as an annoying gatekeeper. It is a teacher. Every error it raises is a chance to learn a rule you didn't know. Read the message, understand it, fix it, move on.
+        </div>
+        <pre><code>Common validator messages and what they mean:
+
+ERROR: Element "img" is missing required attribute "src"
+  → You forgot the most important attribute on an &lt;img&gt;.
+
+ERROR: Stray end tag "p"
+  → You closed a &lt;p&gt; that wasn't open. Likely a nesting issue.
+
+ERROR: Bad value "fr" for attribute "lang" on element "html"
+  → Typo. The correct value is "fr" (it actually IS valid — example of a false alarm).
+
+WARNING: Section lacks heading. Consider using "h2"–"h6"
+  → A &lt;section&gt; should generally have a heading for accessibility.
+
+INFO: Trailing slash on void elements has no effect
+  → &lt;br /&gt; is fine but unnecessary in HTML5. Pick a style and be consistent.</code></pre>
+      </section>
+
+      <section id="vscode">
+        <h2><span class="num">6</span> VS Code Setup</h2>
+        <p>Visual Studio Code is a free, open-source editor from Microsoft. It has become the de facto standard for web development. The setup below takes about 5 minutes and will dramatically improve your quality of life.</p>
+        <h3>Step 1 — Install VS Code</h3>
+        <p>Download from <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a> and install for your platform. Launch it once.</p>
+        <h3>Step 2 — Install essential extensions</h3>
+        <table>
+          <thead><tr><th>Extension</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Live Server</strong> (Ritwick Dey)</td><td>Serves files over HTTP, auto-refreshes on save.</td></tr>
+            <tr><td><strong>HTML CSS Support</strong></td><td>Autocompletes class names from your CSS files.</td></tr>
+            <tr><td><strong>Auto Rename Tag</strong></td><td>When you rename <code>&lt;div&gt;</code>, automatically renames <code>&lt;/div&gt;</code>.</td></tr>
+            <tr><td><strong>Prettier</strong></td><td>Formats your HTML on save — no more arguing about indentation.</td></tr>
+            <tr><td><strong>HTMLHint</strong></td><td>Inline HTML linting.</td></tr>
+            <tr><td><strong>Path Intellisense</strong></td><td>Autocompletes file paths in <code>href</code> and <code>src</code> attributes.</td></tr>
+          </tbody>
+        </table>
+        <h3>Step 3 — Configure formatting on save</h3>
+        <p>Open VS Code Settings (JSON) and add:</p>
+        <pre><code>{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "html.format.wrapLineLength": 100,
+  "html.format.wrapAttributes": "auto",
+  "files.associations": {
+    "*.html": "html"
+  },
+  "emmet.triggerExpansionOnTab": true
+}</code></pre>
+        <h3>Step 4 — Use Emmet (built-in!)</h3>
+        <p>Emmet is a built-in abbreviation engine. Type these and press <span class="kbd">Tab</span>:</p>
+        <pre><code>!            → full HTML5 boilerplate
+ul&gt;li*5      → &lt;ul&gt; with 5 &lt;li&gt; children
+a:link       → &lt;a href="http://"&gt;&lt;/a&gt;
+img          → &lt;img src="" alt="" /&gt;
+div.card*3   → three divs with class="card"
+nav&gt;ul&gt;li*4&gt;a   → navigation list pattern</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Type <code>!</code> in an empty <code>.html</code> file and press <span class="kbd">Tab</span>. VS Code generates the entire boilerplate. Memorise it anyway — knowing what's in the boilerplate is more important than having it generated.
+        </div>
+      </section>
+
+      <section id="browsers">
+        <h2><span class="num">7</span> Browser Choice</h2>
+        <p>For learning HTML, you want two browsers installed: <strong>your primary dev browser</strong> and <strong>one secondary browser for cross-testing</strong>.</p>
+        <div class="grid-2">
+          <div class="card"><h4>Chrome / Edge (Chromium)</h4><p>Best dev tools, most-used engine, ~65% market share. Pick as your primary dev browser.</p></div>
+          <div class="card"><h4>Firefox</h4><p>Independent engine. Excellent accessibility inspector and CSS tools. The Chromium antidote.</p></div>
+          <div class="card"><h4>Safari (macOS only)</h4><p>iOS / iPadOS engine. Test here before shipping — it has quirks Chromium doesn't.</p></div>
+          <div class="card"><h4>Optional: Edge, Brave, Arc</h4><p>Chromium-based. Useful to verify that a behaviour is Chromium-wide vs Chrome-specific.</p></div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Install Firefox Developer Edition — it ships with experimental dev tools and the most thorough accessibility tree in the business.
+        </div>
+      </section>
+
+      <section id="community">
+        <h2><span class="num">8</span> Joining Communities</h2>
+        <p>HTML is a 30-year-old language with a thriving community. Connecting with other learners and experts accelerates you enormously. Recommended starting points:</p>
+        <table>
+          <thead><tr><th>Community</th><th>Best for</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://developer.mozilla.org/" target="_blank" rel="noopener">MDN Web Docs</a></td><td>The reference. Bookmark it.</td></tr>
+            <tr><td><a href="https://discourse.mozilla.org/" target="_blank" rel="noopener">MDN Discourse</a></td><td>Asking questions about MDN content.</td></tr>
+            <tr><td><a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener">WHATWG HTML Spec</a></td><td>The actual, authoritative spec. Dense but definitive.</td></tr>
+            <tr><td><a href="https://www.w3.org/community/" target="_blank" rel="noopener">W3C Community Groups</a></td><td>Where new web standards are debated.</td></tr>
+            <tr><td><a href="https://stackoverflow.com/questions/tagged/html" target="_blank" rel="noopener">Stack Overflow — [html]</a></td><td>Q&amp;A. Search before asking; most HTML questions are already answered.</td></tr>
+            <tr><td><a href="https://www.reddit.com/r/webdev/" target="_blank" rel="noopener">r/webdev</a></td><td>Casual discussion, news, careers.</td></tr>
+            <tr><td><a href="https://frontend.club/" target="_blank" rel="noopener">Frontend Weekly</a></td><td>Newsletter for staying current.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't ask "what's the best" questions on Stack Overflow — they get closed as opinion-based. Ask "how do I do X" or "why does Y behave like Z" instead. Include a minimal reproducible example.
+        </div>
+      </section>
+
+      <section id="workflow">
+        <h2><span class="num">9</span> Your Daily Workflow</h2>
+        <p>Once you're set up, a typical 30-minute study session looks like this:</p>
+        <ol class="steps">
+          <li>Open the project folder in VS Code.</li>
+          <li>Right-click today's <code>.html</code> file → <strong>Open with Live Server</strong>.</li>
+          <li>Read the page in the browser first — it renders the way the curriculum intends.</li>
+          <li>Switch to VS Code to view the source. Follow along by editing a copy.</li>
+          <li>Complete every "Try it yourself" exercise in your copy.</li>
+          <li>Run the W3C validator on your exercise output.</li>
+          <li>Open DevTools → Elements and inspect the DOM. Compare it to the page's source — notice how the browser has normalised your HTML.</li>
+          <li>Click the Prev / Next links at the bottom of the page to advance.</li>
+        </ol>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use the <span class="kbd">Ctrl</span>+<span class="kbd">`</span> shortcut to open VS Code's integrated terminal. Run <code>python -m http.server 8000</code> for an instant dev server even without the Live Server extension.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="introduction.html">← Previous: Introduction</a>
+      <a href="prerequisites.html">Next: Prerequisites →</a>
+    </div>
+    <p>HTML Mastery — Section 0 · Getting Started · How To Use</p>
+  </footer>
+</body>
+</html>

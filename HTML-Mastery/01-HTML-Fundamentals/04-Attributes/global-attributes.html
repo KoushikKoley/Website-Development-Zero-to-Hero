@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Attributes — HTML Mastery</title>
+  <meta name="description" content="Every HTML global attribute: id, class, style, title, lang, dir, tabindex, accesskey, hidden, contenteditable, spellcheck, translate, draggable, and more. 15+ attributes with examples.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #2563eb 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    section h3 code { background: transparent; color: var(--brand); padding: 0; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { background: white; border: 1px dashed var(--brand); padding: 12px; border-radius: 8px; margin: 12px 0; }
+    [contenteditable]:focus { outline: 2px solid var(--brand); outline-offset: 2px; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.4 · Attributes</span>
+    <h1>Global Attributes</h1>
+    <p>The attributes that work on <em>every</em> HTML element. <code>id</code>, <code>class</code>, <code>style</code>, <code>title</code>, <code>lang</code>, <code>dir</code>, <code>tabindex</code>, <code>hidden</code>, <code>contenteditable</code>, <code>spellcheck</code>, and more.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is a Global Attribute?</a></li>
+        <li><a href="#id">id</a></li>
+        <li><a href="#class">class</a></li>
+        <li><a href="#style">style</a></li>
+        <li><a href="#title">title</a></li>
+        <li><a href="#lang">lang &amp; dir</a></li>
+        <li><a href="#tabindex">tabindex</a></li>
+        <li><a href="#accesskey">accesskey</a></li>
+        <li><a href="#hidden">hidden</a></li>
+        <li><a href="#contenteditable">contenteditable</a></li>
+        <li><a href="#spellcheck">spellcheck</a></li>
+        <li><a href="#translate">translate</a></li>
+        <li><a href="#draggable">draggable</a></li>
+        <li><a href="#misc">Lesser-Known Globals</a></li>
+        <li><a href="#summary">Summary Table</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is a Global Attribute?</h2>
+        <p>A <strong>global attribute</strong> is an attribute that can be applied to <em>any</em> HTML element. Compare with element-specific attributes — <code>href</code> only works on <code>&lt;a&gt;</code>, <code>src</code> on <code>&lt;img&gt;</code>/<code>&lt;script&gt;</code>, etc. Global attributes work everywhere.</p>
+        <p>The WHATWG spec lists about 30 global attributes. The most important ones, in order of frequency of use:</p>
+        <ol>
+          <li><code>id</code> — unique identifier</li>
+          <li><code>class</code> — CSS class(es)</li>
+          <li><code>style</code> — inline styles</li>
+          <li><code>title</code> — tooltip text</li>
+          <li><code>lang</code>, <code>dir</code> — language and direction</li>
+          <li><code>tabindex</code> — keyboard focus order</li>
+          <li><code>hidden</code> — hide element</li>
+          <li><code>contenteditable</code> — make editable</li>
+          <li><code>spellcheck</code> — enable/disable spell check</li>
+          <li><code>translate</code> — hint for translation tools</li>
+          <li><code>draggable</code> — make draggable</li>
+          <li><code>accesskey</code> — keyboard shortcut</li>
+          <li><code>data-*</code> — custom data (separate page)</li>
+          <li><code>role</code> and <code>aria-*</code> — accessibility (separate page)</li>
+        </ol>
+      </section>
+
+      <section id="id">
+        <h2><span class="num">2</span> <code>id</code></h2>
+        <p>The <code>id</code> attribute gives an element a <strong>unique identifier</strong> on the page. No two elements in the same document can share an <code>id</code>.</p>
+        <pre><code>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+
+&lt;a href="#introduction"&gt;Jump to intro&lt;/a&gt;
+
+&lt;script&gt;
+  document.getElementById('introduction').scrollIntoView();
+&lt;/script&gt;</code></pre>
+        <p>Rules:</p>
+        <ul>
+          <li>Must be unique within the document.</li>
+          <li>Must contain at least one character.</li>
+          <li>Cannot contain spaces.</li>
+          <li>Is case-sensitive: <code>intro</code> and <code>Intro</code> are different IDs.</li>
+          <li>Should start with a letter (no leading digit), though HTML5 technically allows it.</li>
+          <li>Should be meaningful: <code>id="main-nav"</code>, not <code>id="nav3"</code>.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Reusing the same ID on multiple elements is invalid HTML. Browsers will silently keep only the first when you call <code>getElementById</code>. Always ensure IDs are unique.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>id</code> sparingly. For styling, prefer <code>class</code>. Reserve <code>id</code> for: anchor targets (<code>href="#section"</code>), JavaScript targeting, and form label association (<code>&lt;label for="id"&gt;</code>).
+        </div>
+      </section>
+
+      <section id="class">
+        <h2><span class="num">3</span> <code>class</code></h2>
+        <p>The <code>class</code> attribute assigns one or more CSS classes to an element. Multiple elements can share a class, and one element can have multiple classes (space-separated).</p>
+        <pre><code>&lt;button class="btn btn-primary"&gt;Save&lt;/button&gt;
+&lt;button class="btn btn-secondary"&gt;Cancel&lt;/button&gt;
+&lt;p class="lead text-muted"&gt;Intro paragraph&lt;/p&gt;</code></pre>
+        <p>Class names:</p>
+        <ul>
+          <li>Are case-sensitive: <code>btn</code> ≠ <code>Btn</code> ≠ <code>BTN</code>.</li>
+          <li>Must start with a letter, hyphen-plus-letter, or underscore (HTML5 allows almost anything but stick to ASCII).</li>
+          <li>Can be hyphen-separated: <code>btn-primary</code>, <code>card-header</code>.</li>
+          <li>Conventional naming systems: BEM (<code>block__element--modifier</code>), utility-first (Tailwind: <code>flex p-4</code>).</li>
+        </ul>
+        <h3>Querying classes with JavaScript</h3>
+        <pre><code>document.getElementsByClassName('btn')        // HTMLCollection
+document.querySelectorAll('.btn-primary')     // NodeList
+
+el.classList.add('active')
+el.classList.remove('active')
+el.classList.toggle('active')
+el.classList.contains('active')  // true/false</code></pre>
+      </section>
+
+      <section id="style">
+        <h2><span class="num">4</span> <code>style</code></h2>
+        <p>The <code>style</code> attribute applies inline CSS directly to an element. Properties are separated by semicolons.</p>
+        <pre><code>&lt;p style="color: navy; font-size: 18px; line-height: 1.6;"&gt;
+  This paragraph has inline styles.
+&lt;/p&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Inline styles are <strong>bad practice</strong> in production code because:
+          <ul>
+            <li>They mix presentation with structure.</li>
+            <li>They have higher specificity than stylesheet rules, making overrides hard.</li>
+            <li>They can't be cached separately.</li>
+            <li>They can't respond to media queries or pseudo-classes.</li>
+          </ul>
+          Use the <code>style</code> attribute only for one-off styles that genuinely can't be expressed in CSS — typically dynamic values from JavaScript.
+        </div>
+        <pre><code>&lt;!-- Acceptable: dynamic style set by JS --&gt;
+&lt;div id="progress" style="width: 67%;"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // Update as data loads
+  document.getElementById('progress').style.width = '87%'
+&lt;/script&gt;</code></pre>
+      </section>
+
+      <section id="title">
+        <h2><span class="num">5</span> <code>title</code></h2>
+        <p>The <code>title</code> attribute provides advisory information — usually shown as a browser tooltip when the user hovers. Useful for abbreviations, link destinations, and small explanations.</p>
+        <pre><code>&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;
+
+&lt;a href="report.pdf" title="PDF, 2.4 MB"&gt;Download report&lt;/a&gt;
+
+&lt;span title="World Health Organization, founded 1948"&gt;WHO&lt;/span&gt;
+
+&lt;input type="text" title="Your full legal name as on your ID"&gt;</code></pre>
+        <div class="demo-box">
+          <p>Hover over this: <abbr title="HyperText Markup Language">HTML</abbr> is the language of the web.</p>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The <code>title</code> tooltip is:
+          <ul>
+            <li>Not accessible by default (screen readers ignore <code>title</code> on most elements).</li>
+            <li>Not visible on touch devices (no hover).</li>
+            <li>Often slow to appear (~2 second delay in most browsers).</li>
+          </ul>
+          Don't rely on <code>title</code> for important info. Use visible text or ARIA labels instead.
+        </div>
+      </section>
+
+      <section id="lang">
+        <h2><span class="num">6</span> <code>lang</code> and <code>dir</code></h2>
+        <h3>lang</h3>
+        <p>Declares the language of an element's content. Browsers use it for pronunciation, hyphenation, spell check, and translation.</p>
+        <pre><code>&lt;p&gt;The German word &lt;span lang="de"&gt;Schadenfreude&lt;/span&gt; means joy at others' misfortune.&lt;/p&gt;
+&lt;p lang="fr"&gt;Bonjour le monde!&lt;/p&gt;
+&lt;q lang="es"&gt;Hola mundo&lt;/q&gt;</code></pre>
+        <p>Should always be set on the <code>&lt;html&gt;</code> element first (see <a href="../02-Document-Structure/html-head-body.html">html / head / body</a>).</p>
+        <h3>dir</h3>
+        <p>Sets the text direction: <code>ltr</code> (default, left-to-right) or <code>rtl</code> (right-to-left, for Arabic, Hebrew, Persian, Urdu).</p>
+        <pre><code>&lt;html lang="ar" dir="rtl"&gt;
+  &lt;body&gt;
+    &lt;p&gt;مرحبا بالعالم&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>Also useful for mixing directions:</p>
+        <pre><code>&lt;p&gt;The Hebrew word &lt;span dir="rtl" lang="he"&gt;שלום&lt;/span&gt; means peace.&lt;/p&gt;</code></pre>
+        <p>A third value, <code>auto</code>, lets the browser guess based on character analysis — useful for user-generated content.</p>
+      </section>
+
+      <section id="tabindex">
+        <h2><span class="num">7</span> <code>tabindex</code></h2>
+        <p>Controls whether an element can receive keyboard focus, and in what order. Critical for keyboard accessibility.</p>
+        <table>
+          <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>tabindex="0"</code></td><td>Element is focusable in normal tab order (after native-focusable elements). Use for elements that should be keyboard-reachable but aren't by default (e.g. a custom <code>&lt;div&gt;</code> button).</td></tr>
+            <tr><td><code>tabindex="-1"</code></td><td>Element is focusable programmatically (<code>el.focus()</code>) but skipped by Tab key. Useful for dialogs, etc.</td></tr>
+            <tr><td><code>tabindex="1"</code>+</td><td><strong>Anti-pattern.</strong> Forces a positive tab order that overrides the document's natural order. Avoid.</td></tr>
+            <tr><td>(absent)</td><td>Element is focusable only if it's a native focusable element (link, button, input, etc.).</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Make a custom div focusable --&gt;
+&lt;div tabindex="0" role="button" onclick="doThing()"&gt;Click me&lt;/div&gt;
+
+&lt;!-- Skip link, programmatically focusable --&gt;
+&lt;a href="#main" tabindex="-1" id="skip-link"&gt;Skip to content&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't use <code>tabindex="1"</code>, <code>tabindex="2"</code>, etc. Positive tabindexes create an unnatural tab order that confuses screen-reader users. Use <code>tabindex="0"</code> (default order) or <code>tabindex="-1"</code> (programmatically focusable only).
+        </div>
+      </section>
+
+      <section id="accesskey">
+        <h2><span class="num">8</span> <code>accesskey</code></h2>
+        <p>Defines a keyboard shortcut to activate or focus an element.</p>
+        <pre><code>&lt;button accesskey="s"&gt;Save&lt;/button&gt;
+&lt;a href="/" accesskey="h"&gt;Home&lt;/a&gt;</code></pre>
+        <p>Modifier keys vary by platform and browser:</p>
+        <ul>
+          <li>Chrome / Firefox on Windows: <span class="kbd">Alt</span> + <span class="kbd">S</span></li>
+          <li>Chrome / Firefox on macOS: <span class="kbd">⌃</span> + <span class="kbd">⌥</span> + <span class="kbd">S</span></li>
+          <li>Safari on macOS: <span class="kbd">⌃</span> + <span class="kbd">⌥</span> + <span class="kbd">S</span></li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>accesskey</code> is widely considered an accessibility anti-pattern:
+          <ul>
+            <li>The modifier keys conflict with OS and screen-reader shortcuts.</li>
+            <li>Users have no way to discover the shortcuts without reading the source.</li>
+            <li>Different browsers use different modifiers, making the shortcuts inconsistent.</li>
+          </ul>
+          Prefer visible keyboard UI (real buttons) or full keyboard-navigation patterns via JavaScript.
+        </div>
+      </section>
+
+      <section id="hidden">
+        <h2><span class="num">9</span> <code>hidden</code></h2>
+        <p>The boolean <code>hidden</code> attribute hides an element entirely. It's equivalent to <code>display: none</code> in CSS but is declarative — works even before CSS loads.</p>
+        <pre><code>&lt;div hidden&gt;
+  This content is hidden from all users — sighted, screen-reader, and DOM-tree viewers (well, it's still in the DOM but not rendered).
+&lt;/div&gt;
+
+&lt;details&gt;
+  &lt;summary&gt;Click to expand&lt;/summary&gt;
+  &lt;p&gt;Revealed content&lt;/p&gt;
+&lt;/details&gt;
+
+&lt;template id="card-template"&gt;
+  &lt;!-- Templates are inherently hidden --&gt;
+&lt;/template&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          If you apply <code>hidden</code> to an element that has <code>display: flex</code> or <code>display: block</code> via CSS, the CSS wins and the element stays visible. Either remove the CSS or use <code>style="display: none"</code>. The CSS <code>[hidden] { display: none !important; }</code> rule is sometimes added to restore expected behaviour.
+        </div>
+      </section>
+
+      <section id="contenteditable">
+        <h2><span class="num">10</span> <code>contenteditable</code></h2>
+        <p>Makes any element editable by the user, like a text field. Useful for in-place editing experiences.</p>
+        <pre><code>&lt;div contenteditable="true"&gt;
+  Click and edit me. The text changes as you type.
+&lt;/div&gt;
+
+&lt;blockquote contenteditable="true"&gt;
+  Editable quote.
+&lt;/blockquote&gt;</code></pre>
+        <div class="demo-box">
+          <p contenteditable="true" style="cursor:text;">Try editing this paragraph. Click here and start typing.</p>
+        </div>
+        <p>Values: <code>true</code> (editable), <code>false</code> (not editable, overrides ancestor's <code>true</code>), <code>inherit</code> (default, inherits from parent).</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>contenteditable</code> doesn't save changes anywhere — they're lost on refresh. You need JavaScript to read <code>el.innerText</code> and persist it (to localStorage, a server, etc.). Also, browser implementations of contenteditable are notoriously inconsistent — for rich text editors, use a library like ProseMirror or TipTap rather than raw contenteditable.
+        </div>
+      </section>
+
+      <section id="spellcheck">
+        <h2><span class="num">11</span> <code>spellcheck</code></h2>
+        <p>Enables or disables browser spell checking on a text element. Mostly affects <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, and <code>contenteditable</code> elements.</p>
+        <pre><code>&lt;input type="text" spellcheck="true"&gt;          ← enabled (default for text inputs)
+&lt;input type="email" spellcheck="false"&gt;       ← disable (emails aren't words)
+&lt;textarea spellcheck="true"&gt;&lt;/textarea&gt;
+
+&lt;div contenteditable="true" spellcheck="true"&gt;...&lt;/div&gt;</code></pre>
+        <p>Values: <code>true</code>, <code>false</code>, or empty (browser default).</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Disable spellcheck on fields that contain identifiers, code, or technical strings: usernames, API keys, code editors, logins, email addresses. Users get frustrated when their username is underlined in red.
+        </div>
+      </section>
+
+      <section id="translate">
+        <h2><span class="num">12</span> <code>translate</code></h2>
+        <p>Tells translation tools (Google Translate, browser auto-translate, etc.) whether to translate the element's content.</p>
+        <pre><code>&lt;p&gt;
+  &lt;span translate="no"&gt;Dropbox&lt;/span&gt; is a cloud storage service.
+&lt;/p&gt;
+
+&lt;!-- Brand names, code, technical terms --&gt;
+&lt;code translate="no"&gt;const x = 5;&lt;/code&gt;
+
+&lt;!-- Username in a comment --&gt;
+&lt;a href="/u/123" translate="no"&gt;@jane_doe&lt;/a&gt;
+
+&lt;!-- Whole document --&gt;
+&lt;html lang="en" translate="no"&gt;   ← don't translate this page</code></pre>
+        <p>Values: <code>yes</code> (translate — default), <code>no</code> (don't translate).</p>
+      </section>
+
+      <section id="draggable">
+        <h2><span class="num">13</span> <code>draggable</code></h2>
+        <p>Makes an element draggable. Used with the HTML Drag and Drop API.</p>
+        <pre><code>&lt;div id="card" draggable="true"&gt;
+  Drag me around.
+&lt;/div&gt;
+
+&lt;script&gt;
+  const card = document.getElementById('card')
+  card.addEventListener('dragstart', e =&gt; {
+    e.dataTransfer.setData('text/plain', 'card-data')
+  })
+
+  const dropZone = document.getElementById('drop-zone')
+  dropZone.addEventListener('dragover', e =&gt; e.preventDefault())
+  dropZone.addEventListener('drop', e =&gt; {
+    e.preventDefault()
+    const data = e.dataTransfer.getData('text/plain')
+    console.log('Dropped:', data)
+  })
+&lt;/script&gt;</code></pre>
+        <p>Values: <code>true</code>, <code>false</code>, or <code>auto</code> (browser default — images and links are draggable by default, other elements aren't).</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The native Drag and Drop API is famously clunky. For complex drag-and-drop UIs (sortable lists, kanban boards), use a library like <a href="https://sortablejs.github.io/Sortable/" target="_blank" rel="noopener">SortableJS</a>. For touch devices, native HTML5 drag-and-drop doesn't work — you need a polyfill or pointer events.
+        </div>
+      </section>
+
+      <section id="misc">
+        <h2><span class="num">14</span> Lesser-Known Global Attributes</h2>
+        <table>
+          <thead><tr><th>Attribute</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>enterkeyhint</code></td><td>Hints the mobile keyboard's Enter key label: <code>enter</code>, <code>done</code>, <code>go</code>, <code>next</code>, <code>previous</code>, <code>search</code>, <code>send</code>.</td></tr>
+            <tr><td><code>inputmode</code></td><td>Hints the type of mobile keyboard: <code>numeric</code>, <code>tel</code>, <code>email</code>, <code>url</code>, <code>decimal</code>, <code>search</code>.</td></tr>
+            <tr><td><code>autocapitalize</code></td><td>Controls automatic capitalisation on iOS: <code>none</code>, <code>sentences</code>, <code>words</code>, <code>characters</code>.</td></tr>
+            <tr><td><code>autofocus</code></td><td>Focuses the element on page load. One per page.</td></tr>
+            <tr><td><code>nonce</code></td><td>Cryptographic nonce for Content Security Policy.</td></tr>
+            <tr><td><code>part</code></td><td>Exposes shadow DOM parts for CSS customisation.</td></tr>
+            <tr><td><code>slot</code></td><td>Assigns element to a slot in shadow DOM.</td></tr>
+            <tr><td><code>is</code></td><td>Upgrades a built-in element to a customised built-in (web components).</td></tr>
+            <tr><td><code>itemid</code>, <code>itemprop</code>, <code>itemref</code>, <code>itemscope</code>, <code>itemtype</code></td><td>Microdata attributes for structured data (largely replaced by JSON-LD).</td></tr>
+            <tr><td><code>exportparts</code></td><td>Re-exports shadow parts from nested shadow trees.</td></tr>
+            <tr><td><code>writingsuggestions</code></td><td>Enable/disable browser writing suggestions (Chrome).</td></tr>
+            <tr><td><code>virtualkeyboardpolicy</code></td><td>Controls whether on-screen keyboard appears for contenteditable.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">15</span> Summary Table</h2>
+        <table>
+          <thead><tr><th>Attribute</th><th>Type</th><th>Best use</th></tr></thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>string</td><td>Unique identifier for anchors, JS targeting, label-for</td></tr>
+            <tr><td><code>class</code></td><td>string</td><td>CSS targeting, JS selection</td></tr>
+            <tr><td><code>style</code></td><td>string (CSS)</td><td>Inline styles (avoid in production)</td></tr>
+            <tr><td><code>title</code></td><td>string</td><td>Tooltips, abbreviation expansion</td></tr>
+            <tr><td><code>lang</code></td><td>BCP 47</td><td>Language declaration</td></tr>
+            <tr><td><code>dir</code></td><td>ltr/rtl/auto</td><td>Text direction</td></tr>
+            <tr><td><code>tabindex</code></td><td>integer</td><td>0 (focusable) or -1 (programmatic)</td></tr>
+            <tr><td><code>accesskey</code></td><td>char</td><td>Keyboard shortcut (avoid)</td></tr>
+            <tr><td><code>hidden</code></td><td>boolean</td><td>Hide element</td></tr>
+            <tr><td><code>contenteditable</code></td><td>boolean</td><td>Make editable</td></tr>
+            <tr><td><code>spellcheck</code></td><td>boolean</td><td>Spell-check toggle</td></tr>
+            <tr><td><code>translate</code></td><td>yes/no</td><td>Translation hint</td></tr>
+            <tr><td><code>draggable</code></td><td>boolean</td><td>Drag-and-drop source</td></tr>
+            <tr><td><code>enterkeyhint</code></td><td>keyword</td><td>Mobile Enter key label</td></tr>
+            <tr><td><code>inputmode</code></td><td>keyword</td><td>Mobile keyboard type</td></tr>
+            <tr><td><code>autocapitalize</code></td><td>keyword</td><td>iOS capitalisation</td></tr>
+            <tr><td><code>autofocus</code></td><td>boolean</td><td>Focus on load</td></tr>
+          </tbody>
+        </table>
+        <div class="callout exercise">
+          <strong>Try it yourself — 20 minutes</strong>
+          Build a small "demo dashboard" page that uses at least 10 different global attributes. Suggested elements:
+          <ol>
+            <li>An <code>&lt;h1&gt;</code> with <code>id="page-title"</code>.</li>
+            <li>A <code>&lt;div class="card highlight"</code> with multiple classes.</li>
+            <li>An abbreviation <code>&lt;abbr title="..."&gt;</code>.</li>
+            <li>A <code>&lt;span lang="de"&gt;</code> inside an English paragraph.</li>
+            <li>A <code>&lt;div tabindex="0"&gt;</code> that you can Tab to.</li>
+            <li>A <code>&lt;div hidden&gt;</code> and a button that toggles it visible via JavaScript.</li>
+            <li>A <code>&lt;p contenteditable="true" spellcheck="true"&gt;</code>.</li>
+            <li>A username <code>&lt;span translate="no"&gt;@jane_doe&lt;/span&gt;</code>.</li>
+            <li>A draggable card with <code>draggable="true"</code> and a JS drag handler.</li>
+            <li>A username <code>&lt;input autocapitalize="none" spellcheck="false"&gt;</code>.</li>
+          </ol>
+          Open it in a browser. Test each feature works as expected.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../03-Elements-and-Tags/nesting.html">← Previous: Nesting</a>
+      <a href="data-attributes.html">Next: data-* Attributes →</a>
+    </div>
+    <p>HTML Mastery — Section 1.4 · Attributes · Global Attributes</p>
+  </footer>
+</body>
+</html>

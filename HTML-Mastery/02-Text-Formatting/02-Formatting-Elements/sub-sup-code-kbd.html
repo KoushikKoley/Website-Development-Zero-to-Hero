@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sub, Sup, Code, Kbd, Samp, Var — HTML Mastery</title>
+  <meta name="description" content="Complete reference for sub, sup, code, pre, kbd, samp, and var HTML elements with examples in mathematics, chemistry, and programming. Learn when to use subscript, superscript, inline code, and keyboard input.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #2563eb 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.2 · Formatting Elements</span>
+    <h1>Sub · Sup · Code · Pre · Kbd · Samp · Var</h1>
+    <p>The technical-text family. Seven elements that turn numbers into chemistry, exponents into math, code into monospace, and keystrokes into interactive guides. Indispensable for science docs, programming tutorials, and developer references.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Quick Reference</a></li>
+        <li><a href="#sub">sub — Subscript</a></li>
+        <li><a href="#sup">sup — Superscript</a></li>
+        <li><a href="#code">code — Inline Code</a></li>
+        <li><a href="#pre">pre — Preformatted Text</a></li>
+        <li><a href="#kbd">kbd — Keyboard Input</a></li>
+        <li><a href="#samp">samp — Sample Output</a></li>
+        <li><a href="#var">var — Variable</a></li>
+        <li><a href="#pre-code">Combining pre + code</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Quick Reference</h2>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Renders as</th><th>Use for</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;sub&gt;</code></td><td>Subscript (text below baseline)</td><td>Chemistry (H₂O), footnotes</td></tr>
+            <tr><td><code>&lt;sup&gt;</code></td><td>Superscript (text above baseline)</td><td>Exponents (x²), ordinals (1st)</td></tr>
+            <tr><td><code>&lt;code&gt;</code></td><td>Monospace inline</td><td>Variable names, code snippets inline</td></tr>
+            <tr><td><code>&lt;pre&gt;</code></td><td>Preformatted block (preserves whitespace)</td><td>Multi-line code, ASCII art, terminal output</td></tr>
+            <tr><td><code>&lt;kbd&gt;</code></td><td>Monospace, often boxed</td><td>Keyboard keys, shortcuts</td></tr>
+            <tr><td><code>&lt;samp&gt;</code></td><td>Monospace</td><td>Sample output from a program</td></tr>
+            <tr><td><code>&lt;var&gt;</code></td><td>Italic</td><td>Math variables, placeholders</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="sub">
+        <h2><span class="num">2</span> <code>&lt;sub&gt;</code> — Subscript</h2>
+        <p>The <code>&lt;sub&gt;</code> element renders text below the baseline at a smaller size. Its semantic meaning: this text is a subscript — a typographic convention with specific meaning in chemistry, mathematics, and footnotes.</p>
+        <h3>Chemistry examples</h3>
+        <pre><code>&lt;p&gt;Water has the formula H&lt;sub&gt;2&lt;/sub&gt;O.&lt;/p&gt;
+&lt;p&gt;Carbon dioxide: CO&lt;sub&gt;2&lt;/sub&gt;. Methane: CH&lt;sub&gt;4&lt;/sub&gt;.&lt;/p&gt;
+&lt;p&gt;Sulfuric acid: H&lt;sub&gt;2&lt;/sub&gt;SO&lt;sub&gt;4&lt;/sub&gt;.&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>Water has the formula H<sub>2</sub>O.</p>
+          <p>Carbon dioxide: CO<sub>2</sub>. Methane: CH<sub>4</sub>.</p>
+          <p>Sulfuric acid: H<sub>2</sub>SO<sub>4</sub>.</p>
+        </div>
+        <h3>Footnote references</h3>
+        <pre><code>&lt;p&gt;The study found surprising results.&lt;sub&gt;1&lt;/sub&gt;&lt;/p&gt;
+&lt;p&gt;...&lt;/p&gt;
+&lt;p&gt;&lt;sub&gt;1&lt;/sub&gt; Smith et al., 2023.&lt;/p&gt;</code></pre>
+        <h3>Mathematical sequences</h3>
+        <pre><code>&lt;p&gt;The first term is a&lt;sub&gt;0&lt;/sub&gt;, the nth term is a&lt;sub&gt;n&lt;/sub&gt;.&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="sup">
+        <h2><span class="num">3</span> <code>&lt;sup&gt;</code> — Superscript</h2>
+        <p>The <code>&lt;sup&gt;</code> element renders text above the baseline at a smaller size. It is used for exponents, ordinals, footnote markers, and trademarks.</p>
+        <h3>Math examples</h3>
+        <pre><code>&lt;p&gt;Einstein's famous equation: E = mc&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Pythagoras: a&lt;sup&gt;2&lt;/sup&gt; + b&lt;sup&gt;2&lt;/sup&gt; = c&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;2&lt;sup&gt;10&lt;/sup&gt; = 1024.&lt;/p&gt;
+&lt;p&gt;Area of a circle: A = πr&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>Einstein's famous equation: E = mc<sup>2</sup>.</p>
+          <p>Pythagoras: a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>.</p>
+          <p>2<sup>10</sup> = 1024.</p>
+          <p>Area of a circle: A = πr<sup>2</sup>.</p>
+        </div>
+        <h3>Ordinals</h3>
+        <pre><code>&lt;p&gt;She finished in 1&lt;sup&gt;st&lt;/sup&gt; place.&lt;/p&gt;
+&lt;p&gt;The 3&lt;sup&gt;rd&lt;/sup&gt; edition is now available.&lt;/p&gt;
+&lt;p&gt;On the 21&lt;sup&gt;st&lt;/sup&gt; of May.&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>She finished in 1<sup>st</sup> place.</p>
+          <p>The 3<sup>rd</sup> edition is now available.</p>
+        </div>
+        <h3>Footnote markers</h3>
+        <pre><code>&lt;p&gt;The earth is round&lt;sup&gt;1&lt;/sup&gt; and orbits the sun&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Avoid using <code>&lt;sup&gt;</code> for trademark symbols (™, ®) — use the actual Unicode characters <code>&amp;trade;</code> and <code>&amp;reg;</code> instead. They render at the correct size automatically.
+        </div>
+      </section>
+
+      <section id="code">
+        <h2><span class="num">4</span> <code>&lt;code&gt;</code> — Inline Code</h2>
+        <p>The <code>&lt;code&gt;</code> element represents a fragment of <strong>computer code</strong>. Browsers render it in a monospace font by default. Use it for inline mentions of variables, function names, file paths, HTML tags, and short code snippets.</p>
+        <pre><code>&lt;p&gt;Use the &lt;code&gt;Array.map()&lt;/code&gt; method to transform each element.&lt;/p&gt;
+&lt;p&gt;The file is located at &lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Set &lt;code&gt;font-size&lt;/code&gt; in rem units.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;&amp;lt;article&amp;gt;&lt;/code&gt; element represents a self-contained composition.&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>Use the <code>Array.map()</code> method to transform each element.</p>
+          <p>The file is located at <code>/etc/nginx/nginx.conf</code>.</p>
+          <p>Set <code>font-size</code> in rem units.</p>
+          <p>The <code>&lt;article&gt;</code> element represents a self-contained composition.</p>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          When showing HTML tags inside <code>&lt;code&gt;</code>, you must escape <code>&lt;</code> and <code>&gt;</code> as <code>&amp;lt;</code> and <code>&amp;gt;</code>. Otherwise, the browser will treat them as real tags and they will not display.
+        </div>
+      </section>
+
+      <section id="pre">
+        <h2><span class="num">5</span> <code>&lt;pre&gt;</code> — Preformatted Text</h2>
+        <p>The <code>&lt;pre&gt;</code> element represents <strong>preformatted text</strong>: whitespace, line breaks, and tabs are preserved exactly as written in the source. Browsers render it in monospace font with no automatic wrapping.</p>
+        <pre><code>&lt;pre&gt;function greet(name) {
+  return "Hello, " + name;
+}
+
+greet("World");
+// → Hello, World&lt;/pre&gt;</code></pre>
+        <h3>Use cases</h3>
+        <ul>
+          <li>Multi-line code blocks</li>
+          <li>ASCII art</li>
+          <li>Terminal output / log files</li>
+          <li>Email signatures with aligned text</li>
+          <li>Pre-formatted tables of data</li>
+        </ul>
+        <h3>ASCII art example</h3>
+        <pre><code>&lt;pre&gt;
+       __
+      /  \
+     |    |
+     |    |
+    /      \
+   /        \
+  /__________\
+&lt;/pre&gt;</code></pre>
+        <div class="callout">
+          <strong>Info</strong>
+          Inside <code>&lt;pre&gt;</code>, you still need to escape <code>&lt;</code> and <code>&gt;</code> as entities. The whitespace preservation only affects spaces, tabs, and newlines — angle brackets will still be parsed as tags.
+        </div>
+      </section>
+
+      <section id="kbd">
+        <h2><span class="num">6</span> <code>&lt;kbd&gt;</code> — Keyboard Input</h2>
+        <p>The <code>&lt;kbd&gt;</code> element represents <strong>user input from a keyboard, voice input, or any other input device</strong>. Use it to mark up keystrokes, keyboard shortcuts, and menu paths in user instructions.</p>
+        <pre><code>&lt;p&gt;To save, press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;S&lt;/kbd&gt;.&lt;/p&gt;
+&lt;p&gt;Press &lt;kbd&gt;Enter&lt;/kbd&gt; to submit the form.&lt;/p&gt;
+&lt;p&gt;Use &lt;kbd&gt;Cmd&lt;/kbd&gt; + &lt;kbd&gt;Shift&lt;/kbd&gt; + &lt;kbd&gt;P&lt;/kbd&gt; on macOS.&lt;/p&gt;
+&lt;p&gt;Select &lt;kbd&gt;File&lt;/kbd&gt; → &lt;kbd&gt;New&lt;/kbd&gt; from the menu.&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>To save, press <kbd>Ctrl</kbd> + <kbd>S</kbd>.</p>
+          <p>Press <kbd>Enter</kbd> to submit the form.</p>
+          <p>Use <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on macOS.</p>
+          <p>Select <kbd>File</kbd> → <kbd>New</kbd> from the menu.</p>
+        </div>
+        <h3>Styling kbd to look like a keycap</h3>
+        <pre><code>kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid #cbd5e1;
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff, #f1f5f9);
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+  color: #0f172a;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Nested <code>&lt;kbd&gt;</code> inside <code>&lt;kbd&gt;</code> represents a single key that is itself a combination: <code>&lt;kbd&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;S&lt;/kbd&gt;&lt;/kbd&gt;</code> means "the Ctrl+S keystroke as a single unit". This is subtle but useful for advanced tutorials.
+        </div>
+      </section>
+
+      <section id="samp">
+        <h2><span class="num">7</span> <code>&lt;samp&gt;</code> — Sample Output</h2>
+        <p>The <code>&lt;samp&gt;</code> element represents <strong>sample output from a program or computer system</strong>. Use it to show what a program prints, what an error message looks like, or what a terminal returns.</p>
+        <pre><code>&lt;p&gt;After running the command, you'll see:&lt;/p&gt;
+&lt;p&gt;
+  &lt;samp&gt;Error: file not found at /var/log/app.log&lt;/samp&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The server responds with:&lt;/p&gt;
+&lt;p&gt;&lt;samp&gt;HTTP/1.1 200 OK
+Content-Type: application/json
+{"status": "success"}&lt;/samp&gt;&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>After running the command, you'll see:</p>
+          <p><samp>Error: file not found at /var/log/app.log</samp></p>
+        </div>
+        <h3>Combining <code>&lt;samp&gt;</code> with <code>&lt;kbd&gt;</code></h3>
+        <p>A common pattern: show the user input (<code>&lt;kbd&gt;</code>) followed by the resulting output (<code>&lt;samp&gt;</code>).</p>
+        <pre><code>&lt;p&gt;
+  &lt;kbd&gt;ping example.com&lt;/kbd&gt;
+  &lt;samp&gt;PING example.com (93.184.216.34): 56 data bytes
+64 bytes from 93.184.216.34: icmp_seq=0 ttl=56 time=12.3 ms&lt;/samp&gt;
+&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="var">
+        <h2><span class="num">8</span> <code>&lt;var&gt;</code> — Variable</h2>
+        <p>The <code>&lt;var&gt;</code> element represents a <strong>variable in a mathematical expression or programming context</strong>. It can be a placeholder name the user is expected to replace, or an actual variable in code. Renders in italic by default.</p>
+        <pre><code>&lt;p&gt;The area of a rectangle is &lt;var&gt;width&lt;/var&gt; × &lt;var&gt;height&lt;/var&gt;.&lt;/p&gt;
+&lt;p&gt;In the function &lt;code&gt;f(&lt;var&gt;x&lt;/var&gt;) = &lt;var&gt;x&lt;/var&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/code&gt;,
+   &lt;var&gt;x&lt;/var&gt; is the input.&lt;/p&gt;
+&lt;p&gt;To install, run: &lt;code&gt;npm install &lt;var&gt;package-name&lt;/var&gt;&lt;/code&gt;&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>The area of a rectangle is <var>width</var> × <var>height</var>.</p>
+          <p>In the function <code>f(<var>x</var>) = <var>x</var><sup>2</sup></code>, <var>x</var> is the input.</p>
+          <p>To install, run: <code>npm install <var>package-name</var></code></p>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>&lt;var&gt;</code> inside <code>&lt;code&gt;</code> clearly separates the actual code from the placeholder the reader should replace. This is much clearer than italicizing inside <code>&lt;code&gt;</code> alone.
+        </div>
+      </section>
+
+      <section id="pre-code">
+        <h2><span class="num">9</span> Combining pre + code</h2>
+        <p>For multi-line code blocks, the canonical pattern is to nest <code>&lt;code&gt;</code> inside <code>&lt;pre&gt;</code>. This gives you both whitespace preservation and the semantic "this is code" signal.</p>
+        <pre><code>&lt;pre&gt;&lt;code&gt;function fibonacci(n) {
+  if (n &lt;= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+&lt;/code&gt;&lt;/pre&gt;</code></pre>
+        <h3>Adding a language class for syntax highlighting</h3>
+        <p>Many syntax highlighters (Prism, highlight.js, CodeMirror) look for a <code>language-*</code> class on the <code>&lt;code&gt;</code> element:</p>
+        <pre><code>&lt;pre&gt;&lt;code class="language-javascript"&gt;
+const greet = (name) =&gt; `Hello, ${name}!`;
+&lt;/code&gt;&lt;/pre&gt;</code></pre>
+        <h3>Recommended base CSS</h3>
+        <pre><code>pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Inline code */
+code {
+  background: #eef2ff;
+  color: #1e3a8a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}</code></pre>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">10</span> Real-World Examples</h2>
+        <h3>Math tutorial</h3>
+        <pre><code>&lt;p&gt;
+  The quadratic formula solves &lt;var&gt;ax&lt;/var&gt;&lt;sup&gt;2&lt;/sup&gt; + &lt;var&gt;bx&lt;/var&gt; + &lt;var&gt;c&lt;/var&gt; = 0:
+&lt;/p&gt;
+&lt;p&gt;
+  &lt;var&gt;x&lt;/var&gt; = (−&lt;var&gt;b&lt;/var&gt; ± √(&lt;var&gt;b&lt;/var&gt;&lt;sup&gt;2&lt;/sup&gt; − 4&lt;var&gt;a&lt;/var&gt;&lt;var&gt;c&lt;/var&gt;)) / (2&lt;var&gt;a&lt;/var&gt;)
+&lt;/p&gt;</code></pre>
+        <h3>Chemistry reference</h3>
+        <pre><code>&lt;p&gt;
+  Glucose has the chemical formula C&lt;sub&gt;6&lt;/sub&gt;H&lt;sub&gt;12&lt;/sub&gt;O&lt;sub&gt;6&lt;/sub&gt;
+  and a molar mass of approximately 180 g/mol.
+&lt;/p&gt;</code></pre>
+        <h3>Programming tutorial</h3>
+        <pre><code>&lt;p&gt;
+  To install React, run &lt;code&gt;npm install &lt;var&gt;react&lt;/var&gt; &lt;var&gt;react-dom&lt;/var&gt;&lt;/code&gt;
+  in your project directory.
+&lt;/p&gt;
+
+&lt;p&gt;Then press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt; to stop the dev server.&lt;/p&gt;
+
+&lt;p&gt;You should see:&lt;/p&gt;
+&lt;p&gt;&lt;samp&gt;Compiled successfully!&lt;/samp&gt;&lt;/p&gt;</code></pre>
+        <h3>Keyboard shortcut reference</h3>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;&lt;th&gt;Action&lt;/th&gt;&lt;th&gt;Windows&lt;/th&gt;&lt;th&gt;macOS&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Save&lt;/td&gt;
+    &lt;td&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;S&lt;/kbd&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;kbd&gt;⌘&lt;/kbd&gt;+&lt;kbd&gt;S&lt;/kbd&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Find&lt;/td&gt;
+    &lt;td&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;F&lt;/kbd&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;kbd&gt;⌘&lt;/kbd&gt;+&lt;kbd&gt;F&lt;/kbd&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <h3>API documentation</h3>
+        <pre><code>&lt;p&gt;
+  The endpoint returns a JSON object with the following structure:
+&lt;/p&gt;
+&lt;pre&gt;&lt;samp&gt;{
+  "id": 42,
+  "name": "Ada Lovelace",
+  "email": "ada@example.com"
+}&lt;/samp&gt;&lt;/pre&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Using <code>&lt;sup&gt;</code> for "1st", "2nd"</td>
+              <td>Visually OK but missing semantic context</td>
+              <td>Use <code>&lt;sup&gt;</code> — it's actually the correct choice for ordinals</td>
+            </tr>
+            <tr>
+              <td>Forgetting to escape <code>&lt;</code> in <code>&lt;code&gt;</code></td>
+              <td>Tags get parsed instead of displayed</td>
+              <td>Use <code>&amp;lt;</code> and <code>&amp;gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;pre&gt;</code> without <code>&lt;code&gt;</code> inside</td>
+              <td>Loses the "this is code" semantic signal</td>
+              <td>Nest <code>&lt;code&gt;</code> inside <code>&lt;pre&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;code&gt;</code> for non-code text just for monospace</td>
+              <td>Misleads tools and search engines</td>
+              <td>Use a <code>&lt;span class="mono"&gt;</code> instead</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;kbd&gt;</code> for button text</td>
+              <td>Buttons aren't keyboard input</td>
+              <td>Use <code>&lt;button&gt;</code> or styled <code>&lt;span&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Long lines in <code>&lt;pre&gt;</code> causing horizontal scroll</td>
+              <td>Poor mobile UX</td>
+              <td>Use <code>overflow-x: auto</code> or <code>white-space: pre-wrap</code></td>
+            </tr>
+            <tr>
+              <td>Using Unicode subscript characters instead of <code>&lt;sub&gt;</code></td>
+              <td>Inconsistent rendering; not semantic</td>
+              <td>Use <code>&lt;sub&gt;</code> for proper subscripts</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Chemistry formulas</strong>
+          Write the chemical formulas for: water, carbon dioxide, sulfuric acid, glucose, and ammonia (NH₃) using <code>&lt;sub&gt;</code>. Verify they render correctly.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Math page</strong>
+          Build a small math reference page showing: the Pythagorean theorem (a² + b² = c²), the area of a circle (πr²), Einstein's equation (E=mc²), and the quadratic formula. Use <code>&lt;sup&gt;</code>, <code>&lt;var&gt;</code>, and <code>&lt;sub&gt;</code> appropriately.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Programming tutorial</strong>
+          Write a tutorial paragraph that:
+          <ul>
+            <li>Mentions the <code>console.log()</code> function inline</li>
+            <li>Shows a 3-line code block using <code>&lt;pre&gt;&lt;code&gt;</code></li>
+            <li>Tells the reader to press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd> to open the console</li>
+            <li>Shows the expected output <code>&lt;samp&gt;</code></li>
+          </ul>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Keyboard shortcut table</strong>
+          Build a 2-column table of keyboard shortcuts for any app you use (browser, editor, OS). Use <code>&lt;kbd&gt;</code> for the keys. Style the <code>&lt;kbd&gt;</code> elements to look like physical keycaps.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li><code>&lt;sub&gt;</code> = subscript for chemistry (H₂O) and footnote refs.</li>
+          <li><code>&lt;sup&gt;</code> = superscript for exponents (x²), ordinals (1st), footnote markers.</li>
+          <li><code>&lt;code&gt;</code> = inline code, monospace by default.</li>
+          <li><code>&lt;pre&gt;</code> = block that preserves whitespace; pair with <code>&lt;code&gt;</code> for code blocks.</li>
+          <li><code>&lt;kbd&gt;</code> = keyboard keys and shortcuts.</li>
+          <li><code>&lt;samp&gt;</code> = sample program output.</li>
+          <li><code>&lt;var&gt;</code> = variables and placeholders in math/code.</li>
+          <li>Always escape <code>&lt;</code> and <code>&gt;</code> as entities inside <code>&lt;code&gt;</code> and <code>&lt;pre&gt;</code>.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="mark-small-s.html">← Previous: Mark, Small &amp; S</a>
+      <a href="abbr-cite.html">Next: Abbr &amp; Cite →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Sub/Sup/Code</p>
+  </footer>
+</body>
+</html>

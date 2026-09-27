@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TH &amp; Scope — Table Header Cells — HTML Mastery</title>
+  <meta name="description" content="Master the th (table header) element and the scope attribute: scope=col, scope=row, scope=colgroup, scope=rowgroup. Learn why scope is the single most important table accessibility feature, how screen readers use it, and when to use th vs td.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box table { margin: 0; }
+    .demo-box .live-table { border-collapse: collapse; width: 100%; }
+    .demo-box .live-table th, .demo-box .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-box .live-table th { background: #f1f5f9; }
+    .demo-box .live-table th[scope="row"] { background: #f8fafc; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .scope-diagram {
+      background: #0b1020; color: #e2e8f0; padding: 18px;
+      border-radius: 12px; font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85rem; line-height: 1.5; overflow-x: auto;
+      white-space: pre;
+    }
+    .scope-diagram .col { color: #fbbf24; }
+    .scope-diagram .row { color: #86efac; }
+    .scope-diagram .cell { color: #cdd6f4; }
+    .scope-diagram .dim { color: #64748b; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 2</span>
+    <h1><code>&lt;th&gt;</code> and the <code>scope</code> attribute</h1>
+    <p>The header cell is the single most powerful accessibility feature in HTML tables. Without <code>scope</code>, a screen reader user is lost. With it, every cell announces its row and column context — like a coordinate readout.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what-is-th">What is &lt;th&gt;?</a></li>
+        <li><a href="#th-vs-td">&lt;th&gt; vs &lt;td&gt;</a></li>
+        <li><a href="#default-styling">Default styling</a></li>
+        <li><a href="#scope-attribute">The scope attribute</a></li>
+        <li><a href="#scope-col">scope="col"</a></li>
+        <li><a href="#scope-row">scope="row"</a></li>
+        <li><a href="#scope-colgroup">scope="colgroup" &amp; rowgroup</a></li>
+        <li><a href="#why-matters">Why this matters</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what-is-th">
+        <h2><span class="num">1</span> What is <code>&lt;th&gt;</code>?</h2>
+        <p><code>&lt;th&gt;</code> stands for "table header". It marks a cell as a <strong>header</strong> rather than a data cell. Headers describe the meaning of the cells around them: column headers describe the cells below them, row headers describe the cells to their right.</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th scope="col"&gt;Name&lt;/th&gt;
+    &lt;th scope="col"&gt;Email&lt;/th&gt;
+    &lt;th scope="col"&gt;Role&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Ada Lovelace&lt;/td&gt;
+    &lt;td&gt;ada@example.com&lt;/td&gt;
+    &lt;td&gt;Admin&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <p>Visually, the <code>&lt;th&gt;</code> cells get rendered <strong>bold</strong> and <strong>centered</strong> by default — but that's not what makes them important. The semantic role is what counts: it tells assistive technology (and search engines) "this cell describes a row or column of data".</p>
+      </section>
+
+      <section id="th-vs-td">
+        <h2><span class="num">2</span> <code>&lt;th&gt;</code> vs <code>&lt;td&gt;</code></h2>
+        <p>The two cell elements look similar but serve very different purposes:</p>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th><code>&lt;th&gt;</code></th><th><code>&lt;td&gt;</code></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Semantic role</td><td>Header — describes other cells</td><td>Data — holds a value</td></tr>
+            <tr><td>Default weight</td><td>Bold</td><td>Normal</td></tr>
+            <tr><td>Default alignment</td><td>Center</td><td>Left</td></tr>
+            <tr><td>Implicit scope</td><td>If no <code>scope</code> attr, treated as <code>col</code> when in <code>&lt;thead&gt;</code> or first row, <code>row</code> when in first column — but explicit is better</td><td>Not applicable</td></tr>
+            <tr><td>Screen reader behavior</td><td>Announced as a header; can be repeated before each cell it covers</td><td>Announced as data only</td></tr>
+            <tr><td>Search engine weight</td><td>Slightly higher — words in headers carry more SEO weight</td><td>Normal weight</td></tr>
+            <tr><td>Common location</td><td>First row (column headers) and/or first column (row headers)</td><td>Body of the table</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          You can put a <code>&lt;th&gt;</code> anywhere — including in the middle of a table — but the convention is to keep headers in the first row, first column, or both. Reserve <code>&lt;th&gt;</code> for cells whose primary job is <em>labeling</em>, not holding data.
+        </div>
+      </section>
+
+      <section id="default-styling">
+        <h2><span class="num">3</span> Default styling</h2>
+        <p>Every browser styles <code>&lt;th&gt;</code> cells with:</p>
+        <ul>
+          <li><code>font-weight: bold</code></li>
+          <li><code>text-align: center</code> (most browsers — Chrome/Firefox/Safari)</li>
+          <li>A small default padding (varies by browser)</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Default rendering (no CSS)</div>
+          <table>
+            <tr><th>Name</th><th>Email</th></tr>
+            <tr><td>Ada</td><td>ada@example.com</td></tr>
+          </table>
+        </div>
+        <p>You can override any of this with CSS. A common pattern is <code>th { text-align: left; }</code> to match Western reading flow, and a subtle background color to make headers stand out:</p>
+        <pre><code>th {
+  text-align: left;
+  background: #f1f5f9;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 2px solid #cbd5e1;
+}</code></pre>
+      </section>
+
+      <section id="scope-attribute">
+        <h2><span class="num">4</span> The <code>scope</code> attribute</h2>
+        <p>The <code>scope</code> attribute tells screen readers which cells a given header cell describes. Without it, screen readers must guess based on position — and they often guess wrong, especially in complex tables.</p>
+        <div class="scope-diagram"><span class="dim">+-------+-------+-------+</span>
+<span class="dim">|</span> <span class="col">TH col</span> <span class="dim">|</span> <span class="col">TH col</span> <span class="dim">|</span> <span class="col">TH col</span> <span class="dim">|</span>  <span class="dim">&lt;-- scope="col" applied to each</span>
+<span class="dim">+-------+-------+-------+</span>
+<span class="dim">|</span><span class="row">TH row</span> <span class="dim">|</span> <span class="cell">  td  </span> <span class="dim">|</span> <span class="cell">  td  </span> <span class="dim">|</span>  <span class="dim">&lt;-- scope="row" applied to first cell</span>
+<span class="dim">+-------+-------+-------+</span>
+<span class="dim">|</span><span class="row">TH row</span> <span class="dim">|</span> <span class="cell">  td  </span> <span class="dim">|</span> <span class="cell">  td  </span> <span class="dim">|</span>
+<span class="dim">+-------+-------+-------+</span></div>
+        <h3>The four allowed values</h3>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Applies to</th><th>Use case</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>col</code></td><td>Header cells in the first row</td><td>Each header describes one column of data below it</td></tr>
+            <tr><td><code>row</code></td><td>Header cells in the first column</td><td>Each header describes one row of data to its right</td></tr>
+            <tr><td><code>colgroup</code></td><td>Header cells spanning multiple columns (with <code>colspan</code>)</td><td>The header describes several columns grouped together</td></tr>
+            <tr><td><code>rowgroup</code></td><td>Header cells spanning multiple rows (with <code>rowspan</code>)</td><td>The header describes several rows grouped together</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          <code>scope</code> doesn't change anything visually. It only affects how assistive technology navigates the table. <strong>But that means it's essential for ~15% of users</strong> who depend on screen readers.
+        </div>
+      </section>
+
+      <section id="scope-col">
+        <h2><span class="num">5</span> <code>scope="col"</code></h2>
+        <p>Use <code>scope="col"</code> on header cells in the first row of the table. Each such header describes the column beneath it.</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th scope="col"&gt;Product&lt;/th&gt;
+    &lt;th scope="col"&gt;Price&lt;/th&gt;
+    &lt;th scope="col"&gt;Stock&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Apple&lt;/td&gt;&lt;td&gt;$1.20&lt;/td&gt;&lt;td&gt;128&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Banana&lt;/td&gt;&lt;td&gt;$0.50&lt;/td&gt;&lt;td&gt;240&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output — Apple cell announced as "Product, Apple"</div>
+          <table class="live-table">
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Stock</th>
+            </tr>
+            <tr><td>Apple</td><td>$1.20</td><td>128</td></tr>
+            <tr><td>Banana</td><td>$0.50</td><td>240</td></tr>
+          </table>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Screen reader narration with proper <code>scope</code>: "Product, Apple, Price, one dollar twenty, Stock, one hundred twenty eight". Without <code>scope</code>, the user just hears "Apple, one dollar twenty, one hundred twenty eight" — no context.
+        </div>
+      </section>
+
+      <section id="scope-row">
+        <h2><span class="num">6</span> <code>scope="row"</code></h2>
+        <p>Use <code>scope="row"</code> on the first cell of each data row when that cell identifies the row. This is common for tables where each row is a named entity (a person, a country, a product):</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th scope="col"&gt;Country&lt;/th&gt;
+    &lt;th scope="col"&gt;Capital&lt;/th&gt;
+    &lt;th scope="col"&gt;Population&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th scope="row"&gt;France&lt;/th&gt;
+    &lt;td&gt;Paris&lt;/td&gt;
+    &lt;td&gt;67M&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th scope="row"&gt;Japan&lt;/th&gt;
+    &lt;td&gt;Tokyo&lt;/td&gt;
+    &lt;td&gt;125M&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output — Paris announced as "Capital, France, Paris"</div>
+          <table class="live-table">
+            <tr>
+              <th scope="col">Country</th>
+              <th scope="col">Capital</th>
+              <th scope="col">Population</th>
+            </tr>
+            <tr>
+              <th scope="row">France</th>
+              <td>Paris</td>
+              <td>67M</td>
+            </tr>
+            <tr>
+              <th scope="row">Japan</th>
+              <td>Tokyo</td>
+              <td>125M</td>
+            </tr>
+          </table>
+        </div>
+        <p>Notice that the first column now mixes <code>&lt;th scope="row"&gt;</code> (in body rows) and <code>&lt;th scope="col"&gt;</code> (in the header row). That's perfectly valid and extremely common.</p>
+      </section>
+
+      <section id="scope-colgroup">
+        <h2><span class="num">7</span> <code>scope="colgroup"</code> and <code>scope="rowgroup"</code></h2>
+        <p>When a header cell spans multiple columns (using <code>colspan</code>), you should use <code>scope="colgroup"</code>. Likewise for <code>rowspan</code> and <code>scope="rowgroup"</code>.</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th scope="col" rowspan="2"&gt;Student&lt;/th&gt;
+    &lt;th scope="colgroup" colspan="2"&gt;First Semester&lt;/th&gt;
+    &lt;th scope="colgroup" colspan="2"&gt;Second Semester&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;!-- Nested column headers, each scope="col" --&gt;
+    &lt;th scope="col"&gt;Math&lt;/th&gt;
+    &lt;th scope="col"&gt;Science&lt;/th&gt;
+    &lt;th scope="col"&gt;Math&lt;/th&gt;
+    &lt;th scope="col"&gt;Science&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th scope="row"&gt;Ada&lt;/th&gt;
+    &lt;td&gt;A&lt;/td&gt;
+    &lt;td&gt;A&lt;/td&gt;
+    &lt;td&gt;B&lt;/td&gt;
+    &lt;td&gt;A&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output — grouped headers</div>
+          <table class="live-table">
+            <tr>
+              <th scope="col" rowspan="2">Student</th>
+              <th scope="colgroup" colspan="2" style="text-align:center;">First Semester</th>
+              <th scope="colgroup" colspan="2" style="text-align:center;">Second Semester</th>
+            </tr>
+            <tr>
+              <th scope="col">Math</th>
+              <th scope="col">Science</th>
+              <th scope="col">Math</th>
+              <th scope="col">Science</th>
+            </tr>
+            <tr>
+              <th scope="row">Ada</th>
+              <td>A</td>
+              <td>A</td>
+              <td>B</td>
+              <td>A</td>
+            </tr>
+            <tr>
+              <th scope="row">Alan</th>
+              <td>B</td>
+              <td>A</td>
+              <td>A</td>
+              <td>B</td>
+            </tr>
+          </table>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Forgetting <code>scope="colgroup"</code> on grouped headers means screen readers can't connect the group header (e.g., "First Semester") with the sub-headers (e.g., "Math", "Science"). For very complex tables, <code>scope</code> alone is not enough — see the <a href="../03-Accessible-Tables/scope-headers.html">Scope &amp; Headers deep dive</a>.
+        </div>
+      </section>
+
+      <section id="why-matters">
+        <h2><span class="num">8</span> Why this matters</h2>
+        <p>According to the World Health Organization, an estimated 2.2 billion people worldwide have some form of vision impairment. Many of them rely on screen readers to navigate the web. When you skip <code>scope</code>, you make every table on your site a maze.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h4>WCAG 2.1 Success Criterion 1.3.1</h4>
+            <p>"Info and Relationships" requires that information and relationships conveyed through presentation are programmatically determined. <code>scope</code> is exactly that: it makes row/column relationships explicit.</p>
+          </div>
+          <div class="card">
+            <h4>Section 508 / EAA</h4>
+            <p>Government and EU public-sector sites are legally required to use proper table headers. Skipping <code>scope</code> is a real compliance violation.</p>
+          </div>
+          <div class="card">
+            <h4>SEO benefit</h4>
+            <p>Search engines parse tables for structured data (recipes, prices, schedules). Proper headers improve how your data appears in rich results.</p>
+          </div>
+          <div class="card">
+            <h4>Maintainability</h4>
+            <p>Headers also help <em>human</em> developers understand the table structure six months later. Future-you will thank present-you.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Impact</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>&lt;td&gt;</code> with <code>font-weight: bold</code> instead of <code>&lt;th&gt;</code></td><td>Screen reader treats it as data, not a header. Loses semantic meaning.</td><td>Use <code>&lt;th&gt;</code>; style with CSS if needed.</td></tr>
+            <tr><td>Using <code>&lt;th&gt;</code> without <code>scope</code></td><td>Screen readers guess based on position — usually right for simple tables, wrong for complex ones.</td><td>Always add <code>scope</code> explicitly.</td></tr>
+            <tr><td>Adding <code>scope</code> to a <code>&lt;td&gt;</code></td><td>Invalid HTML. <code>scope</code> only belongs on <code>&lt;th&gt;</code>.</td><td>Use <code>&lt;th&gt;</code> instead.</td></tr>
+            <tr><td>Setting <code>scope="col"</code> on row headers (or vice versa)</td><td>Screen reader announces wrong context, confusing users.</td><td>Double-check the value matches the header's actual role.</td></tr>
+            <tr><td>Naming headers vaguely ("Column 1", "Data")</td><td>Screen reader wastes time on useless labels.</td><td>Use descriptive labels: "Quarterly Revenue", not "Q1".</td></tr>
+            <tr><td>Multiple header rows without <code>colgroup</code></td><td>Top-level group headers aren't associated with sub-headers.</td><td>Use <code>scope="colgroup"</code> on grouped headers.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Convert this table</strong>
+          The following table uses only <code>&lt;td&gt;</code> cells. Rewrite it with proper <code>&lt;th scope&gt;</code> on the first row and first column.
+          <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;City&lt;/td&gt;&lt;td&gt;Jan&lt;/td&gt;&lt;td&gt;Jul&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Oslo&lt;/td&gt;&lt;td&gt;-4°C&lt;/td&gt;&lt;td&gt;17°C&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Cairo&lt;/td&gt;&lt;td&gt;14°C&lt;/td&gt;&lt;td&gt;28°C&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Grouped headers</strong>
+          Build a sales table with a top row grouped by region ("North America", "Europe"), and a sub-row of months ("Jan", "Feb"). Use <code>scope="colgroup"</code> on the region headers.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Screen reader test</strong>
+          Turn on VoiceOver (Mac: Cmd+F5), NVDA (Windows: free download), or ChromeVox (Chrome extension). Navigate your Exercise 1 table with the <kbd>Tab</kbd> key. Listen for how it announces headers. Now compare with a version that lacks <code>scope</code> — what changes?
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — CSS restyle</strong>
+          Take your Exercise 1 table and write CSS that styles <code>&lt;th&gt;</code> differently from <code>&lt;td&gt;</code>: bold dark header background, white text, left-aligned. Confirm <code>scope</code> itself does not change the visual appearance.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <p>The <code>scope</code> attribute has universal browser support. The variation is in how well different screen readers use it:</p>
+        <div class="browser-support">
+          <span class="pill yes">HTML5 spec — supported</span>
+          <span class="pill yes">NVDA — full</span>
+          <span class="pill yes">JAWS — full</span>
+          <span class="pill yes">VoiceOver (Mac/iOS) — full</span>
+          <span class="pill yes">TalkBack (Android) — full</span>
+          <span class="pill yes">Chrome / Edge / Firefox / Safari</span>
+        </div>
+        <p>Note: very old screen readers (2005-era) sometimes ignored <code>scope</code> in favor of the more verbose <code>headers</code>/<code>id</code> approach. Modern screen readers all honor <code>scope</code> properly. For complex tables where <code>scope</code> is insufficient, see the <a href="../03-Accessible-Tables/scope-headers.html">Scope &amp; Headers lesson</a>.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Data grids</h4>
+            <p>Sortable admin tables always use <code>&lt;th scope="col"&gt;</code> so users navigating by header can find the sort buttons.</p>
+          </div>
+          <div class="card">
+            <h4>Pricing tables</h4>
+            <p>Feature comparison with feature names in the first column (<code>scope="row"</code>) and plan names in the header row (<code>scope="col"</code>).</p>
+          </div>
+          <div class="card">
+            <h4>Forms in tables</h4>
+            <p>Form-field labels in the first column become <code>&lt;th scope="row"&gt;</code> for clean a11y.</p>
+          </div>
+          <div class="card">
+            <h4>Schedule grids</h4>
+            <p>Conference schedules with time slots as row headers and rooms as column headers.</p>
+          </div>
+          <div class="card">
+            <h4>Stat dashboards</h4>
+            <p>Year/quarter grouping with <code>colgroup</code> for grouped headers.</p>
+          </div>
+          <div class="card">
+            <h4>Exam results</h4>
+            <p>Student names as row headers, subjects as column headers, grade in cells.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="table-tr-td.html">← Previous: Table Structure</a>
+    <a class="next" href="caption.html">Next: Caption →</a>
+  </footer>
+</body>
+</html>

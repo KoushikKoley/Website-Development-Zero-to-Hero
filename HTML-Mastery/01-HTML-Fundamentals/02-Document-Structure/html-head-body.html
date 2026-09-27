@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The html, head, and body Elements — HTML Mastery</title>
+  <meta name="description" content="A complete walkthrough of the &lt;html&gt;, &lt;head&gt;, and &lt;body&gt; elements — the lang attribute, the role of each section, what belongs where, and the rules you must follow.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #06b6d4 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #93c5fd; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .tag-section { border: 2px solid var(--brand); border-radius: 12px; padding: 16px; margin: 14px 0; background: #f8fafc; }
+    .tag-section h4 { margin: 0 0 8px; color: var(--brand); font-family: "JetBrains Mono", monospace; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.2 · Document Structure</span>
+    <h1>The <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code> Elements</h1>
+    <p>Three nested containers carry every HTML document. Each has a distinct role, distinct rules, and distinct ways to misuse it.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">The Big Picture</a></li>
+        <li><a href="#html">The &lt;html&gt; Element</a></li>
+        <li><a href="#lang">The lang Attribute</a></li>
+        <li><a href="#head">The &lt;head&gt; Element</a></li>
+        <li><a href="#body">The &lt;body&gt; Element</a></li>
+        <li><a href="#rules">What Goes Where</a></li>
+        <li><a href="#optional">Are They Required?</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> The Big Picture</h2>
+        <p>Every HTML document is a tree with three layers:</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;             ← root element (one per document)
+  &lt;head&gt;                     ← metadata: not rendered on the page
+    &lt;title&gt;...&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;                      ← all visible content goes here
+    &lt;h1&gt;Hello!&lt;/h1&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <div class="grid-2">
+          <div class="card"><h4>&lt;html&gt; — the root</h4><p>Contains everything else. Exactly one per document. Carries the <code>lang</code> attribute.</p></div>
+          <div class="card"><h4>&lt;head&gt; — the metadata</h4><p>Carries info <em>about</em> the page: title, encoding, links to CSS and JS, social sharing tags. Not shown on the page.</p></div>
+          <div class="card"><h4>&lt;body&gt; — the content</h4><p>Everything the user sees: headings, paragraphs, images, buttons, forms.</p></div>
+          <div class="card"><h4>The order is fixed</h4><p><code>&lt;head&gt;</code> must come before <code>&lt;body&gt;</code>, and both must be inside <code>&lt;html&gt;</code>.</p></div>
+        </div>
+      </section>
+
+      <section id="html">
+        <h2><span class="num">2</span> The &lt;html&gt; Element</h2>
+        <p>The <code>&lt;html&gt;</code> element is the <strong>root element</strong> of every HTML document. It is the ancestor of every other element. There can be only one <code>&lt;html&gt;</code> per document, and it must be the direct child of the DOCTYPE.</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  ...
+&lt;/html&gt;</code></pre>
+        <h3>What goes on the &lt;html&gt; tag?</h3>
+        <ul>
+          <li><strong><code>lang</code></strong> — declares the document's primary language. Required for accessibility and SEO. (See below.)</li>
+          <li><strong><code>dir</code></strong> — text direction: <code>"ltr"</code> (default) or <code>"rtl"</code> for right-to-left languages like Arabic or Hebrew.</li>
+          <li><strong><code>xmlns</code></strong> — XML namespace. Only needed if you're serving the page as XML (rare). Harmless on normal HTML pages.</li>
+          <li><strong>Global attributes</strong> like <code>class</code>, <code>id</code>, <code>data-*</code> are technically allowed but rarely useful here.</li>
+        </ul>
+        <pre><code>&lt;!-- English page, left-to-right (default) --&gt;
+&lt;html lang="en"&gt;
+
+&lt;!-- Arabic page, right-to-left --&gt;
+&lt;html lang="ar" dir="rtl"&gt;
+
+&lt;!-- Chinese (Simplified) page --&gt;
+&lt;html lang="zh-Hans"&gt;
+
+&lt;!-- Page served as XHTML --&gt;
+&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;</code></pre>
+      </section>
+
+      <section id="lang">
+        <h2><span class="num">3</span> The lang Attribute</h2>
+        <p>The <code>lang</code> attribute on <code>&lt;html&gt;</code> declares the document's primary language. This is one of the most important and most-forgotten attributes in all of HTML.</p>
+        <h3>Why it matters</h3>
+        <div class="grid-2">
+          <div class="card"><h4>Screen readers</h4><p>Determine pronunciation rules. An English screen reader reading German text without <code>lang="de"</code> butchers it.</p></div>
+          <div class="card"><h4>Search engines</h4><p>Google uses <code>lang</code> to serve the right language version to users.</p></div>
+          <div class="card"><h4>Browser translation</h4><p>Chrome's "Translate this page" feature relies on <code>lang</code> to know what to translate from.</p></div>
+          <div class="card"><h4>Hyphenation &amp; spell-check</h4><p>Browsers use <code>lang</code> to apply correct hyphenation rules and dictionary.</p></div>
+        </div>
+        <h3>Common values</h3>
+        <table>
+          <thead><tr><th>Code</th><th>Language</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>en</code></td><td>English (generic)</td><td>Falls back to any regional variant</td></tr>
+            <tr><td><code>en-US</code></td><td>English (United States)</td><td>Region-specific</td></tr>
+            <tr><td><code>en-GB</code></td><td>English (United Kingdom)</td><td>Region-specific</td></tr>
+            <tr><td><code>fr</code></td><td>French</td><td></td></tr>
+            <tr><td><code>es</code></td><td>Spanish</td><td></td></tr>
+            <tr><td><code>de</code></td><td>German</td><td></td></tr>
+            <tr><td><code>zh-Hans</code></td><td>Chinese, Simplified script</td><td>Preferred over <code>zh-CN</code></td></tr>
+            <tr><td><code>zh-Hant</code></td><td>Chinese, Traditional script</td><td>Preferred over <code>zh-TW</code></td></tr>
+            <tr><td><code>ja</code></td><td>Japanese</td><td></td></tr>
+            <tr><td><code>ar</code></td><td>Arabic</td><td>Often combined with <code>dir="rtl"</code></td></tr>
+            <tr><td><code>he</code></td><td>Hebrew</td><td>RTL</td></tr>
+            <tr><td><code>hi</code></td><td>Hindi</td><td></td></tr>
+            <tr><td><code>ru</code></td><td>Russian</td><td></td></tr>
+            <tr><td><code>pt-BR</code></td><td>Portuguese (Brazil)</td><td></td></tr>
+          </tbody>
+        </table>
+        <p>Codes follow <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener">BCP 47</a>: a 2-letter language code from ISO 639-1, optionally followed by a region subtag.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't put the wrong language on purpose. Setting <code>lang="en"</code> on a page written entirely in Spanish causes screen readers to mispronounce every word and breaks Google's translation feature.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          You can override <code>lang</code> on individual elements when a page mixes languages: <code>&lt;p&gt;The German word &lt;span lang="de"&gt;Schadenfreude&lt;/span&gt; means...&lt;/p&gt;</code>. The screen reader will switch pronunciation for that word.
+        </div>
+      </section>
+
+      <section id="head">
+        <h2><span class="num">4</span> The &lt;head&gt; Element</h2>
+        <p>The <code>&lt;head&gt;</code> element is the container for <strong>metadata</strong> — information <em>about</em> the page that the browser uses but does not show as content.</p>
+        <p>What belongs in the <code>&lt;head&gt;</code>:</p>
+        <div class="tag-section">
+          <h4>&lt;title&gt;</h4>
+          <p>The page title shown in the browser tab and used as the default bookmark name. Required. One per page. Limited to ~60 characters for SEO (Google truncates longer titles).</p>
+        </div>
+        <div class="tag-section">
+          <h4>&lt;meta&gt;</h4>
+          <p>Various metadata: charset, viewport, description, author, social media tags. Multiple <code>&lt;meta&gt;</code> tags are common. Covered in detail on the next page.</p>
+        </div>
+        <div class="tag-section">
+          <h4>&lt;link&gt;</h4>
+          <p>Links to external resources: stylesheets, favicons, preconnect hints, RSS feeds.</p>
+          <pre><code>&lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;link rel="icon" href="favicon.ico"&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="alternate" type="application/rss+xml" href="feed.xml"&gt;</code></pre>
+        </div>
+        <div class="tag-section">
+          <h4>&lt;style&gt;</h4>
+          <p>Inline CSS. Useful for tiny, page-specific styles. Generally, prefer external <code>&lt;link&gt;</code> stylesheets.</p>
+        </div>
+        <div class="tag-section">
+          <h4>&lt;script&gt;</h4>
+          <p>JavaScript. Can be in <code>&lt;head&gt;</code> (often with <code>defer</code>) or at the end of <code>&lt;body&gt;</code>.</p>
+          <pre><code>&lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;script type="application/ld+json"&gt;{ ... }&lt;/script&gt;</code></pre>
+        </div>
+        <div class="tag-section">
+          <h4>&lt;base&gt;</h4>
+          <p>Sets the default URL and target for all relative links on the page. Use sparingly; it's easy to confuse yourself.</p>
+        </div>
+        <div class="tag-section">
+          <h4>&lt;noscript&gt;</h4>
+          <p>Content shown only when JavaScript is disabled.</p>
+        </div>
+        <p>What does <strong>not</strong> belong in the <code>&lt;head&gt;</code>: anything you can see on the page. No headings, paragraphs, images, divs, sections, etc.</p>
+      </section>
+
+      <section id="body">
+        <h2><span class="num">5</span> The &lt;body&gt; Element</h2>
+        <p>The <code>&lt;body&gt;</code> element contains everything the user sees: text, images, links, forms, scripts that affect the page. There is exactly one <code>&lt;body&gt;</code> per document, and it must be the second child of <code>&lt;html&gt;</code> (after <code>&lt;head&gt;</code>).</p>
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;nav&gt;...&lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;h1&gt;Post Title&lt;/h1&gt;
+      &lt;p&gt;...&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;...&lt;/footer&gt;
+  &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;</code></pre>
+        <h3>Useful attributes on &lt;body&gt;</h3>
+        <ul>
+          <li><strong><code>class</code></strong> — common pattern: <code>class="home"</code>, <code>class="article dark-mode"</code> for page-specific styling.</li>
+          <li><strong><code>id</code></strong> — sometimes used for JavaScript targeting.</li>
+          <li><strong><code>onload</code>, <code>onresize</code>, <code>onscroll</code></strong> — event handlers. Modern code prefers <code>addEventListener</code> in a separate script, but inline handlers are valid.</li>
+          <li><strong>Old presentational attributes</strong> like <code>bgcolor</code>, <code>text</code>, <code>margin</code> — obsolete. Use CSS.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't put <code>&lt;script&gt;</code> tags that block rendering at the top of <code>&lt;body&gt;</code> — they'll delay the page's first paint. Either add <code>defer</code>, or put them at the bottom of <code>&lt;body&gt;</code>.
+        </div>
+      </section>
+
+      <section id="rules">
+        <h2><span class="num">6</span> What Goes Where</h2>
+        <table>
+          <thead><tr><th>Element</th><th>Goes in &lt;head&gt;?</th><th>Goes in &lt;body&gt;?</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;title&gt;</code></td><td>✓</td><td>✗</td></tr>
+            <tr><td><code>&lt;meta&gt;</code></td><td>✓</td><td>✗</td></tr>
+            <tr><td><code>&lt;link&gt;</code></td><td>✓</td><td>✓ (rarely, for preload)</td></tr>
+            <tr><td><code>&lt;style&gt;</code></td><td>✓</td><td>✓ (scoped is deprecated)</td></tr>
+            <tr><td><code>&lt;script&gt;</code></td><td>✓ (with <code>defer</code>)</td><td>✓ (often at bottom)</td></tr>
+            <tr><td><code>&lt;base&gt;</code></td><td>✓</td><td>✗</td></tr>
+            <tr><td><code>&lt;noscript&gt;</code></td><td>✓ (in head, only <code>link</code>/<code>style</code>/<code>meta</code>)</td><td>✓ (any content)</td></tr>
+            <tr><td><code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>...</td><td>✗</td><td>✓</td></tr>
+            <tr><td><code>&lt;img&gt;</code>, <code>&lt;video&gt;</code></td><td>✗</td><td>✓</td></tr>
+            <tr><td><code>&lt;form&gt;</code></td><td>✗</td><td>✓</td></tr>
+            <tr><td><code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code></td><td>✗</td><td>✓</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="optional">
+        <h2><span class="num">7</span> Are They Required?</h2>
+        <p>Technically, the HTML5 parser will <em>infer</em> missing <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code> tags. This document is valid (if ugly):</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;Lazy&lt;/title&gt;
+&lt;p&gt;Hello!&lt;/p&gt;</code></pre>
+        <p>The parser sees the <code>&lt;meta&gt;</code> and <code>&lt;title&gt;</code> (which are head-only elements) and infers a <code>&lt;head&gt;</code>. It sees the <code>&lt;p&gt;</code> (a body-only element) and infers a <code>&lt;body&gt;</code>. The DOM ends up the same as if you'd written all the tags explicitly.</p>
+        <p><strong>Don't do this.</strong> Even though it's valid, it's harder to read, harder to maintain, and breaks tools that expect explicit structure. Always write all three tags.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Run DevTools → Elements on any page. Notice the browser has inserted <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, and <code>&lt;body&gt;</code> even if the source didn't have them. The DOM is the normalised form; the source is your responsibility.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">8</span> Common Mistakes</h2>
+        <table>
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th></tr></thead>
+          <tbody>
+            <tr><td>Putting <code>&lt;meta&gt;</code> inside <code>&lt;body&gt;</code></td><td>Invalid; the parser moves it to <code>&lt;head&gt;</code> for you, but tools complain. Keep it in <code>&lt;head&gt;</code>.</td></tr>
+            <tr><td>Putting <code>&lt;p&gt;</code> inside <code>&lt;head&gt;</code></td><td>Invalid; parser implicitly closes <code>&lt;head&gt;</code> and opens <code>&lt;body&gt;</code>.</td></tr>
+            <tr><td>Multiple <code>&lt;body&gt;</code> tags</td><td>Invalid; only the first is kept.</td></tr>
+            <tr><td>Forgetting <code>lang</code> on <code>&lt;html&gt;</code></td><td>Valid HTML but fails accessibility best practice. Always set it.</td></tr>
+            <tr><td><code>&lt;html lang="english"&gt;</code></td><td>Invalid language code. Use <code>"en"</code>, not the full word.</td></tr>
+            <tr><td>Two <code>&lt;title&gt;</code> tags</td><td>Invalid; only one is allowed.</td></tr>
+            <tr><td><code>&lt;head&gt;</code> after <code>&lt;body&gt;</code></td><td>Invalid order; <code>&lt;head&gt;</code> must come first.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout exercise">
+          <strong>Try it yourself — 10 minutes</strong>
+          Build a complete document from scratch (no Emmet) that includes:
+          <ol>
+            <li>A <code>&lt;title&gt;</code> of "Document Structure Practice".</li>
+            <li><code>lang="en"</code> on <code>&lt;html&gt;</code>.</li>
+            <li>A <code>&lt;meta charset="UTF-8"&gt;</code>.</li>
+            <li>A viewport meta tag.</li>
+            <li>A description meta tag.</li>
+            <li>A linked stylesheet (you can create <code>style.css</code> with one rule).</li>
+            <li>An <code>&lt;h1&gt;</code> and a <code>&lt;p&gt;</code> in the body.</li>
+            <li>A <code>&lt;script&gt;</code> at the bottom of the body with <code>console.log('Page loaded')</code>.</li>
+          </ol>
+          Validate it at <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a>. If it passes, you've internalised document structure.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="doctype.html">← Previous: DOCTYPE</a>
+      <a href="metadata.html">Next: Metadata →</a>
+    </div>
+    <p>HTML Mastery — Section 1.2 · Document Structure · html / head / body</p>
+  </footer>
+</body>
+</html>

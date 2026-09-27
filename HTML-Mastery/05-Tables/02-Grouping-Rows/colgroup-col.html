@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>colgroup &amp; col — Column-Level Styling — HTML Mastery</title>
+  <meta name="description" content="Master colgroup and col: the only way to apply styling (width, background, alignment) to entire columns at once. Learn the span attribute, the difference between colgroup and col, real-world patterns like fixed left columns, and why CSS doesn't have a 'column' selector.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box .live-table { border-collapse: collapse; width: 100%; }
+    .demo-box .live-table th, .demo-box .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-box .live-table thead th { background: #1e293b; color: white; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.no { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .browser-support .pill.limited { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 5</span>
+    <h1><code>&lt;colgroup&gt;</code> and <code>&lt;col&gt;</code></h1>
+    <p>The only HTML mechanism for applying CSS to entire columns. The browser lays out tables row-by-row, so without <code>&lt;colgroup&gt;</code> you'd have to repeat the same style on every cell of a column. <code>&lt;colgroup&gt;</code> fixes that.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why-columns">Why column styling is special</a></li>
+        <li><a href="#colgroup">The &lt;colgroup&gt; element</a></li>
+        <li><a href="#col">The &lt;col&gt; element</a></li>
+        <li><a href="#span">The span attribute</a></li>
+        <li><a href="#width">Setting column widths</a></li>
+        <li><a href="#background">Column backgrounds</a></li>
+        <li><a href="#alignment">Column alignment</a></li>
+        <li><a href="#fixed-left">Pattern: fixed left column</a></li>
+        <li><a href="#limitations">CSS limitations</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why-columns">
+        <h2><span class="num">1</span> Why column styling is special</h2>
+        <p>HTML tables are stored and laid out <strong>row by row</strong>. A <code>&lt;tr&gt;</code> contains cells, and each cell belongs to a "column" only implicitly — there is no <code>&lt;column&gt;</code> element wrapping cells vertically. This means CSS selectors like <code>td:first-child</code> work, but they require every row to be styled individually.</p>
+        <p>What if you want column 3 to have a fixed width of 200px and a light-blue background? You'd have to:</p>
+        <pre><code>td:nth-child(3),
+th:nth-child(3) {
+  width: 200px;
+  background: #eff6ff;
+}</code></pre>
+        <p>That works, but it's brittle — if you insert a column later, every selector breaks. Worse: <strong>setting <code>width</code> on individual cells doesn't reliably control column width</strong> in all browsers — the algorithm is column-based.</p>
+        <div class="callout info">
+          <strong>Definition</strong>
+          The <code>&lt;colgroup&gt;</code> and <code>&lt;col&gt;</code> elements describe the <em>columns</em> of the table as first-class entities. CSS applied to them controls the column's width, background, borders, and visibility — applied once, not per cell.
+        </div>
+      </section>
+
+      <section id="colgroup">
+        <h2><span class="num">2</span> The <code>&lt;colgroup&gt;</code> element</h2>
+        <p><code>&lt;colgroup&gt;</code> ("column group") is a container that sits inside <code>&lt;table&gt;</code> right after <code>&lt;caption&gt;</code> and before <code>&lt;thead&gt;</code>. It holds one or more <code>&lt;col&gt;</code> elements, or it can apply a span itself.</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Project Timeline&lt;/caption&gt;
+  &lt;colgroup&gt;
+    &lt;col&gt;                          &lt;!-- column 1 --&gt;
+    &lt;col style="width: 200px;"&gt;     &lt;!-- column 2 --&gt;
+    &lt;col style="background: #fef3c7;"&gt;  &lt;!-- column 3 --&gt;
+  &lt;/colgroup&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;Task&lt;/th&gt;&lt;th&gt;Owner&lt;/th&gt;&lt;th&gt;Due&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Design mockup&lt;/td&gt;&lt;td&gt;Ada&lt;/td&gt;&lt;td&gt;Mar 15&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <p>Rules:</p>
+        <ul>
+          <li>Must be a direct child of <code>&lt;table&gt;</code>.</li>
+          <li>Must come after <code>&lt;caption&gt;</code> (if present) and before <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, or <code>&lt;tr&gt;</code>.</li>
+          <li>Can hold zero or more <code>&lt;col&gt;</code> children, OR use its own <code>span</code> attribute (but not both meaningfully).</li>
+          <li>You can have multiple <code>&lt;colgroup&gt;</code> elements in the same table.</li>
+        </ul>
+      </section>
+
+      <section id="col">
+        <h2><span class="num">3</span> The <code>&lt;col&gt;</code> element</h2>
+        <p><code>&lt;col&gt;</code> represents a single column. It's a <strong>void element</strong> — no closing tag, no content. It applies styling to all cells in that column.</p>
+        <pre><code>&lt;colgroup&gt;
+  &lt;col style="background: #f1f5f9;"&gt;   &lt;!-- col 1 --&gt;
+  &lt;col&gt;                                &lt;!-- col 2 (no styling) --&gt;
+  &lt;col style="width: 80px; text-align: right;"&gt;  &lt;!-- col 3 --&gt;
+&lt;/colgroup&gt;</code></pre>
+        <p>Each <code>&lt;col&gt;</code> in source order corresponds to one column. The browser matches them positionally — first <code>&lt;col&gt;</code> = column 1, second = column 2, etc.</p>
+      </section>
+
+      <section id="span">
+        <h2><span class="num">4</span> The <code>span</code> attribute</h2>
+        <p>Both <code>&lt;colgroup&gt;</code> and <code>&lt;col&gt;</code> accept a <code>span</code> attribute, an integer specifying how many columns the element covers. This is the short form when you want to style several columns identically:</p>
+        <pre><code>&lt;!-- Equivalent ways to style 3 columns identically --&gt;
+
+&lt;!-- Verbose: three col elements --&gt;
+&lt;colgroup&gt;
+  &lt;col style="width: 100px;"&gt;
+  &lt;col style="width: 100px;"&gt;
+  &lt;col style="width: 100px;"&gt;
+&lt;/colgroup&gt;
+
+&lt;!-- Concise: one col with span --&gt;
+&lt;colgroup&gt;
+  &lt;col span="3" style="width: 100px;"&gt;
+&lt;/colgroup&gt;
+
+&lt;!-- Or colgroup itself with span (when all cols share styling) --&gt;
+&lt;colgroup span="3" style="width: 100px;"&gt;&lt;/colgroup&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Mixing <code>span</code> on <code>&lt;colgroup&gt;</code> with child <code>&lt;col&gt;</code> elements is invalid. If <code>&lt;colgroup&gt;</code> has a <code>span</code> attribute, it must be empty (no <code>&lt;col&gt;</code> children). The browser will silently drop the children.
+        </div>
+      </section>
+
+      <section id="width">
+        <h2><span class="num">5</span> Setting column widths</h2>
+        <p>The most common use of <code>&lt;colgroup&gt;</code> is to declare column widths upfront. This speeds up rendering — the browser knows the column widths before processing body cells.</p>
+        <pre><code>&lt;colgroup&gt;
+  &lt;col style="width: 40px;"&gt;            &lt;!-- narrow ID column --&gt;
+  &lt;col style="width: 200px;"&gt;           &lt;!-- medium name column --&gt;
+  &lt;col style="width: 60%;"&gt;             &lt;!-- description takes remaining --&gt;
+&lt;/colgroup&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Column-width demo — first column 80px, second 200px, third auto</div>
+          <table class="live-table">
+            <colgroup>
+              <col style="width: 80px;">
+              <col style="width: 200px;">
+              <col>
+            </colgroup>
+            <thead>
+              <tr><th scope="col">ID</th><th scope="col">Name</th><th scope="col">Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>001</td><td>Ada Lovelace</td><td>Pioneering mathematician who wrote the first algorithm intended for a machine.</td></tr>
+              <tr><td>002</td><td>Alan Turing</td><td>Computer scientist whose work cracked the Enigma code during WWII.</td></tr>
+              <tr><td>003</td><td>Grace Hopper</td><td>Developed the first compiler for a computer programming language.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Mixing units (<code>px</code>, <code>%</code>, <code>auto</code>) is fine. The browser distributes widths per CSS rules. Using <code>%</code> on one column while others are fixed is a common pattern: "name column 200px, description takes whatever's left".
+        </div>
+      </section>
+
+      <section id="background">
+        <h2><span class="num">6</span> Column backgrounds</h2>
+        <p><code>background</code> applied to a <code>&lt;col&gt;</code> paints the entire column — including header and footer cells. This is the canonical way to highlight a "highlighted" pricing column or a "selected" row indicator column.</p>
+        <pre><code>&lt;colgroup&gt;
+  &lt;col&gt;
+  &lt;col style="background: #dbeafe;"&gt;    &lt;!-- highlighted middle column --&gt;
+  &lt;col&gt;
+&lt;/colgroup&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Highlighted middle column</div>
+          <table class="live-table">
+            <colgroup>
+              <col>
+              <col style="background: #dbeafe;">
+              <col>
+            </colgroup>
+            <thead>
+              <tr><th scope="col">Basic</th><th scope="col">Pro ★</th><th scope="col">Enterprise</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1 user</td><td>10 users</td><td>Unlimited</td></tr>
+              <tr><td>5GB storage</td><td>100GB storage</td><td>1TB storage</td></tr>
+              <tr><td>Email support</td><td>Priority support</td><td>Dedicated CSM</td></tr>
+              <tr><td>$9/mo</td><td>$29/mo</td><td>$99/mo</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>background</code> on <code>&lt;col&gt;</code> is one of the few CSS properties that works. Many others (like <code>border</code>, <code>padding</code>, <code>font-weight</code>) do <em>not</em> reliably apply to columns in all browsers. See the <a href="#limitations">limitations table</a>.
+        </div>
+      </section>
+
+      <section id="alignment">
+        <h2><span class="num">7</span> Column alignment (the text-align trick)</h2>
+        <p>For a long time, <code>text-align</code> on <code>&lt;col&gt;</code> didn't work consistently across browsers. The modern workaround is the CSS <code>:nth-child</code> approach, or to apply <code>text-align</code> to individual cells via <code>td:nth-child(N)</code>. However, the new <code>text-align</code> on <code>&lt;col&gt;</code> does work in modern Chrome/Firefox/Safari:</p>
+        <pre><code>&lt;colgroup&gt;
+  &lt;col&gt;                                &lt;!-- left (default) --&gt;
+  &lt;col style="text-align: right;"&gt;     &lt;!-- right-aligned price --&gt;
+  &lt;col style="text-align: center;"&gt;    &lt;!-- centered status --&gt;
+&lt;/colgroup&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Mixed column alignment</div>
+          <table class="live-table">
+            <colgroup>
+              <col>
+              <col style="text-align: right;">
+              <col style="text-align: center;">
+            </colgroup>
+            <thead>
+              <tr><th scope="col">Product</th><th scope="col" style="text-align:right;">Price</th><th scope="col" style="text-align:center;">Stock</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Apple</td><td style="text-align:right;">$1.20</td><td style="text-align:center;">128</td></tr>
+              <tr><td>Banana</td><td style="text-align:right;">$0.50</td><td style="text-align:center;">240</td></tr>
+              <tr><td>Cherry</td><td style="text-align:right;">$3.99</td><td style="text-align:center;">Sold out</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>For maximum compatibility, target cells directly: <code>tbody td:nth-child(2) { text-align: right; }</code>. This works in every browser since IE6.</p>
+      </section>
+
+      <section id="fixed-left">
+        <h2><span class="num">8</span> Pattern: fixed left column</h2>
+        <p>A common UI pattern: the first column (typically row labels) stays fixed while the rest of the table scrolls horizontally. Combined with <code>position: sticky</code> on both <code>&lt;col&gt;</code> and the cells, this is achievable:</p>
+        <pre><code>&lt;style&gt;
+  .freeze-table-wrap { overflow-x: auto; }
+  .freeze-table { border-collapse: collapse; }
+  .freeze-table thead th { position: sticky; top: 0; background: #1e293b; color: white; z-index: 2; }
+  .freeze-table tbody th { position: sticky; left: 0; background: #f1f5f9; z-index: 1; }
+  .freeze-table thead th:first-child { z-index: 3; } /* corner */
+&lt;/style&gt;
+
+&lt;div class="freeze-table-wrap"&gt;
+  &lt;table class="freeze-table"&gt;
+    &lt;caption&gt;Sales by Region × Month&lt;/caption&gt;
+    &lt;colgroup&gt;
+      &lt;col style="width: 120px;"&gt;     &lt;!-- fixed region column --&gt;
+      &lt;col span="12" style="width: 80px;"&gt;  &lt;!-- 12 month columns --&gt;
+    &lt;/colgroup&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th scope="col"&gt;Region&lt;/th&gt;
+        &lt;th scope="col"&gt;Jan&lt;/th&gt; ... &lt;th scope="col"&gt;Dec&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;North&lt;/th&gt;
+        &lt;td&gt;...&lt;/td&gt; ... &lt;td&gt;...&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The corner cell (top-left) needs a higher <code>z-index</code> than the body cells because both the sticky header and sticky body want to render there. Set the corner cell's <code>z-index</code> to 2 or 3 to keep it visible.
+        </div>
+      </section>
+
+      <section id="limitations">
+        <h2><span class="num">9</span> CSS limitations on <code>&lt;col&gt;</code></h2>
+        <p>Because the table layout algorithm is row-major, most CSS properties don't apply cleanly to <code>&lt;col&gt;</code>. Here's the truth table:</p>
+        <table>
+          <thead>
+            <tr><th>CSS property</th><th>Applies to <code>&lt;col&gt;</code>?</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>width</code></td><td>✅ Yes</td><td>The primary use case.</td></tr>
+            <tr><td><code>background</code></td><td>✅ Yes</td><td>Paints all cells in the column.</td></tr>
+            <tr><td><code>visibility: collapse</code></td><td>✅ Yes</td><td>Hides the entire column (modern browsers).</td></tr>
+            <tr><td><code>border</code></td><td>⚠️ Limited</td><td>Works in some browsers when <code>border-collapse: collapse</code>; unreliable otherwise.</td></tr>
+            <tr><td><code>text-align</code></td><td>⚠️ Modern only</td><td>Works in current Chrome/Firefox/Safari. Older browsers ignore it.</td></tr>
+            <tr><td><code>color</code></td><td>⚠️ Inherits</td><td>Sets the inherited color, but explicit cell color wins.</td></tr>
+            <tr><td><code>padding</code></td><td>❌ No</td><td>Use padding on <code>td</code>/<code>th</code> instead.</td></tr>
+            <tr><td><code>font-weight</code></td><td>⚠️ Inherits</td><td>Inherited but not reliably applied to cell text.</td></tr>
+            <tr><td><code>vertical-align</code></td><td>❌ No</td><td>Apply to individual cells.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Recommendation</strong>
+          Use <code>&lt;colgroup&gt;</code>/<code>&lt;col&gt;</code> only for <strong>width, background, and visibility</strong>. For everything else, use cell-level selectors (<code>td:nth-child(N)</code>).
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it fails</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Putting <code>&lt;colgroup&gt;</code> after <code>&lt;thead&gt;</code></td><td>Invalid HTML; browser may drop the <code>&lt;colgroup&gt;</code>.</td><td>Place <code>&lt;colgroup&gt;</code> immediately after <code>&lt;caption&gt;</code>, before <code>&lt;thead&gt;</code>.</td></tr>
+            <tr><td>Putting text inside <code>&lt;colgroup&gt;</code> or <code>&lt;col&gt;</code></td><td>Both are contentless elements.</td><td><code>&lt;col&gt;</code> is void; <code>&lt;colgroup&gt;</code> only holds <code>&lt;col&gt;</code> children.</td></tr>
+            <tr><td>Using <code>span</code> on <code>&lt;colgroup&gt;</code> while also having <code>&lt;col&gt;</code> children</td><td>Invalid; the children are dropped.</td><td>Pick one: <code>span</code> on <code>&lt;colgroup&gt;</code>, or children.</td></tr>
+            <tr><td>Trying to apply <code>padding</code> via <code>&lt;col&gt;</code></td><td>Property doesn't propagate.</td><td>Use <code>td:nth-child(N) { padding: ... }</code>.</td></tr>
+            <tr><td>Mismatched column count</td><td>Having 5 columns of data but only 4 <code>&lt;col&gt;</code> elements — the 5th column gets default width.</td><td>Ensure <code>&lt;col&gt;</code> count matches actual column count (counting spans).</td></tr>
+            <tr><td>Using <code>border</code> on <code>&lt;col&gt;</code> with <code>border-collapse: separate</code></td><td>Border doesn't render.</td><td>Switch to <code>border-collapse: collapse</code>, or border the cells instead.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Set column widths</strong>
+          Create a 4-column table (Name, Email, Phone, Status). Use <code>&lt;colgroup&gt;</code> and <code>&lt;col&gt;</code> to give the Name column 150px, Email 25%, Phone 150px, and Status the rest.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Highlight a column</strong>
+          Build a 3-tier pricing table (Basic, Pro, Enterprise). Use <code>&lt;col&gt;</code> with a background color on the middle column to highlight the "Pro" plan as recommended.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Use the span shortcut</strong>
+          Create a 12-column table (one per month) where all columns should be 80px wide. Use a single <code>&lt;col span="12"&gt;</code> instead of 12 separate <code>&lt;col&gt;</code> elements.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Sticky left column</strong>
+          Build a sales matrix with 5 regions (rows) and 12 months (columns). Apply <code>position: sticky; left: 0;</code> to the first column's <code>&lt;th&gt;</code> and <code>&lt;td&gt;</code>. Wrap the table in a horizontally-scrollable container. Verify the region labels stay visible as you scroll right.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome — full</span>
+          <span class="pill yes">Edge — full</span>
+          <span class="pill yes">Firefox — full</span>
+          <span class="pill yes">Safari — full</span>
+          <span class="pill yes">Opera — full</span>
+          <span class="pill yes">width / background / visibility — universal</span>
+          <span class="pill limited">text-align on col — modern only</span>
+          <span class="pill no">padding / vertical-align on col — not supported</span>
+        </div>
+        <p>The elements themselves work everywhere. The variation is which CSS properties actually take effect. For maximum browser compatibility, use <code>&lt;col&gt;</code> only for <code>width</code>, <code>background</code>, and <code>visibility: collapse</code>.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Pricing tables</h4>
+            <p>Highlight the recommended plan with a column background. Set fixed widths so all plans align side-by-side.</p>
+          </div>
+          <div class="card">
+            <h4>Schedule / matrix grids</h4>
+            <p>Equal-width columns for time slots or categories. Fixed first column for row labels.</p>
+          </div>
+          <div class="card">
+            <h4>Financial reports</h4>
+            <p>Set the account-name column to 200px and number columns to right-aligned 100px.</p>
+          </div>
+          <div class="card">
+            <h4>Data dashboards</h4>
+            <p>Use <code>visibility: collapse</code> on a <code>&lt;col&gt;</code> for a "hide column" UI feature — no DOM rebuild required.</p>
+          </div>
+          <div class="card">
+            <h4>Comparison tables</h4>
+            <p>Wider first column for feature names; narrower columns for each product's data.</p>
+          </div>
+          <div class="card">
+            <h4>Calendars</h4>
+            <p>7 equal-width day columns. <code>&lt;col span="7" style="width: 14.28%;"&gt;</code> is a clean one-liner.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="thead-tbody-tfoot.html">← Previous: thead/tbody/tfoot</a>
+    <a class="next" href="rowspan-colspan.html">Next: rowspan &amp; colspan →</a>
+  </footer>
+</body>
+</html>

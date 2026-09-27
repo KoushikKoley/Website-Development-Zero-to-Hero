@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Navigation Patterns — HTML Mastery</title>
+  <meta name="description" content="Site navigation patterns in HTML: main menu, breadcrumbs with &lt;nav&gt;, pagination with aria-label, footer nav. Semantic structure with nav, ul, li, a. Complete patterns and best practices.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    /* Main menu demo */
+    .main-menu-demo {
+      background: #0f172a;
+      color: white;
+      border-radius: 10px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .main-menu-demo .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .main-menu-demo ul {
+      list-style: none;
+      margin: 0; padding: 0;
+      display: flex;
+      gap: 4px;
+    }
+    .main-menu-demo a {
+      color: #cbd5e1;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .main-menu-demo a:hover { background: rgba(255,255,255,0.1); color: white; }
+    .main-menu-demo a[aria-current="page"] {
+      background: var(--brand);
+      color: white;
+    }
+    /* Breadcrumb demo */
+    .breadcrumb-demo {
+      background: #f1f5f9;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .breadcrumb-demo ol {
+      list-style: none;
+      margin: 0; padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .breadcrumb-demo li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb-demo li:not(:last-child)::after {
+      content: "›";
+      color: var(--ink-soft);
+      margin-left: 6px;
+    }
+    .breadcrumb-demo a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+    .breadcrumb-demo a:hover { text-decoration: underline; }
+    .breadcrumb-demo [aria-current] {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    /* Pagination demo */
+    .pagination-demo {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .pagination-demo a, .pagination-demo span {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.9rem;
+      background: white;
+    }
+    .pagination-demo a:hover { background: #eef2ff; border-color: var(--brand); }
+    .pagination-demo [aria-current="page"] {
+      background: var(--brand);
+      color: white;
+      border-color: var(--brand);
+    }
+    .pagination-demo .gap { border: none; background: transparent; }
+    /* Footer nav demo */
+    .footer-demo {
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 20px;
+      border-radius: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .footer-demo h5 { color: white; margin: 0 0 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .footer-demo ul { list-style: none; margin: 0; padding: 0; }
+    .footer-demo li { margin: 4px 0; }
+    .footer-demo a { color: #cbd5e1; text-decoration: none; font-size: 0.85rem; }
+    .footer-demo a:hover { color: white; text-decoration: underline; }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .footer-demo { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.8 · Site Nav</span>
+    <h1>Site Navigation Patterns</h1>
+    <p>Site navigation is more than a menu bar. It's a hierarchy of <code>&lt;nav&gt;</code> regions — main menu, breadcrumbs, pagination, footer nav — each with semantic structure and accessibility built in. Done well, it lets users (and search engines) understand your entire site architecture from any page.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#nav-element">The &lt;nav&gt; Element</a></li>
+        <li><a href="#main-menu">Main Menu Pattern</a></li>
+        <li><a href="#aria-current">aria-current for Active Page</a></li>
+        <li><a href="#breadcrumbs">Breadcrumbs</a></li>
+        <li><a href="#pagination">Pagination</a></li>
+        <li><a href="#footer-nav">Footer Navigation</a></li>
+        <li><a href="#mega-menu">Mega Menus &amp; Dropdowns</a></li>
+        <li><a href="#mobile-nav">Mobile Navigation</a></li>
+        <li><a href="#semantic">Semantic Structure Recap</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="nav-element">
+        <h2><span class="num">1</span> The <code>&lt;nav&gt;</code> Element</h2>
+        <p>The <code>&lt;nav&gt;</code> element is a landmark region that identifies a group of navigational links. Screen readers use it to let users jump directly to navigation. There's no rule about how many <code>&lt;nav&gt;</code> elements you can have — but each should be distinguishable via <code>aria-label</code> or <code>aria-labelledby</code>.</p>
+        <pre><code>&lt;!-- Primary site nav --&gt;
+&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;-- Footer nav (a separate region) --&gt;
+&lt;nav aria-label="Footer"&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;-- Pagination --&gt;
+&lt;nav aria-label="Pagination"&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;-- Breadcrumb --&gt;
+&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;...&lt;/ol&gt;
+&lt;/nav&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Wrapping Every Link List</strong>
+          Don't wrap every group of links in <code>&lt;nav&gt;</code>. Reserve it for major navigation blocks. A footer with social icons, a sidebar with "related links", or an in-content list of citations don't need to be <code>&lt;nav&gt;</code> — they don't help users navigate the site.
+        </div>
+      </section>
+
+      <section id="main-menu">
+        <h2><span class="num">2</span> Main Menu Pattern</h2>
+        <p>The site's main menu is typically a horizontal bar of links. Semantically: <code>&lt;nav&gt;</code> containing a <code>&lt;ul&gt;</code> of <code>&lt;li&gt;</code>s with <code>&lt;a&gt;</code>s.</p>
+        <pre><code>&lt;header class="site-header"&gt;
+  &lt;a href="/" class="logo"&gt;Acme&lt;/a&gt;
+  &lt;nav aria-label="Primary"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/pricing"&gt;Pricing&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/blog"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+        <div class="demo-box">
+          <div class="main-menu-demo">
+            <div class="brand">ACME</div>
+            <ul>
+              <li><a href="#" aria-current="page">Home</a></li>
+              <li><a href="#">Products</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Wrap menu links in <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code>, not <code>&lt;div&gt;</code>. Screen readers announce list semantics ("List, six items"), giving users context about menu size and structure.
+        </div>
+      </section>
+
+      <section id="aria-current">
+        <h2><span class="num">3</span> <code>aria-current</code> for Active Page</h2>
+        <p>Use <code>aria-current="page"</code> on the link to the current page. Screen readers announce "current page"; browsers and CSS can style it distinctly.</p>
+        <pre><code>&lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+
+&lt;style&gt;
+  /* Style the current page link */
+  nav a[aria-current="page"] {
+    background: var(--brand);
+    color: white;
+    font-weight: 600;
+  }
+&lt;/style&gt;</code></pre>
+        <h3>aria-current Values</h3>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>page</code></td><td>The current page within a set of pages.</td></tr>
+            <tr><td><code>step</code></td><td>The current step within a process.</td></tr>
+            <tr><td><code>location</code></td><td>The current location, e.g., in a breadcrumb trail.</td></tr>
+            <tr><td><code>date</code></td><td>The current date in a calendar.</td></tr>
+            <tr><td><code>time</code></td><td>The current time.</td></tr>
+            <tr><td><code>true</code></td><td>The current item in a set.</td></tr>
+            <tr><td><code>false</code></td><td>Default — not current.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake — Using a Class Instead</strong>
+          Don't just use <code>class="active"</code> — screen readers won't know it's the current page. Always pair with <code>aria-current="page"</code>. CSS can then target <code>[aria-current="page"]</code> instead of a custom class.
+        </div>
+      </section>
+
+      <section id="breadcrumbs">
+        <h2><span class="num">4</span> Breadcrumbs</h2>
+        <p>Breadcrumbs show the user's path from the homepage to the current page — essential for sites deeper than 2 levels. The pattern: <code>&lt;nav aria-label="Breadcrumb"&gt;</code> with an ordered list.</p>
+        <pre><code>&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products/electronics"&gt;Electronics&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products/electronics/headphones" aria-current="page"&gt;Headphones&lt;/a&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+
+&lt;style&gt;
+  nav[aria-label="Breadcrumb"] ol {
+    list-style: none; display: flex; flex-wrap: wrap;
+    gap: 6px; padding: 0; margin: 0;
+  }
+  nav[aria-label="Breadcrumb"] li {
+    display: flex; align-items: center; gap: 6px;
+  }
+  nav[aria-label="Breadcrumb"] li:not(:last-child)::after {
+    content: "›";
+    color: var(--ink-soft);
+    margin-left: 6px;
+  }
+  nav[aria-label="Breadcrumb"] [aria-current] {
+    color: var(--ink); font-weight: 600;
+  }
+&lt;/style&gt;</code></pre>
+        <div class="demo-box">
+          <div class="breadcrumb-demo">
+            <ol>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Products</a></li>
+              <li><a href="#">Electronics</a></li>
+              <li><a href="#" aria-current="page">Headphones</a></li>
+            </ol>
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — Add Schema.org BreadcrumbList</strong>
+          Pair breadcrumbs with structured data for rich Google search results:
+          <pre style="margin-top: 10px;"><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Products", "item": "https://example.com/products"},
+    {"@type": "ListItem", "position": 3, "name": "Headphones", "item": "https://example.com/products/electronics/headphones"}
+  ]
+}
+&lt;/script&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="pagination">
+        <h2><span class="num">5</span> Pagination</h2>
+        <p>For paginated content (search results, blog lists, product grids), provide a pagination control wrapped in <code>&lt;nav aria-label="Pagination"&gt;</code>.</p>
+        <pre><code>&lt;nav aria-label="Pagination"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="?page=1" rel="prev" aria-label="Previous page"&gt;← Previous&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=1"&gt;1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=2" aria-current="page"&gt;2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=3"&gt;3&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=4"&gt;4&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=5"&gt;5&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=3" rel="next" aria-label="Next page"&gt;Next →&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+        <div class="demo-box">
+          <div class="pagination-demo">
+            <a href="#" rel="prev" aria-label="Previous page">← Previous</a>
+            <a href="#">1</a>
+            <a href="#" aria-current="page">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#" rel="next" aria-label="Next page">Next →</a>
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — Large Paginations</strong>
+          For 20+ pages, show only a window: <code>1 ... 5 6 [7] 8 9 ... 20</code>. Use <code>aria-disabled="true"</code> (not just CSS) on the ellipsis items to prevent them from being focusable.
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — Pagination as Buttons</strong>
+          Some designs render pagination as <code>&lt;button&gt;</code>s that trigger JS navigation. This breaks: deep-linking, browser back button, SEO crawling, and middle-click-to-open-in-new-tab. Always use real <code>&lt;a href&gt;</code> links for pagination — let the page reload for true URLs.
+        </div>
+      </section>
+
+      <section id="footer-nav">
+        <h2><span class="num">6</span> Footer Navigation</h2>
+        <p>Footers typically contain secondary navigation — categories, legal links, social media. Often a multi-column layout with multiple <code>&lt;nav&gt;</code> regions.</p>
+        <pre><code>&lt;footer&gt;
+  &lt;nav aria-label="Product"&gt;
+    &lt;h5&gt;Product&lt;/h5&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/features"&gt;Features&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/pricing"&gt;Pricing&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/changelog"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+
+  &lt;nav aria-label="Company"&gt;
+    &lt;h5&gt;Company&lt;/h5&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/blog"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/careers"&gt;Careers&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+
+  &lt;nav aria-label="Legal"&gt;
+    &lt;h5&gt;Legal&lt;/h5&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/privacy"&gt;Privacy Policy&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/terms"&gt;Terms of Service&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/footer&gt;</code></pre>
+        <div class="demo-box">
+          <div class="footer-demo">
+            <nav aria-label="Product">
+              <h5>Product</h5>
+              <ul>
+                <li><a href="#">Features</a></li>
+                <li><a href="#">Pricing</a></li>
+                <li><a href="#">Changelog</a></li>
+              </ul>
+            </nav>
+            <nav aria-label="Company">
+              <h5>Company</h5>
+              <ul>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Careers</a></li>
+              </ul>
+            </nav>
+            <nav aria-label="Legal">
+              <h5>Legal</h5>
+              <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Cookies</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <section id="mega-menu">
+        <h2><span class="num">7</span> Mega Menus &amp; Dropdowns</h2>
+        <p>Large sites (e.g., e-commerce, university) often use mega menus — multi-column dropdowns that appear on hover/click. The HTML structure is nested <code>&lt;ul&gt;</code>s; the interactivity needs CSS and/or JS.</p>
+        <pre><code>&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;button aria-expanded="false" aria-controls="products-menu"&gt;
+        Products ▾
+      &lt;/button&gt;
+      &lt;ul id="products-menu" hidden&gt;
+        &lt;li&gt;&lt;a href="/products/electronics"&gt;Electronics&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/products/clothing"&gt;Clothing&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/products/home"&gt;Home &amp; Garden&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Hover-Only Dropdowns</strong>
+          CSS-only hover dropdowns don't work on touch devices and break for keyboard users. Always:
+          <ul>
+            <li>Use a <code>&lt;button&gt;</code> to toggle (not <code>&lt;a href="#"&gt;</code>).</li>
+            <li>Sync <code>aria-expanded</code> state.</li>
+            <li>Use <code>hidden</code> + JS to show/hide (not just CSS <code>display</code>).</li>
+            <li>Close on <code>Escape</code> key.</li>
+            <li>Restore focus to the trigger button on close.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="mobile-nav">
+        <h2><span class="num">8</span> Mobile Navigation</h2>
+        <p>On mobile, the main menu collapses behind a "hamburger" button that reveals a slide-out panel or full-screen overlay.</p>
+        <pre><code>&lt;button class="menu-toggle"
+        aria-expanded="false"
+        aria-controls="mobile-menu"&gt;
+  ☰ Menu
+&lt;/button&gt;
+
+&lt;nav id="mobile-menu" aria-label="Mobile" hidden&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;script&gt;
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = document.querySelector('#mobile-menu');
+
+  toggle.addEventListener('click', () =&gt; {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!isOpen));
+    menu.hidden = isOpen;
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', e =&gt; {
+    if (e.key === 'Escape') {
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.hidden = true;
+      toggle.focus();
+    }
+  });
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The hamburger menu has accessibility concerns — it hides primary navigation. Consider: bottom-tab navigation for 3-5 primary destinations, or always-visible nav with a "More" overflow. Test with one-handed mobile thumb reach.
+        </div>
+      </section>
+
+      <section id="semantic">
+        <h2><span class="num">9</span> Semantic Structure Recap</h2>
+        <p>Putting it all together — a complete page with all four nav regions:</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+  &lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+  &lt;header&gt;
+    &lt;a href="/" class="logo"&gt;Acme&lt;/a&gt;
+    &lt;nav aria-label="Primary"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;nav aria-label="Breadcrumb"&gt;
+    &lt;ol&gt;
+      &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/blog" aria-current="page"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/nav&gt;
+
+  &lt;main id="main"&gt;
+    &lt;h1&gt;Blog Posts&lt;/h1&gt;
+    &lt;article&gt;...&lt;/article&gt;
+    &lt;article&gt;...&lt;/article&gt;
+    &lt;article&gt;...&lt;/article&gt;
+
+    &lt;nav aria-label="Pagination"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="?page=1" rel="prev"&gt;← Previous&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="?page=1"&gt;1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="?page=2" aria-current="page"&gt;2&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="?page=3"&gt;3&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="?page=3" rel="next"&gt;Next →&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;nav aria-label="Footer"&gt;
+      &lt;ul&gt;...&lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Main Menu with aria-current</strong>
+          Build a horizontal main menu with 6 items. Mark the current page with <code>aria-current="page"</code> and style it distinctively (background color, white text). Test with a screen reader if available.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Breadcrumb with Schema.org</strong>
+          Build a 4-level breadcrumb (Home &gt; Products &gt; Electronics &gt; Headphones). Style separators with CSS <code>::after</code>. Add the matching <code>BreadcrumbList</code> JSON-LD structured data in the <code>&lt;head&gt;</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Pagination with Ellipsis</strong>
+          Build pagination for 20 pages, showing: First, ..., 5 6 7 [8] 9 10 11, ..., Last. Use <code>aria-current="page"</code> on the current page. Disable (not link) the ellipsis items.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Footer with 3 Nav Regions</strong>
+          Build a 3-column footer with separate <code>&lt;nav aria-label&gt;</code> regions for "Product", "Company", and "Legal". Each contains a list of 3-5 links.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Accessible Dropdown</strong>
+          Build a navigation item with a dropdown submenu. Use a <code>&lt;button&gt;</code> trigger, sync <code>aria-expanded</code>, toggle the <code>hidden</code> attribute, close on Escape, and restore focus on close.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Mobile Hamburger Menu</strong>
+          Implement a hamburger menu toggle. The button updates <code>aria-expanded</code>; the menu shows/hides via <code>hidden</code>; pressing Escape closes and returns focus to the toggle.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>aria-label</code> on <code>&lt;nav&gt;</code></td><td>Screen readers can't distinguish multiple navs.</td><td>Add <code>aria-label="Primary"</code>, <code>aria-label="Footer"</code>, etc.</td></tr>
+            <tr><td>Using <code>class="active"</code> instead of <code>aria-current</code></td><td>Screen readers don't announce current page.</td><td>Use <code>aria-current="page"</code>.</td></tr>
+            <tr><td>Pagination as <code>&lt;button&gt;</code></td><td>Breaks deep-linking, back button, SEO.</td><td>Use <code>&lt;a href&gt;</code> links.</td></tr>
+            <tr><td>Dropdowns triggered only on hover</td><td>Fails on touch; breaks keyboard nav.</td><td>Use click + <code>aria-expanded</code> + Escape.</td></tr>
+            <tr><td>Hamburger menu without <code>aria-expanded</code></td><td>Screen reader users can't tell if it's open.</td><td>Sync <code>aria-expanded</code> state on toggle.</td></tr>
+            <tr><td>Wrapping every link list in <code>&lt;nav&gt;</code></td><td>Overuse dilutes the landmark.</td><td>Reserve <code>&lt;nav&gt;</code> for major navigation.</td></tr>
+            <tr><td>Menu as <code>&lt;div&gt;</code>s instead of <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code></td><td>Loses list semantics for screen readers.</td><td>Use semantic list markup.</td></tr>
+            <tr><td>Mobile menu shown via CSS only</td><td>Visible to screen readers even when "closed".</td><td>Use <code>hidden</code> attribute; toggle with JS.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Marketing Sites</h4>
+            <p>Main nav (5-7 items) + footer (3-4 columns). Often a CTA button in the header.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce</h4>
+            <p>Mega menu categories + breadcrumbs + pagination on product lists + footer with policies.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation Sites</h4>
+            <p>Left sidebar TOC + breadcrumb + "Edit on GitHub" + footer with version selector.</p>
+          </div>
+          <div class="card">
+            <h4>News Publishers</h4>
+            <p>Section-based main nav (World, Business, Tech) + breadcrumb + pagination + tag cloud.</p>
+          </div>
+          <div class="card">
+            <h4>SaaS Dashboards</h4>
+            <p>Top utility nav + left sidebar nav + breadcrumb + footer (rarely).</p>
+          </div>
+          <div class="card">
+            <h4>Universities / Government</h4>
+            <p>Mega menus with dozens of links organized by audience (Students, Faculty, Alumni).</p>
+          </div>
+          <div class="card">
+            <h4>Web Apps (SPA)</h4>
+            <p>Client-side routing — but still use <code>&lt;a href&gt;</code> for accessible, crawlable links. React Router, Vue Router do this.</p>
+          </div>
+          <div class="card">
+            <h4>Mobile Web</h4>
+            <p>Bottom tab bars (iOS-style), hamburger menus, drawer patterns. Consider thumb-zone accessibility.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li>Use <code>&lt;nav aria-label="..."&gt;</code> for each major navigation region — primary, footer, breadcrumb, pagination.</li>
+          <li>Main menu = <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code>/<code>&lt;a&gt;</code> inside <code>&lt;nav&gt;</code>.</li>
+          <li><code>aria-current="page"</code> marks the current page; pair with CSS for visible active state.</li>
+          <li>Breadcrumbs: ordered list + CSS separators + Schema.org structured data.</li>
+          <li>Pagination: <code>&lt;a href&gt;</code> links (never buttons) + <code>rel="prev"</code>/<code>rel="next"</code>.</li>
+          <li>Footer nav: multiple <code>&lt;nav aria-label&gt;</code> regions in columns.</li>
+          <li>Dropdowns and mobile menus: use <code>&lt;button&gt;</code> triggers + <code>aria-expanded</code> + <code>hidden</code> attribute.</li>
+          <li>Reserve <code>&lt;nav&gt;</code> for major navigation; don't wrap every link list.</li>
+          <li>Always test with keyboard: Tab, Enter, Escape, and verify focus is visible.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>ARIA 1.2 · HTML Living Standard</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="internal-nav.html">← Previous: Internal Page Navigation</a>
+      <a href="accessibility.html">Next: Accessible Links →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Site Navigation Patterns</p>
+  </footer>
+</body>
+</html>

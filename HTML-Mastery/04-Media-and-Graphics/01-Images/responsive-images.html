@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Images — HTML Mastery</title>
+  <meta name="description" content="Master responsive images in HTML: srcset with x and w descriptors, the sizes attribute, the picture element with source for art direction and format negotiation (WebP, AVIF), device pixel ratio, and lazy loading strategy.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .support {
+      margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--ink-soft);
+    }
+    .support span {
+      background: #f1f5f9; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    footer {
+      background: #0f172a; color: #cbd5e1;
+      padding: 24px; text-align: center;
+    }
+    footer .nav {
+      max-width: 1200px; margin: 0 auto 12px;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    footer a { color: #93c5fd; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .flow-diagram {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      margin: 18px 0; text-align: center;
+    }
+    .flow-step {
+      background: #eef2ff; border: 1px solid #c7d2fe;
+      border-radius: 10px; padding: 10px 8px; font-size: 0.85rem;
+    }
+    .flow-arrow { align-self: center; color: var(--brand); font-weight: bold; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .flow-diagram { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 4 · Media &amp; Graphics</span>
+    <h1>Responsive Images — <code>srcset</code>, <code>sizes</code> &amp; <code>&lt;picture&gt;</code></h1>
+    <p>Serving a single 4K JPEG to a 320-pixel phone wastes bandwidth and slows your page. Responsive images let the browser pick the right file based on viewport, DPR, and supported format — all in pure HTML.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#problem">The problem</a></li>
+        <li><a href="#dpr">Device pixel ratio</a></li>
+        <li><a href="#srcset-x">srcset with x descriptors</a></li>
+        <li><a href="#srcset-w">srcset with w descriptors</a></li>
+        <li><a href="#sizes">The sizes attribute</a></li>
+        <li><a href="#picture">The <code>&lt;picture&gt;</code> element</a></li>
+        <li><a href="#art-direction">Art direction</a></li>
+        <li><a href="#formats">Format negotiation</a></li>
+        <li><a href="#lazy">Lazy loading strategy</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercise">Try it yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="problem">
+        <h2><span class="num">1</span> The Problem</h2>
+        <p>Devices vary wildly. A flagship phone has a 3x DPR display at 430 CSS pixels wide; a 4K monitor renders at 1920 CSS pixels with a 1x DPR. Sending the same image to both means:</p>
+        <ul>
+          <li>Sending a 4000-pixel image to a phone — blurry thumbnails &amp; wasted bandwidth.</li>
+          <li>Sending a 400-pixel image to a 4K monitor — blocky, blurry on a high-end display.</li>
+        </ul>
+        <p>Responsive images solve this in HTML, without JavaScript, letting the browser choose.</p>
+        <div class="flow-diagram">
+          <div class="flow-step"><strong>1.</strong> Author lists candidate files</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><strong>2.</strong> Browser measures viewport &amp; DPR</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><strong>3.</strong> Browser picks the best fit</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><strong>4.</strong> Downloads only that one</div>
+        </div>
+      </section>
+
+      <section id="dpr">
+        <h2><span class="num">2</span> Device Pixel Ratio (DPR)</h2>
+        <p>On high-density displays, one CSS pixel is backed by multiple physical pixels. The <strong>DPR</strong> is the ratio of physical pixels to CSS pixels.</p>
+        <table>
+          <thead>
+            <tr><th>Device class</th><th>DPR</th><th>CSS pixels per inch</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Old desktop monitor</td><td>1x</td><td>96</td></tr>
+            <tr><td>Standard laptop</td><td>1x – 1.5x</td><td>96 – 144</td></tr>
+            <tr><td>Retina MacBook</td><td>2x</td><td>192</td></tr>
+            <tr><td>iPhone 12/13/14</td><td>3x</td><td>~288</td></tr>
+            <tr><td>iPhone Pro Max</td><td>3x</td><td>~288</td></tr>
+            <tr><td>Galaxy S-series</td><td>3x – 4x</td><td>~288-384</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key idea</strong>
+          A 400 CSS-pixel-wide image needs to be 1200 physical pixels wide on a 3x DPR screen to look crisp. That's why we offer multiple resolutions.
+        </div>
+      </section>
+
+      <section id="srcset-x">
+        <h2><span class="num">3</span> <code>srcset</code> with <code>x</code> Descriptors</h2>
+        <p>The <code>x</code> descriptor tells the browser the DPR each file targets. The browser picks the one matching the device.</p>
+        <pre><code>&lt;img
+  src="logo-1x.png"
+  alt="Company logo"
+  srcset="
+    logo-1x.png 1x,
+    logo-2x.png 2x,
+    logo-3x.png 3x
+  "
+&gt;</code></pre>
+        <p>The browser fetches <code>logo-2x.png</code> on a Retina display, <code>logo-3x.png</code> on an iPhone, and <code>logo-1x.png</code> on an old monitor. <code>src</code> is the fallback for browsers that don't understand <code>srcset</code>.</p>
+        <div class="callout tip">
+          <strong>When to use x descriptors</strong>
+          <code>x</code> descriptors are ideal for <strong>fixed-size images</strong> — icons, logos, avatars, thumbnails. When the rendered size is the same regardless of viewport, only DPR matters.
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Mixing <code>x</code> and <code>w</code> descriptors in the same <code>srcset</code>. The spec forbids it — pick one strategy per image.
+        </div>
+      </section>
+
+      <section id="srcset-w">
+        <h2><span class="num">4</span> <code>srcset</code> with <code>w</code> Descriptors</h2>
+        <p>The <code>w</code> descriptor tells the browser the <strong>intrinsic width</strong> of each candidate file in pixels. Combined with the <code>sizes</code> attribute, the browser computes which file fits best at the current viewport and DPR.</p>
+        <pre><code>&lt;img
+  src="photo-800.jpg"
+  alt="A mountain lake at dawn"
+  srcset="
+    photo-400.jpg   400w,
+    photo-800.jpg   800w,
+    photo-1200.jpg 1200w,
+    photo-1600.jpg 1600w,
+    photo-2400.jpg 2400w
+  "
+  sizes="100vw"
+&gt;</code></pre>
+        <div class="callout info">
+          <strong>How it works</strong>
+          The browser multiplies the rendered CSS width (from <code>sizes</code>) by the DPR, then picks the smallest file that is at least that wide. On a 320 CSS-px, 3x DPR phone displaying full-width: it needs 960 physical px → picks <code>photo-1200.jpg</code>.
+        </div>
+      </section>
+
+      <section id="sizes">
+        <h2><span class="num">5</span> The <code>sizes</code> Attribute</h2>
+        <p><code>sizes</code> tells the browser how wide the image will be rendered at different viewport widths. It's a list of media-condition : length pairs, ending with a default length.</p>
+        <pre><code>&lt;img
+  src="photo-800.jpg"
+  alt="..."
+  srcset="
+    photo-400.jpg   400w,
+    photo-800.jpg   800w,
+    photo-1200.jpg 1200w,
+    photo-1600.jpg 1600w
+  "
+  sizes="
+    (max-width: 600px) 100vw,
+    (max-width: 1200px) 50vw,
+    33vw
+  "
+&gt;</code></pre>
+        <p>Reading the <code>sizes</code> above: "On viewports ≤ 600px, the image fills 100% of viewport width. On viewports ≤ 1200px, the image is 50% (e.g. a 2-column grid). Otherwise, it's 33% (3-column grid)."</p>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Omitting <code>sizes</code> when using <code>w</code> descriptors. The spec defaults to <code>100vw</code>, which causes the browser to over-fetch on multi-column layouts. <strong>Always provide <code>sizes</code> when you use <code>w</code> descriptors.</strong>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          <code>sizes</code> is a <em>hint</em> to the browser before layout runs. It doesn't have to be exact, but it should be close. If you lie (claim the image is 50vw when it's actually 100vw), the browser will under- or over-fetch.
+        </div>
+      </section>
+
+      <section id="picture">
+        <h2><span class="num">6</span> The <code>&lt;picture&gt;</code> Element</h2>
+        <p><code>&lt;picture&gt;</code> is a container that lets you specify multiple <code>&lt;source&gt;</code> elements with different conditions, plus a final <code>&lt;img&gt;</code> as fallback. The browser picks the first matching <code>&lt;source&gt;</code>.</p>
+        <pre><code>&lt;picture&gt;
+  &lt;source srcset="hero-wide.webp" type="image/webp" media="(min-width: 800px)"&gt;
+  &lt;source srcset="hero-narrow.webp" type="image/webp" media="(max-width: 799px)"&gt;
+  &lt;source srcset="hero-wide.jpg" media="(min-width: 800px)"&gt;
+  &lt;source srcset="hero-narrow.jpg" media="(max-width: 799px)"&gt;
+  &lt;img src="hero-wide.jpg" alt="Mountain lake at dawn" width="1600" height="900" loading="lazy"&gt;
+&lt;/picture&gt;</code></pre>
+        <p>The <code>&lt;img&gt;</code> is mandatory — it provides the <code>src</code>, <code>alt</code>, dimensions, and is what gets rendered. <code>&lt;source&gt;</code> elements only override the URL.</p>
+        <div class="callout info">
+          <strong>srcset vs picture</strong>
+          Use <code>srcset</code> when you have one image at multiple resolutions. Use <code>&lt;picture&gt;</code> when you need different <em>images</em> (art direction) or different <em>formats</em> (WebP/AVIF fallback).
+        </div>
+      </section>
+
+      <section id="art-direction">
+        <h2><span class="num">7</span> Art Direction</h2>
+        <p>"Art direction" means showing a <em>different crop or composition</em> at different viewport sizes. A wide hero shot of a mountain works on desktop, but the subject shrinks to nothing on a phone — so you crop tighter for small screens.</p>
+        <pre><code>&lt;picture&gt;
+  &lt;!-- Desktop: full scenic shot --&gt;
+  &lt;source
+    media="(min-width: 1024px)"
+    srcset="mountain-wide-1600.jpg 1600w, mountain-wide-2400.jpg 2400w"
+    sizes="100vw"
+  &gt;
+  &lt;!-- Tablet: medium crop --&gt;
+  &lt;source
+    media="(min-width: 640px)"
+    srcset="mountain-medium-800.jpg 800w, mountain-medium-1200.jpg 1200w"
+    sizes="100vw"
+  &gt;
+  &lt;!-- Phone: tight portrait crop --&gt;
+  &lt;source
+    media="(max-width: 639px)"
+    srcset="mountain-tight-400.jpg 400w, mountain-tight-800.jpg 800w"
+    sizes="100vw"
+  &gt;
+  &lt;img src="mountain-wide-1600.jpg" alt="..." width="1600" height="900" loading="eager"&gt;
+&lt;/picture&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Art direction is expensive — it requires manually creating multiple crops. Reserve it for hero images and editorial photography where composition matters. For product images, gallery thumbnails, and user avatars, plain <code>srcset</code> + <code>sizes</code> is enough.
+        </div>
+      </section>
+
+      <section id="formats">
+        <h2><span class="num">8</span> Format Negotiation (WebP, AVIF)</h2>
+        <p>Modern formats like <strong>WebP</strong> and <strong>AVIF</strong> produce dramatically smaller files than JPEG/PNG at equivalent quality. Use <code>&lt;picture&gt;</code> with <code>type</code> attributes so supporting browsers get the modern format, and older ones fall back to JPEG.</p>
+        <pre><code>&lt;picture&gt;
+  &lt;source srcset="hero.avif" type="image/avif"&gt;
+  &lt;source srcset="hero.webp" type="image/webp"&gt;
+  &lt;img src="hero.jpg" alt="..." width="1600" height="900" loading="lazy"&gt;
+&lt;/picture&gt;</code></pre>
+
+        <p>Order matters: list the most desirable format first. The browser picks the first <code>&lt;source&gt;</code> whose <code>type</code> it can decode.</p>
+
+        <table>
+          <thead>
+            <tr><th>Format</th><th>Compression</th><th>Browser support</th><th>Typical savings vs JPEG</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>JPEG</td><td>Lossy</td><td>100% (everywhere)</td><td>baseline</td></tr>
+            <tr><td>PNG</td><td>Lossless</td><td>100%</td><td>larger for photos</td></tr>
+            <tr><td>WebP</td><td>Lossy + lossless</td><td>~98% (IE11 is the last holdout)</td><td>25-35% smaller</td></tr>
+            <tr><td>AVIF</td><td>Lossy + lossless</td><td>~95% (Chrome 85+, Safari 16.4+, Firefox 93+)</td><td>40-50% smaller</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Combine format negotiation with <code>srcset</code> for both. Modern browsers get modern formats at the right resolution; old browsers still get a working JPEG. This is the gold standard pattern:
+        </div>
+        <pre><code>&lt;picture&gt;
+  &lt;source
+    type="image/avif"
+    srcset="hero-400.avif 400w, hero-800.avif 800w, hero-1600.avif 1600w"
+    sizes="(max-width: 600px) 100vw, 50vw"
+  &gt;
+  &lt;source
+    type="image/webp"
+    srcset="hero-400.webp 400w, hero-800.webp 800w, hero-1600.webp 1600w"
+    sizes="(max-width: 600px) 100vw, 50vw"
+  &gt;
+  &lt;img
+    src="hero-800.jpg"
+    srcset="hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w"
+    sizes="(max-width: 600px) 100vw, 50vw"
+    alt="Mountain lake at dawn"
+    width="1600" height="900"
+    loading="lazy"
+    decoding="async"
+  &gt;
+&lt;/picture&gt;</code></pre>
+      </section>
+
+      <section id="lazy">
+        <h2><span class="num">9</span> Lazy Loading Strategy</h2>
+        <p>Combine responsive images with native lazy loading. The pattern below is what production sites ship:</p>
+        <ul>
+          <li><strong>LCP image (hero):</strong> <code>loading="eager" fetchpriority="high"</code>, full <code>&lt;picture&gt;</code> with formats.</li>
+          <li><strong>Above-the-fold secondary:</strong> <code>loading="eager"</code> without <code>fetchpriority</code>.</li>
+          <li><strong>Below the fold:</strong> <code>loading="lazy"</code> with <code>decoding="async"</code> and <code>width</code>/<code>height</code> always set.</li>
+        </ul>
+        <pre><code>&lt;!-- Hero/LCP --&gt;
+&lt;picture&gt;
+  &lt;source type="image/avif" srcset="hero-1600.avif" sizes="100vw"&gt;
+  &lt;source type="image/webp" srcset="hero-1600.webp" sizes="100vw"&gt;
+  &lt;img src="hero-1600.jpg" alt="..." width="1600" height="900"
+       loading="eager" decoding="async" fetchpriority="high"&gt;
+&lt;/picture&gt;
+
+&lt;!-- Gallery image (lazy) --&gt;
+&lt;picture&gt;
+  &lt;source type="image/avif"
+          srcset="photo-400.avif 400w, photo-800.avif 800w"
+          sizes="(max-width: 600px) 50vw, 25vw"&gt;
+  &lt;source type="image/webp"
+          srcset="photo-400.webp 400w, photo-800.webp 800w"
+          sizes="(max-width: 600px) 50vw, 25vw"&gt;
+  &lt;img src="photo-800.jpg"
+       srcset="photo-400.jpg 400w, photo-800.jpg 800w"
+       sizes="(max-width: 600px) 50vw, 25vw"
+       alt="..." width="800" height="600"
+       loading="lazy" decoding="async"&gt;
+&lt;/picture&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Lazy-loading images that are <em>inside</em> the initial viewport (above the fold). The browser still waits for layout to confirm visibility, which can delay LCP by 100-300ms.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it's bad</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>x</code> and <code>w</code> in the same <code>srcset</code></td><td>Invalid; browser ignores it</td><td>Pick one strategy per image</td></tr>
+            <tr><td>Forgetting <code>sizes</code> with <code>w</code></td><td>Browser defaults to <code>100vw</code>, over-fetches</td><td>Always specify <code>sizes</code></td></tr>
+            <tr><td>Lying in <code>sizes</code></td><td>Browser picks wrong file</td><td>Match your real CSS layout</td></tr>
+            <tr><td>Putting <code>type</code> on the <code>&lt;img&gt;</code></td><td>Invalid; <code>type</code> only goes on <code>&lt;source&gt;</code></td><td>Move <code>type</code> to <code>&lt;source&gt;</code></td></tr>
+            <tr><td>Forgetting the <code>&lt;img&gt;</code> inside <code>&lt;picture&gt;</code></td><td>Image won't render; accessibility lost</td><td>Always include final <code>&lt;img&gt;</code> with <code>alt</code></td></tr>
+            <tr><td>Listing JPEG before WebP</td><td>Browser picks JPEG even if it supports WebP</td><td>List best format first</td></tr>
+            <tr><td>Skipping <code>width</code>/<code>height</code> on the <code>&lt;img&gt;</code></td><td>Layout shift, breaks <code>loading="lazy"</code></td><td>Always include dimensions</td></tr>
+            <tr><td>Serving all images at 2400w</td><td>Mobile users download 5x what they need</td><td>Provide multiple widths</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">11</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Avatar with x descriptors</strong>
+          Generate three sizes of an avatar (1x, 2x, 3x). Use <code>srcset</code> with <code>x</code> descriptors. Open on a phone and a desktop, then use DevTools → Network → Img to confirm only the right file was fetched.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Article hero with w + sizes</strong>
+          Build a hero image with <code>w</code> descriptors at 400/800/1200/1600/2400. Set <code>sizes="(max-width: 800px) 100vw, 800px"</code>. Resize the browser and watch DevTools show different files being downloaded.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — AVIF/WebP/JPEG fallback</strong>
+          Find a JPEG. Convert it to WebP (<code>cwebp photo.jpg -o photo.webp</code>) and AVIF (use an online converter). Build a <code>&lt;picture&gt;</code> with all three sources. Open in Chrome, Firefox, and an old browser if available — confirm each picks the right format.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Art-directed hero</strong>
+          Take a wide photo with a subject off-center. Create a desktop version (subject small) and a phone version (subject cropped tight). Use <code>&lt;picture&gt;</code> with <code>media</code> queries to swap crops. Resize your browser across the breakpoint.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">12</span> Summary</h2>
+        <ul>
+          <li>Responsive images let the browser choose the right file in pure HTML.</li>
+          <li><code>srcset</code> with <code>x</code> descriptors → fixed-size images (icons, avatars).</li>
+          <li><code>srcset</code> with <code>w</code> descriptors + <code>sizes</code> → fluid images (heroes, gallery photos).</li>
+          <li><code>&lt;picture&gt;</code> + <code>&lt;source&gt;</code> → art direction (different crops) and format negotiation (AVIF/WebP/JPEG).</li>
+          <li>Always set <code>width</code>/<code>height</code>, always include <code>alt</code>, always include final <code>&lt;img&gt;</code> in <code>&lt;picture&gt;</code>.</li>
+          <li>Lazy-load below the fold; eager + <code>fetchpriority="high"</code> for LCP.</li>
+          <li>List modern formats first (AVIF → WebP → JPEG/PNG).</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>srcset since 2014</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="images-basics.html">← Previous: Images Basics</a>
+      <a href="figure-vs-img.html">Next: Figure vs Img →</a>
+    </div>
+    <p>HTML Mastery · Section 4 · Media &amp; Graphics · Responsive Images</p>
+  </footer>
+</body>
+</html>

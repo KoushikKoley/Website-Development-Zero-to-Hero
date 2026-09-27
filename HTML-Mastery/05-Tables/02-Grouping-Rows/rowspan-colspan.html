@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rowspan &amp; colspan — Merging Cells — HTML Mastery</title>
+  <meta name="description" content="Master the rowspan and colspan attributes for merging cells in HTML tables. Build a weekly schedule, a comparison matrix, and learn the calculation gotchas that cause ragged rows. Plus accessibility patterns for merged cells with scope=colgroup and headers/id.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box .live-table { border-collapse: collapse; width: 100%; }
+    .demo-box .live-table th, .demo-box .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-box .live-table thead th { background: #1e293b; color: white; }
+    .demo-box .live-table td.free { background: #fef3c7; text-align: center; font-style: italic; color: #92400e; }
+    .demo-box .live-table td.class-cell { background: #dbeafe; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .grid-viz {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 10px;
+      background: #0b1020;
+      border-radius: 12px;
+    }
+    .grid-viz > div {
+      background: #1e293b;
+      color: #cdd6f4;
+      padding: 14px 8px;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: "JetBrains Mono", monospace;
+    }
+    .grid-viz > div.span2 { grid-column: span 2; background: #2563eb; color: white; }
+    .grid-viz > div.span3 { grid-column: span 3; background: #7c3aed; color: white; }
+    .grid-viz > div.empty { background: transparent; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 6</span>
+    <h1><code>rowspan</code> and <code>colspan</code></h1>
+    <p>Merge cells across rows or columns. Build weekly schedules, exam timetables, comparison matrices, and grouped headers. Learn the calculation gotchas that turn elegant tables into ragged messes — and how to keep screen readers on board.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#intro">What rowspan and colspan do</a></li>
+        <li><a href="#colspan">The colspan attribute</a></li>
+        <li><a href="#rowspan">The rowspan attribute</a></li>
+        <li><a href="#calculation">The calculation rule</a></li>
+        <li><a href="#schedule-example">Example: weekly schedule</a></li>
+        <li><a href="#matrix-example">Example: comparison matrix</a></li>
+        <li><a href="#grouped-headers">Grouped headers with colspan</a></li>
+        <li><a href="#gotchas">Calculation gotchas</a></li>
+        <li><a href="#a11y">Accessibility with merged cells</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="intro">
+        <h2><span class="num">1</span> What rowspan and colspan do</h2>
+        <p>By default, every cell occupies exactly one row and one column. The <code>rowspan</code> and <code>colspan</code> attributes (only valid on <code>&lt;th&gt;</code> and <code>&lt;td&gt;</code>) let a cell span multiple rows or columns.</p>
+        <div class="grid-viz">
+          <div>A</div><div>B</div><div>C</div><div>D</div>
+          <div class="span2">E (colspan=2)</div><div class="empty"></div><div>F</div><div>G</div>
+          <div>H</div><div class="span3">I (colspan=3)</div><div class="empty"></div><div class="empty"></div>
+        </div>
+        <p>Cells E and I use <code>colspan</code>. Visually, they appear to span 2 and 3 cells respectively — but in the source HTML, they're still single cells. The "empty" divs above are placeholders to show what slots the spanning cell occupies.</p>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Allowed on</th><th>Value</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>colspan</code></td><td><code>&lt;th&gt;</code>, <code>&lt;td&gt;</code></td><td>Positive integer (default 1)</td><td>Cell spans N columns horizontally</td></tr>
+            <tr><td><code>rowspan</code></td><td><code>&lt;th&gt;</code>, <code>&lt;td&gt;</code></td><td>Positive integer (default 1)</td><td>Cell spans N rows vertically</td></tr>
+          </tbody>
+        </table>
+        <p>The catch: every row of the table must still account for the same total number of columns. When a cell spans 2 columns, the next cell in the same row is pushed one column to the right — so you must <em>not</em> add an extra <code>&lt;td&gt;</code> to compensate.</p>
+      </section>
+
+      <section id="colspan">
+        <h2><span class="num">2</span> The <code>colspan</code> attribute</h2>
+        <p><code>colspan="N"</code> makes a single cell occupy N columns. The browser visually merges them. Common use: a "no data" message spanning an entire row, or a sub-header above grouped columns.</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th scope="col"&gt;Name&lt;/th&gt;
+    &lt;th scope="col"&gt;Math&lt;/th&gt;
+    &lt;th scope="col"&gt;Science&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th scope="row"&gt;Ada&lt;/th&gt;
+    &lt;td&gt;A&lt;/td&gt;
+    &lt;td&gt;A&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan="3"&gt;No data for second student&lt;/td&gt;
+    &lt;!-- NO extra &lt;td&gt; here! colspan already covers all 3 --&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">colspan="3" placeholder row</div>
+          <table class="live-table">
+            <tr><th scope="col">Name</th><th scope="col">Math</th><th scope="col">Science</th></tr>
+            <tr><th scope="row">Ada</th><td>A</td><td>A</td></tr>
+            <tr><td colspan="3" style="text-align:center; background:#fef3c7; font-style:italic;">No data for second student</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section id="rowspan">
+        <h2><span class="num">3</span> The <code>rowspan</code> attribute</h2>
+        <p><code>rowspan="N"</code> makes a single cell occupy N rows. The browser renders the cell as a tall block. Subsequent rows must <em>not</em> include a cell in that column — the rowspanning cell already fills it.</p>
+        <pre><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th scope="col"&gt;Day&lt;/th&gt;
+    &lt;th scope="col"&gt;Session&lt;/th&gt;
+    &lt;th scope="col"&gt;Topic&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td rowspan="2"&gt;Monday&lt;/td&gt;     &lt;!-- spans 2 rows --&gt;
+    &lt;td&gt;Morning&lt;/td&gt;
+    &lt;td&gt;Algebra&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;!-- NO &lt;td&gt; for "Day" here! rowspan covers it --&gt;
+    &lt;td&gt;Afternoon&lt;/td&gt;
+    &lt;td&gt;Geometry&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">rowspan="2" — Monday cell spans two rows</div>
+          <table class="live-table">
+            <tr><th scope="col">Day</th><th scope="col">Session</th><th scope="col">Topic</th></tr>
+            <tr><td rowspan="2" style="background:#dbeafe; font-weight:600;">Monday</td><td>Morning</td><td>Algebra</td></tr>
+            <tr><td>Afternoon</td><td>Geometry</td></tr>
+            <tr><td rowspan="2" style="background:#dbeafe; font-weight:600;">Tuesday</td><td>Morning</td><td>Calculus</td></tr>
+            <tr><td>Afternoon</td><td>Statistics</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section id="calculation">
+        <h2><span class="num">4</span> The calculation rule</h2>
+        <p>The golden rule of merged cells: <strong>every row must cover the same number of columns</strong>, counting spans. If your table has 4 columns total, every row's cells (summing spans) must equal 4.</p>
+        <div class="callout info">
+          <strong>The formula</strong>
+          For each row: <code>sum of colspan values on cells in this row + count of cells (treating cells already covered by an earlier rowspan as 0)</code> must equal the table's total column count.
+        </div>
+        <p>Example — a 4-column table with a spanning cell:</p>
+        <pre><code>&lt;!-- 4 columns total --&gt;
+&lt;tr&gt;
+  &lt;td&gt;A&lt;/td&gt;             &lt;!-- col 1 --&gt;
+  &lt;td colspan="2"&gt;B&lt;/td&gt;  &lt;!-- cols 2-3 (counts as 2) --&gt;
+  &lt;td&gt;C&lt;/td&gt;             &lt;!-- col 4 --&gt;
+&lt;/tr&gt;
+&lt;!-- Total: 1 + 2 + 1 = 4 ✓ --&gt;</code></pre>
+        <p>If you accidentally added another <code>&lt;td&gt;</code> after C, the total would be 5 and the browser would render an extra phantom column.</p>
+      </section>
+
+      <section id="schedule-example">
+        <h2><span class="num">5</span> Example: weekly schedule</h2>
+        <p>A classic use case — a class timetable where some classes span multiple periods:</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Class Schedule — Week of Mar 10&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Time&lt;/th&gt;
+      &lt;th scope="col"&gt;Mon&lt;/th&gt;
+      &lt;th scope="col"&gt;Tue&lt;/th&gt;
+      &lt;th scope="col"&gt;Wed&lt;/th&gt;
+      &lt;th scope="col"&gt;Thu&lt;/th&gt;
+      &lt;th scope="col"&gt;Fri&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;9:00&lt;/th&gt;
+      &lt;td rowspan="2"&gt;Math&lt;/td&gt;          &lt;!-- 2-period block --&gt;
+      &lt;td&gt;English&lt;/td&gt;
+      &lt;td rowspan="3"&gt;Lab&lt;/td&gt;           &lt;!-- 3-period lab --&gt;
+      &lt;td&gt;History&lt;/td&gt;
+      &lt;td&gt;English&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;10:00&lt;/th&gt;
+      &lt;!-- no &lt;td&gt; for Mon — rowspan covers it --&gt;
+      &lt;td&gt;Geography&lt;/td&gt;
+      &lt;!-- no &lt;td&gt; for Wed --&gt;
+      &lt;td&gt;Art&lt;/td&gt;
+      &lt;td&gt;Music&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;11:00&lt;/th&gt;
+      &lt;td&gt;PE&lt;/td&gt;
+      &lt;td&gt;Geography&lt;/td&gt;
+      &lt;!-- no &lt;td&gt; for Wed --&gt;
+      &lt;td&gt;English&lt;/td&gt;
+      &lt;td&gt;Free&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Rendered output — 6 columns × 3 rows with merged cells</div>
+          <table class="live-table">
+            <caption style="text-align:left; font-weight:600; padding:6px 0;">Class Schedule — Week of Mar 10</caption>
+            <thead>
+              <tr>
+                <th scope="col">Time</th>
+                <th scope="col">Mon</th>
+                <th scope="col">Tue</th>
+                <th scope="col">Wed</th>
+                <th scope="col">Thu</th>
+                <th scope="col">Fri</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">9:00</th>
+                <td rowspan="2" class="class-cell">Math</td>
+                <td>English</td>
+                <td rowspan="3" class="class-cell">Lab</td>
+                <td>History</td>
+                <td>English</td>
+              </tr>
+              <tr>
+                <th scope="row">10:00</th>
+                <td>Geography</td>
+                <td>Art</td>
+                <td>Music</td>
+              </tr>
+              <tr>
+                <th scope="row">11:00</th>
+                <td>PE</td>
+                <td>Geography</td>
+                <td>English</td>
+                <td class="free">Free</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Draw your table on paper before writing the HTML. Mark each merged cell with a number indicating its span. Then trace each row, counting cells and spans to verify every row equals the column count.
+        </div>
+      </section>
+
+      <section id="matrix-example">
+        <h2><span class="num">6</span> Example: comparison matrix</h2>
+        <p>Comparison tables often have a row that says "All plans include" and lists common features spanning multiple columns:</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Plan Comparison&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Feature&lt;/th&gt;
+      &lt;th scope="col"&gt;Basic&lt;/th&gt;
+      &lt;th scope="col"&gt;Pro&lt;/th&gt;
+      &lt;th scope="col"&gt;Enterprise&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Users&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;&lt;td&gt;10&lt;/td&gt;&lt;td&gt;Unlimited&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td colspan="4"&gt;All plans include 24/7 monitoring, SSL, and backups&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Storage&lt;/th&gt;
+      &lt;td&gt;5GB&lt;/td&gt;&lt;td&gt;100GB&lt;/td&gt;&lt;td&gt;1TB&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Comparison matrix with colspan="4" announcement row</div>
+          <table class="live-table">
+            <caption style="text-align:left; font-weight:600; padding:6px 0;">Plan Comparison</caption>
+            <thead>
+              <tr><th scope="col">Feature</th><th scope="col">Basic</th><th scope="col">Pro</th><th scope="col">Enterprise</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Users</th><td>1</td><td>10</td><td>Unlimited</td></tr>
+              <tr><td colspan="4" style="text-align:center; background:#fef3c7; font-style:italic;">All plans include 24/7 monitoring, SSL, and backups</td></tr>
+              <tr><th scope="row">Storage</th><td>5GB</td><td>100GB</td><td>1TB</td></tr>
+              <tr><th scope="row">Support</th><td>Email</td><td>Priority</td><td>Dedicated CSM</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="grouped-headers">
+        <h2><span class="num">7</span> Grouped headers with <code>colspan</code></h2>
+        <p>When you have nested column headers (e.g., semesters grouping months), you need <code>colspan</code> on the top row plus <code>scope="colgroup"</code> for accessibility:</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Student Grades&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col" rowspan="2"&gt;Student&lt;/th&gt;
+      &lt;th scope="colgroup" colspan="2"&gt;First Semester&lt;/th&gt;
+      &lt;th scope="colgroup" colspan="2"&gt;Second Semester&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;!-- no &lt;th&gt; for Student — rowspan covers it --&gt;
+      &lt;th scope="col"&gt;Math&lt;/th&gt;
+      &lt;th scope="col"&gt;Science&lt;/th&gt;
+      &lt;th scope="col"&gt;Math&lt;/th&gt;
+      &lt;th scope="col"&gt;Science&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Ada&lt;/th&gt;
+      &lt;td&gt;A&lt;/td&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;B&lt;/td&gt;&lt;td&gt;A&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Grouped headers with rowspan + colspan</div>
+          <table class="live-table">
+            <caption style="text-align:left; font-weight:600; padding:6px 0;">Student Grades</caption>
+            <thead>
+              <tr>
+                <th scope="col" rowspan="2">Student</th>
+                <th scope="colgroup" colspan="2" style="text-align:center;">First Semester</th>
+                <th scope="colgroup" colspan="2" style="text-align:center;">Second Semester</th>
+              </tr>
+              <tr>
+                <th scope="col">Math</th>
+                <th scope="col">Science</th>
+                <th scope="col">Math</th>
+                <th scope="col">Science</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Ada</th><td>A</td><td>A</td><td>B</td><td>A</td></tr>
+              <tr><th scope="row">Alan</th><td>B</td><td>A</td><td>A</td><td>B</td></tr>
+              <tr><th scope="row">Grace</th><td>A</td><td>A</td><td>A</td><td>A</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="gotchas">
+        <h2><span class="num">8</span> Calculation gotchas</h2>
+        <div class="callout warn">
+          <strong>Gotcha 1: Forgetting to remove cells</strong>
+          When a cell uses <code>rowspan="3"</code>, the next 2 rows must <em>not</em> include a <code>&lt;td&gt;</code> in that column. If you forget and add one anyway, the browser will render an extra column for that row only — visually broken, semantically wrong.
+        </div>
+        <div class="callout warn">
+          <strong>Gotcha 2: Counting with mixed spans</strong>
+          In a 4-column row with one cell having <code>colspan="2"</code>, you write 3 <code>&lt;td&gt;</code> elements — not 4. The colspanning cell counts as 2.
+        </div>
+        <div class="callout warn">
+          <strong>Gotcha 3: rowspan extending beyond table</strong>
+          If <code>rowspan="5"</code> is used in the last row of the table, the extra span is silently ignored by the browser. But it's confusing — set the value to the actual number of rows spanned.
+        </div>
+        <div class="callout warn">
+          <strong>Gotcha 4: colspan="0"</strong>
+          The spec says <code>colspan="0"</code> should mean "span all remaining columns", but browser support is inconsistent. Don't use it. Always specify the exact integer.
+        </div>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">9</span> Accessibility with merged cells</h2>
+        <p>Screen readers try to map each cell to its proper row and column header. With merged cells, this gets tricky:</p>
+        <ul>
+          <li>Use <code>scope="colgroup"</code> on a header cell that uses <code>colspan</code>.</li>
+          <li>Use <code>scope="rowgroup"</code> on a header cell that uses <code>rowspan</code>.</li>
+          <li>For very complex tables (3+ header levels), <code>scope</code> alone may not be enough — use the <code>headers</code> + <code>id</code> approach instead (see the <a href="../03-Accessible-Tables/scope-headers.html">Scope &amp; Headers deep dive</a>).</li>
+        </ul>
+        <pre><code>&lt;!-- Grouped header with colgroup scope --&gt;
+&lt;th scope="colgroup" colspan="2"&gt;First Semester&lt;/th&gt;
+
+&lt;!-- Complex cell with explicit header references --&gt;
+&lt;td headers="q1-math ada q1"&gt;A&lt;/td&gt;
+&lt;th id="q1-math" scope="col"&gt;Math&lt;/th&gt;
+&lt;th id="ada" scope="row"&gt;Ada&lt;/th&gt;
+&lt;th id="q1" scope="colgroup" colspan="2"&gt;Q1&lt;/th&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Test complex tables with a screen reader. NVDA, JAWS, and VoiceOver all have table navigation modes. Try navigating cell-by-cell with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>→</kbd> in NVDA and listen to whether the headers are correctly announced.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Symptom</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Adding a <code>&lt;td&gt;</code> where a rowspan already covers</td><td>Row has too many cells; browser adds phantom column.</td><td>Remove the extra cell.</td></tr>
+            <tr><td>Using <code>colspan="0"</code></td><td>Inconsistent cross-browser behavior.</td><td>Always use a positive integer.</td></tr>
+            <tr><td><code>rowspan</code> value larger than remaining rows</td><td>Browser silently truncates; confusing markup.</td><td>Set rowspan = actual rows spanned.</td></tr>
+            <tr><td>Mixing <code>colspan</code> + <code>rowspan</code> on same cell</td><td>Layout confusion; readers may mis-announce.</td><td>Test with screen readers; consider simplifying.</td></tr>
+            <tr><td>Using spans for layout purposes only</td><td>Tables-as-layout antipattern resurfaces.</td><td>Use spans only when data genuinely merges.</td></tr>
+            <tr><td>Forgetting <code>scope="colgroup"</code>/<code>rowgroup</code></td><td>Screen reader loses header association.</td><td>Add scope explicitly.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Build a 2×2 rowspan</strong>
+          Create a 3-row, 2-column table where the first cell of row 1 uses <code>rowspan="2"</code>. Verify the layout: the spanning cell should appear tall, and row 2 should have only one cell in the source.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build a schedule</strong>
+          Build a 3-column, 4-row class schedule. Use <code>rowspan="2"</code> for one class that lasts two periods. Use <code>colspan="3"</code> for a "Lunch Break" row spanning all columns.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Grouped headers</strong>
+          Build a sales table with two grouped headers: "Q1" spanning Jan + Feb, and "Q2" spanning Apr + May. Use <code>scope="colgroup"</code> on the grouped headers and <code>rowspan="2"</code> on the leftmost "Region" header.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Calculation check</strong>
+          Without running it, predict what this malformed table will render as. Then test:
+          <pre><code>&lt;table border="1"&gt;
+  &lt;tr&gt;&lt;td rowspan="2"&gt;A&lt;/td&gt;&lt;td&gt;B&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;C&lt;/td&gt;&lt;td&gt;D&lt;/td&gt;&lt;/tr&gt;  &lt;!-- extra! --&gt;
+&lt;/table&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Opera</span>
+          <span class="pill yes">All mobile browsers</span>
+        </div>
+        <p>Both attributes have universal support since HTML 3.2 (1997). The only edge case is <code>colspan="0"</code>, which has inconsistent support — avoid it. Positive integer values work everywhere.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Timetables</h4>
+            <p>School/university class schedules where classes span multiple periods.</p>
+          </div>
+          <div class="card">
+            <h4>Conference agendas</h4>
+            <p>Multi-day events with tracks. Keynote sessions span all tracks via <code>colspan</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Comparison tables</h4>
+            <p>"All plans include..." rows spanning every column to announce shared features.</p>
+          </div>
+          <div class="card">
+            <h4>Financial reports</h4>
+            <p>Quarterly grouping with <code>scope="colgroup"</code>. "Total" rows with <code>colspan</code> for the label.</p>
+          </div>
+          <div class="card">
+            <h4>Organizational charts</h4>
+            <p>Hierarchy where a manager cell spans multiple subordinate rows.</p>
+          </div>
+          <div class="card">
+            <h4>Sport brackets</h4>
+            <p>Tournament trees with merged cells representing advancing teams.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="colgroup-col.html">← Previous: colgroup &amp; col</a>
+    <a class="next" href="../03-Accessible-Tables/scope-headers.html">Next: Scope &amp; Headers →</a>
+  </footer>
+</body>
+</html>

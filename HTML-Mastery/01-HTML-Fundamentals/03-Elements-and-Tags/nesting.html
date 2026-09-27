@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nesting Rules &amp; Content Categories — HTML Mastery</title>
+  <meta name="description" content="The nesting rules of HTML: proper nesting, content categories (flow, phrasing, embedded, interactive), what can contain what, common mistakes, and how to validate.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #dc2626 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(1.9rem, 4.8vw, 2.9rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    pre.valid { border-left: 4px solid var(--success); }
+    pre.invalid { border-left: 4px solid var(--warn); }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .tree {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 18px 20px;
+      border-radius: 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    .tree .el { color: #f472b6; }
+    .tree .text { color: #e2e8f0; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.3 · Elements &amp; Tags</span>
+    <h1>Nesting Rules &amp; Content Categories</h1>
+    <p>Not every element can sit inside every other. The WHATWG spec defines content categories that govern what can contain what — and getting it wrong causes subtle bugs.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#proper">Proper Nesting</a></li>
+        <li><a href="#categories">Content Categories</a></li>
+        <li><a href="#flow">Flow Content</a></li>
+        <li><a href="#phrasing">Phrasing Content</a></li>
+        <li><a href="#embedded">Embedded Content</a></li>
+        <li><a href="#interactive">Interactive Content</a></li>
+        <li><a href="#sectioning">Sectioning Content</a></li>
+        <li><a href="#heading">Heading Content</a></li>
+        <li><a href="#transparency">Transparent Content</a></li>
+        <li><a href="#rules">Common Rules</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#validation">Validation</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="proper">
+        <h2><span class="num">1</span> Proper Nesting</h2>
+        <p>The first rule of HTML nesting: <strong>tags must be properly nested</strong>. If you open <code>&lt;a&gt;</code> then <code>&lt;span&gt;</code>, you must close <code>&lt;/span&gt;</code> before <code>&lt;/a&gt;</code>.</p>
+        <pre class="valid"><code>&lt;!-- GOOD: properly nested --&gt;
+&lt;p&gt;Visit &lt;a href="x"&gt;our &lt;em&gt;wonderful&lt;/em&gt; site&lt;/a&gt;.&lt;/p&gt;
+              └─ a opens ──── em opens ──── em closes ── a closes ─┘</code></pre>
+        <pre class="invalid"><code>&lt;!-- BAD: overlapping tags --&gt;
+&lt;p&gt;Visit &lt;a href="x"&gt;our &lt;em&gt;wonderful&lt;/a&gt; site&lt;/em&gt;.&lt;/p&gt;
+                          └─ a closes here, but em is still open ─┘</code></pre>
+        <p>Browsers will silently "fix" overlapping tags by closing the inner tag early, but the resulting DOM may not match what you wrote. Always close inner tags before outer ones.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The classic overlap mistake: <code>&lt;b&gt;Bold &lt;i&gt;both&lt;/b&gt; italic&lt;/i&gt;</code>. The browser will close <code>&lt;i&gt;</code> when it sees <code>&lt;/b&gt;</code>, then reopen it after — producing <code>&lt;b&gt;Bold &lt;i&gt;both&lt;/i&gt;&lt;/b&gt;&lt;i&gt; italic&lt;/i&gt;</code>. Always write <code>&lt;b&gt;Bold &lt;i&gt;both&lt;/i&gt;&lt;/b&gt;</code>.
+        </div>
+      </section>
+
+      <section id="categories">
+        <h2><span class="num">2</span> Content Categories</h2>
+        <p>The WHATWG spec groups every element into one or more <strong>content categories</strong>. Each category has rules about what its members can contain. The seven main categories:</p>
+        <table>
+          <thead><tr><th>Category</th><th>What it is</th><th>Where it can live</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Metadata content</strong></td><td>Page metadata</td><td>Only in <code>&lt;head&gt;</code></td></tr>
+            <tr><td><strong>Flow content</strong></td><td>Most body content</td><td>In <code>&lt;body&gt;</code> and most flow containers</td></tr>
+            <tr><td><strong>Sectioning content</strong></td><td>Defines document sections</td><td>In flow content</td></tr>
+            <tr><td><strong>Heading content</strong></td><td>Headings</td><td>In flow content</td></tr>
+            <tr><td><strong>Phrasing content</strong></td><td>Inline text and markup</td><td>Inside phrasing or flow that allows phrasing</td></tr>
+            <tr><td><strong>Embedded content</strong></td><td>Imports another resource</td><td>In flow content</td></tr>
+            <tr><td><strong>Interactive content</strong></td><td>User interaction</td><td>In flow content; some restrictions</td></tr>
+          </tbody>
+        </table>
+        <p>Most elements belong to multiple categories. For example, <code>&lt;a&gt;</code> is flow, phrasing, interactive, and palpable content all at once.</p>
+      </section>
+
+      <section id="flow">
+        <h2><span class="num">3</span> Flow Content</h2>
+        <p>Most elements that can appear in the document body are flow content. There are over 100 flow elements — basically everything except head-only elements and a few rare ones.</p>
+        <p>Common flow elements: <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;form&gt;</code>, <code>&lt;figure&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;hr&gt;</code>, <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>, plus all phrasing content.</p>
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;h1&gt;Title&lt;/h1&gt;
+      &lt;p&gt;Body paragraph.&lt;/p&gt;
+      &lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+&lt;/body&gt;</code></pre>
+      </section>
+
+      <section id="phrasing">
+        <h2><span class="num">4</span> Phrasing Content</h2>
+        <p>Phrasing content is the inline text and markup of a document. The key rule: <strong>phrasing content can only contain other phrasing content</strong>.</p>
+        <p>Phrasing elements include: <code>&lt;a&gt;</code>, <code>&lt;abbr&gt;</code>, <code>&lt;b&gt;</code>, <code>&lt;bdi&gt;</code>, <code>&lt;bdo&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;cite&gt;</code>, <code>&lt;code&gt;</code>, <code>&lt;data&gt;</code>, <code>&lt;dfn&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;kbd&gt;</code>, <code>&lt;mark&gt;</code>, <code>&lt;q&gt;</code>, <code>&lt;ruby&gt;</code>, <code>&lt;s&gt;</code>, <code>&lt;samp&gt;</code>, <code>&lt;small&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;sub&gt;</code>, <code>&lt;sup&gt;</code>, <code>&lt;time&gt;</code>, <code>&lt;u&gt;</code>, <code>&lt;var&gt;</code>, <code>&lt;wbr&gt;</code>, plus images, form inputs, and more.</p>
+        <p>Phrasing elements go inside <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, etc.</p>
+        <pre class="valid"><code>&lt;!-- Valid: phrasing inside phrasing --&gt;
+&lt;p&gt;You can &lt;em&gt;emphasise&lt;/em&gt; words like &lt;strong&gt;this&lt;/strong&gt;.&lt;/p&gt;
+&lt;span&gt;Hello &lt;a href="x"&gt;world&lt;/a&gt;!&lt;/span&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- INVALID: block element inside phrasing --&gt;
+&lt;p&gt;You can &lt;div&gt;not do this&lt;/div&gt;.&lt;/p&gt;
+&lt;span&gt;Or &lt;p&gt;this&lt;/p&gt;&lt;/span&gt;
+&lt;a href="x"&gt;Link with &lt;h1&gt;a heading&lt;/h1&gt; inside&lt;/a&gt;</code></pre>
+        <p>The browser will recover by closing the paragraph, span, or anchor early. This usually results in a layout you didn't intend.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          A useful mental model: <strong>if it produces a new line by default, it's not phrasing content</strong>. <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;h1&gt;</code> — all block-level, all cannot go inside <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, or another phrasing element.
+        </div>
+      </section>
+
+      <section id="embedded">
+        <h2><span class="num">5</span> Embedded Content</h2>
+        <p>Elements that import another resource into the document.</p>
+        <p>Embedded elements: <code>&lt;audio&gt;</code>, <code>&lt;canvas&gt;</code>, <code>&lt;embed&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;math&gt;</code>, <code>&lt;object&gt;</code>, <code>&lt;picture&gt;</code>, <code>&lt;svg&gt;</code>, <code>&lt;video&gt;</code>.</p>
+        <pre><code>&lt;!-- An image is embedded content --&gt;
+&lt;p&gt;Here is a photo: &lt;img src="cat.jpg" alt="A cat"&gt; of my cat.&lt;/p&gt;
+
+&lt;!-- An iframe is embedded content --&gt;
+&lt;iframe src="https://www.youtube.com/embed/abc" title="My video"&gt;&lt;/iframe&gt;</code></pre>
+        <p>Embedded content can usually appear in both flow and phrasing contexts.</p>
+      </section>
+
+      <section id="interactive">
+        <h2><span class="num">6</span> Interactive Content</h2>
+        <p>Elements specifically designed for user interaction: <code>&lt;a&gt;</code> (with <code>href</code>), <code>&lt;button&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;embed&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;label&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;input&gt;</code> (except <code>type="hidden"</code>).</p>
+        <p>The key rule: <strong>interactive content cannot contain other interactive content</strong>. You cannot nest a button inside a link, or a link inside a button.</p>
+        <pre class="invalid"><code>&lt;!-- INVALID: button inside a link --&gt;
+&lt;a href="x"&gt;&lt;button&gt;Click&lt;/button&gt;&lt;/a&gt;
+
+&lt;!-- INVALID: link inside a button --&gt;
+&lt;button&gt;&lt;a href="x"&gt;Click&lt;/a&gt;&lt;/button&gt;
+
+&lt;!-- INVALID: button inside a label --&gt;
+&lt;label&gt;&lt;button&gt;Click&lt;/button&gt;&lt;/label&gt;</code></pre>
+        <p>If you need a "button that links somewhere", use a <code>&lt;button&gt;</code> with a click handler that navigates, or style an <code>&lt;a&gt;</code> to look like a button.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't put an <code>&lt;a&gt;</code> inside a <code>&lt;button&gt;</code> or vice versa. The HTML is invalid, and browsers handle it inconsistently — some clicks will trigger the button, others the link, and screen readers get confused.
+        </div>
+      </section>
+
+      <section id="sectioning">
+        <h2><span class="num">7</span> Sectioning Content</h2>
+        <p>Elements that create a new section in the document outline: <code>&lt;article&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;section&gt;</code>.</p>
+        <p>Sectioning elements typically contain flow content. They can be nested — an <code>&lt;article&gt;</code> can contain <code>&lt;section&gt;</code>s, and vice versa.</p>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Blog Post&lt;/h1&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Introduction&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Method&lt;/h2&gt;
+    &lt;p&gt;...&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+        <p>Each sectioning element creates its own heading scope — an <code>&lt;h1&gt;</code> inside a <code>&lt;section&gt;</code> is the top of that section, not the page. (Though most documents still use <code>&lt;h1&gt;</code> only once at the page level — see Section 7.)</p>
+      </section>
+
+      <section id="heading">
+        <h2><span class="num">8</span> Heading Content</h2>
+        <p>Just the six: <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code>, <code>&lt;h4&gt;</code>, <code>&lt;h5&gt;</code>, <code>&lt;h6&gt;</code>.</p>
+        <p>Rules:</p>
+        <ul>
+          <li>Heading content can only contain phrasing content (text and inline markup).</li>
+          <li>One <code>&lt;h1&gt;</code> per page is the convention (though technically you can have more).</li>
+          <li>Don't skip levels: don't go from <code>&lt;h1&gt;</code> directly to <code>&lt;h4&gt;</code>.</li>
+          <li>Don't use headings for visual size; use CSS.</li>
+        </ul>
+        <pre class="invalid"><code>&lt;!-- INVALID: h1 cannot contain a div --&gt;
+&lt;h1&gt;Title with &lt;div&gt;subtext&lt;/div&gt;&lt;/h1&gt;
+
+&lt;!-- INVALID: heading skipped --&gt;
+&lt;h1&gt;Title&lt;/h1&gt;
+&lt;h4&gt;Subtitle&lt;/h4&gt;   &lt;!-- skipped h2 and h3 --&gt;</code></pre>
+      </section>
+
+      <section id="transparency">
+        <h2><span class="num">9</span> Transparent Content</h2>
+        <p>Some elements have a "transparent" content model — they allow whatever their parent allows. The most common is <code>&lt;a&gt;</code> and <code>&lt;object&gt;</code>.</p>
+        <pre><code>&lt;!-- a inside a p (phrasing parent): a contains phrasing --&gt;
+&lt;p&gt;Visit &lt;a href="x"&gt;our site&lt;/a&gt;.&lt;/p&gt;
+
+&lt;!-- a inside a div (flow parent): a can contain flow --&gt;
+&lt;div&gt;
+  &lt;a href="x"&gt;
+    &lt;article&gt;
+      &lt;h2&gt;Card title&lt;/h2&gt;
+      &lt;p&gt;Card body&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/a&gt;
+&lt;/div&gt;</code></pre>
+        <p>This is why an <code>&lt;a&gt;</code> can wrap a whole "card" of block content today (HTML5 changed this from HTML4, where <code>&lt;a&gt;</code> could only contain inline content).</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Even with transparent content, you can't nest interactive content inside interactive content. <code>&lt;a&gt;</code> cannot contain <code>&lt;a&gt;</code>, <code>&lt;button&gt;</code>, or any other interactive element.
+        </div>
+      </section>
+
+      <section id="rules">
+        <h2><span class="num">10</span> Common Nesting Rules</h2>
+        <table>
+          <thead><tr><th>Parent</th><th>Allowed children</th><th>Common mistakes</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code></td><td>Zero or more <code>&lt;li&gt;</code></td><td>Putting anything else directly inside (text, <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>)</td></tr>
+            <tr><td><code>&lt;li&gt;</code></td><td>Flow content</td><td>—</td></tr>
+            <tr><td><code>&lt;dl&gt;</code></td><td>One or more <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> pairs</td><td>Mixing <code>&lt;li&gt;</code> in</td></tr>
+            <tr><td><code>&lt;table&gt;</code></td><td>Optional <code>&lt;caption&gt;</code>, <code>&lt;colgroup&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;tfoot&gt;</code>, or <code>&lt;tr&gt;</code></td><td>Putting <code>&lt;tr&gt;</code> or <code>&lt;td&gt;</code> directly in table without tbody (browsers fix it)</td></tr>
+            <tr><td><code>&lt;tr&gt;</code></td><td><code>&lt;td&gt;</code>, <code>&lt;th&gt;</code></td><td>Anything else</td></tr>
+            <tr><td><code>&lt;select&gt;</code></td><td><code>&lt;option&gt;</code> or <code>&lt;optgroup&gt;</code></td><td>Putting text or other elements directly in</td></tr>
+            <tr><td><code>&lt;optgroup&gt;</code></td><td><code>&lt;option&gt;</code></td><td>—</td></tr>
+            <tr><td><code>&lt;p&gt;</code></td><td>Phrasing content only</td><td>Putting <code>&lt;div&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;table&gt;</code>, another <code>&lt;p&gt;</code></td></tr>
+            <tr><td><code>&lt;span&gt;</code></td><td>Phrasing content only</td><td>Putting block elements</td></tr>
+            <tr><td><code>&lt;a&gt;</code></td><td>Transparent (whatever parent allows), but no other interactive elements</td><td>Nesting <code>&lt;a&gt;</code>, <code>&lt;button&gt;</code> inside</td></tr>
+            <tr><td><code>&lt;button&gt;</code></td><td>Phrasing content (no interactive)</td><td>Nesting <code>&lt;a&gt;</code>, <code>&lt;button&gt;</code>, <code>&lt;label&gt;</code></td></tr>
+            <tr><td><code>&lt;label&gt;</code></td><td>Phrasing content (no other label, no button except one labeled control)</td><td>Nesting labels</td></tr>
+            <tr><td><code>&lt;form&gt;</code></td><td>Flow content (no nested form)</td><td>Putting a form inside a form</td></tr>
+            <tr><td><code>&lt;head&gt;</code></td><td>Metadata content only</td><td>Putting visible content like <code>&lt;p&gt;</code></td></tr>
+            <tr><td><code>&lt;picture&gt;</code></td><td>Zero or more <code>&lt;source&gt;</code>, then exactly one <code>&lt;img&gt;</code></td><td>Forgetting the <code>&lt;img&gt;</code> fallback</td></tr>
+            <tr><td><code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code></td><td>Zero or more <code>&lt;source&gt;</code> and <code>&lt;track&gt;</code>, plus fallback content</td><td>—</td></tr>
+            <tr><td><code>&lt;html&gt;</code></td><td>One <code>&lt;head&gt;</code>, then one <code>&lt;body&gt;</code></td><td>Reversed order or multiple</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <pre class="invalid"><code>&lt;!-- 1. Block element inside inline phrasing --&gt;
+&lt;p&gt;Some text &lt;div&gt;not allowed here&lt;/div&gt;&lt;/p&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 2. List item outside a list --&gt;
+&lt;li&gt;Orphan list item&lt;/li&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 3. Direct text inside &lt;ul&gt; --&gt;
+&lt;ul&gt;
+  Random text
+  &lt;li&gt;Item&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 4. &lt;a&gt; inside &lt;a&gt; --&gt;
+&lt;a href="x"&gt;Outer &lt;a href="y"&gt;inner&lt;/a&gt;&lt;/a&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 5. &lt;button&gt; inside &lt;a&gt; or vice versa --&gt;
+&lt;a href="x"&gt;&lt;button&gt;Click&lt;/button&gt;&lt;/a&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 6. Skipped heading level --&gt;
+&lt;h1&gt;Title&lt;/h1&gt;
+&lt;h3&gt;Subtitle&lt;/h3&gt;   &lt;!-- skipped h2 --&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 7. Heading inside a &lt;p&gt; --&gt;
+&lt;p&gt;Intro &lt;h2&gt;Heading&lt;/h2&gt; rest&lt;/p&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 8. &lt;tr&gt; or &lt;td&gt; outside a &lt;table&gt; --&gt;
+&lt;div&gt;
+  &lt;tr&gt;&lt;td&gt;Cell&lt;/td&gt;&lt;/tr&gt;
+&lt;/div&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 9. Form inside a form --&gt;
+&lt;form action="x"&gt;
+  &lt;form action="y"&gt;...&lt;/form&gt;
+&lt;/form&gt;</code></pre>
+        <pre class="invalid"><code>&lt;!-- 10. Block content directly inside &lt;select&gt; --&gt;
+&lt;select&gt;
+  &lt;option&gt;A&lt;/option&gt;
+  &lt;div&gt;not allowed&lt;/div&gt;
+&lt;/select&gt;</code></pre>
+      </section>
+
+      <section id="validation">
+        <h2><span class="num">12</span> Validation</h2>
+        <p>How do you know your nesting is correct? Three approaches:</p>
+        <ol>
+          <li><strong>The W3C Validator.</strong> Paste your HTML into <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a>. It will flag every nesting violation explicitly.</li>
+          <li><strong>Browser DevTools.</strong> Open the Elements panel. If the DOM doesn't match your source, the browser "fixed" an invalid nesting. Notice the differences — that's where you violated the rules.</li>
+          <li><strong>HTMLHint / eslint-plugin-html.</strong> Inline linting in your editor catches most issues as you type.</li>
+        </ol>
+        <div class="tree">
+<span class="el">&lt;ul&gt;</span>                          <span class="text">← expected</span>
+  <span class="el">&lt;li&gt;</span>
+    <span class="text">Item</span>
+  <span class="el">&lt;/li&gt;</span>
+<span class="el">&lt;/ul&gt;</span>
+        </div>
+        <p>If you wrote <code>&lt;ul&gt;text&lt;li&gt;item&lt;/li&gt;&lt;/ul&gt;</code>, the browser will silently wrap the loose text in a <code>&lt;li&gt;</code> for you. The DevTools will show you that. The validator will tell you the source was invalid.</p>
+        <div class="callout exercise">
+          <strong>Try it yourself — 15 minutes</strong>
+          Write a complete page that demonstrates <em>valid</em> nesting of every structure below:
+          <ol>
+            <li>An <code>&lt;a&gt;</code> wrapping an <code>&lt;article&gt;</code> (entire card is clickable).</li>
+            <li>A <code>&lt;dl&gt;</code> with three <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> pairs.</li>
+            <li>A <code>&lt;table&gt;</code> with <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;caption&gt;</code>, and a <code>&lt;colgroup&gt;</code> with two <code>&lt;col&gt;</code>s.</li>
+            <li>A <code>&lt;form&gt;</code> with <code>&lt;fieldset&gt;</code>, <code>&lt;legend&gt;</code>, and inputs with associated <code>&lt;label&gt;</code>s.</li>
+            <li>A <code>&lt;picture&gt;</code> with two <code>&lt;source&gt;</code>s and an <code>&lt;img&gt;</code>.</li>
+          </ol>
+          Run it through the W3C Validator. If it passes, you've internalised content categories.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="void-elements.html">← Previous: Void Elements</a>
+      <a href="../04-Attributes/global-attributes.html">Next: Global Attributes →</a>
+    </div>
+    <p>HTML Mastery — Section 1.3 · Elements &amp; Tags · Nesting &amp; Content Categories</p>
+  </footer>
+</body>
+</html>

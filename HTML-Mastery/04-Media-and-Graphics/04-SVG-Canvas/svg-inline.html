@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inline SVG — HTML Mastery</title>
+  <meta name="description" content="Master inline SVG in HTML: svg element, path, circle, rect, line, polyline, polygon, g, text, use, defs, linearGradient, radialGradient, viewBox, advantages of scalable scriptable CSS-stylable graphics. Examples: icons, logos, charts.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 24px;
+      background: #f8fafc; margin: 14px 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .demo-box svg { display: block; }
+    .icon-row {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+    }
+    .icon-row svg { width: 48px; height: 48px; }
+    .support {
+      margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--ink-soft);
+    }
+    .support span {
+      background: #f1f5f9; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    footer {
+      background: #0f172a; color: #cbd5e1;
+      padding: 24px; text-align: center;
+    }
+    footer .nav {
+      max-width: 1200px; margin: 0 auto 12px;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    footer a { color: #93c5fd; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 4 · Media &amp; Graphics</span>
+    <h1>Inline SVG — Scalable, Scriptable, Stylable</h1>
+    <p>SVG is XML for drawing. Inline it directly in HTML and you get crisp graphics at any size, full CSS styling, full JavaScript control, and accessibility for free. The best choice for icons, logos, and charts.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why">Why inline SVG?</a></li>
+        <li><a href="#anatomy">Anatomy of an SVG</a></li>
+        <li><a href="#viewbox">viewBox &amp; sizing</a></li>
+        <li><a href="#shapes">Basic shapes</a></li>
+        <li><a href="#path">The path element</a></li>
+        <li><a href="#g">Grouping with &lt;g&gt;</a></li>
+        <li><a href="#text">&lt;text&gt; element</a></li>
+        <li><a href="#defs">&lt;defs&gt; and &lt;use&gt;</a></li>
+        <li><a href="#gradients">Linear &amp; radial gradients</a></li>
+        <li><a href="#examples">Real examples</a></li>
+        <li><a href="#css">Styling with CSS</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercise">Try it yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why">
+        <h2><span class="num">1</span> Why Inline SVG?</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Scalable</h4>
+            <p>Vector math, not pixels. One file looks crisp at 16px or 4000px. No more 1x/2x/3x exports.</p>
+          </div>
+          <div class="card">
+            <h4>Scriptable</h4>
+            <p>Every element is a DOM node. Animate, transform, or react to clicks with vanilla JS.</p>
+          </div>
+          <div class="card">
+            <h4>CSS-stylable</h4>
+            <p>Set <code>fill</code>, <code>stroke</code>, <code>opacity</code> from your stylesheet. Inherit colors via <code>currentColor</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Accessible</h4>
+            <p>Use <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code> for screen readers, <code>role="img"</code> and <code>aria-label</code> for context.</p>
+          </div>
+          <div class="card">
+            <h4>Tiny</h4>
+            <p>An icon set in SVG is often smaller than one PNG. No HTTP request when inline.</p>
+          </div>
+          <div class="card">
+            <h4>Animatable</h4>
+            <p>CSS animations, SMIL, or the Web Animations API. No images or videos to load.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="anatomy">
+        <h2><span class="num">2</span> Anatomy of an SVG</h2>
+        <pre><code>&lt;svg xmlns="http://www.w3.org/2000/svg"
+     width="100" height="100"
+     viewBox="0 0 100 100"
+     role="img" aria-labelledby="title desc"&gt;
+  &lt;title id="title"&gt;Blue circle&lt;/title&gt;
+  &lt;desc id="desc"&gt;A solid blue circle filling the canvas.&lt;/desc&gt;
+  &lt;circle cx="50" cy="50" r="45" fill="#2563eb" /&gt;
+&lt;/svg&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="100" height="100" viewBox="0 0 100 100" role="img" aria-label="Blue circle">
+            <title>Blue circle</title>
+            <circle cx="50" cy="50" r="45" fill="#2563eb" />
+          </svg>
+        </div>
+        <p>Note: <code>xmlns</code> is technically required by the spec but browsers usually infer it for inline SVG in HTML5. Best practice is to include it.</p>
+      </section>
+
+      <section id="viewbox">
+        <h2><span class="num">3</span> <code>viewBox</code> &amp; Sizing</h2>
+        <p><code>viewBox="minX minY width height"</code> defines the SVG's internal coordinate system. <code>width</code>/<code>height</code> (attributes or CSS) define how big it renders on screen.</p>
+        <pre><code>&lt;!-- 100×100 internal coords, renders at 200×200 (2x scaled) --&gt;
+&lt;svg viewBox="0 0 100 100" width="200" height="200"&gt;
+  &lt;circle cx="50" cy="50" r="40" /&gt;
+&lt;/svg&gt;</code></pre>
+        <p>Best practice: set <code>viewBox</code> always; let CSS control rendered size with <code>width: 100%</code> or fixed dimensions.</p>
+        <pre><code>svg { width: 100%; height: auto; }</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip — <code>preserveAspectRatio</code></strong>
+          Default <code>"xMidYMid meet"</code> keeps aspect ratio and centers. Set <code>"none"</code> to stretch (rarely wanted). Set <code>"xMidYMid slice"</code> to crop like CSS <code>object-fit: cover</code>.
+        </div>
+      </section>
+
+      <section id="shapes">
+        <h2><span class="num">4</span> Basic Shapes</h2>
+        <pre><code>&lt;!-- Rectangle --&gt;
+&lt;rect x="10" y="10" width="80" height="50" rx="8"
+      fill="#2563eb" stroke="#1e3a8a" stroke-width="2" /&gt;
+
+&lt;!-- Circle --&gt;
+&lt;circle cx="50" cy="50" r="30" fill="#7c3aed" /&gt;
+
+&lt;!-- Ellipse --&gt;
+&lt;ellipse cx="50" cy="50" rx="40" ry="20" fill="#16a34a" /&gt;
+
+&lt;!-- Line --&gt;
+&lt;line x1="10" y1="90" x2="90" y2="10"
+      stroke="#dc2626" stroke-width="3" stroke-linecap="round" /&gt;
+
+&lt;!-- Polyline (open path) --&gt;
+&lt;polyline points="10,90 30,40 60,60 90,10"
+          fill="none" stroke="#f59e0b" stroke-width="3" /&gt;
+
+&lt;!-- Polygon (closed path) --&gt;
+&lt;polygon points="50,10 90,40 70,90 30,90 10,40"
+         fill="#ec4899" /&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="500" height="160" viewBox="0 0 500 160" role="img" aria-label="SVG basic shapes demo">
+            <rect x="10" y="20" width="80" height="50" rx="8" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+            <circle cx="160" cy="45" r="30" fill="#7c3aed" />
+            <ellipse cx="270" cy="45" rx="40" ry="20" fill="#16a34a" />
+            <line x1="340" y1="70" x2="420" y2="20" stroke="#dc2626" stroke-width="3" stroke-linecap="round" />
+            <polyline points="10,140 60,100 110,120 160,90" fill="none" stroke="#f59e0b" stroke-width="3" />
+            <polygon points="270,90 310,100 295,140 245,140 230,100" fill="#ec4899" />
+          </svg>
+        </div>
+      </section>
+
+      <section id="path">
+        <h2><span class="num">5</span> The <code>&lt;path&gt;</code> Element</h2>
+        <p>The Swiss-army knife of SVG. Its <code>d</code> attribute is a series of commands: <code>M</code> (move), <code>L</code> (line), <code>C</code> (cubic Bézier), <code>Q</code> (quadratic), <code>A</code> (arc), <code>Z</code> (close).</p>
+        <pre><code>&lt;!-- Heart shape using cubic Béziers --&gt;
+&lt;path d="M50,90
+         C 20,60 20,30 35,25
+         C 45,22 50,30 50,35
+         C 50,30 55,22 65,25
+         C 80,30 80,60 50,90 Z"
+      fill="#dc2626" /&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="100" height="100" viewBox="0 0 100 100" role="img" aria-label="Heart shape">
+            <path d="M50,90 C 20,60 20,30 35,25 C 45,22 50,30 50,35 C 50,30 55,22 65,25 C 80,30 80,60 50,90 Z" fill="#dc2626" />
+          </svg>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Command</th><th>Meaning</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>M x y</code></td><td>Move (without drawing)</td><td><code>M50,90</code></td></tr>
+            <tr><td><code>L x y</code></td><td>Line to</td><td><code>L100,100</code></td></tr>
+            <tr><td><code>H x</code> / <code>V y</code></td><td>Horizontal / vertical line</td><td><code>H200 V100</code></td></tr>
+            <tr><td><code>C x1 y1, x2 y2, x y</code></td><td>Cubic Bézier (two control points)</td><td><code>C 20,60 20,30 35,25</code></td></tr>
+            <tr><td><code>Q x1 y1, x y</code></td><td>Quadratic Bézier (one control point)</td><td><code>Q 50,0 50,50</code></td></tr>
+            <tr><td><code>A rx ry rot large-arc sweep x y</code></td><td>Arc</td><td><code>A 25,25 0 0,1 50,25</code></td></tr>
+            <tr><td><code>Z</code></td><td>Close path</td><td><code>Z</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Uppercase commands are absolute; lowercase are relative. <code>M50,90</code> jumps to (50,90); <code>m50,90</code> moves 50 right and 90 down from current position.
+        </div>
+      </section>
+
+      <section id="g">
+        <h2><span class="num">6</span> Grouping with <code>&lt;g&gt;</code></h2>
+        <p><code>&lt;g&gt;</code> groups shapes so you can transform or style them as a unit. Attributes on the group inherit to children.</p>
+        <pre><code>&lt;g transform="translate(50,50) rotate(45)"
+   fill="#2563eb" stroke="#1e3a8a" stroke-width="2"&gt;
+  &lt;rect x="-20" y="-20" width="40" height="40" /&gt;
+  &lt;circle cx="0" cy="0" r="10" fill="#fff" /&gt;
+&lt;/g&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Grouped and rotated shapes">
+            <g transform="translate(60,60) rotate(45)" fill="#2563eb" stroke="#1e3a8a" stroke-width="2">
+              <rect x="-20" y="-20" width="40" height="40" />
+              <circle cx="0" cy="0" r="10" fill="#fff" />
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section id="text">
+        <h2><span class="num">7</span> The <code>&lt;text&gt;</code> Element</h2>
+        <pre><code>&lt;svg viewBox="0 0 200 60" width="200" height="60"&gt;
+  &lt;text x="10" y="40"
+        font-family="sans-serif"
+        font-size="24"
+        font-weight="700"
+        fill="#2563eb"&gt;
+    Hello SVG
+  &lt;/text&gt;
+&lt;/svg&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="200" height="60" viewBox="0 0 200 60" role="img" aria-label="Hello SVG text">
+            <text x="10" y="40" font-family="sans-serif" font-size="24" font-weight="700" fill="#2563eb">Hello SVG</text>
+          </svg>
+        </div>
+        <p>SVG text is real text — selectable, searchable, screen-reader accessible. Better than raster text for logos.</p>
+      </section>
+
+      <section id="defs">
+        <h2><span class="num">8</span> <code>&lt;defs&gt;</code> and <code>&lt;use&gt;</code></h2>
+        <p>Define reusable shapes or gradients in <code>&lt;defs&gt;</code> (not rendered directly), then reference them with <code>&lt;use href="#id"&gt;</code> wherever needed.</p>
+        <pre><code>&lt;svg width="200" height="80" viewBox="0 0 200 80"&gt;
+  &lt;defs&gt;
+    &lt;symbol id="star" viewBox="0 0 24 24"&gt;
+      &lt;polygon points="12,2 15,9 22,9 17,14 19,22 12,18 5,22 7,14 2,9 9,9"
+               fill="currentColor" /&gt;
+    &lt;/symbol&gt;
+  &lt;/defs&gt;
+
+  &lt;use href="#star" x="10"  y="20" width="40" height="40" style="color:#f59e0b" /&gt;
+  &lt;use href="#star" x="80"  y="20" width="40" height="40" style="color:#dc2626" /&gt;
+  &lt;use href="#star" x="150" y="20" width="40" height="40" style="color:#16a34a" /&gt;
+&lt;/svg&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="200" height="60" viewBox="0 0 200 60" role="img" aria-label="Three colored stars using defs and use">
+            <defs>
+              <symbol id="star" viewBox="0 0 24 24">
+                <polygon points="12,2 15,9 22,9 17,14 19,22 12,18 5,22 7,14 2,9 9,9" fill="currentColor" />
+              </symbol>
+            </defs>
+            <use href="#star" x="10"  y="10" width="40" height="40" style="color:#f59e0b" />
+            <use href="#star" x="80"  y="10" width="40" height="40" style="color:#dc2626" />
+            <use href="#star" x="150" y="10" width="40" height="40" style="color:#16a34a" />
+          </svg>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip — icon system pattern</strong>
+          Define all icons as <code>&lt;symbol&gt;</code> in a hidden SVG at the top of the page, then reference each by <code>&lt;use href="#icon-search"&gt;</code> everywhere. One source of truth, infinite re-use, easy theming via <code>currentColor</code>.
+        </div>
+      </section>
+
+      <section id="gradients">
+        <h2><span class="num">9</span> Linear &amp; Radial Gradients</h2>
+        <pre><code>&lt;svg width="300" height="100" viewBox="0 0 300 100"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="lin" x1="0" y1="0" x2="1" y2="0"&gt;
+      &lt;stop offset="0%"  stop-color="#2563eb" /&gt;
+      &lt;stop offset="100%" stop-color="#7c3aed" /&gt;
+    &lt;/linearGradient&gt;
+    &lt;radialGradient id="rad" cx="0.5" cy="0.5" r="0.5"&gt;
+      &lt;stop offset="0%"   stop-color="#fbbf24" /&gt;
+      &lt;stop offset="100%" stop-color="#dc2626" /&gt;
+    &lt;/radialGradient&gt;
+  &lt;/defs&gt;
+
+  &lt;rect x="10"  y="10" width="120" height="80" fill="url(#lin)" rx="8" /&gt;
+  &lt;circle cx="220" cy="50" r="40" fill="url(#rad)" /&gt;
+&lt;/svg&gt;</code></pre>
+        <div class="demo-box">
+          <svg width="300" height="100" viewBox="0 0 300 100" role="img" aria-label="Linear and radial gradient shapes">
+            <defs>
+              <linearGradient id="lin" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#2563eb" />
+                <stop offset="100%" stop-color="#7c3aed" />
+              </linearGradient>
+              <radialGradient id="rad" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stop-color="#fbbf24" />
+                <stop offset="100%" stop-color="#dc2626" />
+              </radialGradient>
+            </defs>
+            <rect x="10"  y="10" width="120" height="80" fill="url(#lin)" rx="8" />
+            <circle cx="220" cy="50" r="40" fill="url(#rad)" />
+          </svg>
+        </div>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">10</span> Real Examples — Icons, Logo, Chart</h2>
+
+        <h3>Icon set (CSS-themable)</h3>
+        <div class="demo-box">
+          <div class="icon-row" style="color: #2563eb;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Home icon">
+              <path d="M3 12 L12 3 L21 12" /><path d="M5 10v11h14V10" />
+            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Search icon">
+              <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" />
+            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Heart icon">
+              <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bell icon">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+          </div>
+        </div>
+
+        <h3>Logo (text + shape)</h3>
+        <div class="demo-box">
+          <svg width="220" height="60" viewBox="0 0 220 60" role="img" aria-label="Acme Inc. logo">
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#2563eb" />
+                <stop offset="100%" stop-color="#7c3aed" />
+              </linearGradient>
+            </defs>
+            <circle cx="30" cy="30" r="22" fill="url(#logo-grad)" />
+            <path d="M20,30 L28,38 L42,22" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="65" y="38" font-family="sans-serif" font-size="22" font-weight="700" fill="#0f172a">Acme Inc.</text>
+          </svg>
+        </div>
+
+        <h3>Bar chart</h3>
+        <div class="demo-box">
+          <svg width="320" height="180" viewBox="0 0 320 180" role="img" aria-labelledby="chart-title">
+            <title id="chart-title">Q3 revenue by month, rising from $1.2M to $1.7M</title>
+            <g font-family="sans-serif" font-size="10" fill="#475569">
+              <text x="20" y="170">Jul</text>
+              <text x="100" y="170">Aug</text>
+              <text x="180" y="170">Sep</text>
+              <text x="260" y="170">Oct</text>
+            </g>
+            <rect x="10"  y="80"  width="60" height="80"  fill="#93c5fd" />
+            <rect x="90"  y="60"  width="60" height="100" fill="#60a5fa" />
+            <rect x="170" y="40"  width="60" height="120" fill="#3b82f6" />
+            <rect x="250" y="20"  width="60" height="140" fill="#1e3a8a" />
+            <g font-family="sans-serif" font-size="10" fill="#0f172a" text-anchor="middle">
+              <text x="40"  y="76">$1.2M</text>
+              <text x="120" y="56">$1.4M</text>
+              <text x="200" y="36">$1.6M</text>
+              <text x="280" y="16">$1.7M</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section id="css">
+        <h2><span class="num">11</span> Styling SVG with CSS</h2>
+        <p>Inline SVG inherits from CSS like any other HTML element. The magic word is <code>currentColor</code> — it tells SVG shapes to inherit text color.</p>
+        <pre><code>/* CSS */
+.icon {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+.icon:hover { color: #7c3aed; }
+
+/* HTML */
+&lt;a href="/" class="nav-link"&gt;
+  &lt;svg class="icon" viewBox="0 0 24 24"&gt;
+    &lt;path d="M3 12 L12 3 L21 12 M5 10v11h14V10" /&gt;
+  &lt;/svg&gt;
+  Home
+&lt;/a&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip — fill vs stroke</strong>
+          Use <code>stroke="currentColor"</code> with <code>fill="none"</code> for outline icons (Feather, Lucide, Heroicons outline). Use <code>fill="currentColor"</code> for filled icons (Material, Font Awesome solid). Don't mix in the same icon set.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">12</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it's bad</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Forgetting <code>viewBox</code></td><td>SVG can't scale responsively</td><td>Always set <code>viewBox</code></td></tr>
+            <tr><td>Hardcoding width/height without viewBox</td><td>Distorts when CSS resizes</td><td>Set viewBox; control render size via CSS</td></tr>
+            <tr><td>Using fixed <code>fill="#xxx"</code> on icons</td><td>Can't theme via CSS</td><td>Use <code>currentColor</code> + <code>color</code> in CSS</td></tr>
+            <tr><td>No <code>&lt;title&gt;</code> or <code>aria-label</code></td><td>Screen readers see nothing</td><td>Add accessibility text</td></tr>
+            <tr><td>Inlining huge SVGs unoptimized</td><td>Bloats HTML, slow first paint</td><td>Run through SVGO; consider external file</td></tr>
+            <tr><td>Using <code>xlink:href</code> on <code>&lt;use&gt;</code></td><td>Deprecated; use plain <code>href</code></td><td>Switch to <code>href</code></td></tr>
+            <tr><td>Skipping <code>xmlns</code> on standalone SVG files</td><td>Renders as XML, not image</td><td>Always include <code>xmlns</code> for .svg files</td></tr>
+            <tr><td>Inkscape/Illustrator export garbage</td><td>Includes <code> sodipodi</code>, <code>inkscape</code> namespaces</td><td>Run SVGO or clean up export</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">13</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Basic shapes</strong>
+          Recreate a smiley face: a yellow circle (face), two small black circles (eyes), and a path for the smile. Use only <code>&lt;circle&gt;</code>, <code>&lt;path&gt;</code>, and <code>fill</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Icon system</strong>
+          Design 4 icons as <code>&lt;symbol&gt;</code> definitions in a hidden SVG at the top of a page. Use each one 3 times with <code>&lt;use&gt;</code> at different sizes and colors via <code>currentColor</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Gradient logo</strong>
+          Build a logo with: a circle filled with a <code>&lt;linearGradient&gt;</code>, an inner shape (checkmark, leaf, lightning bolt) in white, and SVG text next to it. Verify the text is selectable.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — CSS-themable icon button</strong>
+          Build a button with an SVG icon and a text label. The icon should change color on hover using only CSS — set <code>stroke="currentColor"</code> on the path, set <code>color</code> on the button, and change <code>color</code> on <code>:hover</code>.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">14</span> Summary</h2>
+        <ul>
+          <li>Inline SVG = vector graphics embedded directly in HTML — scalable, scriptable, CSS-stylable.</li>
+          <li>Always set <code>viewBox</code>; control rendered size via CSS.</li>
+          <li>Basic shapes: <code>&lt;rect&gt;</code>, <code>&lt;circle&gt;</code>, <code>&lt;ellipse&gt;</code>, <code>&lt;line&gt;</code>, <code>&lt;polyline&gt;</code>, <code>&lt;polygon&gt;</code>.</li>
+          <li><code>&lt;path&gt;</code> with <code>d</code> attribute draws anything — learn M, L, C, Q, A, Z commands.</li>
+          <li><code>&lt;g&gt;</code> groups; <code>&lt;defs&gt;</code> + <code>&lt;use&gt;</code> enable reuse via symbol system.</li>
+          <li>Gradients via <code>&lt;linearGradient&gt;</code> / <code>&lt;radialGradient&gt;</code> with <code>&lt;stop&gt;</code> children.</li>
+          <li>Use <code>currentColor</code> + <code>fill</code>/<code>stroke</code> for CSS-themable icons.</li>
+          <li>Add <code>&lt;title&gt;</code>, <code>&lt;desc&gt;</code>, <code>role="img"</code>, <code>aria-label</code> for accessibility.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>SVG 1.1 since 2001, SVG 2 in progress</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../03-Figures-Captions/code-blocks.html">← Previous: Code Blocks</a>
+      <a href="canvas-basics.html">Next: Canvas Basics →</a>
+    </div>
+    <p>HTML Mastery · Section 4 · Media &amp; Graphics · Inline SVG</p>
+  </footer>
+</body>
+</html>

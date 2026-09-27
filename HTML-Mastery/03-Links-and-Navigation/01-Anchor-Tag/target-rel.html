@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>target &amp; rel Attributes — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML target and rel attributes: _blank, _self, _parent, _top, framename, noopener, noreferrer, nofollow, alternate, author, bookmark, external, help, license, next, prev, search, tag. Security implications of target=_blank.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #dc2626 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #7c3aed 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .frame-demo {
+      border: 2px solid var(--brand); border-radius: 10px;
+      padding: 20px; background: #f0f9ff; min-height: 100px;
+    }
+    .frame-demo::before {
+      content: "iframe: viewer";
+      display: block;
+      font-size: 0.8rem;
+      color: var(--brand);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .demo-link-list a {
+      display: inline-block;
+      margin: 4px 8px 4px 0;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: white !important;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .demo-link-list a:hover { background: var(--brand-2); }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.3 · target &amp; rel</span>
+    <h1><code>target</code> &amp; <code>rel</code> Attributes</h1>
+    <p>Two attributes that quietly control where a link opens, how much info leaks across origins, and how search engines treat the link. Master them — especially the security-critical <code>rel="noopener"</code> — and your links become both safer and more meaningful.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#target">The target Attribute</a></li>
+        <li><a href="#blank">_blank Deep Dive</a></li>
+        <li><a href="#security">Security: Reverse Tabnabbing</a></li>
+        <li><a href="#parent-top">_parent &amp; _top</a></li>
+        <li><a href="#framename">Named Frames</a></li>
+        <li><a href="#rel">The rel Attribute</a></li>
+        <li><a href="#rel-security">rel: Security Tokens</a></li>
+        <li><a href="#rel-seo">rel: SEO Tokens</a></li>
+        <li><a href="#rel-semantic">rel: Semantic Tokens</a></li>
+        <li><a href="#rel-pagination">rel: Pagination</a></li>
+        <li><a href="#combining">Combining target &amp; rel</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="target">
+        <h2><span class="num">1</span> The <code>target</code> Attribute</h2>
+        <p>By default, clicking a link replaces the current page in its own tab/window/frame. The <code>target</code> attribute overrides this — telling the browser which browsing context should display the destination.</p>
+        <p>Five values are defined by the HTML spec:</p>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Behavior</th><th>Common Use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>_self</code> (default)</td><td>Opens in the same tab/frame the link is in.</td><td>Internal navigation, in-page links.</td></tr>
+            <tr><td><code>_blank</code></td><td>Opens in a new tab or window.</td><td>External sites, PDFs, "open in new tab" UX.</td></tr>
+            <tr><td><code>_parent</code></td><td>Opens in the parent browsing context.</td><td>Inside nested iframes — replaces the immediate parent frame.</td></tr>
+            <tr><td><code>_top</code></td><td>Opens in the topmost browsing context (breaks out of ALL frames).</td><td>Frame-busting, anti-clickjacking for trusted links.</td></tr>
+            <tr><td><code>framename</code></td><td>Opens in a window/iframe with a matching <code>name</code>.</td><td>Targeting a specific iframe as a "viewer".</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Same tab (explicit, default behavior) --&gt;
+&lt;a href="/about" target="_self"&gt;About&lt;/a&gt;
+
+&lt;-- New tab — ALWAYS pair with rel="noopener" --&gt;
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;
+  Visit Example
+&lt;/a&gt;
+
+&lt;-- Top of the frame hierarchy (break out of all iframes) --&gt;
+&lt;a href="https://bank.com/login" target="_top"&gt;Login&lt;/a&gt;
+
+&lt;-- Named frame — opens in iframe named "viewer" --&gt;
+&lt;a href="chapter2.html" target="viewer"&gt;Chapter 2&lt;/a&gt;
+&lt;iframe name="viewer" src="chapter1.html" title="Chapter viewer"&gt;&lt;/iframe&gt;</code></pre>
+      </section>
+
+      <section id="blank">
+        <h2><span class="num">2</span> <code>_blank</code> Deep Dive</h2>
+        <p>Opening a link in a new tab is one of the most common UX patterns on the web — but it's also one of the easiest to get wrong. Here's everything you need to know:</p>
+        <h3>When to Use <code>_blank</code></h3>
+        <ul>
+          <li>External websites (keeps the user on your site in the original tab).</li>
+          <li>PDFs and other documents (so users don't lose their place in your content).</li>
+          <li>Auxiliary tools ("Open calculator", "View shipping rates").</li>
+          <li>Print-friendly versions, share dialogs, help articles.</li>
+        </ul>
+        <h3>When NOT to Use <code>_blank</code></h3>
+        <ul>
+          <li>Internal site navigation — users expect "back" to work, and tabs accumulate.</li>
+          <li>Login/logout flows — the new tab won't have the user's session context they expect.</li>
+          <li>Form submission (use POST or a regular navigation, not a new tab).</li>
+          <li>Mobile-first designs where tabs are hidden behind a UI that users may not discover.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Some accessibility experts argue against <code>target="_blank"</code> by default because it removes user control — they can't predict the back button's behavior. Consider letting users opt in with middle-click or Ctrl/Cmd+click instead. If you do use <code>_blank</code>, indicate it visually (icon) and in the link's accessible name.
+        </div>
+        <div class="demo-box">
+          <p>Standard external link with icon:</p>
+          <p>
+            <a href="#" target="_blank" rel="noopener noreferrer" style="color: var(--brand); text-decoration: none;">
+              View on MDN
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -2px;" aria-hidden="true">
+                <path d="M7 17L17 7M17 7H7M17 7v10"/>
+              </svg>
+              <span class="sr-only" style="position:absolute;left:-9999px;">(opens in new tab)</span>
+            </a>
+          </p>
+        </div>
+      </section>
+
+      <section id="security">
+        <h2><span class="num">3</span> Security: Reverse Tabnabbing</h2>
+        <p>When you open a link with <code>target="_blank"</code>, the new page gets a reference to the original tab via <code>window.opener</code>. A malicious page can use this to redirect your tab to a phishing URL — a known attack called <em>reverse tabnabbing</em>.</p>
+        <pre><code>// On the destination page (the attacker's site):
+if (window.opener) {
+  window.opener.location = 'https://evil-login-page-that-looks-like-yours.com';
+}
+// User switches back to "your" tab, sees a fake login page, types password.</code></pre>
+        <h3>The Fix: <code>rel="noopener"</code></h3>
+        <p>Adding <code>rel="noopener"</code> severs the <code>window.opener</code> reference. The new tab can no longer manipulate yours.</p>
+        <pre><code>&lt;!-- ✅ Safe — no window.opener access granted --&gt;
+&lt;a href="https://untrusted-site.com" target="_blank" rel="noopener"&gt;
+  Visit untrusted site
+&lt;/a&gt;</code></pre>
+        <h3>Browser Defaults Have Caught Up</h3>
+        <p>Since 2019-2021, all major browsers (Chrome 88+, Firefox 79+, Safari 12.1+, Edge 88+) default to <code>noopener</code> behavior for <code>target="_blank"</code> links to cross-origin destinations. But you should still be explicit:</p>
+        <ul>
+          <li>Older browsers don't have the protection.</li>
+          <li>Same-origin links (<code>target="_blank"</code> within your own site) are not protected.</li>
+          <li>It's a documentation signal — explicit <code>rel="noopener"</code> tells future maintainers "this is intentional".</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake — Forgetting noreferrer</strong>
+          <code>rel="noopener"</code> blocks <code>window.opener</code> access, but the new page still sees the <em>Referer</em> header. If your URL contains sensitive tokens in the path (e.g., <code>/reset-password/abc123</code>), add <code>rel="noopener noreferrer"</code> to also suppress the referrer.
+        </div>
+      </section>
+
+      <section id="parent-top">
+        <h2><span class="num">4</span> <code>_parent</code> &amp; <code>_top</code></h2>
+        <p>These two values matter only when the current page is inside an iframe. They control how far "up" the frame hierarchy the navigation propagates.</p>
+        <pre><code>&lt;!-- Outer page: index.html --&gt;
+&lt;iframe name="outer" src="outer.html"&gt;&lt;/iframe&gt;
+
+&lt;-- outer.html --&gt;
+&lt;iframe name="inner" src="inner.html"&gt;&lt;/iframe&gt;
+
+&lt;-- inner.html — link is here --&gt;
+&lt;a href="page.html" target="_self"&gt;    &lt;!-- Replaces inner.html only --&gt;
+&lt;a href="page.html" target="_parent"&gt;  &lt;!-- Replaces outer.html only --&gt;
+&lt;a href="page.html" target="_top"&gt;     &lt;!-- Replaces the whole index.html tab --&gt;
+&lt;a href="page.html" target="outer"&gt;    &lt;!-- Same as _parent in this case --&gt;</code></pre>
+        <h3>Modern Use: <code>_top</code> for Frame-Busting</h3>
+        <p>Clickjacking attacks embed your site in a malicious iframe to capture clicks. If your site detects being framed, you can force a top-level navigation:</p>
+        <pre><code>// JavaScript frame-busting
+if (window.top !== window.self) {
+  window.top.location = '/login?framed=true';
+}</code></pre>
+        <p>HTML can also help: links that <em>must</em> open at the top level (like "Login") should use <code>target="_top"</code>.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Modern frame-busting prefers the <code>X-Frame-Options</code> HTTP header (<code>DENY</code> or <code>SAMEORIGIN</code>) or the <code>Content-Security-Policy: frame-ancestors 'none'</code> directive. Use these over HTML-level tricks — they're enforced before any HTML loads.
+        </div>
+      </section>
+
+      <section id="framename">
+        <h2><span class="num">5</span> Named Frames</h2>
+        <p>You can target any iframe or window with a matching <code>name</code>. This is how master-detail layouts worked before SPA frameworks, and it's still useful for embedded document viewers.</p>
+        <pre><code>&lt;!-- A "table of contents" on the left, content on the right --&gt;
+&lt;nav style="float:left; width:200px;"&gt;
+  &lt;a href="ch1.html" target="viewer"&gt;Chapter 1&lt;/a&gt;
+  &lt;a href="ch2.html" target="viewer"&gt;Chapter 2&lt;/a&gt;
+  &lt;a href="ch3.html" target="viewer"&gt;Chapter 3&lt;/a&gt;
+&lt;/nav&gt;
+&lt;iframe name="viewer" src="ch1.html" style="width: 80%; height: 600px;"
+        title="Chapter viewer"&gt;&lt;/iframe&gt;</code></pre>
+        <div class="demo-box">
+          <p>Live demo:</p>
+          <div style="display: grid; grid-template-columns: 180px 1fr; gap: 16px;">
+            <nav style="display: flex; flex-direction: column; gap: 6px;">
+              <a href="https://en.wikipedia.org/wiki/HTML" target="demo-viewer" rel="noopener" style="color: var(--brand); text-decoration: none; padding: 6px 10px; border-radius: 6px; background: #eef2ff;">Wikipedia: HTML</a>
+              <a href="https://en.wikipedia.org/wiki/HTTP" target="demo-viewer" rel="noopener" style="color: var(--brand); text-decoration: none; padding: 6px 10px; border-radius: 6px; background: #eef2ff;">Wikipedia: HTTP</a>
+              <a href="https://en.wikipedia.org/wiki/URL" target="demo-viewer" rel="noopener" style="color: var(--brand); text-decoration: none; padding: 6px 10px; border-radius: 6px; background: #eef2ff;">Wikipedia: URL</a>
+            </nav>
+            <iframe name="demo-viewer" src="about:blank" title="Demo viewer" style="border: 1px solid var(--line); border-radius: 8px; height: 240px; background: white;"></iframe>
+          </div>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          If the named target doesn't exist, browsers create a new tab/window with that name — which can be confusing. Always verify your <code>&lt;iframe name="..."&gt;</code> matches the <code>target="..."</code> value.
+        </div>
+      </section>
+
+      <section id="rel">
+        <h2><span class="num">6</span> The <code>rel</code> Attribute</h2>
+        <p><code>rel</code> (short for "relationship") is a space-separated list of tokens describing how the linked resource relates to the current document. The tokens serve three purposes:</p>
+        <ul>
+          <li><strong>Security</strong> — control cross-origin behavior.</li>
+          <li><strong>SEO</strong> — tell search engines how to treat the link.</li>
+          <li><strong>Semantics</strong> — describe the link's role (author, license, help, etc.).</li>
+        </ul>
+        <p>There are over 20 recognized tokens. Below, we'll group them by purpose.</p>
+      </section>
+
+      <section id="rel-security">
+        <h2><span class="num">7</span> <code>rel</code>: Security Tokens</h2>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Effect</th><th>Required For</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>noopener</code></td><td>Severs <code>window.opener</code> reference; new tab can't manipulate yours.</td><td>Any <code>target="_blank"</code> link to external content.</td></tr>
+            <tr><td><code>noreferrer</code></td><td>Suppresses the <code>Referer</code> HTTP header. Implies <code>noopener</code>.</td><td>Links that shouldn't leak the source URL.</td></tr>
+            <tr><td><code>opener</code></td><td>Re-enables <code>window.opener</code> when browsers default to <code>noopener</code>.</td><td>Rare — when you explicitly want opener access.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Safe external link — no opener, no referrer --&gt;
+&lt;a href="https://external.com" target="_blank" rel="noopener noreferrer"&gt;
+  Visit external site
+&lt;/a&gt;
+
+&lt;-- If you NEED window.opener access (rare) --&gt;
+&lt;a href="auth-callback.html" target="_blank" rel="opener"&gt;
+  Continue authentication
+&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="rel-seo">
+        <h2><span class="num">8</span> <code>rel</code>: SEO Tokens</h2>
+        <p>Google, Bing, and other engines use these tokens to decide whether to "follow" a link for ranking purposes.</p>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Effect</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>nofollow</code></td><td>Don't pass PageRank; don't crawl destination.</td><td>Untrusted links, paid placements, comment sections (pre-2019 catch-all).</td></tr>
+            <tr><td><code>sponsored</code></td><td>Paid placement (ads, sponsorships).</td><td>Affiliate links, sponsored posts.</td></tr>
+            <tr><td><code>ugc</code></td><td>User-generated content.</td><td>Forum signatures, comment links, wiki edits.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Paid/sponsored ad --&gt;
+&lt;a href="https://sponsor.example.com" rel="sponsored nofollow"&gt;
+  Sponsored deal
+&lt;/a&gt;
+
+&lt;-- User-submitted comment link --&gt;
+&lt;a href="https://user-blog.example.com" rel="ugc nofollow"&gt;
+  User's blog
+&lt;/a&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip — Combine Tokens</strong>
+          Google treats <code>sponsored</code> and <code>ugc</code> as <em>hints</em> — they imply "no follow" but don't strictly enforce it. Add <code>nofollow</code> as well for older crawlers and maximum clarity: <code>rel="sponsored nofollow"</code>.
+        </div>
+      </section>
+
+      <section id="rel-semantic">
+        <h2><span class="num">9</span> <code>rel</code>: Semantic Tokens</h2>
+        <p>These describe the relationship between documents. Browsers and assistive tech may use them; search engines certainly do.</p>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Meaning</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>alternate</code></td><td>Alternative version: translation, RSS, PDF, print.</td><td>RSS feed discovery: <code>&lt;link rel="alternate" type="application/rss+xml"&gt;</code></td></tr>
+            <tr><td><code>author</code></td><td>Link to the document's author.</td><td><code>&lt;a rel="author" href="/users/jane"&gt;Jane Doe&lt;/a&gt;</code></td></tr>
+            <tr><td><code>bookmark</code></td><td>Permalink for the nearest ancestor section.</td><td>Blog post permalinks.</td></tr>
+            <tr><td><code>external</code></td><td>Links to an external site.</td><td>Often styled with icon: ↗</td></tr>
+            <tr><td><code>help</code></td><td>Context-sensitive help.</td><td>Form field tooltips.</td></tr>
+            <tr><td><code>license</code></td><td>Copyright/license for current content.</td><td>CC BY-SA links on Wikipedia.</td></tr>
+            <tr><td><code>tag</code></td><td>Tag/keyword for current content.</td><td>Blog tag clouds.</td></tr>
+            <tr><td><code>search</code></td><td>Search link/resource.</td><td>Often paired with OpenSearch description.</td></tr>
+            <tr><td><code>prefetch</code></td><td>Hint to fetch the resource in idle time.</td><td>Next likely navigation.</td></tr>
+            <tr><td><code>preload</code></td><td>High-priority fetch for current page.</td><td>Critical fonts, CSS, hero images.</td></tr>
+            <tr><td><code>preconnect</code></td><td>Pre-warm the connection (DNS+TCP+TLS).</td><td>Third-party origins you'll fetch from.</td></tr>
+            <tr><td><code>dns-prefetch</code></td><td>Resolve DNS for an origin.</td><td>Lower-priority origins.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Author byline --&gt;
+&lt;a href="/authors/jane-doe" rel="author"&gt;Jane Doe&lt;/a&gt;
+
+&lt;-- License --&gt;
+&lt;a href="https://creativecommons.org/licenses/by/4.0/" rel="license"&gt;CC BY 4.0&lt;/a&gt;
+
+&lt;-- External link --&gt;
+&lt;a href="https://news.ycombinator.com" rel="external"&gt;Hacker News ↗&lt;/a&gt;
+
+&lt;-- Help --&gt;
+&lt;a href="/help/password-reset" rel="help"&gt;How to reset your password&lt;/a&gt;
+
+&lt;-- Tag --&gt;
+&lt;a href="/tags/css" rel="tag"&gt;CSS&lt;/a&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip — Style external links automatically</strong>
+          CSS attribute selectors + <code>rel="external"</code> can add an icon to all external links automatically:
+          <code>a[rel~="external"]::after { content: " ↗"; color: var(--brand); }</code>
+        </div>
+      </section>
+
+      <section id="rel-pagination">
+        <h2><span class="num">10</span> <code>rel</code>: Pagination (<code>next</code> &amp; <code>prev</code>)</h2>
+        <p>For paginated content (article series, search results, product lists), <code>rel="next"</code> and <code>rel="prev"</code> tell search engines the canonical order — and they help browsers pre-fetch the next page.</p>
+        <pre><code>&lt;!-- On page 2 of an article --&gt;
+&lt;a href="/article?page=1" rel="prev"&gt;← Previous&lt;/a&gt;
+&lt;a href="/article?page=3" rel="next"&gt;Next →&lt;/a&gt;
+
+&lt;-- In the &lt;head&gt; for SEO (preferred) --&gt;
+&lt;link rel="prev" href="/article?page=1"&gt;
+&lt;link rel="next" href="/article?page=3"&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Google deprecated using <code>rel="next"</code>/<code>rel="prev"</code> in the <code>&lt;head&gt;</code> for SEO in 2019. It still helps browsers and screen readers understand the relationship, so it's not useless — but don't expect a ranking boost.
+        </div>
+      </section>
+
+      <section id="combining">
+        <h2><span class="num">11</span> Combining <code>target</code> &amp; <code>rel</code></h2>
+        <p>The two attributes are independent but commonly used together. Here's a decision matrix:</p>
+        <table>
+          <thead>
+            <tr><th>Scenario</th><th>target</th><th>rel</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Internal navigation, same tab</td><td>(omit) or <code>_self</code></td><td>(omit)</td></tr>
+            <tr><td>External site, new tab</td><td><code>_blank</code></td><td><code>noopener noreferrer external</code></td></tr>
+            <tr><td>Sponsored external link</td><td><code>_blank</code></td><td><code>noopener noreferrer sponsored nofollow</code></td></tr>
+            <tr><td>PDF download in new tab</td><td><code>_blank</code></td><td><code>noopener</code></td></tr>
+            <tr><td>Internal anchor link</td><td>(omit)</td><td>(omit)</td></tr>
+            <tr><td>Help link in modal</td><td>(omit)</td><td><code>help</code></td></tr>
+            <tr><td>Author byline</td><td>(omit)</td><td><code>author</code></td></tr>
+            <tr><td>License link in footer</td><td>(omit)</td><td><code>license</code></td></tr>
+            <tr><td>Pagination next</td><td>(omit)</td><td><code>next</code></td></tr>
+            <tr><td>Breadcrumb parent</td><td>(omit)</td><td>(omit) — use structured data instead</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- The "production-ready external link" --&gt;
+&lt;a href="https://external.com/page"
+   target="_blank"
+   rel="noopener noreferrer external"
+   aria-label="Visit External.com (opens in new tab)"&gt;
+  Visit External.com
+&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Fix the Security Hole</strong>
+          This code has a tabnabbing vulnerability. Identify the problem and fix it:
+          <pre style="margin-top: 10px;"><code>&lt;a href="https://untrusted.example.com" target="_blank"&gt;
+  Click for free stuff
+&lt;/a&gt;</code></pre>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Author byline</strong>
+          Write an author link to <code>/authors/jane-doe</code> with the correct <code>rel</code> token. Style it as a small byline beneath an article title.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Pagination</strong>
+          Build a 3-link pagination control: "← Previous", "1 (current)", "Next →". Apply <code>rel="prev"</code> and <code>rel="next"</code> correctly. Skip the <code>prev</code> link on page 1 and <code>next</code> on the last page.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Sponsored + External</strong>
+          A blog post includes an affiliate link to "BuyWidget Pro". Mark it correctly for both Google SEO and UX (external indicator).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — iframe Target</strong>
+          Build a master-detail layout: a list of three Wikipedia links on the left, an iframe named "viewer" on the right. Make each link target the iframe. Add <code>noopener</code> for security.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">13</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>target="_blank"</code> without <code>rel="noopener"</code></td><td>Reverse tabnabbing attack surface (older browsers).</td><td>Always add <code>rel="noopener noreferrer"</code>.</td></tr>
+            <tr><td><code>target="_blank"</code> for internal links</td><td>Breaks "back" button UX, accumulates tabs.</td><td>Reserve for external/auxiliary resources.</td></tr>
+            <tr><td>No indication of new-tab behavior</td><td>Screen reader users surprised by tab switch.</td><td>Add <code>aria-label="... (opens in new tab)"</code> or a visible icon.</td></tr>
+            <tr><td>Using <code>rel="nofollow"</code> everywhere</td><td>Over-suppression kills legitimate link equity.</td><td>Use only for untrusted/paid/UGC links.</td></tr>
+            <tr><td>Missing <code>rel="license"</code> on CC content</td><td>License unclear; legal risk.</td><td>Always mark license links explicitly.</td></tr>
+            <tr><td>Confusing <code>sponsored</code> with <code>nofollow</code></td><td>Google treats them differently as hints.</td><td>Use both: <code>rel="sponsored nofollow"</code>.</td></tr>
+            <tr><td>Using <code>target="framename"</code> without matching iframe</td><td>Opens a new window named "framename" — confusing.</td><td>Verify the iframe's <code>name</code> matches.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">14</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>External "Read More"</h4>
+            <p>Article references with <code>target="_blank" rel="noopener noreferrer external"</code> — keeps readers on your site while citing sources.</p>
+          </div>
+          <div class="card">
+            <h4>Affiliate Marketing</h4>
+            <p>Every affiliate link gets <code>rel="sponsored nofollow"</code> — required by Google guidelines and FTC disclosure rules.</p>
+          </div>
+          <div class="card">
+            <h4>Comment Systems</h4>
+            <p>WordPress, Disqus, Reddit auto-add <code>rel="ugc nofollow"</code> to user-submitted links — preserving page rank.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation Sites</h4>
+            <p>"Edit on GitHub" / "View source" / "Report issue" links all use <code>target="_blank" rel="noopener"</code>.</p>
+          </div>
+          <div class="card">
+            <h4>License Footers</h4>
+            <p>Wikipedia, Creative Commons, MIT-licensed docs all use <code>rel="license"</code> to clarify licensing.</p>
+          </div>
+          <div class="card">
+            <h4>Author Bio Links</h4>
+            <p>Blog platforms auto-add <code>rel="author"</code> to author names — historically used for Google Authorship (deprecated, but still useful semantically).</p>
+          </div>
+          <div class="card">
+            <h4>Search Boxes</h4>
+            <p><code>&lt;link rel="search" type="application/opensearchdescription+xml"&gt;</code> in <code>&lt;head&gt;</code> lets browsers add your site to the search bar.</p>
+          </div>
+          <div class="card">
+            <h4>RSS Auto-Discovery</h4>
+            <p><code>&lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</code> — enables the RSS icon in browser address bars.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">15</span> Summary</h2>
+        <ul>
+          <li><code>target</code> has 5 values: <code>_self</code>, <code>_blank</code>, <code>_parent</code>, <code>_top</code>, <code>framename</code>.</li>
+          <li><code>target="_blank"</code> opens a new tab — always pair with <code>rel="noopener noreferrer"</code>.</li>
+          <li>Reverse tabnabbing: without <code>rel="noopener"</code>, the new tab can manipulate your tab via <code>window.opener</code>.</li>
+          <li><code>_parent</code> affects one frame up; <code>_top</code> breaks out of all frames.</li>
+          <li><code>rel</code> tokens: security (<code>noopener</code>, <code>noreferrer</code>), SEO (<code>nofollow</code>, <code>sponsored</code>, <code>ugc</code>), semantic (<code>author</code>, <code>license</code>, <code>help</code>, <code>tag</code>, <code>search</code>, <code>alternate</code>, <code>external</code>).</li>
+          <li>Pagination uses <code>rel="next"</code> and <code>rel="prev"</code> for document ordering (mostly UX now).</li>
+          <li>Combine tokens freely: <code>rel="noopener noreferrer external sponsored nofollow"</code>.</li>
+          <li>For same-site navigation, omit both <code>target</code> and <code>rel</code> — defaults are correct.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>HTML Living Standard</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="href-attribute.html">← Previous: href Attribute</a>
+      <a href="../02-URL-Types/absolute-relative.html">Next: Absolute vs Relative URLs →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · target &amp; rel</p>
+  </footer>
+</body>
+</html>

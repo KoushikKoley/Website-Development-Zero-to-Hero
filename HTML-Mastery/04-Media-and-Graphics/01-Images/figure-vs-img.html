@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figure vs Img — HTML Mastery</title>
+  <meta name="description" content="When to use figure vs standalone img: figure with caption, related content groups, multiple images in one figure, code listings as figures, when NOT to use figure, and the figcaption element.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box figure { margin: 0; }
+    .demo-box figure img {
+      display: block; width: 100%; max-width: 600px;
+      margin: 0 auto; border-radius: 8px;
+      background: linear-gradient(135deg,#dbeafe,#ede9fe);
+      aspect-ratio: 16 / 10; min-height: 200px;
+    }
+    .demo-box figcaption {
+      text-align: center; font-size: 0.92rem; color: var(--ink-soft);
+      margin-top: 10px; font-style: italic;
+    }
+    .support {
+      margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--ink-soft);
+    }
+    .support span {
+      background: #f1f5f9; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    footer {
+      background: #0f172a; color: #cbd5e1;
+      padding: 24px; text-align: center;
+    }
+    footer .nav {
+      max-width: 1200px; margin: 0 auto 12px;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    footer a { color: #93c5fd; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 4 · Media &amp; Graphics</span>
+    <h1>Figure vs <code>&lt;img&gt;</code> — When &amp; Why</h1>
+    <p>Plain <code>&lt;img&gt;</code> is for inline content. <code>&lt;figure&gt;</code> wraps self-contained media with an optional <code>&lt;figcaption&gt;</code>. Knowing which to reach for is one of the most useful semantic decisions in HTML.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What is a figure?</a></li>
+        <li><a href="#when">When to use figure</a></li>
+        <li><a href="#figcaption">The figcaption element</a></li>
+        <li><a href="#multiple">Multiple images in one figure</a></li>
+        <li><a href="#code-listings">Code listings as figures</a></li>
+        <li><a href="#not-figure">When NOT to use figure</a></li>
+        <li><a href="#positioning">Positioning the caption</a></li>
+        <li><a href="#semantics-recap">Quick semantics recap</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercise">Try it yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is a Figure?</h2>
+        <p>The HTML spec calls <code>&lt;figure&gt;</code> a unit of <strong>self-contained content</strong>, often with a caption, that is <strong>referenced from the main flow</strong> of the document but could be moved away without breaking the narrative.</p>
+        <p>Think of a magazine article: the paragraphs flow, and figures (photos, charts, sidebars) can be lifted to a different page or column without losing meaning. That's exactly the semantic of <code>&lt;figure&gt;</code>.</p>
+        <pre><code>&lt;figure&gt;
+  &lt;img src="chart-q3.png" alt="Q3 revenue rose 42% to $1.7M"
+       width="800" height="500" loading="lazy"&gt;
+  &lt;figcaption&gt;Figure 1: Q3 2024 revenue by week.&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+        <div class="demo-box">
+          <figure>
+            <img src="data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'&gt;&lt;rect width='800' height='500' fill='%23dbeafe'/&gt;&lt;text x='400' y='260' font-size='32' fill='%234338ca' text-anchor='middle' font-family='sans-serif'&gt;chart-q3.png&lt;/text&gt;&lt;/svg&gt;" alt="Q3 revenue rose 42% to $1.7M">
+            <figcaption>Figure 1: Q3 2024 revenue by week.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="when">
+        <h2><span class="num">2</span> When to Use Figure</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Use figure when…</h4>
+            <p>The content is referenced from the surrounding text ("see Figure 1 below"), is self-contained, and would still make sense if moved to an appendix or sidebar.</p>
+          </div>
+          <div class="card">
+            <h4>Use plain img when…</h4>
+            <p>The image is part of a sentence flow (a logo, an inline icon, a decorative bullet), or is the main visual of the page (like a hero image) and doesn't need a caption.</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Pattern</th><th>Choose</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Photo with caption in an article</td><td><code>&lt;figure&gt;</code></td><td>Caption semantically tied to image</td></tr>
+            <tr><td>Chart referenced as "Figure 2"</td><td><code>&lt;figure&gt;</code></td><td>Numbering + caption together</td></tr>
+            <tr><td>Hero image at top of a landing page</td><td>Plain <code>&lt;img&gt;</code></td><td>Not referenced; is the content</td></tr>
+            <tr><td>Logo in the header</td><td>Plain <code>&lt;img&gt;</code></td><td>Decorative/branding, no caption</td></tr>
+            <tr><td>Avatar next to a comment</td><td>Plain <code>&lt;img&gt;</code></td><td>Inline, no caption needed</td></tr>
+            <tr><td>Photo gallery thumbnail grid</td><td>Plain <code>&lt;img&gt;</code> in links</td><td>Each thumb links somewhere; caption is the link</td></tr>
+            <tr><td>Article pull-quote</td><td><code>&lt;figure&gt;</code> + <code>&lt;blockquote&gt;</code></td><td>Self-contained; can be moved</td></tr>
+            <tr><td>Sidebar testimonial card</td><td><code>&lt;figure&gt;</code></td><td>Self-contained, captioned author</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="figcaption">
+        <h2><span class="num">3</span> The <code>&lt;figcaption&gt;</code> Element</h2>
+        <p><code>&lt;figcaption&gt;</code> is the only valid caption child of <code>&lt;figure&gt;</code>. It can come first or last in the figure — convention is to put it last for images and first for code listings or blockquotes.</p>
+        <pre><code>&lt;figure&gt;
+  &lt;img src="chart.png" alt="..."&gt;
+  &lt;figcaption&gt;
+    &lt;strong&gt;Figure 3.&lt;/strong&gt; Weekly active users by region,
+    Q4 2024. Source: &lt;a href="/analytics"&gt;internal dashboard&lt;/a&gt;.
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+        <p>You can include rich content in a <code>&lt;figcaption&gt;</code>: links, citations (<code>&lt;cite&gt;</code>), source attributions, even small data tables. Keep it concise — it's a caption, not an essay.</p>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          The <code>&lt;figcaption&gt;</code> should not duplicate the <code>alt</code> text on the image. Write alt for screen-reader users who can't see the image; write the caption for sighted users who need context.
+        </div>
+      </section>
+
+      <section id="multiple">
+        <h2><span class="num">4</span> Multiple Images in One Figure</h2>
+        <p>A single <code>&lt;figure&gt;</code> can contain multiple images. This is great for "before/after" comparisons, photo series, or step-by-step tutorials where the caption describes the group.</p>
+        <pre><code>&lt;figure&gt;
+  &lt;img src="before.jpg" alt="Untidy desk before organizing"&gt;
+  &lt;img src="after.jpg"  alt="Same desk after organizing"&gt;
+  &lt;figcaption&gt;
+    Figure 4: The author's desk before and after applying
+    the KonMari method.
+  &lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+        <p>CSS to display side-by-side:</p>
+        <pre><code>figure { display: flex; gap: 16px; flex-wrap: wrap; }
+figure img { flex: 1 1 45%; min-width: 200px; }
+figcaption { flex-basis: 100%; text-align: center; }</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Each image still needs its own <code>alt</code>. If you only write one caption, the individual alts become even more important — they describe each image to non-sighted users.
+        </div>
+      </section>
+
+      <section id="code-listings">
+        <h2><span class="num">5</span> Code Listings as Figures</h2>
+        <p>A code listing with a caption is a perfect use of <code>&lt;figure&gt;</code>. Pair <code>&lt;pre&gt;&lt;code&gt;</code> inside <code>&lt;figure&gt;</code>, with <code>&lt;figcaption&gt;</code> above.</p>
+        <pre><code>&lt;figure&gt;
+  &lt;figcaption&gt;&lt;strong&gt;Listing 1.&lt;/strong&gt; A basic HTTP server in Node.js.&lt;/figcaption&gt;
+  &lt;pre&gt;&lt;code class="language-js"&gt;const http = require('http');
+const server = http.createServer((req, res) =&gt; {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello, world!');
+});
+server.listen(3000);&lt;/code&gt;&lt;/pre&gt;
+&lt;/figure&gt;</code></pre>
+        <p>The same pattern works for tables, equations (in MathML), video clips, audio samples, and SVG illustrations — anything that is self-contained and benefits from a label.</p>
+      </section>
+
+      <section id="not-figure">
+        <h2><span class="num">6</span> When NOT to Use Figure</h2>
+        <table>
+          <thead>
+            <tr><th>Don't use figure for…</th><th>Use instead</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>An inline image in the middle of a sentence</td><td>Plain <code>&lt;img&gt;</code></td><td>Figure is block-level; would break the paragraph</td></tr>
+            <tr><td>A decorative background image</td><td>CSS <code>background-image</code></td><td>Not content, just styling</td></tr>
+            <tr><td>A logo in a navigation bar</td><td>Plain <code>&lt;img&gt;</code></td><td>Not referenced; branding element</td></tr>
+            <tr><td>An image that <em>is</em> the article (photo essay)</td><td><code>&lt;article&gt;</code> with <code>&lt;img&gt;</code></td><td>It's primary content, not supplementary</td></tr>
+            <tr><td>A pull-quote that duplicates surrounding text</td><td>Plain <code>&lt;blockquote&gt;</code> with <code>aria-hidden</code></td><td>Not self-contained — duplicates content</td></tr>
+            <tr><td>A decorative icon next to a button label</td><td>Inline SVG or plain <code>&lt;img alt=""&gt;</code></td><td>Captioned figure makes no sense for an icon</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Wrapping every image in <code>&lt;figure&gt;</code> "for semantics". This actually <em>removes</em> semantics — a figure implies the image is self-contained and referenced. If it's not, plain <code>&lt;img&gt;</code> is more honest.
+        </div>
+      </section>
+
+      <section id="positioning">
+        <h2><span class="num">7</span> Positioning the Caption</h2>
+        <p><code>&lt;figcaption&gt;</code> can be the first or last child of <code>&lt;figure&gt;</code>. By default it renders where you put it. Common patterns:</p>
+        <pre><code>/* Caption below image (default) */
+figure { margin: 0; }
+figure img { display: block; width: 100%; }
+figure figcaption { padding: 10px 0; font-size: 0.9rem; color: #555; }
+
+/* Caption overlaid on image */
+figure { position: relative; }
+figure figcaption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.6); color: white;
+  padding: 12px; margin: 0;
+}
+
+/* Caption above (great for code listings) */
+figure figcaption { margin-bottom: 10px; font-weight: 600; }
+figure pre { margin-top: 0; }</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          For numbered figures ("Figure 1", "Figure 2"), use CSS counters so the numbering updates automatically — no manual renumbering when you insert a new figure mid-article.
+        </div>
+        <pre><code>body { counter-reset: fig; }
+figure &gt; figcaption::before {
+  counter-increment: fig;
+  content: "Figure " counter(fig) ": ";
+  font-weight: 700;
+  color: var(--brand);
+}</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it's bad</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>&lt;figure&gt;</code> for every image</td><td>Implies self-containment that doesn't exist</td><td>Use only when referenced/captioned</td></tr>
+            <tr><td>Multiple <code>&lt;figcaption&gt;</code> in one figure</td><td>Invalid HTML — only one allowed</td><td>Combine into one caption</td></tr>
+            <tr><td>Putting <code>&lt;figcaption&gt;</code> outside <code>&lt;figure&gt;</code></td><td>Invalid; orphan caption</td><td>Always nest inside figure</td></tr>
+            <tr><td>Repeating alt text verbatim in caption</td><td>Redundant for screen readers</td><td>alt = what; caption = context</td></tr>
+            <tr><td>Using <code>&lt;figure&gt;</code> for an inline icon</td><td>Forces block layout, breaks text flow</td><td>Inline SVG or <code>&lt;img&gt;</code></td></tr>
+            <tr><td>Skipping <code>&lt;figcaption&gt;</code> entirely</td><td>Loses the whole point of figure</td><td>Add a brief caption</td></tr>
+            <tr><td>Numbering figures manually</td><td>Painful to renumber after edits</td><td>Use CSS counters</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="semantics-recap">
+        <h2><span class="num">8</span> Quick Semantics Recap</h2>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Role</th><th>Common content</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;figure&gt;</code></td><td>Self-contained content unit</td><td>Image, code, table, blockquote, video</td></tr>
+            <tr><td><code>&lt;figcaption&gt;</code></td><td>Figure caption (one per figure)</td><td>Label, description, attribution</td></tr>
+            <tr><td><code>&lt;img&gt;</code> (in figure)</td><td>The visual content</td><td>Always set <code>alt</code>, <code>width</code>, <code>height</code></td></tr>
+            <tr><td><code>&lt;pre&gt;&lt;code&gt;</code> (in figure)</td><td>Code listing content</td><td>Wrap code; escape entities</td></tr>
+            <tr><td><code>&lt;blockquote&gt;</code> (in figure)</td><td>Quoted text</td><td>Always wrap text in <code>&lt;p&gt;</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip — combining elements</strong>
+          A figure can contain a mix: an image, then a code snippet, then a paragraph — as long as the whole is self-contained and the caption labels them as a unit. Don't overdo this; one content type per figure is usually cleaner.
+        </div>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Captioned photo</strong>
+          Find a photo. Wrap it in <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code>. Write alt text describing the image and a caption describing its context (e.g. "Figure 1: Sunset from the Eiffel Tower, July 2024.").
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Before/after gallery</strong>
+          Create a <code>&lt;figure&gt;</code> with two images side-by-side. Use CSS flex to lay them out. Write a single caption describing both. Give each image its own alt.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Code listing</strong>
+          Write a <code>&lt;figure&gt;</code> containing a <code>&lt;figcaption&gt;</code> ("Listing 1: Hello world in Python.") followed by a <code>&lt;pre&gt;&lt;code&gt;</code> block. Make the caption bold and blue.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Auto-numbered figures</strong>
+          Add 3 figures to a page. Use CSS counters to auto-number them as "Figure 1", "Figure 2", "Figure 3". Insert a new figure in the middle and confirm the numbering shifts correctly.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">11</span> Summary</h2>
+        <ul>
+          <li><code>&lt;figure&gt;</code> = self-contained content, referenced from main flow, often captioned.</li>
+          <li><code>&lt;figcaption&gt;</code> = the caption, must be the first or last child of <code>&lt;figure&gt;</code>.</li>
+          <li>Use <code>&lt;figure&gt;</code> for captioned photos, charts, code listings, pull-quotes, testimonials.</li>
+          <li>Use plain <code>&lt;img&gt;</code> for inline images, logos, avatars, hero shots.</li>
+          <li>One <code>&lt;figcaption&gt;</code> per figure; multiple images are fine inside one figure.</li>
+          <li>Don't repeat alt text in the caption — they serve different audiences.</li>
+          <li>Use CSS counters to auto-number "Figure N" sequences.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 5 (2014)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="responsive-images.html">← Previous: Responsive Images</a>
+      <a href="../02-Audio-Video/audio.html">Next: Audio →</a>
+    </div>
+    <p>HTML Mastery · Section 4 · Media &amp; Graphics · Figure vs Img</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>data-* Attributes — HTML Mastery</title>
+  <meta name="description" content="The complete guide to HTML data-* attributes: why use them, naming conventions, reading and writing via JavaScript, and real-world patterns like tooltips, analytics, and state.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.4 · Attributes</span>
+    <h1>The <code>data-*</code> Attributes</h1>
+    <p>The official HTML escape hatch for attaching custom data to elements — read and written by JavaScript, ignored by the browser, infinitely flexible.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Are data-* Attributes?</a></li>
+        <li><a href="#why">Why Use Them?</a></li>
+        <li><a href="#naming">Naming Conventions</a></li>
+        <li><a href="#reading">Reading via JavaScript</a></li>
+        <li><a href="#writing">Writing via JavaScript</a></li>
+        <li><a href="#dataset">The dataset API</a></li>
+        <li><a href="#css">Styling with data Attributes</a></li>
+        <li><a href="#patterns">Real-World Patterns</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#rules">Rules Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Are data-* Attributes?</h2>
+        <p>Any attribute whose name begins with <code>data-</code> is treated as a <strong>custom data attribute</strong>. The browser doesn't act on it; it just stores the value for your JavaScript to read or write.</p>
+        <pre><code>&lt;article
+  data-post-id="42"
+  data-author="jane"
+  data-tags="html, web, beginner"
+  data-published="2024-03-15"
+&gt;
+  &lt;h2&gt;My Post&lt;/h2&gt;
+&lt;/article&gt;</code></pre>
+        <p>The browser ignores these attributes entirely — they don't affect rendering, accessibility, or behaviour. They exist purely so your JavaScript can attach data to elements without using global variables or class-name hacks.</p>
+      </section>
+
+      <section id="why">
+        <h2><span class="num">2</span> Why Use Them?</h2>
+        <p>Before HTML5, developers stored data in all sorts of hacky ways:</p>
+        <ul>
+          <li>Encoding data in class names: <code>class="post-id-42 author-jane"</code></li>
+          <li>Stashing data in <code>rel</code> attributes (which is invalid)</li>
+          <li>Using jQuery's <code>$.data()</code> (which kept an internal cache, fragile)</li>
+          <li>Inline <code>onclick="doThing(42)"</code> handlers</li>
+        </ul>
+        <p>The <code>data-*</code> family is the official, sanctioned way. Benefits:</p>
+        <div class="grid-2">
+          <div class="card"><h4>Valid HTML</h4><p>The validator accepts any <code>data-*</code> attribute on any element.</p></div>
+          <div class="card"><h4>Self-documenting</h4><p><code>data-post-id="42"</code> reads more clearly than <code>class="post-42"</code>.</p></div>
+          <div class="card"><h4>Persistent in DOM</h4><p>Unlike JS variables, data attributes survive page reloads and are visible in the DOM tree.</p></div>
+          <div class="card"><h4>Queryable</h4><p><code>document.querySelector('[data-post-id="42"]')</code> finds the element by its data.</p></div>
+          <div class="card"><h4>CSS-hookable</h4><p>Style based on data: <code>[data-state="loading"] { opacity: 0.5; }</code></p></div>
+          <div class="card"><h4>No name conflicts</h4><p>The <code>data-</code> prefix means you'll never clash with a future HTML attribute.</p></div>
+        </div>
+      </section>
+
+      <section id="naming">
+        <h2><span class="num">3</span> Naming Conventions</h2>
+        <p>Rules for <code>data-*</code> attribute names:</p>
+        <ul>
+          <li>Must start with <code>data-</code>.</li>
+          <li>The part after <code>data-</code> can include letters, numbers, dashes, and dots.</li>
+          <li>Cannot include uppercase letters. <code>data-postId</code> is invalid; use <code>data-post-id</code>.</li>
+          <li>XML rules apply — no colons in HTML5, but the spec actually disallows them in practice.</li>
+        </ul>
+        <pre><code>&lt;!-- GOOD — lowercase, dash-separated --&gt;
+data-post-id="42"
+data-user-role="admin"
+data-product-sku="ABC-123"
+
+&lt;!-- BAD — uppercase (will be lowercased, breaks dataset access) --&gt;
+data-postId="42"           ← won't work as expected
+data-UserID="42"           ← same problem
+
+&lt;!-- BAD — leading digit after data- --&gt;
+data-3d-mode="true"        ← actually allowed but discouraged; prefer data-mode-3d</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use kebab-case (lowercase with dashes) consistently: <code>data-user-id</code>, <code>data-post-id</code>, <code>data-cart-total</code>. This is the universal convention and works smoothly with the <code>dataset</code> API.
+        </div>
+      </section>
+
+      <section id="reading">
+        <h2><span class="num">4</span> Reading via JavaScript</h2>
+        <p>Two ways to read a <code>data-*</code> attribute:</p>
+        <h3>Method 1 — getAttribute</h3>
+        <pre><code>const article = document.querySelector('article[data-post-id="42"]')
+
+const id = article.getAttribute('data-post-id')         // "42" (string)
+const author = article.getAttribute('data-author')      // "jane"
+const tags = article.getAttribute('data-tags')         // "html, web, beginner"</code></pre>
+        <p>Always returns a string (or <code>null</code> if the attribute is absent). You'll need to convert numbers manually: <code>Number(id)</code> or <code>parseInt(id, 10)</code>.</p>
+        <h3>Method 2 — dataset API</h3>
+        <pre><code>const article = document.querySelector('article[data-post-id="42"]')
+
+article.dataset.postId        // "42"
+article.dataset.author        // "jane"
+article.dataset.tags          // "html, web, beginner"</code></pre>
+        <p>The <code>dataset</code> property is a DOMStringMap. Each <code>data-foo-bar</code> becomes <code>dataset.fooBar</code> (camelCase). Dashes are stripped and the next letter is capitalised.</p>
+        <pre><code>data-post-id     → dataset.postId
+data-user-role   → dataset.userRole
+data-cart-total  → dataset.cartTotal
+data-foo         → dataset.foo</code></pre>
+      </section>
+
+      <section id="writing">
+        <h2><span class="num">5</span> Writing via JavaScript</h2>
+        <pre><code>const el = document.getElementById('card')
+
+// Method 1: setAttribute
+el.setAttribute('data-state', 'loading')
+
+// Method 2: dataset
+el.dataset.state = 'loading'
+el.dataset.userId = '42'     // automatically becomes data-user-id="42"
+el.dataset.lastLogin = '2024-03-15'</code></pre>
+        <p>Both methods update the DOM, so DevTools shows the new value immediately. Both trigger attribute-change observers (via MutationObserver).</p>
+        <h3>Deleting</h3>
+        <pre><code>// Method 1: removeAttribute
+el.removeAttribute('data-state')
+
+// Method 2: delete on dataset
+delete el.dataset.state</code></pre>
+      </section>
+
+      <section id="dataset">
+        <h2><span class="num">6</span> The dataset API in Depth</h2>
+        <p>The <code>dataset</code> property is a DOMStringMap — a special object that maps camelCase property names to <code>data-*</code> attributes.</p>
+        <pre><code>&lt;div id="x" data-foo="1" data-foo-bar="2" data-foo-bar-baz="3"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const x = document.getElementById('x')
+  console.log(x.dataset)              // DOMStringMap { foo: "1", fooBar: "2", fooBarBaz: "3" }
+
+  // Iterate:
+  for (const [key, value] of Object.entries(x.dataset)) {
+    console.log(key, '=', value)
+  }
+
+  // Read all into a plain object:
+  const data = { ...x.dataset }
+  console.log(data)                   // { foo: "1", fooBar: "2", fooBarBaz: "3" }
+&lt;/script&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Values are <strong>always strings</strong>. Setting <code>el.dataset.count = 5</code> stores the string <code>"5"</code>, not the number. When reading, convert as needed: <code>Number(el.dataset.count)</code>, <code>JSON.parse(el.dataset.config)</code>, <code>el.dataset.isActive === 'true'</code>.
+        </div>
+        <h3>Storing complex data</h3>
+        <pre><code>&lt;!-- Store JSON in a data attribute --&gt;
+&lt;div id="card"
+     data-config='{"theme":"dark","size":"lg","closable":true}'&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const card = document.getElementById('card')
+  const config = JSON.parse(card.dataset.config)
+  console.log(config.theme)        // "dark"
+  console.log(config.closable)     // true (boolean)
+&lt;/script&gt;</code></pre>
+        <p>Use single quotes around the JSON so you can use double quotes inside the JSON without escaping.</p>
+      </section>
+
+      <section id="css">
+        <h2><span class="num">7</span> Styling with data Attributes</h2>
+        <p>The attribute selector <code>[data-...]</code> is a powerful CSS hook.</p>
+        <pre><code>/* Style by data-state */
+[data-state="loading"] { opacity: 0.5; pointer-events: none; }
+[data-state="error"]   { color: red; }
+[data-state="success"] { color: green; }
+
+/* Generic — any element with data-tooltip */
+[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+
+/* Children based on parent's data */
+.tabs[data-active-tab="2"] .tab:nth-child(2) {
+  background: navy;
+  color: white;
+}</code></pre>
+        <pre><code>&lt;button data-state="loading"&gt;Saving...&lt;/button&gt;
+&lt;div class="tabs" data-active-tab="2"&gt;
+  &lt;div class="tab"&gt;Tab 1&lt;/div&gt;
+  &lt;div class="tab"&gt;Tab 2&lt;/div&gt;
+  &lt;div class="tab"&gt;Tab 3&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p>Combined with JavaScript state changes, this is a lightweight state-driven styling system — no framework needed.</p>
+      </section>
+
+      <section id="patterns">
+        <h2><span class="num">8</span> Real-World Patterns</h2>
+
+        <h3>Pattern 1: Pure-HTML Tooltips</h3>
+        <pre><code>&lt;style&gt;
+  [data-tooltip] { position: relative; cursor: help; border-bottom: 1px dotted; }
+  [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: black;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  [data-tooltip]:hover::after { opacity: 1; }
+&lt;/style&gt;
+
+&lt;span data-tooltip="HyperText Markup Language"&gt;HTML&lt;/span&gt;
+&lt;abbr data-tooltip="World Wide Web Consortium"&gt;W3C&lt;/abbr&gt;</code></pre>
+
+        <h3>Pattern 2: Analytics Tracking</h3>
+        <pre><code>&lt;button data-track="cta-click" data-track-location="hero"&gt;Get Started&lt;/button&gt;
+&lt;button data-track="cta-click" data-track-location="footer"&gt;Sign Up&lt;/button&gt;
+
+&lt;script&gt;
+  document.addEventListener('click', e =&gt; {
+    const trackable = e.target.closest('[data-track]')
+    if (!trackable) return
+
+    analytics.track(trackable.dataset.track, {
+      location: trackable.dataset.trackLocation,
+      url: location.pathname,
+      ts: Date.now()
+    })
+  })
+&lt;/script&gt;</code></pre>
+
+        <h3>Pattern 3: Single Event Handler for Many Buttons</h3>
+        <pre><code>&lt;ul id="cart"&gt;
+  &lt;li&gt;
+    &lt;span&gt;Apple&lt;/span&gt;
+    &lt;button data-action="remove" data-item-id="1"&gt;Remove&lt;/button&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;span&gt;Pear&lt;/span&gt;
+    &lt;button data-action="remove" data-item-id="2"&gt;Remove&lt;/button&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script&gt;
+  document.getElementById('cart').addEventListener('click', e =&gt; {
+    const btn = e.target.closest('[data-action="remove"]')
+    if (!btn) return
+
+    const itemId = btn.dataset.itemId
+    removeFromCart(itemId)
+  })
+&lt;/script&gt;</code></pre>
+        <p>This is the <strong>event delegation</strong> pattern: one listener handles all current and future buttons, instead of attaching a handler to each.</p>
+
+        <h3>Pattern 4: Tab Interface State</h3>
+        <pre><code>&lt;div class="tabs" data-active-tab="0"&gt;
+  &lt;button data-tab="0"&gt;Overview&lt;/button&gt;
+  &lt;button data-tab="1"&gt;Reviews&lt;/button&gt;
+  &lt;button data-tab="2"&gt;Specs&lt;/button&gt;
+
+  &lt;section data-panel="0"&gt;Overview content&lt;/section&gt;
+  &lt;section data-panel="1"&gt;Reviews content&lt;/section&gt;
+  &lt;section data-panel="2"&gt;Specs content&lt;/section&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  [data-panel] { display: none; }
+  .tabs[data-active-tab="0"] [data-panel="0"],
+  .tabs[data-active-tab="1"] [data-panel="1"],
+  .tabs[data-active-tab="2"] [data-panel="2"] {
+    display: block;
+  }
+&lt;/style&gt;
+
+&lt;script&gt;
+  document.querySelectorAll('[data-tab]').forEach(btn =&gt; {
+    btn.addEventListener('click', () =&gt; {
+      const tabs = btn.closest('.tabs')
+      tabs.dataset.activeTab = btn.dataset.tab
+    })
+  })
+&lt;/script&gt;</code></pre>
+
+        <h3>Pattern 5: Lazy-loaded Content</h3>
+        <pre><code>&lt;div data-lazy-url="/api/comments/42"&gt;
+  Loading comments...
+&lt;/div&gt;
+
+&lt;script&gt;
+  const observer = new IntersectionObserver(entries =&gt; {
+    entries.forEach(entry =&gt; {
+      if (entry.isIntersecting) {
+        const url = entry.target.dataset.lazyUrl
+        fetch(url).then(r =&gt; r.text()).then(html =&gt; {
+          entry.target.innerHTML = html
+          observer.unobserve(entry.target)
+        })
+      }
+    })
+  })
+  document.querySelectorAll('[data-lazy-url]').forEach(el =&gt; observer.observe(el))
+&lt;/script&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <table>
+          <thead><tr><th>Mistake</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td>Using uppercase: <code>data-postId</code></td><td>Use kebab-case: <code>data-post-id</code> — read as <code>dataset.postId</code></td></tr>
+            <tr><td>Storing secrets (API keys, passwords)</td><td>Don't. <code>data-*</code> values are visible in View Source and DevTools.</td></tr>
+            <tr><td>Storing large data (10KB+)</td><td>Use a fetch from JS, or store in IndexedDB. Big attributes bloat the HTML and slow parsing.</td></tr>
+            <tr><td>Storing unescaped user input</td><td>Always HTML-escape user-provided strings before inserting into <code>data-*</code> attributes.</td></tr>
+            <tr><td>Forgetting values are always strings</td><td>Convert: <code>Number(dataset.count)</code>, <code>dataset.flag === 'true'</code>.</td></tr>
+            <tr><td>Using data-* for styling-only "class"</td><td>Use <code>class</code> for styling hooks. Use <code>data-*</code> for data + state.</td></tr>
+            <tr><td>Putting HTML inside data attributes</td><td>Use a hidden <code>&lt;template&gt;</code> instead — cleaner and faster.</td></tr>
+            <tr><td>Naming conflict with framework (Vue, React)</td><td>Some frameworks reserve <code>data-</code> prefixes. Check the docs.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="rules">
+        <h2><span class="num">10</span> Rules Summary</h2>
+        <ul>
+          <li>Any attribute named <code>data-*</code> is a custom data attribute.</li>
+          <li>Names must be lowercase (after <code>data-</code>), dash-separated.</li>
+          <li>Values are always strings; convert to other types in JS.</li>
+          <li>Read via <code>el.getAttribute('data-foo')</code> or <code>el.dataset.foo</code>.</li>
+          <li>Camel-case conversion: <code>data-foo-bar</code> → <code>dataset.fooBar</code>.</li>
+          <li>Valid on every HTML element.</li>
+          <li>Don't store secrets, large data, or unescaped user input.</li>
+          <li>Great for: tooltips, analytics, event delegation, state, lazy loading.</li>
+        </ul>
+        <div class="callout exercise">
+          <strong>Try it yourself — 20 minutes</strong>
+          Build a "task list" page where each task is rendered with data attributes:
+          <pre><code>&lt;ul id="tasks"&gt;
+  &lt;li data-task-id="1" data-priority="high" data-done="false"&gt;
+    Learn HTML &lt;button data-action="toggle"&gt;Done&lt;/button&gt;
+  &lt;/li&gt;
+  &lt;li data-task-id="2" data-priority="low" data-done="true"&gt;
+    Buy milk &lt;button data-action="toggle"&gt;Undone&lt;/button&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+          Implement:
+          <ol>
+            <li>CSS that strikes through completed tasks (<code>[data-done="true"]</code>).</li>
+            <li>One click handler (event delegation) that flips <code>data-done</code> on the closest <code>&lt;li&gt;</code>.</li>
+            <li>An "Add task" form that creates new <code>&lt;li&gt;</code> elements with fresh <code>data-task-id</code> values.</li>
+            <li>A filter bar (All / High priority / Done) that hides non-matching <code>&lt;li&gt;</code>s via CSS.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="global-attributes.html">← Previous: Global Attributes</a>
+      <a href="aria-attributes.html">Next: ARIA Attributes →</a>
+    </div>
+    <p>HTML Mastery — Section 1.4 · Attributes · data-*</p>
+  </footer>
+</body>
+</html>

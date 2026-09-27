@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Description Lists &lt;dl&gt; — HTML Mastery</title>
+  <meta name="description" content="The complete guide to HTML description lists (dl, dt, dd): glossaries, FAQs, metadata, key-value pairs. Multiple dd per dt, accessibility, and real-world use cases.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #16a34a 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    /* Demo dl styles */
+    .demo-box dl {
+      margin: 0;
+    }
+    .demo-box dt {
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 12px;
+    }
+    .demo-box dt:first-child { margin-top: 0; }
+    .demo-box dd {
+      margin: 0 0 12px;
+      padding-left: 16px;
+      color: var(--ink-soft);
+    }
+    .demo-box dd:last-child { margin-bottom: 0; }
+    .grid-dl dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 8px 16px;
+      margin: 0;
+    }
+    .grid-dl dt {
+      font-weight: 700;
+      color: var(--ink);
+      grid-column: 1;
+    }
+    .grid-dl dd {
+      margin: 0;
+      color: var(--ink-soft);
+      grid-column: 2;
+    }
+    .faq details {
+      margin-bottom: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 16px;
+      background: white;
+    }
+    .faq summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .faq summary::marker {
+      color: var(--brand);
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.4 · Lists</span>
+    <h1>Description Lists <code>&lt;dl&gt;</code> · <code>&lt;dt&gt;</code> · <code>&lt;dd&gt;</code></h1>
+    <p>The third list type, often overlooked. Description lists pair terms with their descriptions — the semantic choice for glossaries, FAQs, metadata, key-value pairs, and any time you need to associate a label with one or more values.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is a Description List?</a></li>
+        <li><a href="#syntax">Basic Syntax</a></li>
+        <li><a href="#dt">The dt Element</a></li>
+        <li><a href="#dd">The dd Element</a></li>
+        <li><a href="#multiple-dd">Multiple dd per dt</a></li>
+        <li><a href="#multiple-dt">Multiple dt for One dd</a></li>
+        <li><a href="#wrapping">Wrapping in div (HTML 5.2+)</a></li>
+        <li><a href="#use-cases">Use Cases</a></li>
+        <li><a href="#examples">Real-World Examples</a></li>
+        <li><a href="#styling">Styling</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is a Description List?</h2>
+        <p>A description list (formerly called a "definition list") associates <strong>terms</strong> with their <strong>descriptions</strong>. It uses three elements together:</p>
+        <ul>
+          <li><code>&lt;dl&gt;</code> — description list (the container)</li>
+          <li><code>&lt;dt&gt;</code> — description term (the label)</li>
+          <li><code>&lt;dd&gt;</code> — description details (the value)</li>
+        </ul>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;HTML&lt;/dt&gt;
+  &lt;dd&gt;HyperText Markup Language, the standard markup language for web pages.&lt;/dd&gt;
+
+  &lt;dt&gt;CSS&lt;/dt&gt;
+  &lt;dd&gt;Cascading Style Sheets, used to style HTML documents.&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <div class="demo-box">
+          <dl>
+            <dt>HTML</dt>
+            <dd>HyperText Markup Language, the standard markup language for web pages.</dd>
+            <dt>CSS</dt>
+            <dd>Cascading Style Sheets, used to style HTML documents.</dd>
+          </dl>
+        </div>
+        <div class="callout">
+          <strong>Info</strong>
+          Description lists were called "definition lists" in HTML 4. The name changed in HTML5 to reflect their broader use: not just definitions, but any term-value pairing.
+        </div>
+      </section>
+
+      <section id="syntax">
+        <h2><span class="num">2</span> Basic Syntax</h2>
+        <p>The structure is simple: a <code>&lt;dl&gt;</code> container holds alternating <code>&lt;dt&gt;</code> (term) and <code>&lt;dd&gt;</code> (description) elements. There is no list-item wrapper — the pairs sit directly inside <code>&lt;dl&gt;</code>.</p>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;Term 1&lt;/dt&gt;
+  &lt;dd&gt;Description 1&lt;/dd&gt;
+  &lt;dt&gt;Term 2&lt;/dt&gt;
+  &lt;dd&gt;Description 2&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <p>By default, browsers render <code>&lt;dd&gt;</code> with a left indent (about 40px). <code>&lt;dt&gt;</code> is bold by default in some browsers.</p>
+      </section>
+
+      <section id="dt">
+        <h2><span class="num">3</span> The <code>&lt;dt&gt;</code> Element</h2>
+        <p><code>&lt;dt&gt;</code> represents the term being described. It is short — usually a single word or short phrase. The content is phrasing (inline) only: text, <code>&lt;code&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a&gt;</code>, etc.</p>
+        <pre><code>&lt;dt&gt;Algorithm&lt;/dt&gt;
+&lt;dt&gt;&lt;abbr title="Application Programming Interface"&gt;API&lt;/abbr&gt;&lt;/dt&gt;
+&lt;dt&gt;Asynchronous&lt;/dt&gt;</code></pre>
+      </section>
+
+      <section id="dd">
+        <h2><span class="num">4</span> The <code>&lt;dd&gt;</code> Element</h2>
+        <p><code>&lt;dd&gt;</code> provides the description, definition, or value associated with the preceding <code>&lt;dt&gt;</code>. Unlike <code>&lt;dt&gt;</code>, <code>&lt;dd&gt;</code> can contain flow content: paragraphs, lists, images, blockquotes, even another description list.</p>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;Photosynthesis&lt;/dt&gt;
+  &lt;dd&gt;
+    &lt;p&gt;The process by which plants convert light energy
+       into chemical energy stored in glucose.&lt;/p&gt;
+    &lt;p&gt;The general equation is:
+       6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂&lt;/p&gt;
+  &lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>Default left indent</h3>
+        <p>Browsers apply <code>margin-left: 40px</code> (or <code>1rem</code>) to <code>&lt;dd&gt;</code> by default. This is the visual cue that the description is "subordinate" to the term. Many designs reset this.</p>
+      </section>
+
+      <section id="multiple-dd">
+        <h2><span class="num">5</span> Multiple <code>&lt;dd&gt;</code> per <code>&lt;dt&gt;</code></h2>
+        <p>A single term can have multiple descriptions. This is useful when a term has several distinct meanings, examples, or facets.</p>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;Java&lt;/dt&gt;
+  &lt;dd&gt;An island in Indonesia, southeast of Sumatra.&lt;/dd&gt;
+  &lt;dd&gt;A programming language developed by Sun Microsystems in 1995.&lt;/dd&gt;
+  &lt;dd&gt;A colloquial term for coffee (from Java's coffee exports).&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <div class="demo-box">
+          <dl>
+            <dt>Java</dt>
+            <dd>An island in Indonesia, southeast of Sumatra.</dd>
+            <dd>A programming language developed by Sun Microsystems in 1995.</dd>
+            <dd>A colloquial term for coffee (from Java's coffee exports).</dd>
+          </dl>
+        </div>
+      </section>
+
+      <section id="multiple-dt">
+        <h2><span class="num">6</span> Multiple <code>&lt;dt&gt;</code> for One <code>&lt;dd&gt;</code></h2>
+        <p>Conversely, you can stack multiple <code>&lt;dt&gt;</code> elements before a single <code>&lt;dd&gt;</code>. This is useful when a term has synonyms or alternate spellings.</p>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;Color&lt;/dt&gt;
+  &lt;dt&gt;Colour&lt;/dt&gt;
+  &lt;dd&gt;The visual perception of different wavelengths of light.&lt;/dd&gt;
+
+  &lt;dt&gt;Cookie&lt;/dt&gt;
+  &lt;dt&gt;Biscuit&lt;/dt&gt;
+  &lt;dd&gt;A small, flat, baked treat.&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <div class="demo-box">
+          <dl>
+            <dt>Color</dt>
+            <dt>Colour</dt>
+            <dd>The visual perception of different wavelengths of light.</dd>
+            <dt>Cookie</dt>
+            <dt>Biscuit</dt>
+            <dd>A small, flat, baked treat.</dd>
+          </dl>
+        </div>
+      </section>
+
+      <section id="wrapping">
+        <h2><span class="num">7</span> Wrapping in <code>&lt;div&gt;</code> (HTML 5.2+)</h2>
+        <p>Since HTML 5.2, you can wrap each term/description pair in a <code>&lt;div&gt;</code> for styling or to group related pairs. This is useful for adding borders, backgrounds, or hover effects to individual entries.</p>
+        <pre><code>&lt;dl&gt;
+  &lt;div class="entry"&gt;
+    &lt;dt&gt;HTML&lt;/dt&gt;
+    &lt;dd&gt;HyperText Markup Language&lt;/dd&gt;
+  &lt;/div&gt;
+  &lt;div class="entry"&gt;
+    &lt;dt&gt;CSS&lt;/dt&gt;
+    &lt;dd&gt;Cascading Style Sheets&lt;/dd&gt;
+  &lt;/div&gt;
+&lt;/dl&gt;</code></pre>
+        <pre><code>dl &gt; div.entry {
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: white;
+}
+dl &gt; div.entry:hover {
+  border-color: var(--brand);
+}</code></pre>
+        <div class="callout">
+          <strong>Info</strong>
+          This <code>&lt;div&gt;</code> wrapper is the only block-level element allowed directly inside <code>&lt;dl&gt;</code> (besides <code>&lt;dt&gt;</code> and <code>&lt;dd&gt;</code>). It does not affect semantics.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">8</span> Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Glossary</h4>
+            <p>Term + definition pairs. The classic case. Perfect for technical docs, dictionaries, encyclopedias.</p>
+          </div>
+          <div class="card">
+            <h4>FAQ</h4>
+            <p>Question (<code>dt</code>) + answer (<code>dd</code>). Cleaner than <code>h3</code>+<code>p</code> pairs and more semantic than <code>div</code>s.</p>
+          </div>
+          <div class="card">
+            <h4>Metadata display</h4>
+            <p>Property + value pairs: "Author: Jane Doe", "Published: 2024-03-12". Great for product specs and article metadata.</p>
+          </div>
+          <div class="card">
+            <h4>Speaker list</h4>
+            <p>Speaker name (<code>dt</code>) + bio (<code>dd</code>). Multiple talks per speaker? Multiple <code>dd</code> elements.</p>
+          </div>
+          <div class="card">
+            <h4>Recipe ingredients</h4>
+            <p>Ingredient (<code>dt</code>) + quantity/notes (<code>dd</code>). Naturally structured.</p>
+          </div>
+          <div class="card">
+            <h4>Event schedule</h4>
+            <p>Time (<code>dt</code>) + activity (<code>dd</code>). Clear two-column layout.</p>
+          </div>
+          <div class="card">
+            <h4>Configuration reference</h4>
+            <p>Setting name (<code>dt</code>) + description + default value + type. Multiple <code>dd</code> per setting.</p>
+          </div>
+          <div class="card">
+            <h4>Dictionary entries</h4>
+            <p>Word (<code>dt</code>) + part of speech, pronunciation, definition (multiple <code>dd</code>).</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">9</span> Real-World Examples</h2>
+        <h3>Glossary</h3>
+        <pre><code>&lt;h2&gt;Glossary of Web Terms&lt;/h2&gt;
+&lt;dl&gt;
+  &lt;dt&gt;API&lt;/dt&gt;
+  &lt;dd&gt;Application Programming Interface; a set of rules for how software components communicate.&lt;/dd&gt;
+
+  &lt;dt&gt;CDN&lt;/dt&gt;
+  &lt;dd&gt;Content Delivery Network; a distributed server system that delivers web content based on user location.&lt;/dd&gt;
+
+  &lt;dt&gt;DOM&lt;/dt&gt;
+  &lt;dd&gt;Document Object Model; a programming interface for HTML/XML documents.&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>FAQ</h3>
+        <pre><code>&lt;h2&gt;Frequently Asked Questions&lt;/h2&gt;
+&lt;dl&gt;
+  &lt;dt&gt;How do I reset my password?&lt;/dt&gt;
+  &lt;dd&gt;Click "Forgot password" on the login page and follow the email instructions.&lt;/dd&gt;
+
+  &lt;dt&gt;Can I cancel my subscription anytime?&lt;/dt&gt;
+  &lt;dd&gt;Yes. Visit Settings → Subscription and click "Cancel". Your access continues until the end of the billing period.&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>Product metadata</h3>
+        <pre><code>&lt;dl class="product-meta"&gt;
+  &lt;dt&gt;SKU&lt;/dt&gt;
+  &lt;dd&gt;ACME-X100-BLK&lt;/dd&gt;
+
+  &lt;dt&gt;Weight&lt;/dt&gt;
+  &lt;dd&gt;250 grams&lt;/dd&gt;
+
+  &lt;dt&gt;Dimensions&lt;/dt&gt;
+  &lt;dd&gt;15 × 10 × 5 cm&lt;/dd&gt;
+
+  &lt;dt&gt;Materials&lt;/dt&gt;
+  &lt;dd&gt;Aluminum, silicone&lt;/dd&gt;
+
+  &lt;dt&gt;Warranty&lt;/dt&gt;
+  &lt;dd&gt;2 years limited&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>Dictionary entry</h3>
+        <pre><code>&lt;dl&gt;
+  &lt;dt&gt;&lt;strong&gt;per·spi·ca·cious&lt;/strong&gt; /ˌpərspəˈkāSHəs/&lt;/dt&gt;
+  &lt;dd&gt;&lt;em&gt;adjective&lt;/em&gt;&lt;/dd&gt;
+  &lt;dd&gt;Having a ready insight into and understanding of things.&lt;/dd&gt;
+  &lt;dd&gt;&lt;em&gt;Synonyms:&lt;/em&gt; shrewd, astute, keen&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>Event schedule</h3>
+        <pre><code>&lt;dl class="schedule"&gt;
+  &lt;dt&gt;9:00 AM&lt;/dt&gt;
+  &lt;dd&gt;Registration and coffee&lt;/dd&gt;
+
+  &lt;dt&gt;10:00 AM&lt;/dt&gt;
+  &lt;dd&gt;Keynote: The Future of Web Development&lt;/dd&gt;
+
+  &lt;dt&gt;11:30 AM&lt;/dt&gt;
+  &lt;dd&gt;Workshop: Building Accessible Components&lt;/dd&gt;
+  &lt;dd&gt;Workshop: Advanced CSS Layouts&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+        <h3>Speaker bio</h3>
+        <pre><code>&lt;dl class="speakers"&gt;
+  &lt;dt&gt;Ada Lovelace&lt;/dt&gt;
+  &lt;dd&gt;Mathematician and writer; known for her work on the Analytical Engine.&lt;/dd&gt;
+  &lt;dd&gt;&lt;em&gt;Talk:&lt;/em&gt; The First Algorithm&lt;/dd&gt;
+
+  &lt;dt&gt;Alan Turing&lt;/dt&gt;
+  &lt;dd&gt;Computer scientist, mathematician, and cryptanalyst.&lt;/dd&gt;
+  &lt;dd&gt;&lt;em&gt;Talk:&lt;/em&gt; Computing Machinery and Intelligence&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">10</span> Styling</h2>
+        <h3>Default styling reset</h3>
+        <pre><code>dl, dt, dd {
+  margin: 0;
+  padding: 0;
+}
+dd { padding-left: 0; }</code></pre>
+        <h3>Two-column grid layout (modern)</h3>
+        <p>For metadata display, a grid layout puts the term on the left and the description on the right:</p>
+        <pre><code>dl.metadata {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+dl.metadata dt {
+  font-weight: 600;
+  color: var(--ink);
+}
+dl.metadata dd {
+  margin: 0;
+  color: var(--ink-soft);
+}</code></pre>
+        <div class="demo-box grid-dl">
+          <dl>
+            <dt>Author:</dt><dd>Jane Doe</dd>
+            <dt>Published:</dt><dd>March 12, 2024</dd>
+            <dt>Reading time:</dt><dd>6 minutes</dd>
+            <dt>Tags:</dt><dd>HTML, CSS, Accessibility</dd>
+          </dl>
+        </div>
+        <h3>Card-style FAQ</h3>
+        <pre><code>dl.faq {
+  margin: 0;
+}
+dl.faq dt {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+dl.faq dd {
+  margin: 0 0 12px;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 3px solid var(--brand);
+}</code></pre>
+        <h3>Interactivity with <code>&lt;details&gt;</code></h3>
+        <p>For collapsible FAQs, you can wrap each pair inside <code>&lt;details&gt;</code> and use <code>&lt;summary&gt;</code> for the question:</p>
+        <pre><code>&lt;details&gt;
+  &lt;summary&gt;How do I reset my password?&lt;/summary&gt;
+  &lt;p&gt;Click "Forgot password" on the login page and follow the email instructions.&lt;/p&gt;
+&lt;/details&gt;</code></pre>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">11</span> Accessibility</h2>
+        <ul>
+          <li>Screen readers announce <code>&lt;dl&gt;</code> as a "description list" with N entries.</li>
+          <li>Each <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> pair is announced together as "term" and "description".</li>
+          <li>Some screen readers do not strongly distinguish <code>&lt;dt&gt;</code> from a regular bold heading. The semantic structure still helps users navigate.</li>
+          <li>For interactive FAQs, prefer <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> over custom JavaScript — it is keyboard-accessible out of the box.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If a term has multiple descriptions, do not split them across multiple <code>&lt;dd&gt;</code> elements unless each is a distinct meaning. For a single multi-paragraph description, use one <code>&lt;dd&gt;</code> containing multiple <code>&lt;p&gt;</code> tags — this preserves the "one term, one description" semantic.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">12</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Using <code>&lt;table&gt;</code> for term/value pairs</td>
+              <td>Tables imply tabular data; wrong semantics</td>
+              <td>Use <code>&lt;dl&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;div&gt;</code> + <code>&lt;span&gt;</code> for metadata</td>
+              <td>No semantic relationship between label and value</td>
+              <td>Use <code>&lt;dl&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Mixing <code>&lt;dt&gt;</code> and <code>&lt;dd&gt;</code> inside other containers</td>
+              <td>Invalid HTML; only <code>&lt;dl&gt;</code> may contain them</td>
+              <td>Always wrap pairs in <code>&lt;dl&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Putting <code>&lt;dt&gt;</code> after <code>&lt;dd&gt;</code> (term after description)</td>
+              <td>Wrong order; confusing for screen readers</td>
+              <td>Always <code>dt</code> then <code>dd</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;dd&gt;</code> without a preceding <code>&lt;dt&gt;</code></td>
+              <td>Invalid HTML</td>
+              <td>Always start a pair with <code>&lt;dt&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Wrapping pairs in <code>&lt;li&gt;</code></td>
+              <td><code>&lt;li&gt;</code> is not valid inside <code>&lt;dl&gt;</code></td>
+              <td>Use <code>&lt;div&gt;</code> (HTML 5.2+) instead</td>
+            </tr>
+            <tr>
+              <td>Forgetting to reset default <code>&lt;dd&gt;</code> margin</td>
+              <td>Indent looks inconsistent with design</td>
+              <td>Reset <code>dd { margin: 0; padding-left: ...; }</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">13</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Glossary</strong>
+          Build a glossary of 5 web-development terms. Use <code>&lt;dl&gt;</code>, <code>&lt;dt&gt;</code>, and <code>&lt;dd&gt;</code>. Style it with a two-column grid layout.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Product specs</strong>
+          Create a product specification list (Weight, Dimensions, Materials, Color, Warranty) using a description list. Style it with the term bold and the value indented. Add a divider between entries.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — FAQ with details</strong>
+          Build an FAQ with 4 questions. Use <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> for each question so users can expand/collapse them. Add CSS to style the open state.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Multi-meaning term</strong>
+          Pick a word with multiple meanings (e.g. "bank", "match", "spring"). Build a description list where one <code>&lt;dt&gt;</code> has multiple <code>&lt;dd&gt;</code> elements, one per meaning.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Dictionary entry</strong>
+          Build a rich dictionary entry for one word. Include: the word with pronunciation, part of speech, multiple definitions, and synonyms — using nested structure inside <code>&lt;dd&gt;</code>.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">14</span> Summary</h2>
+        <ul>
+          <li><code>&lt;dl&gt;</code> = description list; <code>&lt;dt&gt;</code> = term; <code>&lt;dd&gt;</code> = description.</li>
+          <li>Use for glossaries, FAQs, metadata, key-value pairs, schedules, speaker bios.</li>
+          <li>One <code>&lt;dt&gt;</code> can have multiple <code>&lt;dd&gt;</code> (multi-meaning terms).</li>
+          <li>Multiple <code>&lt;dt&gt;</code> can precede one <code>&lt;dd&gt;</code> (synonyms).</li>
+          <li>Since HTML 5.2, you can wrap each pair in <code>&lt;div&gt;</code> for styling.</li>
+          <li><code>&lt;dd&gt;</code> can contain any flow content: paragraphs, lists, images, even nested <code>&lt;dl&gt;</code>.</li>
+          <li>For interactive FAQs, prefer native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> for accessibility.</li>
+          <li>Use grid CSS to create clean two-column term/value layouts.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 4.0 (1997)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="ordered-lists.html">← Previous: Ordered Lists</a>
+      <a href="../../03-Links-and-Media/index.html">Next Section →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Description Lists</p>
+  </footer>
+</body>
+</html>

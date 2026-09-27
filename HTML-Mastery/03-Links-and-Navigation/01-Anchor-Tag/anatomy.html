@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anchor Tag Anatomy &lt;a&gt; — HTML Mastery</title>
+  <meta name="description" content="The complete anatomy of the HTML anchor element: href, target, rel, download, hreflang, type, referrerpolicy. Text, image, and block links. Default styling, focus styles, visited colors.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box a { margin-right: 12px; }
+    .anatomy-diagram {
+      background: #0f172a; color: #e2e8f0; border-radius: 14px;
+      padding: 28px; font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 1rem; overflow-x: auto; line-height: 2; border: 1px solid #1e293b;
+    }
+    .anatomy-diagram .tag { color: #f472b6; }
+    .anatomy-diagram .attr { color: #93c5fd; }
+    .anatomy-diagram .val { color: #fbbf24; }
+    .anatomy-diagram .text { color: #86efac; }
+    .anatomy-diagram .comment { color: #64748b; display: block; margin-top: 8px; }
+    .link-states a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; display: inline-block; margin: 4px 6px 4px 0; text-decoration: none; }
+    .link-states a:link { color: #2563eb; }
+    .link-states a:visited { color: #6b21a8; }
+    .link-states a:hover { color: #dc2626; background: #fef2f2; }
+    .link-states a:active { color: #f59e0b; }
+    .link-states a:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .block-link-demo a {
+      display: block; padding: 18px 22px; border: 1px solid var(--line);
+      border-radius: 12px; text-decoration: none; color: var(--ink);
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      margin-bottom: 10px; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .block-link-demo a:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(2,6,23,0.1); }
+    .block-link-demo a h4 { margin: 0 0 4px; color: var(--brand); }
+    .block-link-demo a p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.1 · Anchor Tag</span>
+    <h1>Anchor Tag Anatomy <code>&lt;a&gt;</code></h1>
+    <p>The <code>&lt;a&gt;</code> element is the connective tissue of the web. Every hyperlink — every "click here", every navigation menu item, every download button — flows from this single element. Master its attributes and you control how users move through content.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is an Anchor?</a></li>
+        <li><a href="#anatomy">Anatomy Diagram</a></li>
+        <li><a href="#attributes">All Attributes</a></li>
+        <li><a href="#href">href</a></li>
+        <li><a href="#target">target</a></li>
+        <li><a href="#rel">rel</a></li>
+        <li><a href="#download">download</a></li>
+        <li><a href="#hreflang">hreflang &amp; type</a></li>
+        <li><a href="#referrerpolicy">referrerpolicy</a></li>
+        <li><a href="#content-types">Text, Image, Block</a></li>
+        <li><a href="#default-styling">Default Styling</a></li>
+        <li><a href="#link-states">Link States</a></li>
+        <li><a href="#focus">Focus Styles</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is an Anchor?</h2>
+        <p>The <code>&lt;a&gt;</code> element (short for "anchor") creates hyperlinks — clickable connections between resources. The destination is set by the <code>href</code> attribute; the content between the opening and closing tags becomes the visible, clickable label.</p>
+        <p>Anchors are deceptively simple. A bare <code>&lt;a href="page.html"&gt;Go&lt;/a&gt;</code> works fine, but the element supports a dozen attributes that govern security, behavior, accessibility, and SEO. Understanding each one turns a "good enough" link into a robust, production-ready one.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The <code>&lt;a&gt;</code> element is the only HTML element that can natively navigate to a new URL without JavaScript. Even with frameworks like React or Vue, plain anchors remain the most reliable, accessible, and SEO-friendly way to link.
+        </div>
+      </section>
+
+      <section id="anatomy">
+        <h2><span class="num">2</span> Anatomy Diagram</h2>
+        <p>Below is the complete anatomy of an anchor tag with every common attribute illustrated:</p>
+        <div class="anatomy-diagram">
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://example.com/report.pdf"</span>
+   <span class="attr">target</span>=<span class="val">"_blank"</span>
+   <span class="attr">rel</span>=<span class="val">"noopener noreferrer"</span>
+   <span class="attr">download</span>=<span class="val">"annual-report-2024.pdf"</span>
+   <span class="attr">hreflang</span>=<span class="val">"en"</span>
+   <span class="attr">type</span>=<span class="val">"application/pdf"</span>
+   <span class="attr">referrerpolicy</span>=<span class="val">"no-referrer"</span><span class="tag">&gt;</span>
+   <span class="text">Download Annual Report (PDF, 2.4 MB)</span>
+<span class="tag">&lt;/a&gt;</span>
+<span class="comment">// href       = destination URL (the only required attribute for navigation)</span>
+<span class="comment">// target     = where to open it (_blank = new tab)</span>
+<span class="comment">// rel        = relationship tokens (security + SEO hints)</span>
+<span class="comment">// download   = suggest saving instead of navigating</span>
+<span class="comment">// hreflang   = language of the destination</span>
+<span class="comment">// type       = MIME type hint for the destination</span>
+<span class="comment">// referrerpolicy = how much referrer info to send</span>
+        </div>
+      </section>
+
+      <section id="attributes">
+        <h2><span class="num">3</span> All Attributes at a Glance</h2>
+        <p>The <code>&lt;a&gt;</code> element accepts these specific attributes (in addition to all global attributes like <code>id</code>, <code>class</code>, <code>title</code>, <code>lang</code>, <code>style</code>, and ARIA):</p>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Purpose</th><th>Required?</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>href</code></td><td>The destination URL</td><td>Yes (for navigation)</td><td><code>href="/about"</code></td></tr>
+            <tr><td><code>target</code></td><td>Browsing context: where to open</td><td>No</td><td><code>target="_blank"</code></td></tr>
+            <tr><td><code>rel</code></td><td>Relationship tokens, space-separated</td><td>No (recommended)</td><td><code>rel="noopener noreferrer"</code></td></tr>
+            <tr><td><code>download</code></td><td>Suggest download instead of navigation</td><td>No</td><td><code>download="file.pdf"</code></td></tr>
+            <tr><td><code>hreflang</code></td><td>Language of the linked resource</td><td>No</td><td><code>hreflang="en"</code></td></tr>
+            <tr><td><code>type</code></td><td>MIME type hint of the destination</td><td>No</td><td><code>type="application/pdf"</code></td></tr>
+            <tr><td><code>referrerpolicy</code></td><td>Controls Referrer header sent</td><td>No</td><td><code>referrerpolicy="no-referrer"</code></td></tr>
+            <tr><td><code>coords</code> / <code>shape</code></td><td>For image maps (legacy, deprecated)</td><td>No</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Without <code>href</code>, an <code>&lt;a&gt;</code> is no longer a link — it becomes a placeholder. It will not be focusable, clickable, or announced as a link by screen readers. If you want a disabled look, use <code>class="disabled"</code> + <code>aria-disabled="true"</code>, not a missing <code>href</code>.
+        </div>
+      </section>
+
+      <section id="href">
+        <h2><span class="num">4</span> <code>href</code> — The Destination</h2>
+        <p>The <code>href</code> (Hypertext REFerence) attribute is the single most important attribute on an anchor. Without it, the element is rendered as static text. The value can be:</p>
+        <ul>
+          <li>An <strong>absolute URL</strong>: <code>https://example.com/page</code></li>
+          <li>A <strong>relative URL</strong>: <code>about.html</code>, <code>./about.html</code>, <code>../about.html</code>, <code>/about</code></li>
+          <li>A <strong>fragment</strong>: <code>#section-id</code></li>
+          <li>A <strong>special scheme</strong>: <code>mailto:</code>, <code>tel:</code>, <code>sms:</code></li>
+          <li>An empty string: <code>href=""</code> (refers to the current page — usually a mistake)</li>
+        </ul>
+        <pre><code>&lt;!-- Absolute --&gt;
+&lt;a href="https://developer.mozilla.org/"&gt;MDN Web Docs&lt;/a&gt;
+
+&lt;!-- Relative (same directory) --&gt;
+&lt;a href="about.html"&gt;About Us&lt;/a&gt;
+
+&lt;!-- Relative (root-absolute) --&gt;
+&lt;a href="/contact"&gt;Contact&lt;/a&gt;
+
+&lt;!-- Fragment (jump to #id on this page) --&gt;
+&lt;a href="#table-of-contents"&gt;Jump to TOC&lt;/a&gt;
+
+&lt;!-- Email --&gt;
+&lt;a href="mailto:hello@example.com"&gt;Email us&lt;/a&gt;
+
+&lt;!-- Telephone --&gt;
+&lt;a href="tel:+18005551234"&gt;Call (800) 555-1234&lt;/a&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The full <code>href</code> deep dive is in the next file (<code>href-attribute.html</code>) — covering URL structure, encoding, fragment navigation, and pitfalls of <code>javascript:</code> URLs.
+        </div>
+      </section>
+
+      <section id="target">
+        <h2><span class="num">5</span> <code>target</code> — Where to Open</h2>
+        <p>The <code>target</code> attribute tells the browser which browsing context (tab, window, or iframe) should display the destination. Five values exist:</p>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Behavior</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>_self</code></td><td>Default. Opens in the same tab/frame.</td><td>Standard navigation.</td></tr>
+            <tr><td><code>_blank</code></td><td>Opens in a new tab or window.</td><td>External links, PDFs, "open in new tab" UX.</td></tr>
+            <tr><td><code>_parent</code></td><td>Opens in the parent frame.</td><td>iframe-based apps.</td></tr>
+            <tr><td><code>_top</code></td><td>Opens in the topmost window (breaks out of all frames).</td><td>Frame-busting, anti-clickjacking.</td></tr>
+            <tr><td><code>framename</code></td><td>Opens in the named iframe/window.</td><td>Targeting a specific iframe by name.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Opens in same tab (explicit) --&gt;
+&lt;a href="/about" target="_self"&gt;About&lt;/a&gt;
+
+&lt;!-- Opens in new tab — ALWAYS pair with rel="noopener" --&gt;
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;
+  Visit Example
+&lt;/a&gt;
+
+&lt;!-- Opens in an iframe named "viewer" --&gt;
+&lt;a href="doc.html" target="viewer"&gt;Open in viewer&lt;/a&gt;
+&lt;iframe name="viewer" src="about:blank"&gt;&lt;/iframe&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Security Hole</strong>
+          Always use <code>rel="noopener noreferrer"</code> when setting <code>target="_blank"</code>. Without it, the new page can access <code>window.opener</code> and redirect your tab to a phishing page. Modern browsers default to this for cross-origin links, but always be explicit.
+        </div>
+        <div class="demo-box">
+          <a href="#" target="_blank" rel="noopener noreferrer">Open this page in a new tab →</a>
+        </div>
+      </section>
+
+      <section id="rel">
+        <h2><span class="num">6</span> <code>rel</code> — Relationship Tokens</h2>
+        <p>The <code>rel</code> attribute is a space-separated list of tokens describing the relationship between the current page and the destination. The most common values:</p>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Meaning</th><th>Why It Matters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>noopener</code></td><td>Opens without granting access to <code>window.opener</code></td><td>Security: prevents reverse-tabnabbing.</td></tr>
+            <tr><td><code>noreferrer</code></td><td>Don't send the Referer header</td><td>Privacy; also implies <code>noopener</code>.</td></tr>
+            <tr><td><code>nofollow</code></td><td>Tell search engines not to follow this link</td><td>SEO: paid links, untrusted content.</td></tr>
+            <tr><td><code>noopener</code></td><td>Security for new tabs</td><td>—</td></tr>
+            <tr><td><code>external</code></td><td>Links to an external site</td><td>UX hint, often styled with an icon.</td></tr>
+            <tr><td><code>next</code> / <code>prev</code></td><td>Pagination hints</td><td>SEO: paginated series.</td></tr>
+            <tr><td><code>author</code></td><td>Link to author page</td><td>Schema.org rich results.</td></tr>
+            <tr><td><code>license</code></td><td>Link to license (CC, MIT, etc.)</td><td>Legal context.</td></tr>
+            <tr><td><code>help</code></td><td>Help documentation</td><td>Accessibility hint.</td></tr>
+            <tr><td><code>tag</code></td><td>Tag/keyword link</td><td>Blog tag clouds.</td></tr>
+            <tr><td><code>bookmark</code></td><td>Permanent URL for nearest ancestor</td><td>Blog post permalinks.</td></tr>
+            <tr><td><code>search</code></td><td>Search endpoint</td><td>Often used with OpenSearch.</td></tr>
+            <tr><td><code>alternate</code></td><td>Alternative version (RSS, translation)</td><td>RSS feed discovery.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Standard safe external link --&gt;
+&lt;a href="https://external.com" target="_blank" rel="noopener noreferrer external"&gt;
+  External site
+&lt;/a&gt;
+
+&lt;!-- Paid/sponsored link for SEO --&gt;
+&lt;a href="https://sponsor.com" rel="sponsored nofollow"&gt;Sponsored&lt;/a&gt;
+
+&lt;!-- UGC like comments --&gt;
+&lt;a href="https://spammy-link.com" rel="ugc"&gt;User-submitted&lt;/a&gt;
+
+&lt;!-- Pagination --&gt;
+&lt;a href="/page/2" rel="next"&gt;Next →&lt;/a&gt;
+&lt;a href="/page/1" rel="prev"&gt;← Previous&lt;/a&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>rel="ugc"</code> (User Generated Content) and <code>rel="sponsored"</code> were introduced by Google in 2019 to replace the over-broad <code>nofollow</code> for paid/UGC contexts. Use the most specific token.
+        </div>
+      </section>
+
+      <section id="download">
+        <h2><span class="num">7</span> <code>download</code> — Force a Save</h2>
+        <p>The <code>download</code> attribute tells the browser to download the linked resource instead of navigating to it. You can optionally suggest a filename.</p>
+        <pre><code>&lt;!-- Download with original filename --&gt;
+&lt;a href="/files/report.pdf" download&gt;Download report&lt;/a&gt;
+
+&lt;!-- Download with a custom filename --&gt;
+&lt;a href="/files/2024-q3-financials.pdf" download="Q3-2024-Financials.pdf"&gt;
+  Download Q3 Financials
+&lt;/a&gt;
+
+&lt;!-- Generate a CSV on the fly with blob URL --&gt;
+&lt;a href="data:text/plain;charset=utf-8,Hello%20World" download="hello.txt"&gt;
+  Download hello.txt
+&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake — Cross-origin Limitation</strong>
+          The <code>download</code> attribute is ignored if the URL is cross-origin (different scheme, host, or port) <em>unless</em> the server sends a <code>Content-Disposition: attachment</code> header. To force a download of a third-party file, proxy it through your own server.
+        </div>
+        <p>The <code>download</code> attribute is covered in full depth in <code>04-Download-Links/download-attribute.html</code>.</p>
+      </section>
+
+      <section id="hreflang">
+        <h2><span class="num">8</span> <code>hreflang</code> &amp; <code>type</code> — Resource Hints</h2>
+        <p>These two attributes are hints — they don't change behavior, but they help browsers, search engines, and assistive tech understand the destination.</p>
+        <h3><code>hreflang</code> — Language of the Destination</h3>
+        <p>Uses an <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank" rel="noopener noreferrer">IETF language tag</a> like <code>en</code>, <code>en-US</code>, <code>fr-CA</code>, <code>zh-Hans</code>. Most useful for localized alternative versions of the same page (paired with <code>rel="alternate"</code>).</p>
+        <pre><code>&lt;!-- English version --&gt;
+&lt;a href="/en/about" hreflang="en" rel="alternate"&gt;About&lt;/a&gt;
+
+&lt;!-- French version of the same page --&gt;
+&lt;a href="/fr/a-propos" hreflang="fr" rel="alternate"&gt;À propos&lt;/a&gt;
+
+&lt;!-- Simplified Chinese version --&gt;
+&lt;a href="/zh-Hans/about" hreflang="zh-Hans" rel="alternate"&gt;关于&lt;/a&gt;</code></pre>
+        <h3><code>type</code> — MIME Type Hint</h3>
+        <p>Indicates the MIME type of the linked resource, e.g. <code>application/pdf</code>, <code>image/png</code>, <code>text/csv</code>. Browsers use it as a hint, not a guarantee.</p>
+        <pre><code>&lt;a href="/files/budget.csv" type="text/csv" download&gt;Download budget (CSV)&lt;/a&gt;
+&lt;a href="/files/manual.pdf" type="application/pdf"&gt;View manual (PDF)&lt;/a&gt;
+&lt;a href="/feeds/rss.xml" type="application/rss+xml" rel="alternate"&gt;RSS feed&lt;/a&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Both <code>hreflang</code> and <code>type</code> are most powerful in <code>&lt;link rel="alternate"&gt;</code> tags in the <code>&lt;head&gt;</code> for SEO and feed discovery. On <code>&lt;a&gt;</code> elements they're rarely displayed to users but can be read by extensions and crawlers.
+        </div>
+      </section>
+
+      <section id="referrerpolicy">
+        <h2><span class="num">9</span> <code>referrerpolicy</code> — Control the Referer Header</h2>
+        <p>When you click a link, the browser normally sends a <code>Referer</code> HTTP header telling the destination site which page you came from. <code>referrerpolicy</code> lets you control this per-link.</p>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Sends Referer?</th><th>When</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>no-referrer</code></td><td>Never</td><td>Maximum privacy</td></tr>
+            <tr><td><code>no-referrer-when-downgrade</code></td><td>Only same-security (HTTPS→HTTPS)</td><td>Default in many browsers</td></tr>
+            <tr><td><code>same-origin</code></td><td>Only to same site</td><td>Internal analytics</td></tr>
+            <tr><td><code>origin</code></td><td>Sends only the origin (no path)</td><td>Privacy + analytics</td></tr>
+            <tr><td><code>strict-origin</code></td><td>Origin only, HTTPS→HTTPS</td><td>Modern default</td></tr>
+            <tr><td><code>origin-when-cross-origin</code></td><td>Full URL same-origin; origin only cross-origin</td><td>Balanced</td></tr>
+            <tr><td><code>strict-origin-when-cross-origin</code></td><td>Strict origin when crossing origins</td><td>Browser default since 2020</td></tr>
+            <tr><td><code>unsafe-url</code></td><td>Always sends full URL</td><td>Avoid — leaks paths</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Don't leak that the user came from your admin panel --&gt;
+&lt;a href="https://analytics-vendor.com" referrerpolicy="no-referrer"&gt;
+  Open dashboard
+&lt;/a&gt;
+
+&lt;!-- Same-origin only — useful for internal navigation --&gt;
+&lt;a href="/admin" referrerpolicy="same-origin"&gt;Admin&lt;/a&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Default policy in Chrome, Firefox, and Edge is now <code>strict-origin-when-cross-origin</code>. This means cross-origin destinations see only your origin (e.g. <code>https://yoursite.com</code>), not the full path. If a partner relies on full referrer URLs, set <code>referrerpolicy="unsafe-url"</code> explicitly — and ask why.
+        </div>
+      </section>
+
+      <section id="content-types">
+        <h2><span class="num">10</span> Text, Image, and Block Links</h2>
+        <p>The content inside an <code>&lt;a&gt;</code> can be plain text, an image, structured inline content, or — since HTML5 — even block-level elements like headings, paragraphs, and lists.</p>
+
+        <h3>1. Text Links</h3>
+        <p>The simplest and most common form. The visible text is called the <em>anchor text</em> and is what screen readers announce and search engines index.</p>
+        <pre><code>&lt;a href="/products"&gt;Browse our products&lt;/a&gt;</code></pre>
+        <div class="demo-box">
+          <a href="#" style="color: var(--brand);">Browse our products</a>
+        </div>
+
+        <h3>2. Image Links</h3>
+        <p>Wrap an <code>&lt;img&gt;</code> in an <code>&lt;a&gt;</code>. The image's <code>alt</code> text becomes the link's accessible name.</p>
+        <pre><code>&lt;a href="/home"&gt;
+  &lt;img src="logo.svg" alt="Acme Corp home" width="120" height="40"&gt;
+&lt;/a&gt;
+
+&lt;!-- Icon link with text alongside --&gt;
+&lt;a href="/cart" class="cart-link"&gt;
+  &lt;svg width="20" height="20" aria-hidden="true"&gt;...&lt;/svg&gt;
+  &lt;span&gt;Cart (3)&lt;/span&gt;
+&lt;/a&gt;</code></pre>
+        <div class="demo-box">
+          <a href="#" style="display:inline-flex; align-items:center; gap:8px; color: var(--brand); text-decoration:none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span>Cart (3)</span>
+          </a>
+        </div>
+
+        <h3>3. Block Links (Card Pattern)</h3>
+        <p>Since HTML5, anchors can wrap "transparent" flow content — including headings, paragraphs, and images. This is perfect for clickable cards.</p>
+        <pre><code>&lt;a href="/blog/post-1" class="card-link"&gt;
+  &lt;article&gt;
+    &lt;h3&gt;Understanding CSS Grid&lt;/h3&gt;
+    &lt;p&gt;A deep dive into the two-dimensional layout system...&lt;/p&gt;
+    &lt;time datetime="2024-09-15"&gt;Sep 15, 2024&lt;/time&gt;
+  &lt;/article&gt;
+&lt;/a&gt;</code></pre>
+        <div class="block-link-demo">
+          <a href="#">
+            <h4>Understanding CSS Grid</h4>
+            <p>A deep dive into the two-dimensional layout system that changed web design.</p>
+            <small style="color: var(--ink-soft);">Sep 15, 2024 · 8 min read</small>
+          </a>
+          <a href="#">
+            <h4>Mastering Flexbox</h4>
+            <p>One-dimensional layouts made simple, with real-world patterns.</p>
+            <small style="color: var(--ink-soft);">Aug 28, 2024 · 6 min read</small>
+          </a>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — Nested Interactive Elements</strong>
+          You cannot nest a <code>&lt;button&gt;</code>, another <code>&lt;a&gt;</code>, or <code>&lt;input&gt;</code> inside an <code>&lt;a&gt;</code>. The HTML spec forbids it; browsers will silently split your anchor. If you need a button inside a clickable card, use JavaScript to handle the click, or restructure with absolute-positioned overlays.
+        </div>
+      </section>
+
+      <section id="default-styling">
+        <h2><span class="num">11</span> Default Styling</h2>
+        <p>Browsers apply sensible defaults to anchors, but they vary subtly across vendors. Here's what you inherit before writing any CSS:</p>
+        <table>
+          <thead>
+            <tr><th>State</th><th>Default Color</th><th>Default Decoration</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Unvisited (<code>:link</code>)</td><td><code>#0000EE</code> (blue)</td><td>Underline</td></tr>
+            <tr><td>Visited (<code>:visited</code>)</td><td><code>#551A8B</code> (purple)</td><td>Underline</td></tr>
+            <tr><td>Hover (<code>:hover</code>)</td><td>Inherits</td><td>Underline (often color change)</td></tr>
+            <tr><td>Active (<code>:active</code>)</td><td><code>#FF0000</code> (red) in some browsers</td><td>Underline</td></tr>
+            <tr><td>Focus (<code>:focus</code>)</td><td>Outline ring</td><td>Underline</td></tr>
+          </tbody>
+        </table>
+        <p>Modern CSS resets (Normalize, Modern CSS Reset, Tailwind Preflight) usually override these to use the page's text color and remove underlines, expecting you to re-add them deliberately. Always re-add underline — it's the universal affordance for "this is clickable".</p>
+        <pre><code>/* Modern baseline — colors the page's text color, underline on hover only */
+a {
+  color: currentColor;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+a:hover { color: var(--brand); text-decoration: underline; }</code></pre>
+      </section>
+
+      <section id="link-states">
+        <h2><span class="num">12</span> The Five Link States (LVHA)</h2>
+        <p>Links have five pseudo-class states. Memorize the order — <strong>LVHA</strong> (Link, Visited, Hover, Active) — because CSS specificity means later rules win when states overlap:</p>
+        <pre><code>a:link    { color: #2563eb; }  /* Unvisited */
+a:visited { color: #6b21a8; }  /* Visited */
+a:hover   { color: #dc2626; }  /* Mouse over */
+a:active  { color: #f59e0b; }  /* Being clicked */
+a:focus   { outline: 3px solid #2563eb; outline-offset: 2px; }</code></pre>
+        <div class="demo-box link-states">
+          <a href="#link-states">Unvisited</a>
+          <a href="#anatomy">Hover me</a>
+          <a href="#what">Click me</a>
+          <a href="#what">Tab to me</a>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — Wrong Order</strong>
+          If you write <code>:hover</code> before <code>:visited</code>, the hover style won't apply to visited links because <code>:visited</code> will override it. Always order: <code>:link</code>, <code>:visited</code>, <code>:hover</code>, <code>:active</code>, <code>:focus</code>.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For privacy reasons, browsers severely restrict what you can style on <code>:visited</code> links. You can change <code>color</code>, <code>background-color</code>, <code>border-color</code>, <code>outline-color</code>, <code>column-rule-color</code>, and <code>text-decoration-color</code> — but not <code>font-size</code>, <code>display</code>, <code>padding</code>, or anything that affects layout. This prevents history-sniffing attacks.
+        </div>
+      </section>
+
+      <section id="focus">
+        <h2><span class="num">13</span> Focus Styles — Don't Remove Them</h2>
+        <p>Keyboard users (and many power users) navigate by Tab. The focus ring is how they know which link is "active". Removing it with <code>outline: none</code> is one of the most common accessibility failures on the web.</p>
+        <pre><code>/* ❌ NEVER do this */
+a { outline: none; }
+
+/* ✅ Always do this — visible focus, only when keyboard-navigating */
+a:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Optional: also style for mouse focus, but typically you want
+   the ring only for keyboard users. Use :focus-visible, not :focus. */</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>:focus-visible</code> is supported in all modern browsers since 2022. It applies the focus ring only when the browser heuristically decides the user is keyboard-navigating — meaning mouse users don't see an ugly ring after a click, but keyboard users still get one. Use it over plain <code>:focus</code>.
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">14</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Anatomy Labeling</strong>
+          Write a single anchor tag that uses all seven attributes covered in section 3 (<code>href</code>, <code>target</code>, <code>rel</code>, <code>download</code>, <code>hreflang</code>, <code>type</code>, <code>referrerpolicy</code>). Point it to a PDF on a fictional domain. Add a comment explaining each attribute.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Image Link</strong>
+          Create an anchor that wraps an SVG icon (any icon — a magnifying glass for search). Make the link point to <code>/search</code> and ensure the SVG has appropriate <code>aria-hidden</code> or a visible text label.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Block Card</strong>
+          Build a clickable article card using the block-link pattern. Include a heading, a paragraph of teaser text, and a date. Verify it works with keyboard navigation (Tab to focus, Enter to "click").
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — LVHA Practice</strong>
+          Style a link with all five pseudo-classes. Choose distinct colors for each. Then test by visiting the link (you may need to clear history to test <code>:link</code> vs <code>:visited</code>).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Focus Ring Customization</strong>
+          Replace the default focus outline with a custom 3px solid ring using <code>:focus-visible</code>. Test by Tab-navigating through a list of links. Make sure the ring is visible against both light and dark backgrounds.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">15</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>href</code></td><td>Link becomes inert placeholder; not focusable or announced.</td><td>Always set <code>href</code>, even if <code>#</code>. For disabled state use <code>aria-disabled="true"</code>.</td></tr>
+            <tr><td><code>target="_blank"</code> without <code>rel="noopener"</code></td><td>Security: reverse tabnabbing attack.</td><td>Always add <code>rel="noopener noreferrer"</code>.</td></tr>
+            <tr><td>Removing focus outline</td><td>Keyboard users can't see where they are.</td><td>Style <code>:focus-visible</code>; never <code>outline: none</code>.</td></tr>
+            <tr><td>Link text "click here"</td><td>Bad for SEO, screen readers, and skim-readers.</td><td>Use descriptive text: "Download the Q3 report".</td></tr>
+            <tr><td>Nesting interactive elements</td><td>Invalid HTML; browsers split the anchor.</td><td>Restructure with overlays or JS click handlers.</td></tr>
+            <tr><td>Using <code>javascript:void(0)</code> in href</td><td>Doesn't work without JS; copies badly; bad for accessibility.</td><td>Use <code>&lt;button&gt;</code> instead — that's what they're for.</td></tr>
+            <tr><td>Same <code>href</code> for self-link</td><td>Confusing; reloads page; bad UX.</td><td>Omit the link to the current page or use <code>aria-current="page"</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">16</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Navigation Menus</h4>
+            <p>Every nav item is an <code>&lt;a&gt;</code>. Pair with <code>&lt;nav&gt;</code>, <code>&lt;ul&gt;</code>, <code>aria-current="page"</code> for accessible site navigation.</p>
+          </div>
+          <div class="card">
+            <h4>Breadcrumbs</h4>
+            <p>Sequential anchors separated by separators (›). Use <code>&lt;nav aria-label="Breadcrumb"&gt;</code> with an ordered list.</p>
+          </div>
+          <div class="card">
+            <h4>Read More / CTA</h4>
+            <p>Stylized anchors styled as buttons. Use <code>&lt;a&gt;</code> only when navigating; otherwise use <code>&lt;button&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Pagination</h4>
+            <p>Sequential page links with <code>rel="prev"</code>/<code>rel="next"</code>. Wrap in <code>&lt;nav aria-label="Pagination"&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Article Cards</h4>
+            <p>Block links wrapping entire card content. Most modern blog designs (Medium, Substack) use this pattern.</p>
+          </div>
+          <div class="card">
+            <h4>Email / Phone CTAs</h4>
+            <p><code>mailto:</code> and <code>tel:</code> schemes make contact info tappable on mobile — critical for local business sites.</p>
+          </div>
+          <div class="card">
+            <h4>Download Buttons</h4>
+            <p>PDFs, CSVs, images, generated files. Pair with <code>download</code> attribute and proper MIME <code>type</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Skip Links</h4>
+            <p>The first focusable element on a page: <code>&lt;a href="#main"&gt;Skip to content&lt;/a&gt;</code>. Vital for keyboard users.</p>
+          </div>
+          <div class="card">
+            <h4>Social / External</h4>
+            <p>Outbound links always get <code>target="_blank"</code> + <code>rel="noopener noreferrer external"</code>. Often styled with external-link icon.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">17</span> Summary</h2>
+        <ul>
+          <li>The <code>&lt;a&gt;</code> element creates hyperlinks; <code>href</code> is its only required attribute for navigation.</li>
+          <li>Seven attributes define behavior: <code>href</code>, <code>target</code>, <code>rel</code>, <code>download</code>, <code>hreflang</code>, <code>type</code>, <code>referrerpolicy</code>.</li>
+          <li>Always pair <code>target="_blank"</code> with <code>rel="noopener noreferrer"</code> — security-critical.</li>
+          <li>Content can be text, images, or block elements — but never nest interactive elements.</li>
+          <li>Five link states follow LVHA order: <code>:link</code>, <code>:visited</code>, <code>:hover</code>, <code>:active</code>, <code>:focus</code>.</li>
+          <li>Always style <code>:focus-visible</code>; never remove the focus ring.</li>
+          <li>Visited-link styling is restricted for privacy (history-sniffing protection).</li>
+          <li>For non-navigation actions (form submit, modal open), use <code>&lt;button&gt;</code>, not <code>&lt;a href="#"&gt;</code>.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../../02-Text-Formatting/04-Lists/definition-lists.html">← Previous: Description Lists</a>
+      <a href="href-attribute.html">Next: href Attribute →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Anchor Tag Anatomy</p>
+  </footer>
+</body>
+</html>

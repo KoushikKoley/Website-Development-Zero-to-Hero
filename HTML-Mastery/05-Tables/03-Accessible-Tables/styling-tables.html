@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Styling Tables with CSS — HTML Mastery</title>
+  <meta name="description" content="Master table styling with CSS: border-collapse (collapse vs separate), border-spacing, empty-cells, table-layout (auto vs fixed), zebra striping, hover states, padding, sticky headers, and the modern patterns that make data tables beautiful and readable.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box .live-table { width: 100%; }
+    /* Demo: collapse */
+    .demo-collapse .live-table { border-collapse: collapse; }
+    .demo-collapse .live-table th, .demo-collapse .live-table td { border: 1px solid #475569; padding: 8px 12px; }
+    .demo-collapse .live-table thead th { background: #1e293b; color: white; }
+    /* Demo: separate */
+    .demo-separate .live-table { border-collapse: separate; border-spacing: 8px; }
+    .demo-separate .live-table th, .demo-separate .live-table td { border: 1px solid #475569; padding: 8px 12px; background: #fff; }
+    .demo-separate .live-table thead th { background: #1e293b; color: white; }
+    /* Demo: zebra + hover */
+    .demo-zebra .live-table { border-collapse: collapse; }
+    .demo-zebra .live-table th, .demo-zebra .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-zebra .live-table thead th { background: #1e293b; color: white; }
+    .demo-zebra .live-table tbody tr:nth-child(even) td { background: #f8fafc; }
+    .demo-zebra .live-table tbody tr:hover td { background: #dbeafe; }
+    /* Demo: sticky */
+    .demo-sticky-wrap { max-height: 200px; overflow-y: auto; border: 1px solid #cbd5e1; }
+    .demo-sticky .live-table { border-collapse: collapse; width: 100%; }
+    .demo-sticky .live-table th, .demo-sticky .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-sticky .live-table thead th { background: #1e293b; color: white; position: sticky; top: 0; z-index: 1; }
+    .demo-sticky .live-table tbody td { background: white; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.limited { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 8</span>
+    <h1>Styling Tables with CSS</h1>
+    <p>From <code>border-collapse</code> to sticky headers, every CSS property that matters for tables. Master zebra striping, hover states, fixed layout for predictable columns, and the modern patterns that turn data grids into beautiful, readable interfaces.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">The styling landscape</a></li>
+        <li><a href="#border-collapse">border-collapse</a></li>
+        <li><a href="#border-spacing">border-spacing</a></li>
+        <li><a href="#empty-cells">empty-cells</a></li>
+        <li><a href="#table-layout">table-layout</a></li>
+        <li><a href="#padding">Cell padding</a></li>
+        <li><a href="#zebra">Zebra striping</a></li>
+        <li><a href="#hover">Hover states</a></li>
+        <li><a href="#sticky-headers">Sticky headers</a></li>
+        <li><a href="#number-alignment">Number alignment</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> The styling landscape</h2>
+        <p>Tables have a special CSS layout algorithm with several properties that apply only to tables — there's nothing like <code>border-collapse</code> for flexbox or grid. Mastering these properties is the difference between "the table looks OK" and "the table looks professional".</p>
+        <p>The core properties:</p>
+        <ul>
+          <li><code>border-collapse</code> — merge or separate cell borders</li>
+          <li><code>border-spacing</code> — gap between cells in <code>separate</code> mode</li>
+          <li><code>empty-cells</code> — show/hide borders on empty cells</li>
+          <li><code>table-layout</code> — auto vs fixed column width algorithm</li>
+          <li><code>caption-side</code> — where the caption sits</li>
+          <li><code>vertical-align</code> — cell content alignment (also works on cells)</li>
+        </ul>
+        <p>Plus regular CSS properties (<code>background</code>, <code>color</code>, <code>padding</code>, <code>border</code>) applied to <code>table</code>, <code>th</code>, and <code>td</code>.</p>
+      </section>
+
+      <section id="border-collapse">
+        <h2><span class="num">2</span> <code>border-collapse</code></h2>
+        <p>This single property is the foundation of table styling. Two values:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Value</th><th>Effect</th><th>Use when</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>separate</code> (default)</td><td>Each cell has its own borders; <code>border-spacing</code> creates gaps between them.</td><td>You want visible spacing between cells, or sticky headers with separate background.</td></tr>
+            <tr><td><code>collapse</code></td><td>Adjacent cells share a single border line. No gaps.</td><td>You want clean, continuous borders. The standard for data tables.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>/* The standard modern table reset */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 12px;
+}</code></pre>
+        <div class="grid-2">
+          <div class="demo-box demo-collapse">
+            <div class="demo-label">border-collapse: collapse — shared borders</div>
+            <table class="live-table">
+              <thead><tr><th>Product</th><th>Price</th></tr></thead>
+              <tbody>
+                <tr><td>Apple</td><td>$1.20</td></tr>
+                <tr><td>Banana</td><td>$0.50</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="demo-box demo-separate">
+            <div class="demo-label">border-collapse: separate — independent borders + 8px gap</div>
+            <table class="live-table">
+              <thead><tr><th>Product</th><th>Price</th></tr></thead>
+              <tbody>
+                <tr><td>Apple</td><td>$1.20</td></tr>
+                <tr><td>Banana</td><td>$0.50</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always set <code>border-collapse</code> explicitly. Relying on the default <code>separate</code> value is the source of countless "why does my table have weird gaps?" tickets.
+        </div>
+      </section>
+
+      <section id="border-spacing">
+        <h2><span class="num">3</span> <code>border-spacing</code></h2>
+        <p>Only applies when <code>border-collapse: separate</code>. Sets the gap between cells. Accepts one or two lengths:</p>
+        <pre><code>table {
+  border-collapse: separate;
+  border-spacing: 4px;             /* uniform gap */
+  border-spacing: 4px 8px;        /* 4px horizontal, 8px vertical */
+}</code></pre>
+        <p>This replaces the deprecated <code>cellspacing</code> HTML attribute. The two-value form takes (horizontal, vertical) — same convention as <code>margin</code> shorthand.</p>
+      </section>
+
+      <section id="empty-cells">
+        <h2><span class="num">4</span> <code>empty-cells</code></h2>
+        <p>Also requires <code>border-collapse: separate</code>. Controls whether empty cells render their borders:</p>
+        <pre><code>table { border-collapse: separate; }
+table { empty-cells: show; }   /* default — borders visible */
+table { empty-cells: hide; }  /* empty cells lose their borders */</code></pre>
+        <p>Most modern designs use <code>border-collapse: collapse</code> instead, which makes <code>empty-cells</code> irrelevant. But for designs that need visible cell spacing, <code>empty-cells: hide</code> can prevent ugly empty cells in sparse data.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For real "no data" cells, use an explicit placeholder like <code>—</code> or <code>N/A</code> rather than relying on empty cells. Screen reader users get nothing from an empty cell.
+        </div>
+      </section>
+
+      <section id="table-layout">
+        <h2><span class="num">5</span> <code>table-layout</code></h2>
+        <p>The most important performance property for tables. Two algorithms:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Value</th><th>Algorithm</th><th>Speed</th><th>Use when</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>auto</code> (default)</td><td>Browser reads <em>all</em> rows to find the widest content per column, then sizes columns. Reflows on every row.</td><td>Slow for big tables</td><td>Small tables (&lt;50 rows), or content width varies wildly</td></tr>
+            <tr><td><code>fixed</code></td><td>Browser uses only the first row (or <code>&lt;col&gt;</code> widths) to set column widths. No reflow as more rows load.</td><td>Fast</td><td>Large tables, dynamic data, streaming rows</td></tr>
+          </tbody>
+        </table>
+        <pre><code>table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* With table-layout: fixed, you MUST declare column widths */
+colgroup col:nth-child(1) { width: 120px; }
+colgroup col:nth-child(2) { width: 200px; }
+colgroup col:nth-child(3) { width: auto; }   /* takes remaining */</code></pre>
+        <div class="callout warn">
+          <strong>Gotcha</strong>
+          With <code>table-layout: fixed</code>, if you don't specify column widths, the browser distributes widths equally — which is rarely what you want. Always pair <code>table-layout: fixed</code> with explicit widths via <code>&lt;colgroup&gt;</code>/<code>&lt;col&gt;</code> or <code>&lt;th&gt;</code> widths.
+        </div>
+      </section>
+
+      <section id="padding">
+        <h2><span class="num">6</span> Cell padding</h2>
+        <p>Padding on <code>&lt;th&gt;</code> and <code>&lt;td&gt;</code> gives text room to breathe. The default is zero in most browsers — always set it explicitly. This replaces the deprecated <code>cellpadding</code> HTML attribute.</p>
+        <pre><code>th, td {
+  padding: 10px 14px;   /* generous for desktop */
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  th, td { padding: 6px 8px; }   /* tighter on mobile */
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For dense data tables, prefer 8px-12px padding. For marketing/pricing tables, 16px-20px. Never use less than 6px — the table feels cramped and rows become hard to scan.
+        </div>
+      </section>
+
+      <section id="zebra">
+        <h2><span class="num">7</span> Zebra striping</h2>
+        <p>The classic pattern: alternating row backgrounds for visual scannability. Use <code>:nth-child(even)</code> (or <code>odd</code>) on body rows only — never header or footer:</p>
+        <pre><code>tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+/* Make sure hover overrides stripe */
+tbody tr:hover td {
+  background: #dbeafe;
+}</code></pre>
+        <div class="demo-box demo-zebra">
+          <div class="demo-label">Zebra-striped body rows + hover highlight</div>
+          <table class="live-table">
+            <thead>
+              <tr><th scope="col">Product</th><th scope="col">Price</th><th scope="col">Stock</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Apple</td><td>$1.20</td><td>128</td></tr>
+              <tr><td>Banana</td><td>$0.50</td><td>240</td></tr>
+              <tr><td>Cherry</td><td>$3.99</td><td>0</td></tr>
+              <tr><td>Date</td><td>$2.10</td><td>85</td></tr>
+              <tr><td>Elderberry</td><td>$4.50</td><td>12</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For accessibility, ensure at least 3:1 contrast between the alternating colors. Subtle off-white variations are common but check WCAG contrast. Test with a contrast checker.
+        </div>
+      </section>
+
+      <section id="hover">
+        <h2><span class="num">8</span> Hover states</h2>
+        <p>Hover highlights the entire row, helping users track which row they're scanning. Apply the hover to the <code>&lt;tr&gt;</code> but the background to the <code>&lt;td&gt;</code> — because cells, not rows, hold the background in collapsed-border tables:</p>
+        <pre><code>tbody tr:hover td {
+  background: #eff6ff;
+}
+
+/* For a "selected" state */
+tbody tr.selected td {
+  background: #dbeafe;
+  font-weight: 600;
+}</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Setting <code>background</code> on <code>tr:hover</code> directly works in some browsers but is unreliable. Always target the cells: <code>tr:hover td</code>.
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Add a CSS transition for smoothness: <code>tbody td { transition: background 0.15s ease; }</code>. Avoid longer transitions — they make data tables feel sluggish.
+        </div>
+      </section>
+
+      <section id="sticky-headers">
+        <h2><span class="num">9</span> Sticky headers</h2>
+        <p>The pattern: wrap the table in a scrollable container, set <code>position: sticky; top: 0;</code> on the <code>&lt;thead&gt;</code>'s <code>&lt;th&gt;</code> cells. The header stays visible while body rows scroll under it.</p>
+        <pre><code>.table-scroll {
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #cbd5e1;
+}
+
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: #1e293b;   /* MUST be opaque */
+  color: white;
+  z-index: 1;
+}</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Sticky header — scroll to test</div>
+          <div class="demo-sticky-wrap">
+            <div class="demo-sticky">
+              <table class="live-table">
+                <thead>
+                  <tr><th scope="col">ID</th><th scope="col">Customer</th><th scope="col">Order Total</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1001</td><td>Alice Johnson</td><td>$234.50</td></tr>
+                  <tr><td>1002</td><td>Bob Smith</td><td>$89.99</td></tr>
+                  <tr><td>1003</td><td>Carol Davies</td><td>$1,250.00</td></tr>
+                  <tr><td>1004</td><td>Dan Brown</td><td>$45.20</td></tr>
+                  <tr><td>1005</td><td>Eve Martinez</td><td>$678.34</td></tr>
+                  <tr><td>1006</td><td>Frank Lee</td><td>$210.10</td></tr>
+                  <tr><td>1007</td><td>Grace Ng</td><td>$99.99</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="callout warn">
+          <strong>Sticky header gotchas</strong>
+          <ul>
+            <li>The background must be opaque — otherwise body cells bleed through as you scroll.</li>
+            <li>Set <code>z-index: 1</code> (or higher) so the header paints above the body.</li>
+            <li>If you have sticky body columns too (horizontal + vertical scroll), the corner cell needs a higher z-index than both.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="number-alignment">
+        <h2><span class="num">10</span> Number alignment</h2>
+        <p>Numeric columns should be right-aligned (or decimal-aligned) so digits line up. This is the most common table styling oversight in the wild.</p>
+        <pre><code>/* Right-align numeric columns */
+tbody td.num { text-align: right; }
+th.num { text-align: right; }
+
+/* Decimal alignment via tabular figures */
+.num { font-variant-numeric: tabular-nums; }</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>font-variant-numeric: tabular-nums</code> on numeric cells. It makes digits monospace-width so columns line up vertically even with proportional fonts.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Symptom</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>cellpadding</code>/<code>cellspacing</code> HTML attributes</td><td>Deprecated; harder to override with CSS.</td><td>Use CSS <code>padding</code> and <code>border-spacing</code>.</td></tr>
+            <tr><td>Forgetting <code>border-collapse</code></td><td>Visible gaps between cells; ugly borders.</td><td>Always set <code>border-collapse: collapse</code> unless deliberate.</td></tr>
+            <tr><td>Transparent sticky header</td><td>Body cells bleed through on scroll.</td><td>Use opaque <code>background</code> + <code>z-index</code>.</td></tr>
+            <tr><td><code>table-layout: fixed</code> without column widths</td><td>Equal column widths regardless of content.</td><td>Always pair with <code>&lt;colgroup&gt;</code> or <code>&lt;th&gt;</code> widths.</td></tr>
+            <tr><td>Hover on <code>tr:hover</code> instead of <code>tr:hover td</code></td><td>Background doesn't appear in collapsed-border tables.</td><td>Target the cells, not the row.</td></tr>
+            <tr><td>Skipping zebra contrast checks</td><td>Fails WCAG AA contrast requirements.</td><td>Verify 3:1 ratio between stripes; use a contrast checker.</td></tr>
+            <tr><td>Center-aligning numeric columns</td><td>Numbers don't line up; hard to scan.</td><td>Right-align numbers; use <code>tabular-nums</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">12</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Full reset</strong>
+          Take a bare HTML table with no styling. Apply: <code>border-collapse: collapse</code>, 1px gray borders on cells, 10px padding, header background, left text alignment. Notice the dramatic improvement.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Zebra + hover</strong>
+          Add zebra striping to alternate body rows. Add a hover state that overrides the stripe color. Test that hover works on both even and odd rows.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Sticky header</strong>
+          Build a table with 12+ rows. Wrap it in a container with <code>max-height: 200px; overflow-y: auto</code>. Apply <code>position: sticky; top: 0</code> to header cells. Don't forget the opaque background!
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Fixed layout</strong>
+          Build a 3-column table. Set <code>table-layout: fixed</code> and declare column widths via <code>&lt;colgroup&gt;</code>. Compare rendering speed and column widths vs an <code>auto</code> layout version of the same table.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Number alignment</strong>
+          Build a financial table with currency values. Right-align numeric columns and apply <code>font-variant-numeric: tabular-nums</code>. Confirm digits line up vertically.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">13</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">border-collapse — universal</span>
+          <span class="pill yes">border-spacing — universal</span>
+          <span class="pill yes">empty-cells — universal</span>
+          <span class="pill yes">table-layout — universal</span>
+          <span class="pill yes">position: sticky — all modern browsers</span>
+          <span class="pill yes">font-variant-numeric — modern only</span>
+          <span class="pill limited">:nth-child — IE9+</span>
+        </div>
+        <p>Everything you need for production tables works in every modern browser. <code>position: sticky</code> on <code>&lt;thead&gt;</code> works in all browsers since 2017. <code>tabular-nums</code> works in modern Chrome/Firefox/Safari but may not affect older browsers (graceful fallback — text remains visible).</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">14</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Admin data grids</h4>
+            <p>Sticky headers, zebra rows, hover states, sortable columns. The "enterprise table" look.</p>
+          </div>
+          <div class="card">
+            <h4>Financial reports</h4>
+            <p>Right-aligned numbers with tabular figures. Bold totals in footer with amber background.</p>
+          </div>
+          <div class="card">
+            <h4>Pricing tables</h4>
+            <p>Highlighted middle column via <code>&lt;col&gt;</code> background. Center-aligned checkmarks for "included" features.</p>
+          </div>
+          <div class="card">
+            <h4>Directory lists</h4>
+            <p>Tight padding, hover-to-reveal actions, avatar + name + status layout.</p>
+          </div>
+          <div class="card">
+            <h4>Sports standings</h4>
+            <p>Top row sticky, position column highlighted, alternating row colors for scannability.</p>
+          </div>
+          <div class="card">
+            <h4>Calendars</h4>
+            <p>7-column grid with <code>table-layout: fixed</code>, current-day cell highlighted, weekend columns tinted.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="scope-headers.html">← Previous: Scope &amp; Headers</a>
+    <a class="next" href="responsive-tables.html">Next: Responsive Tables →</a>
+  </footer>
+</body>
+</html>

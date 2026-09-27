@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email (mailto:) and Telephone (tel:) Links — HTML Mastery</title>
+  <meta name="description" content="Master email mailto: links and phone tel: links — full syntax, multiple recipients, subject and body, international numbers, mobile UX, click-to-call patterns, and security considerations.">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.7;
+      color: #1e293b;
+      background: #f8fafc;
+    }
+    .hero {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+      color: #fff;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .hero p { opacity: 0.95; max-width: 700px; margin: 0 auto; }
+    .layout {
+      max-width: 1200px;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      padding: 0 1rem;
+    }
+    .toc {
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+    .toc h3 { font-size: 0.9rem; color: #64748b; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .toc ul { list-style: none; }
+    .toc li { margin-bottom: 0.4rem; }
+    .toc a { color: #475569; text-decoration: none; font-size: 0.9rem; }
+    .toc a:hover { color: #6366f1; }
+    main { background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    h2 { color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
+    h3 { color: #4338ca; margin: 1.5rem 0 0.75rem; }
+    p { margin-bottom: 1rem; }
+    pre {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.875rem;
+      margin: 1rem 0;
+    }
+    code { background: #eef2ff; color: #4338ca; padding: 0.1em 0.35em; border-radius: 3px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.9em; }
+    pre code { background: none; color: inherit; padding: 0; }
+    .callout { padding: 1rem 1.25rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid; }
+    .callout-info { background: #eff6ff; border-color: #3b82f6; }
+    .callout-tip { background: #f0fdf4; border-color: #22c55e; }
+    .callout-warn { background: #fef2f2; border-color: #ef4444; }
+    .callout-exercise { background: #fffbeb; border-color: #f59e0b; }
+    .callout-title { font-weight: 700; margin-bottom: 0.5rem; }
+    .demo {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    .demo a { color: #6366f1; font-weight: 600; }
+    .browser-support { display: inline-block; background: #dcfce7; color: #15803d; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .footer-nav {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .footer-nav a { color: #6366f1; text-decoration: none; font-weight: 600; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; max-height: none; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Email &amp; Telephone Links</h1>
+    <p>mailto: and tel: URL schemes turn plain text into actionable, native communication triggers — perfect for contact pages, support flows, and mobile click-to-call UX.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h3>On This Page</h3>
+      <ul>
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#mailto-basic">Basic mailto: Link</a></li>
+        <li><a href="#mailto-params">mailto: Parameters</a></li>
+        <li><a href="#mailto-multiple">Multiple Recipients</a></li>
+        <li><a href="#mailto-encoded">URL Encoding</a></li>
+        <li><a href="#tel-basic">Basic tel: Link</a></li>
+        <li><a href="#tel-format">Phone Number Format</a></li>
+        <li><a href="#tel-international">International Numbers</a></li>
+        <li><a href="#sms">sms: Links</a></li>
+        <li><a href="#facetime">FaceTime &amp; Skype</a></li>
+        <li><a href="#styling">Styling Action Links</a></li>
+        <li><a href="#security">Security Concerns</a></li>
+        <li><a href="#ux">UX Best Practices</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ul>
+    </aside>
+
+    <main>
+      <section id="intro">
+        <h2>What Are Special URL Schemes?</h2>
+        <p>Beyond <code>http:</code> and <code>https:</code>, browsers recognize several "special" URL schemes that hand off the action to another application instead of loading a web page. The two most useful for content authors are <code>mailto:</code> (opens the visitor's default email client with a pre-filled message) and <code>tel:</code> (initiates a phone call on devices with calling capability). Used well, these schemes remove friction from contact flows: a single tap on a phone number dials it; a single tap on an email address opens a draft already addressed and titled.</p>
+        <p>Mobile devices derive the most value from these schemes — desktop users without a configured mail client will see a less graceful fallback — so always provide visible text alternatives ("email us at <code>hello@example.com</code>") alongside the link. The schemes themselves are simple, but the syntax has enough rules and edge cases to warrant careful study.</p>
+      </section>
+
+      <section id="mailto-basic">
+        <h2>The Basic mailto: Link</h2>
+        <p>The simplest <code>mailto:</code> link contains only the recipient's email address. When clicked, the browser opens the user's default mail client with that address pre-filled in the "To" field. No subject, no body — just the address.</p>
+        <pre><code>&lt;a href="mailto:hello@example.com"&gt;Email us&lt;/a&gt;</code></pre>
+        <div class="demo">
+          <a href="mailto:hello@example.com">Email us</a>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-title">ℹ️ No protocol-relative URL</div>
+          <p>Always write <code>mailto:</code> with the trailing colon — <code>mailto:</code> is the scheme; the email address is the path. Do <strong>not</strong> add <code>//</code> (e.g. <code>mailto://hello@example.com</code> is invalid).</p>
+        </div>
+      </section>
+
+      <section id="mailto-params">
+        <h2>mailto: Parameters</h2>
+        <p>You can pre-fill many fields of the email by adding query-string-style parameters after the address. The supported parameters are <code>subject</code>, <code>body</code>, <code>cc</code> (carbon copy), and <code>bcc</code> (blind carbon copy). Separate the first parameter from the address with <code>?</code>, additional parameters with <code>&amp;</code>.</p>
+        <pre><code>&lt;a href="mailto:hello@example.com?subject=Hello%20there&amp;body=I%20wanted%20to%20say%20hi."&gt;
+  Send a greeting
+&lt;/a&gt;</code></pre>
+        <div class="demo">
+          <a href="mailto:hello@example.com?subject=Hello%20there&body=I%20wanted%20to%20say%20hi.">Send a greeting</a>
+        </div>
+        <h3>Full parameter reference</h3>
+        <table>
+          <thead>
+            <tr><th>Parameter</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>subject</code></td><td>Sets the email subject line</td><td><code>subject=Support%20Request</code></td></tr>
+            <tr><td><code>body</code></td><td>Sets the email body (use <code>%0A</code> for line breaks)</td><td><code>body=Hello%0A%0AMy%20question%20is...</code></td></tr>
+            <tr><td><code>cc</code></td><td>Adds one or more CC recipients</td><td><code>cc=boss@example.com</code></td></tr>
+            <tr><td><code>bcc</code></td><td>Adds one or more BCC recipients</td><td><code>bcc=archive@example.com</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-warn">
+          <div class="callout-title">⚠️ Length limits vary</div>
+          <p>Browsers and email clients impose different (and often short) length limits on <code>mailto:</code> URLs. Avoid stuffing long pre-filled body content; anything beyond ~2,000 characters may be truncated or rejected. For long content, prefer a contact form.</p>
+        </div>
+      </section>
+
+      <section id="mailto-multiple">
+        <h2>Multiple Recipients</h2>
+        <p>Send to multiple recipients by separating addresses with commas inside the main <code>mailto:</code> section (before the <code>?</code>), or repeat the <code>cc</code>/<code>bcc</code> parameters. The first form is more widely supported.</p>
+        <pre><code>&lt;!-- Multiple addresses in the "to" field --&gt;
+&lt;a href="mailto:sales@example.com,support@example.com?subject=Joint%20Inquiry"&gt;
+  Email sales and support
+&lt;/a&gt;
+
+&lt;!-- Or split between to, cc, and bcc --&gt;
+&lt;a href="mailto:sales@example.com?cc=billing@example.com&amp;bcc=audit@example.com"&gt;
+  Email with CC and BCC
+&lt;/a&gt;</code></pre>
+        <div class="demo">
+          <a href="mailto:sales@example.com,support@example.com?subject=Joint%20Inquiry">Email sales and support</a>
+        </div>
+      </section>
+
+      <section id="mailto-encoded">
+        <h2>URL Encoding (Percent-Encoding)</h2>
+        <p>Mailto URLs live inside an HTML attribute, so they must obey URL encoding rules. Spaces become <code>%20</code> (or <code>+</code> in some contexts), commas are usually safe, but characters like <code>&amp;</code>, <code>?</code>, <code>=</code>, <code>#</code>, and non-ASCII letters must be percent-encoded. Line breaks in the body use <code>%0D%0A</code> (CRLF) or <code>%0A</code> (LF) — most clients accept either.</p>
+        <pre><code>&lt;!-- Multi-line body --&gt;
+&lt;a href="mailto:hi@example.com?subject=Bug%20Report&amp;body=Description:%0A%0ASteps%20to%20reproduce:%0A1.%20%0A2.%20%0A3.%20"&gt;
+  Report a bug
+&lt;/a&gt;</code></pre>
+        <div class="callout callout-tip">
+          <div class="callout-title">✅ Pro Tip</div>
+          <p>If you're generating mailto links dynamically with JavaScript, use <code>encodeURIComponent()</code> on each piece — it handles every reserved character correctly. In a build step, use your templating language's URL-encoding filter (e.g. <code>|urlencode</code> in Jinja/Django, <code>urlencode</code> in Liquid).</p>
+        </div>
+      </section>
+
+      <section id="tel-basic">
+        <h2>The Basic tel: Link</h2>
+        <p>The <code>tel:</code> URL scheme triggers a phone call. On mobile devices this opens the dialer pre-filled with the number; on desktops with calling apps (Skype, FaceTime, etc.) it may launch those instead.</p>
+        <pre><code>&lt;a href="tel:+18005551234"&gt;Call us: (800) 555-1234&lt;/a&gt;</code></pre>
+        <div class="demo">
+          <a href="tel:+18005551234">Call us: (800) 555-1234</a>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-title">ℹ️ Visible text should NOT be just digits</div>
+          <p>Always present a human-readable phone number as the link text — <code>(800) 555-1234</code> is friendlier than <code>+18005551234</code>. The <code>href</code> should contain the E.164 format (with the <code>+</code> and country code) for maximum portability.</p>
+        </div>
+      </section>
+
+      <section id="tel-format">
+        <h2>Phone Number Format (E.164)</h2>
+        <p>The most reliable <code>tel:</code> format follows the ITU-T E.164 standard: a leading <code>+</code>, then the country code, then the subscriber number, with no spaces, dashes, or parentheses inside the URL. While browsers are tolerant of separators, E.164 is what carriers and PBX systems expect, so it survives the trip through more apps.</p>
+        <pre><code>&lt;!-- E.164 (recommended) --&gt;
+&lt;a href="tel:+14155550123"&gt;+1 (415) 555-0123&lt;/a&gt;
+
+&lt;!-- With separators (works in browsers, but discouraged) --&gt;
+&lt;a href="tel:+1-415-555-0123"&gt;+1 (415) 555-0123&lt;/a&gt;
+
+&lt;!-- Local format (region-dependent, may fail abroad) --&gt;
+&lt;a href="tel:5550123"&gt;555-0123&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="tel-international">
+        <h2>International Numbers and Pauses</h2>
+        <p>For international audiences, always use E.164. If you need to dial an extension or insert a pause, use <code>,</code> (one-second pause) or <code>;</code> (wait for user input). Note that <code>;</code> is part of the RFC 3966 spec but support is spotty — test on real devices.</p>
+        <pre><code>&lt;!-- With extension --&gt;
+&lt;a href="tel:+18005551234,1234"&gt;Call (800) 555-1234 ext. 1234&lt;/a&gt;
+
+&lt;!-- With wait (RFC 3966) --&gt;
+&lt;a href="tel:+18005551234;ext=1234"&gt;Call (800) 555-1234 ext. 1234&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="sms">
+        <h2>sms: Links</h2>
+        <p>The <code>sms:</code> scheme opens the SMS app pre-filled with a recipient and (optionally) a body. Support is best on mobile; desktop browsers usually do nothing. Use <code>?</code> for the body on iOS and <code>&amp;</code> on Android — to satisfy both, provide two links or accept that one platform may not see the body.</p>
+        <pre><code>&lt;!-- iOS syntax --&gt;
+&lt;a href="sms:+18005551234?body=Hello%20there"&gt;Text us&lt;/a&gt;
+
+&lt;!-- Android syntax --&gt;
+&lt;a href="sms:+18005551234?body=Hello%20there"&gt;Text us&lt;/a&gt;
+
+&lt;!-- Cross-platform safer (no body) --&gt;
+&lt;a href="sms:+18005551234"&gt;Text us&lt;/a&gt;</code></pre>
+        <div class="callout callout-warn">
+          <div class="callout-title">⚠️ Body support is inconsistent</div>
+          <p>Safari on iOS expects <code>?body=</code>; Chrome on Android historically wanted <code>?body=</code> too but the spec evolved. Test on real devices before relying on pre-filled SMS bodies in production.</p>
+        </div>
+      </section>
+
+      <section id="facetime">
+        <h2>FaceTime, Skype, and Other App Schemes</h2>
+        <p>Apple exposes <code>facetime:</code> and <code>facetime-audio:</code> for video and audio calls on supported devices. Skype recognizes <code>skype:</code> with a <code>?call</code> or <code>?chat</code> action. WhatsApp accepts <code>https://wa.me/&lt;number&gt;?text=&lt;encoded&gt;</code>. None of these are universal — always include a visible phone number or username as fallback text.</p>
+        <pre><code>&lt;a href="facetime:john@example.com"&gt;FaceTime John&lt;/a&gt;
+&lt;a href="facetime-audio:+18005551234"&gt;FaceTime Audio (800) 555-1234&lt;/a&gt;
+&lt;a href="skype:john.doe?call"&gt;Call John on Skype&lt;/a&gt;
+&lt;a href="https://wa.me/18005551234?text=Hi%20there"&gt;WhatsApp us&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="styling">
+        <h2>Styling Action Links</h2>
+        <p>mailto: and tel: links are still <code>&lt;a&gt;</code> elements, so they inherit the same color, hover, and focus styles as ordinary links. It's good UX to make them visually distinct so users understand the link will leave the page (launch an external app). Icons help — a small envelope SVG next to mailto, a phone glyph next to tel.</p>
+        <pre><code>&lt;style&gt;
+  .action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #6366f1;
+    color: #fff;
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.15s ease;
+  }
+  .action-link:hover { background: #4f46e5; }
+  .action-link:focus-visible {
+    outline: 3px solid #fbbf24;
+    outline-offset: 2px;
+  }
+&lt;/style&gt;
+
+&lt;a class="action-link" href="mailto:hello@example.com"&gt;
+  ✉️ Email us
+&lt;/a&gt;
+&lt;a class="action-link" href="tel:+18005551234"&gt;
+  📞 Call us
+&lt;/a&gt;</code></pre>
+      </section>
+
+      <section id="security">
+        <h2>Security and Privacy Concerns</h2>
+        <p>mailto: links expose email addresses to anyone reading the source — including spam harvesters. To reduce spam, consider obfuscating the address (e.g. <code>hello [at] example [dot] com</code> as visible text, while the <code>href</code> uses real encoding), or replace the link with a contact form protected by CAPTCHA. The same applies to phone numbers: a public tel: link makes your number crawlable.</p>
+        <p>Never accept user input and concatenate it directly into a mailto: URL without validation — an attacker could craft a link that runs JavaScript in older browsers via <code>javascript:</code> scheme or smuggles extra parameters into the body. Sanitize and URL-encode all dynamic values.</p>
+        <div class="callout callout-warn">
+          <div class="callout-title">⚠️ Never use javascript: scheme</div>
+          <p>The legacy <code>javascript:</code> URL scheme (e.g. <code>href="javascript:sendMail()"</code>) is deprecated, a security risk, and breaks in browsers with JavaScript disabled. Always use <code>mailto:</code> for email triggers, and reserve <code>javascript:</code> for nothing.</p>
+        </div>
+      </section>
+
+      <section id="ux">
+        <h2>UX Best Practices</h2>
+        <ul>
+          <li><strong>Make numbers tappable:</strong> on mobile, wrap every visible phone number in a <code>tel:</code> link. The minimum target size for thumb taps is 44×44px (Apple HIG) or 48×48dp (Material).</li>
+          <li><strong>Show the address:</strong> the visible text should always include the email address or phone number itself, not just "Click here" — screen-reader users benefit from the explicit info.</li>
+          <li><strong>Provide a contact form too:</strong> mailto: fails for users on shared/public machines without a configured mail client. A form is more reliable.</li>
+          <li><strong>Use <code>aria-label</code> for icon-only links:</strong> if your link text is just an envelope emoji, add <code>aria-label="Email us at hello@example.com"</code>.</li>
+          <li><strong>Add <code>rel="noopener"</code> when combining with <code>target="_blank"</code>:</strong> though <code>mailto:</code> rarely opens a new tab, if you do, prevent reverse-tabnabbing.</li>
+        </ul>
+        <div class="callout callout-exercise">
+          <div class="callout-title">✏️ Try It Yourself</div>
+          <p>Build a small "Contact card" component that includes: a styled mailto link with pre-filled subject "Question from website" and a 3-line body template, a tel: link in E.164 format, a WhatsApp link, and visible text fallback for each. Test by clicking each link on both desktop and a mobile device.</p>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2>Summary</h2>
+        <p>The <code>mailto:</code> and <code>tel:</code> URL schemes are tiny but mighty — they turn any link into a one-tap action that opens the visitor's preferred email client or dialer. Master the parameter syntax (<code>subject</code>, <code>body</code>, <code>cc</code>, <code>bcc</code>), always URL-encode dynamic values, prefer E.164 phone numbers, and remember that these schemes are most powerful on mobile while desktop users may need a contact form fallback. Style your action links to set expectations, keep accessibility in mind with descriptive text and ARIA labels, and you'll have contact flows that delight users on every device.</p>
+        <p><span class="browser-support">Browser Support</span> mailto: universal since IE3; tel: supported in all modern mobile browsers and most desktop browsers since 2015. <code>sms:</code> body support varies — always test on real devices before shipping.</p>
+      </section>
+    </main>
+  </div>
+
+  <nav class="footer-nav">
+    <a href="link-types.html">← Previous: Link Types</a>
+    <a href="../../04-Media-and-Graphics/01-Images/images-basics.html">Next: Images Basics →</a>
+  </nav>
+</body>
+</html>

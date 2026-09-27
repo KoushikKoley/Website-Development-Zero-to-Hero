@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Void Elements — HTML Mastery</title>
+  <meta name="description" content="The complete list of HTML void elements: br, hr, img, input, meta, link, area, base, col, embed, source, track, wbr. What they are, when to use each, and how to remember them.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #16a34a 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; font-family: "JetBrains Mono", monospace; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0 0 8px; }
+    .card code { background: #e0e7ff; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { background: white; border: 1px dashed var(--brand); padding: 12px; border-radius: 8px; margin: 12px 0; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.3 · Elements &amp; Tags</span>
+    <h1>Void Elements</h1>
+    <p>The 13 elements that have no closing tag, no content, no children — they stand alone. From <code>&lt;br&gt;</code> to <code>&lt;wbr&gt;</code>, every one of them, with examples.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Makes an Element Void?</a></li>
+        <li><a href="#list">Complete List</a></li>
+        <li><a href="#br">&lt;br&gt;</a></li>
+        <li><a href="#hr">&lt;hr&gt;</a></li>
+        <li><a href="#img">&lt;img&gt;</a></li>
+        <li><a href="#input">&lt;input&gt;</a></li>
+        <li><a href="#meta">&lt;meta&gt;</a></li>
+        <li><a href="#link">&lt;link&gt;</a></li>
+        <li><a href="#area">&lt;area&gt;</a></li>
+        <li><a href="#base">&lt;base&gt;</a></li>
+        <li><a href="#col">&lt;col&gt;</a></li>
+        <li><a href="#embed">&lt;embed&gt;</a></li>
+        <li><a href="#source">&lt;source&gt;</a></li>
+        <li><a href="#track">&lt;track&gt;</a></li>
+        <li><a href="#wbr">&lt;wbr&gt;</a></li>
+        <li><a href="#slash">The Trailing Slash Question</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Makes an Element Void?</h2>
+        <p>A <strong>void element</strong> (sometimes called an "empty element" or "self-closing element") is an HTML element that:</p>
+        <ul>
+          <li>Has no content — there is nothing between an opening and closing tag.</li>
+          <li>Has no closing tag in HTML5.</li>
+          <li>Cannot have child elements.</li>
+        </ul>
+        <p>Void elements exist because they represent something that doesn't wrap content: an image is a single thing, not a container. A line break is a single event. A meta tag is a metadata point.</p>
+        <pre><code>&lt;!-- HTML5 style: no slash --&gt;
+&lt;br&gt;
+
+&lt;!-- XHTML style: with slash (still valid in HTML5) --&gt;
+&lt;br /&gt;</code></pre>
+        <p>Both forms parse identically. The trailing slash is ignored by HTML5 parsers.</p>
+      </section>
+
+      <section id="list">
+        <h2><span class="num">2</span> The Complete List of Void Elements</h2>
+        <p>There are exactly <strong>13 void elements</strong> in HTML5. Memorise them:</p>
+        <table>
+          <thead><tr><th>Element</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;area&gt;</code></td><td>Clickable region in an image map</td></tr>
+            <tr><td><code>&lt;base&gt;</code></td><td>Default URL/target for the page</td></tr>
+            <tr><td><code>&lt;br&gt;</code></td><td>Line break</td></tr>
+            <tr><td><code>&lt;col&gt;</code></td><td>Column in a table</td></tr>
+            <tr><td><code>&lt;embed&gt;</code></td><td>External embedded content (e.g. PDF, plugin)</td></tr>
+            <tr><td><code>&lt;hr&gt;</code></td><td>Horizontal rule / thematic break</td></tr>
+            <tr><td><code>&lt;img&gt;</code></td><td>Image</td></tr>
+            <tr><td><code>&lt;input&gt;</code></td><td>Form input control</td></tr>
+            <tr><td><code>&lt;link&gt;</code></td><td>Link to external resource (CSS, favicon)</td></tr>
+            <tr><td><code>&lt;meta&gt;</code></td><td>Metadata</td></tr>
+            <tr><td><code>&lt;source&gt;</code></td><td>Media source inside <code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code>/<code>&lt;picture&gt;</code></td></tr>
+            <tr><td><code>&lt;track&gt;</code></td><td>Text track (subtitles, captions) for media</td></tr>
+            <tr><td><code>&lt;wbr&gt;</code></td><td>Word break opportunity</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip — Mnemonic</strong>
+          Try this memory aid: "ABCE HI LM ST W" → Area, Base, Col, Embed, HR, Img, Input, Link, Meta, Source, Track, Wbr. Or just remember that all void elements represent a single "thing" rather than a container.
+        </div>
+      </section>
+
+      <section id="br">
+        <h2><span class="num">3</span> &lt;br&gt; — Line Break</h2>
+        <p>Forces a line break in text. Useful for poetry, addresses, and other content where line divisions matter.</p>
+        <pre><code>&lt;p&gt;
+  Roses are red,&lt;br&gt;
+  Violets are blue,&lt;br&gt;
+  HTML is marvellous,&lt;br&gt;
+  And so are you.
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>
+            Roses are red,<br>
+            Violets are blue,<br>
+            HTML is marvellous,<br>
+            And so are you.
+          </p>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't use <code>&lt;br&gt;</code> to create space between paragraphs. Use multiple <code>&lt;p&gt;</code> elements with CSS margin instead. <code>&lt;br&gt;</code> is for content-driven line breaks only.
+          <pre><code>&lt;!-- BAD: using br for spacing --&gt;
+&lt;p&gt;First paragraph&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;p&gt;Second paragraph&lt;/p&gt;
+
+&lt;!-- GOOD: use CSS margins --&gt;
+&lt;p&gt;First paragraph&lt;/p&gt;
+&lt;p&gt;Second paragraph&lt;/p&gt;
+&lt;!-- CSS: p { margin-bottom: 1.5em; } --&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="hr">
+        <h2><span class="num">4</span> &lt;hr&gt; — Horizontal Rule</h2>
+        <p>Represents a <strong>thematic break</strong> — a transition between topics. Despite the name, it's not just decorative; it carries semantic meaning.</p>
+        <pre><code>&lt;h2&gt;Chapter 1&lt;/h2&gt;
+&lt;p&gt;The dragon slept...&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;h2&gt;Chapter 2&lt;/h2&gt;
+&lt;p&gt;Years later...&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <h2 style="margin:0 0 6px;">Chapter 1</h2>
+          <p style="margin:0;">The dragon slept...</p>
+          <hr style="margin:12px 0;">
+          <h2 style="margin:0 0 6px;">Chapter 2</h2>
+          <p style="margin:0;">Years later...</p>
+        </div>
+        <p>Style with CSS: <code>hr { border: none; border-top: 2px solid #ccc; margin: 2em 0; }</code></p>
+      </section>
+
+      <section id="img">
+        <h2><span class="num">5</span> &lt;img&gt; — Image</h2>
+        <p>Embeds an image. <code>src</code> is required; <code>alt</code> is required for accessibility (use empty <code>alt=""</code> only for purely decorative images).</p>
+        <pre><code>&lt;img
+  src="photo.jpg"
+  alt="A golden retriever catches a frisbee mid-air"
+  width="400"
+  height="300"
+  loading="lazy"
+  decoding="async"
+&gt;</code></pre>
+        <p>Key attributes:</p>
+        <ul>
+          <li><code>src</code> — image URL (required)</li>
+          <li><code>alt</code> — text alternative (required for accessibility)</li>
+          <li><code>width</code>, <code>height</code> — intrinsic dimensions (prevents layout shift)</li>
+          <li><code>loading="lazy"</code> — defer loading until near viewport</li>
+          <li><code>decoding="async"</code> — decode off the main thread</li>
+          <li><code>sizes</code>, <code>srcset</code> — responsive image hints</li>
+        </ul>
+      </section>
+
+      <section id="input">
+        <h2><span class="num">6</span> &lt;input&gt; — Form Input</h2>
+        <p>The most attribute-rich void element. Different <code>type</code> values create very different controls.</p>
+        <pre><code>&lt;label for="name"&gt;Name:&lt;/label&gt;
+&lt;input type="text" id="name" name="name" required&gt;
+
+&lt;label for="email"&gt;Email:&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required autocomplete="email"&gt;
+
+&lt;label for="pwd"&gt;Password:&lt;/label&gt;
+&lt;input type="password" id="pwd" name="pwd" minlength="8" required&gt;
+
+&lt;input type="checkbox" id="agree" name="agree" required&gt;
+&lt;label for="agree"&gt;I agree to the terms&lt;/label&gt;
+
+&lt;input type="radio" id="r1" name="plan" value="basic"&gt;
+&lt;label for="r1"&gt;Basic&lt;/label&gt;
+
+&lt;input type="range" min="0" max="100" value="50"&gt;
+
+&lt;input type="color" value="#2563eb"&gt;
+
+&lt;input type="date" min="2024-01-01"&gt;
+
+&lt;input type="file" accept="image/*" multiple&gt;
+
+&lt;input type="submit" value="Send"&gt;</code></pre>
+        <p>The <code>type</code> attribute can be: <code>text</code>, <code>email</code>, <code>password</code>, <code>number</code>, <code>tel</code>, <code>url</code>, <code>search</code>, <code>date</code>, <code>datetime-local</code>, <code>time</code>, <code>month</code>, <code>week</code>, <code>color</code>, <code>range</code>, <code>checkbox</code>, <code>radio</code>, <code>file</code>, <code>hidden</code>, <code>submit</code>, <code>reset</code>, <code>button</code>, <code>image</code>.</p>
+      </section>
+
+      <section id="meta">
+        <h2><span class="num">7</span> &lt;meta&gt; — Metadata</h2>
+        <p>Page-level metadata. Always inside <code>&lt;head&gt;</code>. Multiple per page are normal.</p>
+        <pre><code>&lt;meta charset="UTF-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+&lt;meta name="description" content="A complete HTML course."&gt;
+&lt;meta name="author" content="Jane Doe"&gt;
+&lt;meta name="robots" content="index, follow"&gt;
+&lt;meta property="og:title" content="HTML Mastery"&gt;
+&lt;meta http-equiv="refresh" content="30"&gt;</code></pre>
+        <p>See the <a href="../02-Document-Structure/metadata.html">Metadata page</a> for the full treatment.</p>
+      </section>
+
+      <section id="link">
+        <h2><span class="num">8</span> &lt;link&gt; — External Resource</h2>
+        <p>Links to an external resource. The most common use is loading stylesheets, but it also handles favicons, preconnect hints, and more.</p>
+        <pre><code>&lt;!-- Stylesheet --&gt;
+&lt;link rel="stylesheet" href="/styles.css"&gt;
+
+&lt;!-- Favicon --&gt;
+&lt;link rel="icon" href="/favicon.ico"&gt;
+&lt;link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180"&gt;
+&lt;link rel="manifest" href="/manifest.webmanifest"&gt;
+
+&lt;!-- Performance hints --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="dns-prefetch" href="https://fonts.gstatic.com"&gt;
+&lt;link rel="preload" href="/hero.jpg" as="image"&gt;
+&lt;link rel="prefetch" href="/next-page.html"&gt;
+
+&lt;!-- RSS / Atom feed --&gt;
+&lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</code></pre>
+      </section>
+
+      <section id="area">
+        <h2><span class="num">9</span> &lt;area&gt; — Image Map Region</h2>
+        <p>Defines a clickable region inside an image map. Used inside <code>&lt;map&gt;</code>.</p>
+        <pre><code>&lt;img src="planets.png" usemap="#planetmap" alt="Planets"&gt;
+
+&lt;map name="planetmap"&gt;
+  &lt;area shape="circle" coords="90,58,30" alt="Mercury" href="mercury.html"&gt;
+  &lt;area shape="circle" coords="180,58,30" alt="Venus" href="venus.html"&gt;
+  &lt;area shape="rect" coords="0,0,82,126" alt="Sun" href="sun.html"&gt;
+  &lt;area shape="poly" coords="100,50,150,80,120,120" alt="Mars" href="mars.html"&gt;
+&lt;/map&gt;</code></pre>
+        <p>Shape values: <code>rect</code>, <code>circle</code>, <code>poly</code>, <code>default</code> (whole image). Image maps are largely obsolete today; CSS-positioned links over images are usually better. But <code>&lt;area&gt;</code> still has niche uses.</p>
+      </section>
+
+      <section id="base">
+        <h2><span class="num">10</span> &lt;base&gt; — Default URL/Target</h2>
+        <p>Sets the base URL for all relative URLs on the page, and optionally the default <code>target</code> for links.</p>
+        <pre><code>&lt;head&gt;
+  &lt;base href="https://example.com/blog/" target="_blank"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Now this resolves to https://example.com/blog/post-1.html --&gt;
+  &lt;a href="post-1.html"&gt;Post 1&lt;/a&gt;
+
+  &lt;!-- And this image comes from https://example.com/blog/img/photo.jpg --&gt;
+  &lt;img src="img/photo.jpg" alt=""&gt;
+&lt;/body&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>&lt;base&gt;</code> affects <em>every</em> relative URL on the page, including ones you didn't intend (like anchors <code>&lt;a href="#"&gt;</code> which become <code>https://example.com/blog/#</code>). It's a footgun. Use sparingly.
+        </div>
+      </section>
+
+      <section id="col">
+        <h2><span class="num">11</span> &lt;col&gt; — Table Column</h2>
+        <p>Defines properties for a column in a table. Used inside <code>&lt;colgroup&gt;</code>.</p>
+        <pre><code>&lt;table&gt;
+  &lt;colgroup&gt;
+    &lt;col style="background-color:#f0f9ff"&gt;
+    &lt;col style="background-color:#fef3c7"&gt;
+    &lt;col style="background-color:#fee2e2"&gt;
+  &lt;/colgroup&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Name&lt;/th&gt;
+    &lt;th&gt;Email&lt;/th&gt;
+    &lt;th&gt;Status&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Jane&lt;/td&gt;
+    &lt;td&gt;j@x.com&lt;/td&gt;
+    &lt;td&gt;Active&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        <p><code>&lt;col&gt;</code> can apply a few CSS properties (background, width, border, visibility) to an entire column at once — much cleaner than repeating classes on every cell.</p>
+      </section>
+
+      <section id="embed">
+        <h2><span class="num">12</span> &lt;embed&gt; — External Content</h2>
+        <p>Embeds external content that requires a plugin or a viewer. Largely replaced by <code>&lt;object&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;video&gt;</code>, and <code>&lt;audio&gt;</code>, but still has uses for PDFs and SVG.</p>
+        <pre><code>&lt;embed src="document.pdf" type="application/pdf" width="800" height="600"&gt;
+&lt;embed src="animation.svg" type="image/svg+xml"&gt;</code></pre>
+        <p>The WHATWG spec keeps <code>&lt;embed&gt;</code> for backward compatibility. For new projects, prefer <code>&lt;iframe&gt;</code> or <code>&lt;object&gt;</code>.</p>
+      </section>
+
+      <section id="source">
+        <h2><span class="num">13</span> &lt;source&gt; — Media Source</h2>
+        <p>Specifies multiple media sources so the browser can pick one it supports. Used inside <code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code>, and <code>&lt;picture&gt;</code>.</p>
+        <pre><code>&lt;picture&gt;
+  &lt;source srcset="wide.jpg" media="(min-width: 800px)"&gt;
+  &lt;source srcset="narrow.jpg"&gt;
+  &lt;img src="default.jpg" alt="..."&gt;
+&lt;/picture&gt;
+
+&lt;video controls&gt;
+  &lt;source src="movie.mp4" type="video/mp4"&gt;
+  &lt;source src="movie.webm" type="video/webm"&gt;
+  Your browser does not support the video tag.
+&lt;/video&gt;
+
+&lt;audio controls&gt;
+  &lt;source src="song.mp3" type="audio/mpeg"&gt;
+  &lt;source src="song.ogg" type="audio/ogg"&gt;
+&lt;/audio&gt;</code></pre>
+        <p>The browser picks the first source it can play. Always provide a fallback after the <code>&lt;source&gt;</code> tags.</p>
+      </section>
+
+      <section id="track">
+        <h2><span class="num">14</span> &lt;track&gt; — Subtitles/Captions</h2>
+        <p>Provides timed text tracks for <code>&lt;video&gt;</code> and <code>&lt;audio&gt;</code>: subtitles, captions, descriptions, chapters, metadata.</p>
+        <pre><code>&lt;video controls&gt;
+  &lt;source src="movie.mp4" type="video/mp4"&gt;
+  &lt;track kind="subtitles" src="subtitles.en.vtt" srclang="en" label="English"&gt;
+  &lt;track kind="subtitles" src="subtitles.es.vtt" srclang="es" label="Spanish"&gt;
+  &lt;track kind="captions" src="captions.en.vtt" srclang="en" label="English captions"&gt;
+&lt;/video&gt;</code></pre>
+        <p><code>kind</code> values: <code>subtitles</code> (translation), <code>captions</code> (transcription with sound effects), <code>descriptions</code> (for visually impaired), <code>chapters</code> (navigation), <code>metadata</code> (for scripts).</p>
+        <p>Track files use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API" target="_blank" rel="noopener">WebVTT format</a>.</p>
+      </section>
+
+      <section id="wbr">
+        <h2><span class="num">15</span> &lt;wbr&gt; — Word Break Opportunity</h2>
+        <p>Tells the browser "if you need to wrap here, you may". Useful for long URLs or code that shouldn't break mid-word but should wrap at sensible points.</p>
+        <pre><code>&lt;p&gt;
+  Learn more at https://example.com&lt;wbr&gt;/very-long-url&lt;wbr&gt;/that-might-overflow&lt;wbr&gt;/the-container
+&lt;/p&gt;</code></pre>
+        <p>Without <code>&lt;wbr&gt;</code>, long unbroken strings can overflow the page horizontally. With <code>&lt;wbr&gt;</code>, the browser breaks only when necessary.</p>
+        <div class="demo-box" style="max-width:300px;">
+          <p style="word-break:normal;">Long URL: https://example.com<wbr>/very-long-url<wbr>/that-might-overflow<wbr>/the-container</p>
+        </div>
+      </section>
+
+      <section id="slash">
+        <h2><span class="num">16</span> The Trailing Slash Question</h2>
+        <p>Should you write <code>&lt;br&gt;</code> or <code>&lt;br /&gt;</code>? Both are valid HTML5. The choice is a style preference.</p>
+        <table>
+          <thead><tr><th>Style</th><th>Origin</th><th>Used by</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;br&gt;</code></td><td>HTML5</td><td>Most modern projects, WHATWG spec, MDN</td></tr>
+            <tr><td><code>&lt;br /&gt;</code></td><td>XHTML</td><td>React (JSX requires it), legacy code, WordPress</td></tr>
+          </tbody>
+        </table>
+        <p>The HTML5 spec says: <em>"Then, if the element is one of the void elements… the trailing slash has no effect."</em> So pick one and be consistent.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't try to self-close non-void elements. <code>&lt;div /&gt;</code> does NOT mean an empty div in HTML — it's parsed as an opening tag for <code>&lt;div&gt;</code> with a trailing slash attribute (which is ignored), and the div remains open. Always write <code>&lt;div&gt;&lt;/div&gt;</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Try it yourself — 10 minutes</strong>
+          Create a single HTML file that uses at least 8 of the 13 void elements. Suggested content:
+          <ol>
+            <li>A <code>&lt;meta charset&gt;</code> and viewport.</li>
+            <li>A linked stylesheet via <code>&lt;link&gt;</code>.</li>
+            <li>An image via <code>&lt;img&gt;</code>.</li>
+            <li>A horizontal rule via <code>&lt;hr&gt;</code>.</li>
+            <li>A poem with line breaks via <code>&lt;br&gt;</code>.</li>
+            <li>A form with at least three <code>&lt;input&gt;</code> fields.</li>
+            <li>A table using <code>&lt;col&gt;</code> for column styling.</li>
+            <li>A long URL using <code>&lt;wbr&gt;</code> for break opportunities.</li>
+            <li>A <code>&lt;video&gt;</code> with two <code>&lt;source&gt;</code> elements and a <code>&lt;track&gt;</code>.</li>
+          </ol>
+          Validate the result at <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a>. If you used all 9 correctly, the validator will pass.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="syntax.html">← Previous: Element Syntax</a>
+      <a href="nesting.html">Next: Nesting Rules →</a>
+    </div>
+    <p>HTML Mastery — Section 1.3 · Elements &amp; Tags · Void Elements</p>
+  </footer>
+</body>
+</html>

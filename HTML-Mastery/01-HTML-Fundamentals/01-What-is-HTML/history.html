@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History of HTML — HTML Mastery</title>
+  <meta name="description" content="The complete history of HTML: Tim Berners-Lee at CERN in 1989, the original proposal, HTML 1.0 to HTML5, the WHATWG vs W3C split, and today's Living Standard.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #f59e0b 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #7c3aed 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+    th { background: #f1f5f9; font-weight: 600; }
+    /* Timeline */
+    .timeline { position: relative; padding: 10px 0 10px 32px; margin: 20px 0; }
+    .timeline::before {
+      content: ""; position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 3px; background: linear-gradient(180deg, var(--brand), var(--brand-2));
+      border-radius: 2px;
+    }
+    .tl-item { position: relative; padding: 0 0 24px 28px; }
+    .tl-item::before {
+      content: ""; position: absolute; left: -32px; top: 4px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--brand); border: 3px solid white;
+      box-shadow: 0 0 0 2px var(--brand);
+    }
+    .tl-item .year {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; padding: 2px 10px; border-radius: 6px;
+      font-weight: 700; font-size: 0.85rem; margin-bottom: 4px;
+    }
+    .tl-item h4 { margin: 0 0 6px; font-size: 1.1rem; }
+    .tl-item p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.1 · History</span>
+    <h1>The History of HTML</h1>
+    <p>From a Swiss physics lab in 1989 to a Living Standard maintained by an open community today — three decades of decisions that shape every web page you've ever visited.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#origin">The Origin: 1989, CERN</li>
+        <li><a href="#first">HTML 1.0 (1993)</a></li>
+        <li><a href="#html2">HTML 2.0 (1995)</a></li>
+        <li><a href="#html3">HTML 3.2 (1997)</a></li>
+        <li><a href="#html4">HTML 4.01 (1999)</a></li>
+        <li><a href="#xhtml">XHTML (2000)</a></li>
+        <li><a href="#html5">HTML5 (2014)</a></li>
+        <li><a href="#whatwg">WHATWG vs W3C</a></li>
+        <li><a href="#living">The Living Standard</a></li>
+        <li><a href="#timeline">Visual Timeline</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="origin">
+        <h2><span class="num">1</span> The Origin: 1989, CERN</h2>
+        <p>In March 1989, a 33-year-old British physicist named <strong>Tim Berners-Lee</strong> working at <strong>CERN</strong> (the European Organization for Nuclear Research, near Geneva, Switzerland) wrote a proposal titled "Information Management: A Proposal". His boss, Mike Sendall, scrawled in the margin: <em>"Vague but exciting…"</em></p>
+        <p>Berners-Lee's problem was mundane but real: CERN had thousands of researchers coming and going, each with their own documents, notes, and findings. Finding information was hard. His proposed solution was a "mesh" of linked documents — what he later renamed the <strong>World Wide Web</strong>.</p>
+        <p>The three inventions he proposed remain the foundation of the modern web:</p>
+        <div class="grid-2">
+          <div class="card"><h4>URL</h4><p>Uniform Resource Locator — a way to address any document on the network.</p></div>
+          <div class="card"><h4>HTTP</h4><p>HyperText Transfer Protocol — a way to request documents.</p></div>
+          <div class="card"><h4>HTML</h4><p>HyperText Markup Language — a way to write documents with links.</p></div>
+          <div class="card"><h4>Browser/Server</h4><p>The first browser (named "WorldWideWeb") and the first web server (named "httpd") both written by Berners-Lee.</p></div>
+        </div>
+        <p>The first website went live on 6 August 1991 at <code>http://info.cern.ch</code> — it still exists today and you can visit it. It explained what the World Wide Web was, how to get a browser, and how to set up your own server.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          You can visit the world's first website at <a href="http://info.cern.ch/" target="_blank" rel="noopener">info.cern.ch</a>. Look at the source — it's a tiny HTML document. You can read it in 30 seconds.
+        </div>
+      </section>
+
+      <section id="first">
+        <h2><span class="num">2</span> HTML 1.0 (1993)</h2>
+        <p>The first informal HTML specification was published in 1993 by Tim Berners-Lee and Dan Connolly. HTML 1.0 was tiny — only about 18 elements. There were no tables, no forms, no images embedded in pages, no colours, no CSS. The original vision was for HTML to be a way to share scientific papers.</p>
+        <p>HTML 1.0 included:</p>
+        <ul>
+          <li>Headings: <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code></li>
+          <li>Paragraphs: <code>&lt;p&gt;</code></li>
+          <li>Links: <code>&lt;a href="..."&gt;</code></li>
+          <li>Lists: <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;li&gt;</code></li>
+          <li>Address: <code>&lt;address&gt;</code></li>
+          <li>Term/definition lists: <code>&lt;dl&gt;</code></li>
+          <li>Preformatted text: <code>&lt;pre&gt;</code></li>
+          <li>Title: <code>&lt;title&gt;</code></li>
+        </ul>
+        <pre><code>&lt;!-- A 1993-era HTML document would look like this --&gt;
+&lt;TITLE&gt;My Research Paper&lt;/TITLE&gt;
+&lt;H1&gt;Abstract&lt;/H1&gt;
+&lt;P&gt;This paper examines the viscosity of quark-gluon plasma.
+&lt;P&gt;See &lt;A HREF="paper2.html"&gt;related work&lt;/A&gt;.
+&lt;UL&gt;
+  &lt;LI&gt;Introduction
+  &lt;LI&gt;Method
+  &lt;LI&gt;Results
+&lt;/UL&gt;</code></pre>
+        <p>Note that HTML 1.0 didn't even require <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, or <code>&lt;body&gt;</code> tags. They were implied. And tags were case-insensitive (most people used UPPERCASE for clarity).</p>
+      </section>
+
+      <section id="html2">
+        <h2><span class="num">3</span> HTML 2.0 (1995)</h2>
+        <p>The Internet Engineering Task Force (IETF) published HTML 2.0 as RFC 1866 in November 1995. HTML 2.0 didn't add much that was new — it formalised what browsers were already doing — but it added one crucial feature: <strong>forms</strong>.</p>
+        <p>With forms came <code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;option&gt;</code>. For the first time, web pages could collect user input. This unlocked the modern interactive web.</p>
+        <p>HTML 2.0 also added <code>&lt;img&gt;</code> — the inline image. The original proposal was for a more powerful <code>&lt;FIG&gt;</code> element with captions and credits, but it was deemed too complex. <code>&lt;img&gt;</code> won by being simpler.</p>
+      </section>
+
+      <section id="html3">
+        <h2><span class="num">4</span> HTML 3.2 (1997)</h2>
+        <p>By 1996, the browser wars between Netscape Navigator and Internet Explorer had produced a messy landscape. Both browsers had added their own proprietary tags (<code>&lt;blink&gt;</code>, <code>&lt;marquee&gt;</code>, <code>&lt;font&gt;</code>, <code>&lt;center&gt;</code>, <code>&lt;table&gt;</code> with various extensions). HTML 3.2 was the W3C's compromise — it formalised many of these tags, including presentation tags that we now consider harmful.</p>
+        <p>HTML 3.2 added:</p>
+        <ul>
+          <li><strong>Tables</strong>: <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, <code>&lt;td&gt;</code>, <code>&lt;th&gt;</code>, <code>&lt;caption&gt;</code></li>
+          <li><strong>Image maps</strong>: <code>&lt;map&gt;</code>, <code>&lt;area&gt;</code></li>
+          <li><strong>Presentation tags</strong>: <code>&lt;font&gt;</code>, <code>&lt;center&gt;</code>, <code>&lt;big&gt;</code>, <code>&lt;small&gt;</code>, <code>&lt;u&gt;</code>, <code>&lt;strike&gt;</code></li>
+          <li><strong>Scripting hooks</strong>: <code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> were officially recognised</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Many tutorials still teach <code>&lt;font&gt;</code> and <code>&lt;center&gt;</code>. They are obsolete in HTML5 — they still work but they mix presentation with structure, which is exactly what CSS was invented to fix. Use CSS instead.
+        </div>
+      </section>
+
+      <section id="html4">
+        <h2><span class="num">5</span> HTML 4.01 (1999)</h2>
+        <p>HTML 4.01, released in December 1999, was the most important pre-HTML5 release. It introduced the modern principle of <strong>separating structure from presentation</strong>. Three "flavours" of HTML 4.01 were defined:</p>
+        <table>
+          <thead><tr><th>Flavour</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Strict</td><td>No presentational tags. Pure structure. The recommended flavour.</td></tr>
+            <tr><td>Transitional</td><td>Allowed presentational tags like <code>&lt;font&gt;</code>. For legacy sites.</td></tr>
+            <tr><td>Frameset</td><td>Allowed the dreaded <code>&lt;frameset&gt;</code> element for splitting windows into frames.</td></tr>
+          </tbody>
+        </table>
+        <p>HTML 4.01 doctypes were infamously long:</p>
+        <pre><code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd"&gt;</code></pre>
+        <p>HTML 4.01 also formally introduced <strong>accessibility</strong> as a goal, with the <code>alt</code> attribute on images becoming mandatory in the Strict flavour.</p>
+      </section>
+
+      <section id="xhtml">
+        <h2><span class="num">6</span> XHTML 1.0 (2000)</h2>
+        <p>In January 2000 the W3C published XHTML 1.0. XHTML was HTML rewritten as <strong>XML</strong>. The idea was that XML's strict parsing rules would force authors to write cleaner code, and that XML tooling could be applied to web content.</p>
+        <p>XHTML demanded:</p>
+        <ul>
+          <li>All tags lowercase: <code>&lt;P&gt;</code> → <code>&lt;p&gt;</code></li>
+          <li>All attributes quoted: <code>&lt;a href=x&gt;</code> → <code>&lt;a href="x"&gt;</code></li>
+          <li>All elements closed: <code>&lt;br&gt;</code> → <code>&lt;br /&gt;</code></li>
+          <li>All elements properly nested</li>
+          <li>One root <code>&lt;html&gt;</code> element</li>
+        </ul>
+        <p>XHTML failed in the market. The reason was brutal: a single syntax error (a missing <code>/</code>) would cause Internet Explorer to display a blank page with an error message. Real-world content is messy; XML's strictness was unrealistic. By 2007, the industry had largely abandoned XHTML.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          You may see old code with <code>&lt;br /&gt;</code> or <code>&lt;img ... /&gt;</code> — the trailing slash is an XHTML convention. It's still valid in HTML5 (parsers ignore the slash on void elements) but unnecessary. Pick a style and be consistent.
+        </div>
+      </section>
+
+      <section id="html5">
+        <h2><span class="num">7</span> HTML5 (2014)</h2>
+        <p>HTML5 didn't appear in a single release — it was a multi-year effort (2007–2014) by a group called the <strong>Web Hypertext Application Technology Working Group</strong> (WHATWG). HTML5 abandoned the "version" model entirely; it's a living language. But the term "HTML5" stuck as a marketing label.</p>
+        <p>HTML5 added a huge amount:</p>
+        <div class="grid-2">
+          <div class="card"><h4>Semantic elements</h4><p><code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;figure&gt;</code>, <code>&lt;time&gt;</code>.</p></div>
+          <div class="card"><h4>Media elements</h4><p><code>&lt;audio&gt;</code> and <code>&lt;video&gt;</code> — no plugins required.</p></div>
+          <div class="card"><h4>Canvas &amp; SVG</h4><p><code>&lt;canvas&gt;</code> for 2D drawing; native SVG support.</p></div>
+          <div class="card"><h4>Form input types</h4><p><code>email</code>, <code>url</code>, <code>date</code>, <code>number</code>, <code>range</code>, <code>color</code>, etc.</p></div>
+          <div class="card"><h4>Native APIs</h4><p>Geolocation, localStorage, Web Workers, WebSockets, drag-and-drop.</p></div>
+          <div class="card"><h4>Simple doctype</h4><p><code>&lt;!DOCTYPE html&gt;</code> — five characters instead of 100.</p></div>
+        </div>
+        <p>HTML5 also formalised the principle that browsers should be <strong>forgiving</strong> — they should try to render any input rather than reject it. This is called "error recovery" and it's why HTML5 works on the messy real-world web.</p>
+      </section>
+
+      <section id="whatwg">
+        <h2><span class="num">8</span> WHATWG vs W3C</h2>
+        <p>The history of HTML since 2004 has been shaped by a polite but real rivalry between two standards bodies:</p>
+        <table>
+          <thead><tr><th></th><th>W3C</th><th>WHATWG</th></tr></thead>
+          <tbody>
+            <tr><td>Founded</td><td>1994 by Tim Berners-Lee</td><td>2004 by Apple, Mozilla, Opera</td></tr>
+            <tr><td>Model</td><td>Snapshot versions (HTML 4.01, 5.0, 5.1, 5.2, …)</td><td>Single Living Standard, continually updated</td></tr>
+            <tr><td>Philosophy</td><td>Top-down, formalised</td><td>Bottom-up, browser-driven</td></tr>
+            <tr><td>Members</td><td>Paid membership organisations</td><td>Open to anyone</td></tr>
+          </tbody>
+        </table>
+        <p>From 2007 to 2018, both bodies worked on HTML in parallel, occasionally diverging. In May 2019, the W3C formally handed over HTML to the WHATWG. Today there is one HTML spec: the <a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener">WHATWG HTML Living Standard</a>. There will be no HTML6 — there will only be "HTML, current as of today".</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When looking up an HTML feature, prefer the WHATWG spec or MDN over W3Schools or any "HTML5 reference" site from before 2019. Old references may describe behaviours that have since changed.
+        </div>
+      </section>
+
+      <section id="living">
+        <h2><span class="num">9</span> The Living Standard Today</h2>
+        <p>The HTML Living Standard is updated continuously — often multiple times per week. New elements appear, old ones are deprecated, and behaviors are refined. There is no "HTML 6" or "HTML 5.3" — there's just the latest version of the spec, available at <a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener">html.spec.whatwg.org</a>.</p>
+        <p>Some recent additions include:</p>
+        <ul>
+          <li><code>&lt;dialog&gt;</code> — native modal dialogs (2022)</li>
+          <li><code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> — native disclosure widgets</li>
+          <li>The <code>popover</code> attribute — declarative popovers (2023)</li>
+          <li><code>loading="lazy"</code> on images and iframes</li>
+          <li><code>&lt;search&gt;</code> element (2023)</li>
+          <li>Declarative shadow DOM</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't think of "HTML5" as a fixed feature set you check against a 2014 list. Check current browser support on <a href="https://caniuse.com/" target="_blank" rel="noopener">caniuse.com</a> and the spec at <a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener">WHATWG</a>.
+        </div>
+      </section>
+
+      <section id="timeline">
+        <h2><span class="num">10</span> Visual Timeline</h2>
+        <div class="timeline">
+          <div class="tl-item">
+            <span class="year">1989</span>
+            <h4>The Proposal</h4>
+            <p>Tim Berners-Lee submits "Information Management: A Proposal" at CERN. Initial reaction: "vague but exciting".</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">1991</span>
+            <h4>First Website Goes Live</h4>
+            <p>August 6, 1991 — <code>info.cern.ch</code> explains the World Wide Web. The first public web page.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">1993</span>
+            <h4>HTML 1.0 Draft</h4>
+            <p>Berners-Lee and Connolly publish the first informal HTML spec. ~18 elements. No images, no forms, no tables.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">1994</span>
+            <h4>W3C Founded</h4>
+            <p>Tim Berners-Lee founds the World Wide Web Consortium (W3C) at MIT to coordinate web standards.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">1995</span>
+            <h4>HTML 2.0 (RFC 1866)</h4>
+            <p>IETF publishes HTML 2.0. Adds <code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;img&gt;</code>.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">1997</span>
+            <h4>HTML 3.2</h4>
+            <p>Tables, image maps, and presentational tags (<code>&lt;font&gt;</code>, <code>&lt;center&gt;</code>) are formalised.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">1999</span>
+            <h4>HTML 4.01</h4>
+            <p>Separates structure from presentation. Introduces Strict, Transitional, Frameset flavours.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">2000</span>
+            <h4>XHTML 1.0</h4>
+            <p>HTML reformulated as XML. Strict syntax. Ultimately fails due to brittle parsing.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">2004</span>
+            <h4>WHATWG Founded</h4>
+            <p>Apple, Mozilla, and Opera form WHATWG to push HTML forward outside the W3C.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">2007</span>
+            <h4>HTML5 Work Begins</h4>
+            <p>W3C adopts WHATWG's HTML5 draft as the basis for the next version.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">2014</span>
+            <h4>"HTML5" Marketing Release</h4>
+            <p>W3C publishes HTML5 as a single Recommendation. WHATWG continues as Living Standard.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">2019</span>
+            <h4>W3C Hands HTML to WHATWG</h4>
+            <p>W3C and WHATWG sign an MoU: HTML and DOM are now exclusively the WHATWG Living Standard.</p>
+          </div>
+          <div class="tl-item">
+            <span class="year">Today</span>
+            <h4>Living Standard</h4>
+            <p>HTML evolves continuously. New elements like <code>&lt;dialog&gt;</code>, <code>&lt;search&gt;</code>, and the <code>popover</code> attribute ship regularly.</p>
+          </div>
+        </div>
+        <div class="callout exercise">
+          <strong>Try it yourself — 10 minutes</strong>
+          Visit <a href="http://info.cern.ch/" target="_blank" rel="noopener">info.cern.ch</a> and view its source. Then visit a modern site (e.g. <a href="https://developer.mozilla.org/" target="_blank" rel="noopener">MDN</a>) and view its source. List three differences in element names or structure. You're holding 35 years of evolution in your hands.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="index.html">← Previous: Master Index</a>
+      <a href="anatomy.html">Next: Anatomy of an HTML Document →</a>
+    </div>
+    <p>HTML Mastery — Section 1.1 · What Is HTML · History</p>
+  </footer>
+</body>
+</html>

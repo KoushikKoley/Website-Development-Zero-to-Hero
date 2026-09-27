@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Mastery — The World's #1 HTML Learning Project</title>
+    <meta name="description"
+        content="A comprehensive, information-rich HTML curriculum spanning 130+ files across 12 sections. From fundamentals to advanced features, real-world projects, and reference materials — everything needed to go from absolute beginner to world-class HTML expert.">
+    <meta name="author" content="HTML Mastery Project">
+    <meta property="og:title" content="HTML Mastery — The World's #1 HTML Learning Project">
+    <meta property="og:description"
+        content="130+ interactive HTML learning files covering fundamentals to advanced features, real-world projects, and complete reference.">
+    <meta property="og:type" content="website">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --indigo: #6366f1;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --slate: #1e293b;
+            --slate-light: #475569;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.7;
+            color: var(--slate);
+            background: var(--bg);
+        }
+
+        /* =========================================================
+       MODERN SVG ICONS
+       ========================================================= */
+
+        .icon svg {
+            width: 27px;
+            height: 27px;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .feature .icon svg {
+            width: 30px;
+            height: 30px;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 35%, #db2777 75%, #f97316 100%);
+            color: #fff;
+            padding: 5rem 2rem 6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .accent {
+            background: linear-gradient(120deg, #fde68a, #fca5a5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .hero-stat .label {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Quick start */
+        .quick-start {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin: -4rem auto 4rem;
+            max-width: 1100px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quick-start h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--slate);
+        }
+
+        .quick-start>p {
+            color: var(--slate-light);
+            margin-bottom: 2rem;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .path-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .path-card:hover {
+            border-color: var(--indigo);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -8px rgba(99, 102, 241, 0.3);
+        }
+
+        .path-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .path-card.beginner .icon {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .path-card.intermediate .icon {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .path-card.advanced .icon {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .path-card.reference .icon {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .path-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--slate);
+        }
+
+        .path-card p {
+            font-size: 0.9rem;
+            color: var(--slate-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .path-card .time {
+            font-size: 0.75rem;
+            color: var(--indigo);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Sections list */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, var(--indigo), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .section-header p {
+            color: var(--slate-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Section grid */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .section-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.75rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color, var(--indigo));
+        }
+
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent-color, var(--indigo));
+        }
+
+        .section-card .num {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--slate-light);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .section-card h3 {
+            font-size: 1.2rem;
+            color: var(--slate);
+            font-weight: 700;
+        }
+
+        .section-card p {
+            font-size: 0.9rem;
+            color: var(--slate-light);
+            flex: 1;
+        }
+
+        .section-card .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--slate-light);
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .section-card .meta .count {
+            background: var(--accent-bg, #eef2ff);
+            color: var(--accent-color, var(--indigo));
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .section-card .arrow {
+            color: var(--accent-color, var(--indigo));
+            font-weight: 700;
+        }
+
+        /* Color variants */
+        .section-card[data-color="indigo"] {
+            --accent-color: #6366f1;
+            --accent-bg: #eef2ff;
+        }
+
+        .section-card[data-color="violet"] {
+            --accent-color: #8b5cf6;
+            --accent-bg: #f3e8ff;
+        }
+
+        .section-card[data-color="pink"] {
+            --accent-color: #ec4899;
+            --accent-bg: #fce7f3;
+        }
+
+        .section-card[data-color="rose"] {
+            --accent-color: #f43f5e;
+            --accent-bg: #ffe4e6;
+        }
+
+        .section-card[data-color="orange"] {
+            --accent-color: #f97316;
+            --accent-bg: #ffedd5;
+        }
+
+        .section-card[data-color="amber"] {
+            --accent-color: #f59e0b;
+            --accent-bg: #fef3c7;
+        }
+
+        .section-card[data-color="emerald"] {
+            --accent-color: #10b981;
+            --accent-bg: #d1fae5;
+        }
+
+        .section-card[data-color="teal"] {
+            --accent-color: #14b8a6;
+            --accent-bg: #ccfbf1;
+        }
+
+        .section-card[data-color="cyan"] {
+            --accent-color: #06b6d4;
+            --accent-bg: #cffafe;
+        }
+
+        .section-card[data-color="blue"] {
+            --accent-color: #3b82f6;
+            --accent-bg: #dbeafe;
+        }
+
+        .section-card[data-color="slate"] {
+            --accent-color: #475569;
+            --accent-bg: #f1f5f9;
+        }
+
+        .section-card[data-color="purple"] {
+            --accent-color: #a855f7;
+            --accent-bg: #f5f3ff;
+        }
+
+        /* Features section */
+        .features {
+            background: linear-gradient(180deg, transparent, #eef2ff 50%, transparent);
+            padding: 4rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .feature .icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: var(--card);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--slate);
+        }
+
+        .feature p {
+            font-size: 0.9rem;
+            color: var(--slate-light);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--slate);
+            color: #cbd5e1;
+            padding: 3rem 1.5rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-content h4 {
+            color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .footer-content ul {
+            list-style: none;
+        }
+
+        .footer-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-content a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.15s;
+        }
+
+        .footer-content a:hover {
+            color: #fff;
+        }
+
+        .footer-content p {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="hero-content">
+
+            <span class="hero-badge">The Complete HTML Curriculum</span>
+
+            <h1>HTML <span class="accent">Mastery</span></h1>
+
+            <p>
+                The world's most comprehensive, information-rich HTML learning project.
+                130+ interactive files covering every aspect of HTML — from absolute
+                fundamentals to advanced features, real-world projects, and complete
+                reference materials.
+            </p>
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+                    <div class="num">130+</div>
+                    <div class="label">HTML Files</div>
+                </div>
+
+                <div class="hero-stat">
+                    <div class="num">12</div>
+                    <div class="label">Major Sections</div>
+                </div>
+
+                <div class="hero-stat">
+                    <div class="num">65K+</div>
+                    <div class="label">Lines of Code</div>
+                </div>
+
+                <div class="hero-stat">
+                    <div class="num">4</div>
+                    <div class="label">Real Projects</div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+    <div class="container">
+
+        <section class="quick-start">
+
+            <h2>Choose Your Learning Path</h2>
+
+            <p>
+                Whether you're touching HTML for the first time or polishing expert-level
+                skills, pick the path that fits you.
+            </p>
+
+            <div class="path-grid">
+
+                <!-- Beginner -->
+                <a class="path-card beginner" href="./00-Getting-Started/introduction.html">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 22V12"></path>
+                            <path d="M12 12C7 12 4 9 4 4c5 0 8 3 8 8Z"></path>
+                            <path d="M12 17c0-4 3-7 8-7 0 5-3 8-8 8"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Absolute Beginner</h3>
+
+                    <p>
+                        Start here if you've never written a single line of HTML.
+                        We assume nothing and build up.
+                    </p>
+
+                    <div class="time">⏱️ 20–30 hours</div>
+
+                </a>
+
+
+                <!-- Intermediate -->
+                <a class="path-card intermediate" href="./01-HTML-Fundamentals/01-What-is-HTML/index.html">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 2L3 14h8l-1 8 11-14h-8z"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Skill Builder</h3>
+
+                    <p>
+                        You know the basics — level up with semantic HTML, forms,
+                        tables, media, and accessibility.
+                    </p>
+
+                    <div class="time">⏱️ 30–40 hours</div>
+
+                </a>
+
+
+                <!-- Advanced -->
+                <a class="path-card advanced" href="./08-Advanced-Features/01-Metadata-OpenGraph/og-tags.html">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M5 12h14"></path>
+                            <path d="M13 6l6 6-6 6"></path>
+                            <path d="M3 5v14"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Expert Track</h3>
+
+                    <p>
+                        Web components, shadow DOM, structured data, performance,
+                        advanced accessibility patterns.
+                    </p>
+
+                    <div class="time">⏱️ 25–35 hours</div>
+
+                </a>
+
+
+                <!-- Reference -->
+                <a class="path-card reference" href="./11-Reference/cheatsheet.html">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+                            <path d="M8 6h8"></path>
+                            <path d="M8 10h8"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Quick Reference</h3>
+
+                    <p>
+                        Already an expert? Jump straight to the cheatsheet,
+                        glossary, and curated resources.
+                    </p>
+
+                    <div class="time">⏱️ Forever handy</div>
+
+                </a>
+
+            </div>
+        </section>
+
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>The 12-Section Curriculum</h2>
+
+                <p>
+                    Each section is a self-contained mini-course with multiple files,
+                    real code examples, exercises, and project applications.
+                </p>
+
+            </div>
+
+
+            <div class="sections-grid">
+
+                <a class="section-card" data-color="indigo" href="./00-Getting-Started/introduction.html">
+
+                    <div class="num">Section 00</div>
+
+                    <h3>Getting Started</h3>
+
+                    <p>
+                        Welcome, learning roadmap, how to use this project,
+                        prerequisites, and tool setup.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">3 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="violet" href="./01-HTML-Fundamentals/01-What-is-HTML/index.html">
+
+                    <div class="num">Section 01</div>
+
+                    <h3>HTML Fundamentals</h3>
+
+                    <p>
+                        What HTML is, its history, document structure, elements,
+                        tags, and attributes including ARIA.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="pink"
+                    href="./02-Text-Formatting/01-Headings-Paragraphs/headings.html">
+
+                    <div class="num">Section 02</div>
+
+                    <h3>Text Formatting</h3>
+
+                    <p>
+                        Headings, paragraphs, formatting elements, quotations,
+                        citations, and all list types.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="rose" href="./03-Links-and-Navigation/01-Anchor-Tag/anatomy.html">
+
+                    <div class="num">Section 03</div>
+
+                    <h3>Links &amp; Navigation</h3>
+
+                    <p>
+                        Anchor tags, URL types, fragments, page navigation,
+                        accessibility, and download links.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="orange" href="./04-Media-and-Graphics/01-Images/images-basics.html">
+
+                    <div class="num">Section 04</div>
+
+                    <h3>Media &amp; Graphics</h3>
+
+                    <p>
+                        Images, responsive images, audio, video, figures,
+                        captions, inline SVG, and canvas.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="amber" href="./05-Tables/01-Table-Structure/table-tr-td.html">
+
+                    <div class="num">Section 05</div>
+
+                    <h3>Tables</h3>
+
+                    <p>
+                        Table structure, headers, captions, row grouping,
+                        column groups, spanning, accessibility, and responsive tables.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">9 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="emerald" href="./06-Forms/01-Form-Basics/form-anatomy.html">
+
+                    <div class="num">Section 06</div>
+
+                    <h3>Forms &amp; Inputs</h3>
+
+                    <p>
+                        Form anatomy, all input types, labels, buttons, fieldsets,
+                        validation, and progress/meter elements.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">15 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="teal"
+                    href="./07-Semantic-HTML/01-Why-Semantic/semantic-vs-div.html">
+
+                    <div class="num">Section 07</div>
+
+                    <h3>Semantic HTML</h3>
+
+                    <p>
+                        Why semantic matters, sectioning elements, content grouping,
+                        landmark roles, and ARIA patterns.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="cyan"
+                    href="./08-Advanced-Features/01-Metadata-OpenGraph/og-tags.html">
+
+                    <div class="num">Section 08</div>
+
+                    <h3>Advanced Features</h3>
+
+                    <p>
+                        Open Graph, Twitter Cards, structured data, web components,
+                        shadow DOM, templates, drag-and-drop, dialogs.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="blue" href="./09-Best-Practices/01-SEO/semantic-html-seo.html">
+
+                    <div class="num">Section 09</div>
+
+                    <h3>Best Practices</h3>
+
+                    <p>
+                        SEO, performance, accessibility (WCAG), code quality,
+                        validation, commenting, and formatting standards.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">12 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="purple" href="./10-Projects/01-Portfolio/index.html">
+
+                    <div class="num">Section 10</div>
+
+                    <h3>Real-World Projects</h3>
+
+                    <p>
+                        Four complete projects: personal portfolio, SaaS landing page,
+                        blog template, and admin dashboard.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">16 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+
+                <a class="section-card" data-color="slate" href="./11-Reference/cheatsheet.html">
+
+                    <div class="num">Section 11</div>
+
+                    <h3>Reference Library</h3>
+
+                    <p>
+                        The complete HTML cheat sheet, 100+ term glossary,
+                        and curated external resources for ongoing learning.
+                    </p>
+
+                    <div class="meta">
+                        <span class="count">3 files</span>
+                        <span class="arrow">Start →</span>
+                    </div>
+
+                </a>
+
+            </div>
+        </section>
+    </div>
+
+
+    <section class="features">
+
+        <div class="container">
+
+            <div class="section-header">
+
+                <h2>Why This Project Is Different</h2>
+
+                <p>
+                    Not just another tutorial — a complete, opinionated,
+                    professional-grade reference you'll come back to for years.
+                </p>
+
+            </div>
+
+
+            <div class="features-grid">
+
+
+                <!-- Information Rich -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M12 11v6"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Information-Rich</h3>
+
+                    <p>
+                        Every file is packed with context, history, browser support notes,
+                        real-world use cases, and exercises — not just code snippets.
+                    </p>
+
+                </div>
+
+
+                <!-- Accessibility -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="5" r="2"></circle>
+                            <path d="M5 8h14"></path>
+                            <path d="M12 7v5"></path>
+                            <path d="M8 21l4-9 4 9"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Accessibility-First</h3>
+
+                    <p>
+                        WCAG 2.1/2.2 criteria, screen reader testing guides,
+                        keyboard navigation patterns, and ARIA best practices throughout.
+                    </p>
+
+                </div>
+
+
+                <!-- Performance -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 2L3 14h8l-1 8 11-14h-8z"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Performance-Aware</h3>
+
+                    <p>
+                        Lazy loading, resource hints, critical rendering path,
+                        and modern HTML features for fast, efficient websites.
+                    </p>
+
+                </div>
+
+
+                <!-- SEO -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="M20 20l-4-4"></path>
+                            <path d="M8 11h6"></path>
+                        </svg>
+                    </div>
+
+                    <h3>SEO-Ready</h3>
+
+                    <p>
+                        Meta tags, Open Graph, Twitter Cards, JSON-LD structured data —
+                        everything that helps search engines and social platforms understand your content.
+                    </p>
+
+                </div>
+
+
+                <!-- Semantic -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5h16v14H4z"></path>
+                            <path d="M8 9h8"></path>
+                            <path d="M8 13h5"></path>
+                            <path d="M8 17h8"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Semantic by Default</h3>
+
+                    <p>
+                        Master semantic HTML5 elements, landmark roles,
+                        document outlines, and the modern web component ecosystem.
+                    </p>
+
+                </div>
+
+
+                <!-- Living Standard -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M3 12h18"></path>
+                            <path d="M12 3c3 3 4 6 4 9s-1 6-4 9c-3-3-4-6-4-9s1-6 4-9z"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Living Standard</h3>
+
+                    <p>
+                        Built against the WHATWG Living Standard, the same spec browsers
+                        implement — no outdated HTML4 or XHTML tutorials here.
+                    </p>
+
+                </div>
+
+
+                <!-- Self Contained -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 4h16v16H4z"></path>
+                            <path d="M8 8h8"></path>
+                            <path d="M8 12h8"></path>
+                            <path d="M8 16h5"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Self-Contained</h3>
+
+                    <p>
+                        Every file works offline by opening it in a browser.
+                        No build tools, no npm install, no dependencies — just pure HTML.
+                    </p>
+
+                </div>
+
+
+                <!-- Beyond Syntax -->
+                <div class="feature">
+
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5h16"></path>
+                            <path d="M4 9h10"></path>
+                            <path d="M4 13h16"></path>
+                            <path d="M4 17h10"></path>
+                            <path d="M17 9l3 3-3 3"></path>
+                        </svg>
+                    </div>
+
+                    <h3>Beyond Syntax</h3>
+
+                    <p>
+                        You won't just learn <em>what</em> elements do —
+                        you'll learn <em>why</em> they exist, when to use them, and when not to.
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div>
+
+                <h4>HTML Mastery</h4>
+
+                <p>
+                    The world's #1 HTML learning project. 130+ files, 12 sections,
+                    4 real-world projects, and a complete reference library — all crafted
+                    to take you from absolute beginner to world-class HTML expert.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <h4>Curriculum</h4>
+
+                <ul>
+
+                    <li>
+                        <a href="./00-Getting-Started/introduction.html">
+                            Getting Started
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./01-HTML-Fundamentals/01-What-is-HTML/index.html">
+                            Fundamentals
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./06-Forms/01-Form-Basics/form-anatomy.html">
+                            Forms &amp; Inputs
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./08-Advanced-Features/01-Metadata-OpenGraph/og-tags.html">
+                            Advanced Features
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <div>
+
+                <h4>Projects</h4>
+
+                <ul>
+
+                    <li>
+                        <a href="./10-Projects/01-Portfolio/index.html">
+                            Portfolio
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./10-Projects/02-Landing-Page/index.html">
+                            Landing Page
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./10-Projects/03-Blog/index.html">
+                            Blog
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./10-Projects/04-Dashboard/index.html">
+                            Dashboard
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <div>
+
+                <h4>Reference</h4>
+
+                <ul>
+
+                    <li>
+                        <a href="./11-Reference/cheatsheet.html">
+                            Cheat Sheet
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./11-Reference/glossary.html">
+                            Glossary
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./11-Reference/resources.html">
+                            Resources
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="./README.md">
+                            README
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                HTML Mastery Project · Open Source · GPL 3.0 · Built for learners everywhere 🌍
+            </p>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

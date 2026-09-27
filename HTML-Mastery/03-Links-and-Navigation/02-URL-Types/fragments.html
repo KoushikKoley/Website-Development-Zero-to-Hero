@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fragment Identifiers & Smooth Scroll — HTML Mastery</title>
+  <meta name="description" content="Fragment identifiers (#section-id) in HTML: smooth scrolling with CSS scroll-behavior, :target pseudo-class, accessibility, back-to-top links, skip links for keyboard users. Complete guide.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    /* :target demo styling */
+    section:target {
+      animation: highlight 1.5s ease-out;
+    }
+    @keyframes highlight {
+      0% { background: #fef9c3; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.3); }
+      100% { background: var(--card); }
+    }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .scroll-demo {
+      height: 180px; overflow-y: auto;
+      border: 2px solid var(--brand); border-radius: 8px;
+      padding: 12px 20px; background: #f8fafc;
+      scroll-behavior: smooth;
+    }
+    .scroll-demo h4 { color: var(--brand); margin: 0 0 8px; }
+    .scroll-demo p { margin: 0 0 60px; color: var(--ink-soft); }
+    .scroll-demo .toc-link { display: block; margin-bottom: 6px; color: var(--brand); }
+    .skip-link-demo {
+      position: relative; overflow: hidden;
+      border: 2px solid var(--line); border-radius: 8px;
+      padding: 12px;
+    }
+    .skip-link-demo .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--brand); color: white;
+      padding: 8px 16px; border-radius: 0 0 8px 8px;
+      text-decoration: none; font-weight: 600;
+    }
+    .skip-link-demo .skip-link:focus {
+      left: 0; z-index: 10;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 3.5 · Fragments</span>
+    <h1>Fragment Identifiers <code>#section-id</code></h1>
+    <p>The fragment — that <code>#</code> at the end of a URL — does more than scroll the page. With CSS, it powers in-page navigation, "back to top" links, skip links for keyboard users, tab interfaces, and lightweight scroll-spy UIs — all without JavaScript.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is a Fragment?</a></li>
+        <li><a href="#syntax">Syntax &amp; Resolution</a></li>
+        <li><a href="#server">Fragments Never Reach Server</a></li>
+        <li><a href="#smooth">Smooth Scrolling</a></li>
+        <li><a href="#target-pseudo">:target Pseudo-Class</a></li>
+        <li><a href="#back-to-top">Back-to-Top Links</a></li>
+        <li><a href="#skip-links">Skip Links for A11y</a></li>
+        <li><a href="#cross-page">Cross-Page Fragments</a></li>
+        <li><a href="#id-best-practices">Choosing Good IDs</a></li>
+        <li><a href="#exercises">Try It Yourself</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#real-world">Real-World Use Cases</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is a Fragment?</h2>
+        <p>A fragment is the part of a URL after the <code>#</code> character. In <code>https://example.com/page#section-3</code>, the fragment is <code>section-3</code>. The browser uses it to scroll to — or focus — an element on the page with a matching <code>id</code>.</p>
+        <pre><code>&lt;!-- Link to fragment --&gt;
+&lt;a href="#chapter-3"&gt;Skip to Chapter 3&lt;/a&gt;
+
+&lt;-- Target element --&gt;
+&lt;section id="chapter-3"&gt;
+  &lt;h2&gt;Chapter 3: Closing the Loop&lt;/h2&gt;
+  &lt;p&gt;...&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+        <p>Clicking the link (or visiting <code>page#chapter-3</code> directly) scrolls the section into view and updates the browser's address bar — without a full page reload.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Fragment navigation updates <code>window.location.hash</code> and adds an entry to the browser's session history. Users can press "back" to return to where they were before clicking the fragment link.
+        </div>
+      </section>
+
+      <section id="syntax">
+        <h2><span class="num">2</span> Syntax &amp; Resolution</h2>
+        <p>Fragments match against element <code>id</code> attributes. The matching is case-sensitive in HTML (XHTML) and case-insensitive in HTML5 in browsers — but stick to lowercase for predictability.</p>
+        <pre><code>&lt;!-- All valid fragment links --&gt;
+&lt;a href="#top"&gt;Top&lt;/a&gt;
+&lt;a href="#chapter-1"&gt;Chapter 1&lt;/a&gt;
+&lt;a href="#user-profile"&gt;Profile&lt;/a&gt;
+
+&lt;-- In-page anchors --&gt;
+&lt;h1 id="top"&gt;Page Title&lt;/h1&gt;
+&lt;section id="chapter-1"&gt;...&lt;/section&gt;
+&lt;article id="user-profile"&gt;...&lt;/article&gt;
+
+&lt;-- Cross-page fragment --&gt;
+&lt;a href="/about#team"&gt;Meet the team&lt;/a&gt;</code></pre>
+        <h3>ID Naming Rules</h3>
+        <ul>
+          <li>Must contain at least one character.</li>
+          <li>Cannot contain spaces.</li>
+          <li>HTML5 allows any character except whitespace; HTML4 was restricted to alphanumerics, hyphens, underscores, colons, periods.</li>
+          <li>Best practice: lowercase, hyphen-separated, descriptive (<code>chapter-3</code>, not <code>c3</code> or <code>Section3</code>).</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake — Duplicate IDs</strong>
+          <code>id</code> values must be unique on a page. If you have two elements with <code>id="section"</code>, the fragment link will scroll to the <em>first</em> one — which may confuse users. Always validate your HTML for duplicate IDs.
+        </div>
+      </section>
+
+      <section id="server">
+        <h2><span class="num">3</span> Fragments Never Reach the Server</h2>
+        <p>This is critical to understand: the fragment is <strong>stripped before the HTTP request</strong> is sent. The server never sees <code>#section-3</code> — only the path and query.</p>
+        <pre><code>// URL: https://example.com/page#section-3
+//
+// What the server receives in the HTTP request line:
+//   GET /page HTTP/1.1
+//   Host: example.com
+//
+// The #section-3 part is processed entirely by the browser
+// AFTER the page loads.</code></pre>
+        <h3>Implications</h3>
+        <ul>
+          <li><strong>Analytics</strong>: your server logs won't show fragment usage. Use client-side analytics (Google Analytics reads <code>location.hash</code>).</li>
+          <li><strong>Server-side routing</strong>: fragments can't be used for backend route selection — use query parameters (<code>?section=3</code>) instead.</li>
+          <li><strong>Caching</strong>: fragments don't change cache keys. <code>/page#section-3</code> and <code>/page#section-4</code> hit the same cached HTML.</li>
+          <li><strong>Redirects</strong>: HTTP 301/302 redirects do preserve fragments — the browser re-appends the fragment to the destination URL.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip — Track Fragments in GA4</strong>
+          Google Analytics 4 does not track fragments by default. Use <code>gtag('event', 'fragment_view', { fragment: location.hash })</code> in a hashchange listener to log fragment navigations as events.
+        </div>
+      </section>
+
+      <section id="smooth">
+        <h2><span class="num">4</span> Smooth Scrolling with CSS</h2>
+        <p>By default, clicking a fragment link instantly jumps to the target. Add <code>scroll-behavior: smooth</code> to get a smooth animated scroll — no JavaScript required.</p>
+        <pre><code>/* Applies to the whole document */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Or apply to a specific scrollable container */
+.scrollable {
+  scroll-behavior: smooth;
+}</code></pre>
+        <div class="demo-box">
+          <p><strong>Live demo:</strong> click a link below to see smooth scroll within this scrollable container.</p>
+          <div class="scroll-demo">
+            <a href="#sec-a" class="toc-link">→ Go to Section A</a>
+            <a href="#sec-b" class="toc-link">→ Go to Section B</a>
+            <a href="#sec-c" class="toc-link">→ Go to Section C</a>
+            <h4>Top of demo</h4>
+            <p>Some content...</p>
+            <p style="height: 60px;"></p>
+            <h4 id="sec-a">Section A</h4>
+            <p>You arrived at Section A.</p>
+            <p style="height: 60px;"></p>
+            <h4 id="sec-b">Section B</h4>
+            <p>You arrived at Section B.</p>
+            <p style="height: 60px;"></p>
+            <h4 id="sec-c">Section C</h4>
+            <p>You arrived at Section C.</p>
+          </div>
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake — Respect prefers-reduced-motion</strong>
+          Some users (motion-sensitive, vestibular disorders) find smooth scrolling nauseating. Always honor their preference:
+          <pre style="margin-top: 10px;"><code>@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}</code></pre>
+        </div>
+        <h3>scroll-margin-top for Sticky Headers</h3>
+        <p>If you have a sticky header, smooth scrolling will hide the top of your section behind it. Add <code>scroll-margin-top</code> to compensate:</p>
+        <pre><code>section[id] {
+  scroll-margin-top: 80px; /* matches sticky header height */
+}
+
+/* Or globally: every element with an id */
+[id] {
+  scroll-margin-top: 80px;
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>scroll-padding-top</code> on the <code>&lt;html&gt;</code> element does the same thing for all scroll-snapping/anchor navigation — set it once and forget it:
+          <code>html { scroll-padding-top: 80px; scroll-behavior: smooth; }</code>
+        </div>
+      </section>
+
+      <section id="target-pseudo">
+        <h2><span class="num">5</span> The <code>:target</code> Pseudo-Class</h2>
+        <p>CSS's <code>:target</code> pseudo-class matches the element whose <code>id</code> equals the URL's current fragment. This is pure CSS state — no JavaScript.</p>
+        <pre><code>/* Highlight the section the user just jumped to */
+section:target {
+  background: #fef9c3;
+  animation: highlight-fade 3s forwards;
+}
+
+@keyframes highlight-fade {
+  from { background: #fde68a; }
+  to   { background: transparent; }
+}
+
+/* Style :target with a visible marker */
+section:target::before {
+  content: "▸";
+  color: var(--brand);
+  margin-right: 8px;
+  font-weight: bold;
+}</code></pre>
+        <div class="demo-box">
+          <p>Try it: <a href="#target-pseudo" style="color: var(--brand);">Re-jump to this section</a> — you should see a brief yellow flash (this whole page applies the <code>:target</code> animation above).</p>
+        </div>
+        <h3>:target Powers Pure-CSS Tabs &amp; Modals</h3>
+        <p>Before JavaScript frameworks, <code>:target</code> was used to build tab interfaces, modals, and accordions:</p>
+        <pre><code>&lt;!-- Pure-CSS tab interface --&gt;
+&lt;a href="#tab1"&gt;Tab 1&lt;/a&gt;
+&lt;a href="#tab2"&gt;Tab 2&lt;/a&gt;
+&lt;a href="#tab3"&gt;Tab 3&lt;/a&gt;
+
+&lt;section id="tab1" class="tab"&gt;Content 1&lt;/section&gt;
+&lt;section id="tab2" class="tab"&gt;Content 2&lt;/section&gt;
+&lt;section id="tab3" class="tab"&gt;Content 3&lt;/section&gt;
+
+&lt;style&gt;
+  .tab { display: none; }
+  .tab:target { display: block; }
+  /* Show first tab by default when no fragment is active */
+  .tab:first-of-type { display: block; }
+  .tab:target ~ .tab:first-of-type { display: none; }
+&lt;/style&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Pure-<code>:target</code> UIs have accessibility and UX issues: they don't toggle ARIA states, the back button behaves oddly (each fragment adds history), and screen readers may announce all "tabs" simultaneously. For production, use proper ARIA tabs with JavaScript. Use <code>:target</code> for lightweight demos only.
+        </div>
+      </section>
+
+      <section id="back-to-top">
+        <h2><span class="num">6</span> Back-to-Top Links</h2>
+        <p>A back-to-top link is one of the simplest and most useful UX patterns. With CSS <code>scroll-behavior: smooth</code>, it's a one-liner.</p>
+        <pre><code>&lt;!-- HTML --&gt;
+&lt;a href="#top" class="back-to-top"&gt;↑ Back to top&lt;/a&gt;
+
+&lt;-- Or, target the &lt;html&gt; element directly (modern) --&gt;
+&lt;a href="#top" class="back-to-top"&gt;↑&lt;/a&gt;
+&lt;html id="top"&gt;...&lt;/html&gt;
+
+&lt;style&gt;
+  html { scroll-behavior: smooth; }
+  .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 16px;
+    background: var(--brand);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+&lt;/style&gt;
+
+&lt;-- Optional: show only after scrolling. Needs a tiny bit of JS: --&gt;
+&lt;script&gt;
+  const btn = document.querySelector('.back-to-top');
+  window.addEventListener('scroll', () =&gt; {
+    btn.classList.toggle('visible', window.scrollY &gt; 400);
+  });
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip — Accessible Back-to-Top</strong>
+          Add <code>aria-label="Back to top of page"</code> if the link is an icon-only button (e.g., <code>&lt;a href="#top" aria-label="Back to top"&gt;↑&lt;/a&gt;</code>). This ensures screen reader users understand the link's purpose.
+        </div>
+        <div class="demo-box">
+          <p>Try it: <a href="#top" style="color: var(--brand); font-weight: 600;">↑ Jump to top of this page</a></p>
+        </div>
+      </section>
+
+      <section id="skip-links">
+        <h2><span class="num">7</span> Skip Links for Keyboard Users</h2>
+        <p>A "skip link" is the first focusable element on a page — a hidden link that becomes visible when focused, letting keyboard users jump directly to the main content without tabbing through the entire nav.</p>
+        <pre><code>&lt;!-- Skip link — first element in &lt;body&gt; --&gt;
+&lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+
+&lt;nav&gt;...long navigation menu...&lt;/nav&gt;
+
+&lt;main id="main"&gt;
+  &lt;h1&gt;Page Title&lt;/h1&gt;
+  &lt;!-- main content --&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .skip-link {
+    position: absolute;
+    top: -100px;            /* off-screen by default */
+    left: 0;
+    background: var(--brand);
+    color: white;
+    padding: 12px 20px;
+    z-index: 1000;
+    text-decoration: none;
+    border-radius: 0 0 8px 0;
+    transition: top 0.2s;
+  }
+  .skip-link:focus {
+    top: 0;                 /* slides into view when focused */
+  }
+&lt;/style&gt;</code></pre>
+        <div class="skip-link-demo">
+          <a href="#skip-target" class="skip-link">Skip to main content</a>
+          <p>← Tab into this demo box to see the skip link appear in the top-left.</p>
+          <div id="skip-target" style="margin-top: 24px; padding: 12px; background: #f0fdf4; border-radius: 6px;">
+            <strong>Simulated "main content":</strong> this is where keyboard users would land.
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip — Always Provide Skip Links</strong>
+          WCAG 2.1 Success Criterion 2.4.1 (Bypass Blocks) requires a way to skip repetitive navigation. Skip links are the simplest, most reliable solution. They benefit not just screen reader users but also keyboard-only and switch-device users.
+        </div>
+      </section>
+
+      <section id="cross-page">
+        <h2><span class="num">8</span> Cross-Page Fragments</h2>
+        <p>A fragment can be combined with a path to jump to a specific section of <em>another</em> page:</p>
+        <pre><code>&lt;!-- Load /about.html, then scroll to #team --&gt;
+&lt;a href="/about.html#team"&gt;Meet the team&lt;/a&gt;
+
+&lt;-- External site, scroll to fragment --&gt;
+&lt;a href="https://example.com/docs/#installation"&gt;Installation docs&lt;/a&gt;</code></pre>
+        <p>The browser loads the new page first, then scrolls to the matching element. If the element doesn't exist, the page just loads at the top — no error.</p>
+        <div class="callout warn">
+          <strong>Common Mistake — Fragment Lost on Redirect</strong>
+          If your server 302-redirects <code>/about.html</code> → <code>/about/</code> (trailing slash), browsers usually preserve the fragment. But if you redirect across origins or via JavaScript (<code>window.location = ...</code>), the fragment may be lost. Test thoroughly.
+        </div>
+      </section>
+
+      <section id="id-best-practices">
+        <h2><span class="num">9</span> Choosing Good IDs</h2>
+        <p>Since fragments link to <code>id</code> attributes, your ID strategy matters. Best practices:</p>
+        <table>
+          <thead>
+            <tr><th>Good</th><th>Bad</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>chapter-3</code></td><td><code>c3</code>, <code>ch3</code></td><td>Descriptive beats abbreviated.</td></tr>
+            <tr><td><code>user-profile</code></td><td><code>userProfile</code></td><td>URL-safe lowercase; matches CSS conventions.</td></tr>
+            <tr><td><code>pricing-faq</code></td><td><code>faq1</code>, <code>FAQ</code></td><td>Specific context; predictable casing.</td></tr>
+            <tr><td><code>step-2-setup</code></td><td><code>step2</code></td><td>Survives reordering; clear.</td></tr>
+            <tr><td><code>main</code>, <code>header</code>, <code>footer</code></td><td><code>div1</code>, <code>content-area</code></td><td>Landmark IDs are useful for skip links.</td></tr>
+          </tbody>
+        </table>
+        <h3>Auto-Generating Heading IDs</h3>
+        <p>Most static site generators (Hugo, Eleventy, Gatsby) auto-generate IDs from heading text. Markdown processors do this with plugins (e.g., <code>rehype-slug</code>). This makes fragment linking free — every heading is a potential anchor.</p>
+        <div class="callout tip">
+          <strong>Pro Tip — Permalink Hover Pattern</strong>
+          Many docs sites (MDN, Stripe, React) show a <code>#</code> icon next to each heading on hover. Clicking it copies <code>page#heading-id</code> to the clipboard. Implementation: a small JS snippet that watches headings, adds an anchor on hover, and uses the Clipboard API.
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Smooth Scroll Setup</strong>
+          Create a long HTML page with at least 5 sections. Add a table of contents at the top with fragment links to each. Add CSS for smooth scrolling and a scroll-margin-top of 80px (assuming a sticky header). Test on mobile and desktop.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — :target Highlight</strong>
+          Build a docs page with 4 sections. When the user clicks a TOC link, briefly highlight the destination section with a fading background color. Use only <code>:target</code> and a CSS animation — no JS.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Skip Link</strong>
+          Add a "Skip to main content" link as the first focusable element on a page. Style it to be hidden off-screen until keyboard focus. Test by tabbing through the page from the address bar.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Back to Top Button</strong>
+          Build a fixed-position "Back to top" button. Hide it when the user is at the top of the page (scrollY &lt; 400). Use minimal JS to toggle visibility. Pair with smooth scrolling for the animation.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — prefers-reduced-motion</strong>
+          Take your smooth-scroll page from Exercise 1 and add a <code>prefers-reduced-motion</code> media query that disables smooth scrolling. Test by enabling "Reduce motion" in your OS accessibility settings.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Cross-Page Fragment</strong>
+          Create two HTML files. The first has a link <code>&lt;a href="page2.html#section-3"&gt;Jump to Section 3 on page 2&lt;/a&gt;</code>. The second has 5 sections with IDs. Verify that clicking the link loads page 2 and scrolls to Section 3.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It's Wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Duplicate IDs on a page</td><td>Fragment links resolve to the first match.</td><td>Use a build-time linter; never hard-code duplicates.</td></tr>
+            <tr><td>Smooth scroll without reduced-motion respect</td><td>Causes motion sickness for some users.</td><td>Add <code>@media (prefers-reduced-motion: reduce)</code> override.</td></tr>
+            <tr><td>Sticky header covers section content</td><td>Smooth scroll lands the section title under the header.</td><td>Add <code>scroll-margin-top</code> or <code>scroll-padding-top</code>.</td></tr>
+            <tr><td>Empty <code>href="#"</code> for actions</td><td>Navigates to top of page; URL gets <code>#</code> appended.</td><td>Use a <code>&lt;button&gt;</code> for actions.</td></tr>
+            <tr><td>Using <code>:target</code> for production tabs</td><td>No ARIA states; back button oddities; screen reader issues.</td><td>Use ARIA + JavaScript for real tab interfaces.</td></tr>
+            <tr><td>Forgettable skip links</td><td>Not first focusable, or no <code>:focus</code> style.</td><td>Place skip link first in body; make <code>:focus</code> visible.</td></tr>
+            <tr><td>Server logs missing fragment traffic</td><td>Fragments aren't sent in HTTP requests.</td><td>Use client-side analytics with hashchange listener.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-World Use Cases</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Documentation TOCs</h4>
+            <p>MDN, Stripe, React docs: every heading has an auto-generated ID; the sidebar TOC links to fragments. Pure CSS smooth scroll.</p>
+          </div>
+          <div class="card">
+            <h4>One-Pager Sites</h4>
+            <p>Marketing landings: nav links scroll to #features, #pricing, #faq. No page reloads, instant UX.</p>
+          </div>
+          <div class="card">
+            <h4>Glossary/FAQ Pages</h4>
+            <p>Alphabetical list of terms; each links to its definition further down. Common in wikis and docs.</p>
+          </div>
+          <div class="card">
+            <h4>"View Comments" Links</h4>
+            <p>Blog posts: a "View comments (45)" link points to <code>#comments</code>, scrolling readers to the discussion.</p>
+          </div>
+          <div class="card">
+            <h4>Skip Navigation</h4>
+            <p>WCAG-required skip links are the canonical accessibility pattern. Every modern site should have one.</p>
+          </div>
+          <div class="card">
+            <h4>Lightbox Modals (Legacy)</h4>
+            <p>Pre-JS-framework sites used <code>:target</code> to show/hide modal dialogs. Still seen in lightweight CSS-only designs.</p>
+          </div>
+          <div class="card">
+            <h4>Permalink Anchors</h4>
+            <p>GitHub README headings show a link icon on hover; clicking copies <code>README.md#section</code> to share.</p>
+          </div>
+          <div class="card">
+            <h4>Shareable Deep Links</h4>
+            <p>Docs/tools: <code>/docs/api#authentication</code> lets users bookmark and share a specific section.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li>A fragment (<code>#id</code>) identifies a specific element on a page by its <code>id</code> attribute.</li>
+          <li>Fragments never reach the server — they're processed entirely client-side.</li>
+          <li><code>scroll-behavior: smooth</code> on <code>&lt;html&gt;</code> animates fragment jumps — no JS.</li>
+          <li>Always respect <code>prefers-reduced-motion: reduce</code>.</li>
+          <li><code>scroll-margin-top</code> or <code>scroll-padding-top</code> handles sticky-header overlap.</li>
+          <li><code>:target</code> pseudo-class lets you style the active fragment target with pure CSS.</li>
+          <li>Skip links (first focusable element) let keyboard users bypass navigation — WCAG required.</li>
+          <li>Back-to-top links pair fragment + smooth scroll for a great UX touch.</li>
+          <li>Cross-page fragments: <code>/about#team</code> loads the page, then scrolls to <code>#team</code>.</li>
+          <li>IDs must be unique; use lowercase hyphenated descriptive names.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>scroll-behavior: CSSOM View Module</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="absolute-relative.html">← Previous: Absolute vs Relative URLs</a>
+      <a href="special-schemes.html">Next: Special URL Schemes →</a>
+    </div>
+    <p>HTML Mastery · Section 3 · Links &amp; Navigation · Fragment Identifiers</p>
+  </footer>
+</body>
+</html>

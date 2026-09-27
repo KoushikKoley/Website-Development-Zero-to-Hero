@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anatomy of an HTML Document — HTML Mastery</title>
+  <meta name="description" content="The anatomy of an HTML document: tags, elements, attributes, content, comments. A visual, annotated walkthrough of every part of a real HTML page.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #06b6d4 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #7c3aed 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    /* Annotated code */
+    .annotated {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      padding: 22px 24px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.92rem;
+      line-height: 1.9;
+      overflow-x: auto;
+      counter-reset: line;
+    }
+    .annotated .row {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 16px;
+      align-items: start;
+    }
+    .annotated .code-line {
+      white-space: pre;
+    }
+    .annotated .annot {
+      color: #93c5fd;
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      padding-left: 16px;
+      border-left: 2px solid #334155;
+    }
+    .annotated .tag { color: #f472b6; }
+    .annotated .attr { color: #fbbf24; }
+    .annotated .val { color: #86efac; }
+    .annotated .comment { color: #64748b; font-style: italic; }
+    .annotated .text { color: #e2e8f0; }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+    .legend span { display: flex; align-items: center; gap: 8px; }
+    .legend .dot { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+    th { background: #f1f5f9; font-weight: 600; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .annotated .row { grid-template-columns: 1fr; }
+      .legend { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.1 · Anatomy</span>
+    <h1>Anatomy of an HTML Document</h1>
+    <p>Every HTML page on the web is built from the same five ingredients: tags, elements, attributes, content, and comments. Let's dissect one.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#five">The Five Ingredients</a></li>
+        <li><a href="#annotated">Annotated Example</a></li>
+        <li><a href="#tags">Tags</a></li>
+        <li><a href="#elements">Elements</a></li>
+        <li><a href="#attributes">Attributes</a></li>
+        <li><a href="#content">Content</a></li>
+        <li><a href="#comments">Comments</a></li>
+        <li><a href="#parts">Parts of a Document</a></li>
+        <li><a href="#case">Case Sensitivity</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="five">
+        <h2><span class="num">1</span> The Five Ingredients</h2>
+        <p>HTML is made of five kinds of text:</p>
+        <div class="grid-2">
+          <div class="card"><h4>1. Tags</h4><p>Keywords wrapped in angle brackets — <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;a&gt;</code>.</p></div>
+          <div class="card"><h4>2. Elements</h4><p>A complete tag, its content, and its closing tag — <code>&lt;p&gt;Hello&lt;/p&gt;</code>.</p></div>
+          <div class="card"><h4>3. Attributes</h4><p>Name="value" pairs on a tag — <code>href="..."</code>, <code>class="..."</code>.</p></div>
+          <div class="card"><h4>4. Content</h4><p>The text or nested elements between the opening and closing tags.</p></div>
+          <div class="card"><h4>5. Comments</h4><p>Notes for developers, ignored by browsers — <code>&lt;!-- ... --&gt;</code>.</p></div>
+          <div class="card"><h4>+ Document Prolog</h4><p>The <code>&lt;!DOCTYPE html&gt;</code> declaration at the very top.</p></div>
+        </div>
+      </section>
+
+      <section id="annotated">
+        <h2><span class="num">2</span> Annotated Example</h2>
+        <p>Here's a complete HTML document with every part labelled. Read top to bottom, left to right.</p>
+        <div class="legend">
+          <span><span class="dot" style="background:#f472b6"></span> tag</span>
+          <span><span class="dot" style="background:#fbbf24"></span> attribute</span>
+          <span><span class="dot" style="background:#86efac"></span> value</span>
+          <span><span class="dot" style="background:#64748b"></span> comment</span>
+        </div>
+        <div class="annotated">
+          <div class="row"><div class="code-line"><span class="tag">&lt;!DOCTYPE html&gt;</span></div><div class="annot">Tells the browser this is an HTML5 document.</div></div>
+          <div class="row"><div class="code-line"><span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="val">"en"</span><span class="tag">&gt;</span></div><div class="annot">Root element. <code>lang</code> declares the document's language for screen readers and search engines.</div></div>
+          <div class="row"><div class="code-line"><span class="tag">&lt;head&gt;</span></div><div class="annot">Container for machine-readable metadata. Nothing here is shown on the page.</div></div>
+          <div class="row"><div class="code-line">  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">&gt;</span></div><div class="annot">Declares the file's character encoding. Always UTF-8.</div></div>
+          <div class="row"><div class="code-line">  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"viewport"</span> <span class="attr">content</span>=<span class="val">"width=device-width, initial-scale=1.0"</span><span class="tag">&gt;</span></div><div class="annot">Makes the page responsive on mobile devices.</div></div>
+          <div class="row"><div class="code-line">  <span class="tag">&lt;title&gt;</span><span class="text">My First Page</span><span class="tag">&lt;/title&gt;</span></div><div class="annot">The browser tab title. Crucial for SEO and accessibility.</div></div>
+          <div class="row"><div class="code-line"><span class="tag">&lt;/head&gt;</span></div><div class="annot">Close of the head.</div></div>
+          <div class="row"><div class="code-line"><span class="tag">&lt;body&gt;</span></div><div class="annot">Everything visible on the page goes here.</div></div>
+          <div class="row"><div class="code-line">  <span class="comment">&lt;!-- Page hero --&gt;</span></div><div class="annot">A comment. The browser ignores it. Helps developers navigate the file.</div></div>
+          <div class="row"><div class="code-line">  <span class="tag">&lt;header&gt;</span></div><div class="annot">Semantic wrapper for introductory content.</div></div>
+          <div class="row"><div class="code-line">    <span class="tag">&lt;h1&gt;</span><span class="text">Welcome to my site</span><span class="tag">&lt;/h1&gt;</span></div><div class="annot">Top-level heading. One per page.</div></div>
+          <div class="row"><div class="code-line">    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"tagline"</span><span class="tag">&gt;</span><span class="text">Built with HTML.</span><span class="tag">&lt;/p&gt;</span></div><div class="annot">A paragraph with a class attribute for styling.</div></div>
+          <div class="row"><div class="code-line">    <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"/about"</span> <span class="attr">target</span>=<span class="val">"_blank"</span><span class="tag">&gt;</span><span class="text">About me</span><span class="tag">&lt;/a&gt;</span></div><div class="annot">A hyperlink. <code>target="_blank"</code> opens it in a new tab.</div></div>
+          <div class="row"><div class="code-line">  <span class="tag">&lt;/header&gt;</span></div><div class="annot">Close of the header.</div></div>
+          <div class="row"><div class="code-line"><span class="tag">&lt;/body&gt;</span></div><div class="annot">Close of the body.</div></div>
+          <div class="row"><div class="code-line"><span class="tag">&lt;/html&gt;</span></div><div class="annot">Close of the root. Nothing should appear after this.</div></div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Paste the snippet above into a file and open it in your browser. Then open DevTools → Elements. Notice the browser has added the missing <code>&lt;head&gt;</code> and <code>&lt;body&gt;</code> tags even if you omit them — but you should never omit them.
+        </div>
+      </section>
+
+      <section id="tags">
+        <h2><span class="num">3</span> Tags</h2>
+        <p>A <strong>tag</strong> is the angle-bracket-wrapped keyword that tells the browser "this is an element of type X". Tags come in three flavours:</p>
+        <table>
+          <thead><tr><th>Type</th><th>Form</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td>Opening tag</td><td><code>&lt;name&gt;</code></td><td><code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;a&gt;</code></td></tr>
+            <tr><td>Closing tag</td><td><code>&lt;/name&gt;</code></td><td><code>&lt;/p&gt;</code>, <code>&lt;/div&gt;</code>, <code>&lt;/a&gt;</code></td></tr>
+            <tr><td>Self-closing / void</td><td><code>&lt;name&gt;</code> (no closing tag)</td><td><code>&lt;br&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;input&gt;</code></td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;p&gt;             ← opening tag
+Hello world       ← content
+&lt;/p&gt;            ← closing tag
+
+&lt;br&gt;             ← void element (no content, no closing tag)
+&lt;img src="x"&gt;   ← void element with an attribute</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>&lt;p&gt;</code> is a tag. <code>&lt;p&gt;Hello&lt;/p&gt;</code> is an element. Don't use the terms interchangeably. A tag is the markup; an element is the whole unit including content.
+        </div>
+      </section>
+
+      <section id="elements">
+        <h2><span class="num">4</span> Elements</h2>
+        <p>An <strong>element</strong> is the complete unit: opening tag + content + closing tag. Some elements have no content (void elements like <code>&lt;br&gt;</code>); most do.</p>
+        <pre><code>&lt;p&gt;Hello world!&lt;/p&gt;
+└┬┘ └────┬────┘ └┬┘
+ │      │       │
+ │      │       └─ closing tag
+ │      │
+ │      └─ content
+ │
+ └─ opening tag
+Together: the &lt;p&gt; element</code></pre>
+        <p>Elements can be <strong>nested</strong> — one inside another:</p>
+        <pre><code>&lt;article&gt;
+  &lt;h2&gt;Post Title&lt;/h2&gt;
+  &lt;p&gt;Body paragraph.&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+        <p>The <code>&lt;article&gt;</code> element contains an <code>&lt;h2&gt;</code> element and a <code>&lt;p&gt;</code> element as children. This nesting creates a tree — the DOM.</p>
+      </section>
+
+      <section id="attributes">
+        <h2><span class="num">5</span> Attributes</h2>
+        <p>An <strong>attribute</strong> is a name="value" pair on an opening tag that configures the element. They appear after the tag name, separated by spaces.</p>
+        <pre><code>&lt;a href="https://example.com" target="_blank" rel="noopener"&gt;Link&lt;/a&gt;
+    └─┬─┘ └────────┬─────────┘ └──┬──┘ └────┬────┘
+      │            │              │         │
+      │            │              │         └─ third attribute
+      │            │              └─ second attribute
+      │            └─ first attribute value
+      └─ first attribute name</code></pre>
+        <h3>Attribute rules</h3>
+        <ul>
+          <li><strong>Names are case-insensitive</strong>, but lowercase is the convention.</li>
+          <li><strong>Values should be quoted</strong> with double (<code>"</code>) or single (<code>'</code>) quotes. Unquoted is allowed but fragile.</li>
+          <li><strong>Boolean attributes</strong> like <code>disabled</code> or <code>checked</code> may have no value: <code>&lt;input disabled&gt;</code> is the same as <code>&lt;input disabled="disabled"&gt;</code>.</li>
+          <li><strong>Order doesn't matter</strong>: <code>href="x" class="y"</code> equals <code>class="y" href="x"</code>.</li>
+          <li><strong>Some attributes are global</strong> (<code>id</code>, <code>class</code>) — work on every element. Others are element-specific (<code>href</code> only on <code>&lt;a&gt;</code>).</li>
+        </ul>
+      </section>
+
+      <section id="content">
+        <h2><span class="num">6</span> Content</h2>
+        <p><strong>Content</strong> is everything between the opening and closing tags. It can be:</p>
+        <ul>
+          <li><strong>Text</strong>: <code>&lt;p&gt;Hello!&lt;/p&gt;</code></li>
+          <li><strong>Other elements</strong>: <code>&lt;div&gt;&lt;p&gt;Hi&lt;/p&gt;&lt;/div&gt;</code></li>
+          <li><strong>Empty</strong>: <code>&lt;div&gt;&lt;/div&gt;</code> — still a valid element</li>
+          <li><strong>Entities</strong>: <code>&lt;p&gt;5 &amp;lt; 10&lt;/p&gt;</code> renders as "5 &lt; 10"</li>
+        </ul>
+        <h3>HTML entities</h3>
+        <p>Certain characters are special in HTML — <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, <code>"</code>, <code>'</code> — and must be escaped with entities when used as content:</p>
+        <table>
+          <thead><tr><th>Character</th><th>Entity</th><th>When to use</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;</code></td><td><code>&amp;lt;</code></td><td>Whenever you want a literal &lt; in text</td></tr>
+            <tr><td><code>&gt;</code></td><td><code>&amp;gt;</code></td><td>Literal &gt;</td></tr>
+            <tr><td><code>&amp;</code></td><td><code>&amp;amp;</code></td><td>Literal &amp;</td></tr>
+            <tr><td><code>"</code></td><td><code>&amp;quot;</code></td><td>Inside an attribute value quoted with <code>"</code></td></tr>
+            <tr><td><code>'</code></td><td><code>&amp;apos;</code></td><td>Inside an attribute value quoted with <code>'</code></td></tr>
+            <tr><td>non-breaking space</td><td><code>&amp;nbsp;</code></td><td>Prevents line wrap at this point</td></tr>
+            <tr><td>©</td><td><code>&amp;copy;</code></td><td>Copyright symbol</td></tr>
+            <tr><td>—</td><td><code>&amp;mdash;</code></td><td>Em dash</td></tr>
+            <tr><td>→</td><td><code>&amp;rarr;</code></td><td>Right arrow</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Typing <code>5 &lt; 10</code> directly in HTML may work in some browsers (they recover), but it's invalid. The <code>&lt;</code> starts a tag. Always write <code>5 &amp;lt; 10</code>.
+        </div>
+      </section>
+
+      <section id="comments">
+        <h2><span class="num">7</span> Comments</h2>
+        <p><strong>Comments</strong> are notes for developers. They are ignored by the browser when rendering, but visible in "View Source". They cannot be nested.</p>
+        <pre><code>&lt;!-- This is a single-line comment --&gt;
+
+&lt;!--
+  This is a multi-line comment.
+  Useful for explaining a complex block.
+  Note: you cannot put --&gt; inside a comment.
+--&gt;
+
+&lt;p&gt;Hello&lt;/p&gt; &lt;!-- inline comment after a paragraph --&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use comments to mark sections in long documents — <code>&lt;!-- ===== Navigation ===== --&gt;</code> makes skimming much easier. But don't over-comment obvious code; it becomes noise.
+        </div>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Comments are <strong>not</strong> secure. They appear in the page source. Don't put secrets, API keys, or rude notes about clients in HTML comments. They are public.
+        </div>
+      </section>
+
+      <section id="parts">
+        <h2><span class="num">8</span> Parts of a Document</h2>
+        <p>Every HTML document follows this skeleton:</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;...&lt;/title&gt;
+    &lt;meta name="description" content="..."&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- all visible content --&gt;
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <table>
+          <thead><tr><th>Part</th><th>Purpose</th><th>Visible?</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Activates standards mode</td><td>No</td></tr>
+            <tr><td><code>&lt;html&gt;</code></td><td>Root element of the document</td><td>No</td></tr>
+            <tr><td><code>&lt;head&gt;</code></td><td>Metadata: title, charset, links to CSS/JS</td><td>No</td></tr>
+            <tr><td><code>&lt;body&gt;</code></td><td>All visible content</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="case">
+        <h2><span class="num">9</span> Case Sensitivity</h2>
+        <p>HTML is <strong>case-insensitive</strong> for tag and attribute names. <code>&lt;P&gt;</code>, <code>&lt;p&gt;</code>, and <code>&lt;P&gt;</code> are all the same tag. However, the convention — universally — is <strong>lowercase</strong>.</p>
+        <p>Attribute values, however, can be case-sensitive. <code>class="Card"</code> and <code>class="card"</code> are different classes. URLs are usually case-sensitive too. Entity names like <code>&amp;copy;</code> are case-sensitive (capitalised <code>&amp;COPY;</code> is invalid).</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't write <code>&lt;DIV CLASS="foo"&gt;</code>. It works, but it's an XHTML/legacy habit. Use lowercase everywhere. The one exception is the doctype, which is conventionally <code>&lt;!DOCTYPE html&gt;</code> — though <code>&lt;!doctype html&gt;</code> also works.
+        </div>
+        <div class="callout exercise">
+          <strong>Try it yourself — 5 minutes</strong>
+          Recreate the annotated example from memory. Then:
+          <ol>
+            <li>Add a new <code>&lt;p&gt;</code> with the text "HTML is fun!" and a class of <code>intro</code>.</li>
+            <li>Add a comment above it: <code>&lt;!-- intro paragraph --&gt;</code></li>
+            <li>View the page in your browser — the comment should be invisible.</li>
+            <li>View Source (right-click → View Page Source) — the comment should be visible in the source.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="history.html">← Previous: History</a>
+      <a href="../02-Document-Structure/doctype.html">Next: The DOCTYPE →</a>
+    </div>
+    <p>HTML Mastery — Section 1.1 · What Is HTML · Anatomy</p>
+  </footer>
+</body>
+</html>

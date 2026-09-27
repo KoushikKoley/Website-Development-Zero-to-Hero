@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Element Syntax — HTML Mastery</title>
+  <meta name="description" content="The complete syntax of HTML elements: opening tags, closing tags, self-closing void elements, attributes, content models, and the difference between block and inline elements.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #2563eb 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #06b6d4 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    /* Anatomy diagram */
+    .anatomy {
+      background: var(--code-bg); color: var(--code-fg);
+      border-radius: 12px; padding: 22px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.95rem; line-height: 1.9;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    .anatomy .tag { color: #f472b6; }
+    .anatomy .attr { color: #fbbf24; }
+    .anatomy .val { color: #86efac; }
+    .anatomy .text { color: #e2e8f0; }
+    .anatomy .comment { color: #64748b; font-style: italic; }
+    .block-vs-inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .bvi-card {
+      border: 2px solid; border-radius: 12px;
+      padding: 16px; font-family: "JetBrains Mono", monospace;
+      font-size: 0.9rem;
+    }
+    .bvi-card.block { border-color: var(--brand); background: #eff6ff; }
+    .bvi-card.inline { border-color: var(--brand-2); background: #f5f3ff; }
+    .bvi-card h5 { margin: 0 0 10px; color: var(--ink); font-family: -apple-system, sans-serif; font-size: 1rem; }
+    .demo p, .demo div { background: rgba(37,99,235,0.05); padding: 4px; margin: 4px 0; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .block-vs-inline { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.3 · Elements &amp; Tags</span>
+    <h1>Element Syntax</h1>
+    <p>The grammar of HTML: opening tags, closing tags, void elements, attributes, content models, and the foundational distinction between block and inline elements.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#parts">The Parts of an Element</a></li>
+        <li><a href="#opening">Opening Tag</a></li>
+        <li><a href="#closing">Closing Tag</a></li>
+        <li><a href="#void">Void (Self-Closing) Elements</a></li>
+        <li><a href="#attributes">Attributes</a></li>
+        <li><a href="#boolean">Boolean Attributes</a></li>
+        <li><a href="#nested">Nested Elements</a></li>
+        <li><a href="#models">Content Models</a></li>
+        <li><a href="#block-inline">Block vs Inline</a></li>
+        <li><a href="#rules">Syntax Rules Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="parts">
+        <h2><span class="num">1</span> The Parts of an Element</h2>
+        <p>An HTML element has up to four parts. The complete anatomy of a paragraph element:</p>
+        <div class="anatomy">
+<span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="val">"intro"</span> <span class="attr">id</span>=<span class="val">"first"</span><span class="tag">&gt;</span><span class="text">Hello, world!</span><span class="tag">&lt;/p&gt;</span>
+<span class="comment">│└─┬─┘                  │                  │                │       │</span>
+<span class="comment"> │  │                   │                  │                │       └─ closing tag</span>
+<span class="comment"> │  │                   │                  │                └─ content</span>
+<span class="comment"> │  │                   │                  └─ second attribute value</span>
+<span class="comment"> │  │                   └─ second attribute name</span>
+<span class="comment"> │  └─ tag name</span>
+<span class="comment"> └─ opening angle bracket</span>
+        </div>
+        <p>Together, this is the <strong>element</strong>. The <strong>tag</strong> is just the angle-bracket part. The complete unit — opening tag, content, closing tag — is the element.</p>
+      </section>
+
+      <section id="opening">
+        <h2><span class="num">2</span> Opening Tag</h2>
+        <p>The opening tag begins an element. It is composed of:</p>
+        <ol>
+          <li>A <code>&lt;</code> (less-than sign)</li>
+          <li>The <strong>tag name</strong> (lowercase by convention)</li>
+          <li>Zero or more attributes, each separated by whitespace</li>
+          <li>A <code>&gt;</code> (greater-than sign)</li>
+        </ol>
+        <pre><code>&lt;p&gt;                  ← no attributes
+&lt;p class="lead"&gt;      ← one attribute
+&lt;a href="x" target="_blank" rel="noopener"&gt;   ← three attributes</code></pre>
+      </section>
+
+      <section id="closing">
+        <h2><span class="num">3</span> Closing Tag</h2>
+        <p>The closing tag ends an element. It is composed of:</p>
+        <ol>
+          <li>A <code>&lt;</code></li>
+          <li>A <code>/</code> (forward slash)</li>
+          <li>The same tag name as the opening tag</li>
+          <li>A <code>&gt;</code></li>
+        </ol>
+        <pre><code>&lt;/p&gt;     ← closing tag for &lt;p&gt;
+&lt;/div&gt;   ← closing tag for &lt;div&gt;</code></pre>
+        <p>Closing tags are <strong>required</strong> for all non-void elements. Browsers will try to insert missing ones for you, but the result is often not what you intended.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Forgetting to close a tag can cascade errors through the rest of the document. If a single <code>&lt;p&gt;</code> isn't closed, every subsequent element may be treated as inside it. Always close what you open.
+        </div>
+      </section>
+
+      <section id="void">
+        <h2><span class="num">4</span> Void (Self-Closing) Elements</h2>
+        <p>A small set of elements have no content and therefore no closing tag. These are called <strong>void elements</strong>. The full list (15 elements) is the topic of the next page, but here are the most common:</p>
+        <pre><code>&lt;br&gt;             ← line break
+&lt;hr&gt;             ← horizontal rule (thematic break)
+&lt;img src="x" alt="..."&gt;
+&lt;input type="text"&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;link rel="stylesheet" href="x"&gt;</code></pre>
+        <p>In HTML5, you may write a trailing slash if you like — <code>&lt;br /&gt;</code> — but it has no effect. Pick a style and be consistent.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The XML/XHTML convention is <code>&lt;br /&gt;</code>. The HTML5 convention is <code>&lt;br&gt;</code>. Most modern codebases omit the slash.
+        </div>
+      </section>
+
+      <section id="attributes">
+        <h2><span class="num">5</span> Attributes</h2>
+        <p>Attributes configure elements. They live in the opening tag, after the tag name, separated by spaces. Each attribute is a name="value" pair.</p>
+        <pre><code>&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;Link&lt;/a&gt;
+    └─┬─┘ └────────┬────────┘ └────┬────┘ └─────────┬─────────┘
+      │            │               │                   │
+      │            │               │                   └─ third attribute
+      │            │               └─ second attribute
+      │            └─ first attribute
+      └─ tag name</code></pre>
+        <h3>Attribute value quoting</h3>
+        <p>Values should always be quoted. Both single and double quotes work:</p>
+        <pre><code>&lt;a href="https://example.com"&gt;      ← double quotes (most common)
+&lt;a href='https://example.com'&gt;      ← single quotes
+&lt;a href=https://example.com&gt;        ← unquoted (allowed but fragile)</code></pre>
+        <p>Unquoted values cannot contain spaces, quotes, <code>=</code>, <code>&lt;</code>, <code>&gt;</code>, or <code>`</code>. Just always quote — it's safer.</p>
+        <h3>Empty attribute values</h3>
+        <pre><code>&lt;input value=""&gt;   ← empty string value, explicitly quoted
+&lt;div data-x&gt;       ← boolean attribute, no value</code></pre>
+      </section>
+
+      <section id="boolean">
+        <h2><span class="num">6</span> Boolean Attributes</h2>
+        <p>Some attributes are boolean — their mere presence means "true", and their absence means "false". The value doesn't matter.</p>
+        <pre><code>&lt;input type="checkbox" checked&gt;           ← checked
+&lt;input type="checkbox" checked="checked"&gt; ← also checked
+&lt;input type="checkbox" checked=""&gt;        ← also checked
+&lt;input type="checkbox" checked="false"&gt;   ← STILL CHECKED! Presence = true.
+&lt;input type="checkbox"&gt;                   ← not checked (attribute absent)</code></pre>
+        <p>Common boolean attributes:</p>
+        <ul>
+          <li><code>disabled</code> — on <code>&lt;button&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;option&gt;</code>, <code>&lt;fieldset&gt;</code></li>
+          <li><code>checked</code> — on <code>&lt;input type="checkbox"&gt;</code> and <code>&lt;input type="radio"&gt;</code></li>
+          <li><code>selected</code> — on <code>&lt;option&gt;</code></li>
+          <li><code>readonly</code> — on <code>&lt;input&gt;</code> and <code>&lt;textarea&gt;</code></li>
+          <li><code>required</code> — on form fields</li>
+          <li><code>multiple</code> — on <code>&lt;input type="file"&gt;</code> and <code>&lt;select&gt;</code></li>
+          <li><code>autofocus</code> — on focusable elements</li>
+          <li><code>hidden</code> — global attribute, hides element</li>
+          <li><code>async</code>, <code>defer</code> — on <code>&lt;script&gt;</code></li>
+          <li><code>reversed</code> — on <code>&lt;ol&gt;</code></li>
+          <li><code>nowrap</code> — deprecated, do not use</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Writing <code>checked="false"</code> does <em>not</em> uncheck a checkbox. The presence of the attribute is what matters, regardless of value. To uncheck, remove the attribute entirely (or use JavaScript: <code>el.checked = false</code>).
+        </div>
+      </section>
+
+      <section id="nested">
+        <h2><span class="num">7</span> Nested Elements</h2>
+        <p>Elements can contain other elements. This is what creates the document tree.</p>
+        <pre><code>&lt;article&gt;
+  &lt;h2&gt;Title&lt;/h2&gt;
+  &lt;p&gt;A paragraph with &lt;a href="x"&gt;a link&lt;/a&gt; in it.&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;First&lt;/li&gt;
+    &lt;li&gt;Second&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/article&gt;</code></pre>
+        <p>Two rules:</p>
+        <ol>
+          <li><strong>Tags must be properly nested.</strong> If you open <code>&lt;a&gt;</code> then <code>&lt;b&gt;</code>, you must close <code>&lt;/b&gt;</code> before <code>&lt;/a&gt;</code>.</li>
+          <li><strong>Content models must be respected.</strong> Not every element can be a child of every other. See Content Models below.</li>
+        </ol>
+        <div class="callout warn">
+          <strong>Common Mistake — Improper Nesting</strong>
+          <pre><code>&lt;b&gt;Bold &lt;i&gt;both&lt;/b&gt; italic&lt;/i&gt;   ← INVALID: tags overlap</code></pre>
+          The browser will silently fix this — usually by closing the inner tag early — but the resulting DOM won't match what you wrote. Always close inner tags before outer ones.
+        </div>
+      </section>
+
+      <section id="models">
+        <h2><span class="num">8</span> Content Models</h2>
+        <p>Every HTML element belongs to one or more <strong>content categories</strong> defined by the WHATWG spec. These categories determine what each element can contain and where it can be placed.</p>
+        <table>
+          <thead><tr><th>Category</th><th>Description</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Flow content</strong></td><td>Most elements that can appear in <code>&lt;body&gt;</code></td><td><code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;img&gt;</code></td></tr>
+            <tr><td><strong>Phrasing content</strong></td><td>Inline text and markup</td><td><code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code></td></tr>
+            <tr><td><strong>Heading content</strong></td><td>Section headings</td><td><code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code></td></tr>
+            <tr><td><strong>Sectioning content</strong></td><td>Define document sections</td><td><code>&lt;article&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;section&gt;</code></td></tr>
+            <tr><td><strong>Interactive content</strong></td><td>User-interaction elements</td><td><code>&lt;a&gt;</code> with href, <code>&lt;button&gt;</code>, <code>&lt;input&gt;</code></td></tr>
+            <tr><td><strong>Embedded content</strong></td><td>External resources</td><td><code>&lt;img&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;canvas&gt;</code></td></tr>
+            <tr><td><strong>Metadata content</strong></td><td>For <code>&lt;head&gt;</code></td><td><code>&lt;title&gt;</code>, <code>&lt;meta&gt;</code>, <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code></td></tr>
+            <tr><td><strong>Form-associated content</strong></td><td>Submit with a form</td><td><code>&lt;input&gt;</code>, <code>&lt;button&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;label&gt;</code></td></tr>
+            <tr><td><strong>Palpable content</strong></td><td>Should have visible content</td><td>Most elements</td></tr>
+          </tbody>
+        </table>
+        <p>The most important practical rule: <strong>phrasing content</strong> can contain only other phrasing content. A <code>&lt;span&gt;</code> cannot contain a <code>&lt;div&gt;</code>. A <code>&lt;p&gt;</code> cannot contain another <code>&lt;p&gt;</code> or a <code>&lt;div&gt;</code>.</p>
+        <pre><code>&lt;!-- Valid: span contains phrasing only --&gt;
+&lt;span&gt;Hello &lt;em&gt;world&lt;/em&gt;!&lt;/span&gt;
+
+&lt;!-- INVALID: span cannot contain a div --&gt;
+&lt;span&gt;Hello &lt;div&gt;world&lt;/div&gt;&lt;/span&gt;
+
+&lt;!-- INVALID: p cannot contain a div --&gt;
+&lt;p&gt;Hello &lt;div&gt;world&lt;/div&gt;&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="block-inline">
+        <h2><span class="num">9</span> Block vs Inline</h2>
+        <p>Before HTML5, HTML elements were classified as either <strong>block-level</strong> or <strong>inline</strong>. HTML5 replaced this with the content model system above, but the old terms remain useful because they describe how elements behave visually by default.</p>
+        <div class="block-vs-inline">
+          <div class="bvi-card block">
+            <h5>Block-level</h5>
+            <p>Starts on a new line. Takes full available width. Width, height, margin, padding all apply.</p>
+            <p>Examples: <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;form&gt;</code></p>
+          </div>
+          <div class="bvi-card inline">
+            <h5>Inline</h5>
+            <p>Does not start a new line. Takes only as much width as needed. Vertical margin/padding behave oddly. Width/height usually ignored.</p>
+            <p>Examples: <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;code&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;sub&gt;</code>, <code>&lt;sup&gt;</code></p>
+          </div>
+        </div>
+        <h3>Visual demonstration</h3>
+        <div class="demo" style="background:white;padding:14px;border:1px solid var(--line);border-radius:8px;">
+          <p style="margin:0;background:rgba(37,99,235,0.1);">This is a &lt;p&gt; (block) — full width, new line.</p>
+          <p style="margin:0;background:rgba(37,99,235,0.1);">Another &lt;p&gt; — also full width, also new line.</p>
+          <div><span style="background:rgba(124,58,237,0.1);">A &lt;span&gt;</span> <span style="background:rgba(124,58,237,0.1);">and another</span> <span style="background:rgba(124,58,237,0.1);">all on one line.</span></div>
+        </div>
+        <h3>The modern reality</h3>
+        <p>With CSS, you can make any element behave either way: <code>display: block</code> on an inline element, or <code>display: inline</code> on a block. The block/inline distinction is now about <em>defaults</em> and <em>semantics</em>, not hard rules. But choosing the right element by its semantics — not by its default styling — remains the right approach.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          A useful middle ground is <code>display: inline-block</code> — sits inline but accepts width, height, padding. Commonly used for buttons inside text.
+        </div>
+      </section>
+
+      <section id="rules">
+        <h2><span class="num">10</span> Syntax Rules Summary</h2>
+        <ul>
+          <li>Tags are wrapped in <code>&lt;</code> and <code>&gt;</code>.</li>
+          <li>Tag names are lowercase by convention.</li>
+          <li>Most elements need a closing tag with <code>/</code>.</li>
+          <li>Void elements (like <code>&lt;br&gt;</code>, <code>&lt;img&gt;</code>) have no closing tag.</li>
+          <li>Attributes are <code>name="value"</code> pairs in the opening tag.</li>
+          <li>Always quote attribute values.</li>
+          <li>Boolean attributes can appear without a value.</li>
+          <li>Tags must be properly nested (inner closed before outer).</li>
+          <li>Content models determine what can contain what.</li>
+          <li>Block elements stack vertically; inline elements flow horizontally.</li>
+          <li>HTML is case-insensitive for tag/attribute names but lowercase is convention.</li>
+          <li>Comments use <code>&lt;!-- ... --&gt;</code> and cannot be nested.</li>
+        </ul>
+        <div class="callout exercise">
+          <strong>Try it yourself — 10 minutes</strong>
+          Write a complete document from scratch (no Emmet). Include:
+          <ol>
+            <li>A <code>&lt;header&gt;</code> with an <code>&lt;h1&gt;</code> and a <code>&lt;p&gt;</code> containing an <code>&lt;a&gt;</code> link.</li>
+            <li>A <code>&lt;main&gt;</code> with two <code>&lt;section&gt;</code>s, each with an <code>&lt;h2&gt;</code> and a paragraph.</li>
+            <li>A list (<code>&lt;ul&gt;</code>) with at least three <code>&lt;li&gt;</code> items, one of which contains an <code>&lt;a&gt;</code> link.</li>
+            <li>An image (<code>&lt;img&gt;</code> — use any URL).</li>
+            <li>A horizontal rule (<code>&lt;hr&gt;</code>) and a line break (<code>&lt;br&gt;</code>).</li>
+          </ol>
+          Open it in your browser. Inspect each element. Validate the HTML at <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a>.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../02-Document-Structure/metadata.html">← Previous: Metadata</a>
+      <a href="void-elements.html">Next: Void Elements →</a>
+    </div>
+    <p>HTML Mastery — Section 1.3 · Elements &amp; Tags · Syntax</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The DOCTYPE Declaration — HTML Mastery</title>
+  <meta name="description" content="Everything about the &lt;!DOCTYPE html&gt; declaration: history of HTML4, XHTML, and HTML5 doctypes, quirks mode vs standards mode, and the common mistakes that break your layout.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #dc2626 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #93c5fd; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .mode-card { padding: 18px; border-radius: 12px; color: white; }
+    .mode-card.standards { background: linear-gradient(135deg, #16a34a, #15803d); }
+    .mode-card.quirks { background: linear-gradient(135deg, #dc2626, #991b1b); }
+    .mode-card.almost { background: linear-gradient(135deg, #f59e0b, #b45309); }
+    .mode-card h4 { margin: 0 0 8px; font-size: 1.1rem; }
+    .mode-card p { margin: 0; font-size: 0.95rem; opacity: 0.95; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.2 · Document Structure</span>
+    <h1>The <code>&lt;!DOCTYPE html&gt;</code> Declaration</h1>
+    <p>Five characters that decide whether your page renders in modern standards mode or 1999-era quirks mode. Easy to write, easy to forget, expensive to get wrong.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What Is DOCTYPE?</a></li>
+        <li><a href="#history">A Brief History</a></li>
+        <li><a href="#modes">Quirks vs Standards</a></li>
+        <li><a href="#modern">The Modern Form</a></li>
+        <li><a href="#omitting">What If You Omit It?</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#xml">XML Declaration Confusion</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Is DOCTYPE?</h2>
+        <p>The <strong>DOCTYPE</strong> (short for "document type declaration") is the very first line of every HTML document. It is not an HTML tag — it's an instruction to the browser about which version of HTML the page is using.</p>
+        <pre><code>&lt;!DOCTYPE html&gt;</code></pre>
+        <p>In HTML5, the DOCTYPE is intentionally minimal. It says one thing: <em>"Treat this document as modern HTML, rendered in standards mode."</em></p>
+        <p>The DOCTYPE must be:</p>
+        <ul>
+          <li>The first thing in the file — before any whitespace, before any HTML, before the <code>&lt;html&gt;</code> tag.</li>
+          <li>Present once. Multiple DOCTYPEs are invalid.</li>
+          <li>Exactly <code>&lt;!DOCTYPE html&gt;</code> (case-insensitive, but uppercase is the convention).</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Type <code>!</code> in an empty HTML file in VS Code and press Tab. Emmet generates the full boilerplate, starting with <code>&lt;!DOCTYPE html&gt;</code>. Memorise the boilerplate anyway — knowing what's in it matters.
+        </div>
+      </section>
+
+      <section id="history">
+        <h2><span class="num">2</span> A Brief History of DOCTYPEs</h2>
+        <p>Before HTML5, the DOCTYPE had to reference a specific Document Type Definition (DTD) — a formal SGML/XML specification that listed every allowed element and attribute. These DTDs were long and easy to mistype.</p>
+        <h3>HTML 4.01 — three flavours, three doctypes</h3>
+        <pre><code>&lt;!-- HTML 4.01 Strict --&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd"&gt;
+
+&lt;!-- HTML 4.01 Transitional (allowed presentational tags) --&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd"&gt;
+
+&lt;!-- HTML 4.01 Frameset (for &lt;frameset&gt;) --&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+   "http://www.w3.org/TR/html4/frameset.dtd"&gt;</code></pre>
+        <h3>XHTML 1.0 — the same DTDs, just stricter</h3>
+        <pre><code>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;</code></pre>
+        <h3>XHTML 1.1</h3>
+        <pre><code>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"&gt;</code></pre>
+        <p>These long DOCTYPEs did real work — they pointed browsers at a DTD that listed every allowed element. But they were impossible to memorise. Authors copied them from a cheatsheet. The WHATWG's design insight for HTML5 was that none of this was necessary: the browser only needs to know "this is HTML, render in standards mode".</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Some template generators still output old-style DOCTYPEs like <code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" ...&gt;</code>. There is no reason to use these today. Replace with <code>&lt;!DOCTYPE html&gt;</code>.
+        </div>
+      </section>
+
+      <section id="modes">
+        <h2><span class="num">3</span> Quirks Mode vs Standards Mode</h2>
+        <p>Browsers have three rendering modes. The DOCTYPE determines which one is used.</p>
+        <div class="grid-2">
+          <div class="mode-card standards">
+            <h4>✓ Standards Mode (No Quirks)</h4>
+            <p>The browser renders the page according to the modern CSS and HTML specifications. This is what you want. Triggered by <code>&lt;!DOCTYPE html&gt;</code>.</p>
+          </div>
+          <div class="mode-card quirks">
+            <h4>✗ Quirks Mode</h4>
+            <p>The browser emulates the buggy behaviour of IE5 (1999). Layout breaks in mysterious ways. Triggered by omitting the DOCTYPE or using an invalid one.</p>
+          </div>
+          <div class="mode-card almost">
+            <h4>⚠ Limited Quirks Mode</h4>
+            <p>A halfway house for documents using the old HTML 4.01 Transitional or Frameset DOCTYPEs. Mostly standards-compliant but with some legacy behaviours around tables and inline blocks.</p>
+          </div>
+          <div class="mode-card almost">
+            <h4>Why it matters</h4>
+            <p>In Quirks Mode: <code>width</code> includes padding and border (the old IE box model). Inline elements behave like the 90s. New CSS features may not work. Avoid at all costs.</p>
+          </div>
+        </div>
+        <h3>Concrete example of the box model difference</h3>
+        <p>Consider this CSS:</p>
+        <pre><code>.box {
+  width: 200px;
+  padding: 20px;
+  border: 5px solid black;
+}</code></pre>
+        <table>
+          <thead><tr><th>Mode</th><th>Total element width</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Standards</td><td>250px</td><td>200 (content) + 20+20 (padding) + 5+5 (border) = 250</td></tr>
+            <tr><td>Quirks</td><td>200px</td><td>200 includes padding and border (the IE5 box model)</td></tr>
+          </tbody>
+        </table>
+        <p>This single difference is why an entire generation of CSS layouts "broke in IE" — authors had been testing in standards mode and IE6 was rendering in quirks mode due to a missing DOCTYPE.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          To check which mode your page is in: open DevTools → Console and run <code>document.compatMode</code>. <code>"CSS1Compat"</code> means standards; <code>"BackCompat"</code> means quirks. Run it now on this page — you'll see <code>"CSS1Compat"</code>.
+        </div>
+      </section>
+
+      <section id="modern">
+        <h2><span class="num">4</span> The Modern Form</h2>
+        <p>HTML5 introduced the universal DOCTYPE:</p>
+        <pre><code>&lt;!DOCTYPE html&gt;</code></pre>
+        <p>That's it. No version, no DTD URL, no PUBLIC keyword. It works for every HTML5 document forever. Case-insensitive — <code>&lt;!doctype html&gt;</code> and <code>&lt;!DOCTYPE html&gt;</code> are equivalent — but the uppercase form is the universal convention.</p>
+        <p>The full minimal HTML5 document:</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;Hello, world!&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </section>
+
+      <section id="omitting">
+        <h2><span class="num">5</span> What Happens If You Omit the DOCTYPE?</h2>
+        <p>Browsers do not refuse to render your page. They render it — in <strong>quirks mode</strong>. This produces subtle, hard-to-debug problems:</p>
+        <ul>
+          <li>Box model is the old IE5 one (width includes padding and border).</li>
+          <li>CSS units like <code>vh</code> and <code>vw</code> may behave oddly.</li>
+          <li>Inline-block elements get unwanted whitespace between them.</li>
+          <li>Some CSS3 features are silently unsupported.</li>
+          <li>JavaScript APIs may report different values for <code>document.documentElement.clientHeight</code>.</li>
+        </ul>
+        <p>The browser will not warn you. You'll spend hours wondering why a 200-pixel-wide box is 200 pixels wide instead of 250. Always start with the DOCTYPE.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          A common "skeleton" mistake is starting the file with a comment:
+          <pre><code>&lt;!-- My awesome page --&gt;
+&lt;!DOCTYPE html&gt;
+...</code></pre>
+          This is fine in modern browsers (comments before the DOCTYPE don't trigger quirks mode), but it's fragile and a validator will complain. Always put the DOCTYPE first, before any comments.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">6</span> Common Mistakes</h2>
+        <table>
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td>Omitting DOCTYPE entirely</td><td>Triggers quirks mode</td><td>Add <code>&lt;!DOCTYPE html&gt;</code> as line 1</td></tr>
+            <tr><td><code>&lt;DOCTYPE html&gt;</code> (no exclamation)</td><td>Invalid; treated as a tag</td><td>Add <code>!</code>: <code>&lt;!DOCTYPE html&gt;</code></td></tr>
+            <tr><td><code>&lt;!DOCTYP html&gt;</code> (typo)</td><td>Browser can't match; quirks mode</td><td>Spell it correctly</td></tr>
+            <tr><td>Putting the DOCTYPE after <code>&lt;html&gt;</code></td><td>Invalid; some browsers trigger quirks</td><td>DOCTYPE always first</td></tr>
+            <tr><td>Using HTML 4.01 DOCTYPE in a 2024 page</td><td>Triggers limited-quirks mode</td><td>Replace with <code>&lt;!DOCTYPE html&gt;</code></td></tr>
+            <tr><td>Multiple DOCTYPEs</td><td>Validator error; second one ignored</td><td>Use exactly one</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="xml">
+        <h2><span class="num">7</span> The XML Declaration Confusion</h2>
+        <p>If you ever see this at the top of a file:</p>
+        <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html&gt;
+...</code></pre>
+        <p>…that's the <strong>XML declaration</strong>, not the DOCTYPE. It was used in XHTML and is unnecessary (and harmful) in HTML5. Remove it. In old IE versions, this XML declaration actually triggered quirks mode because it pushed the DOCTYPE below the first line — yet another reason to forget XHTML.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If you're ever debugging a layout and CSS units aren't behaving as expected, the first check is: is the page in standards mode? Run <code>document.compatMode</code> in the console. The second check is: is the DOCTYPE the first thing in the file?
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">8</span> Summary</h2>
+        <ul>
+          <li><strong>Always</strong> start every HTML document with <code>&lt;!DOCTYPE html&gt;</code>.</li>
+          <li>It must be the first line — no whitespace, no comments before it.</li>
+          <li>It's case-insensitive but conventionally uppercase.</li>
+          <li>It is not a tag — it's a processing instruction.</li>
+          <li>It tells the browser to use standards mode, not quirks mode.</li>
+          <li>Modern HTML5 has no other valid DOCTYPE.</li>
+        </ul>
+        <div class="callout exercise">
+          <strong>Try it yourself — 5 minutes</strong>
+          Create two files:
+          <ol>
+            <li><code>with-doctype.html</code> — full HTML5 boilerplate with <code>&lt;!DOCTYPE html&gt;</code>. Include a <code>&lt;div&gt;</code> styled with <code>width: 200px; padding: 20px; border: 5px solid red;</code> and a background.</li>
+            <li><code>without-doctype.html</code> — same content but omit the DOCTYPE entirely.</li>
+          </ol>
+          Open both. Open DevTools Console and run <code>document.compatMode</code> on each. Notice the difference in the rendered width of the box. That's the box model in action.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../01-What-is-HTML/anatomy.html">← Previous: Anatomy</a>
+      <a href="html-head-body.html">Next: &lt;html&gt;, &lt;head&gt;, &lt;body&gt; →</a>
+    </div>
+    <p>HTML Mastery — Section 1.2 · Document Structure · DOCTYPE</p>
+  </footer>
+</body>
+</html>

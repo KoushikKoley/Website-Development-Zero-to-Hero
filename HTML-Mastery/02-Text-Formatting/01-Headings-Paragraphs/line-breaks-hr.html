@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Line Breaks &lt;br&gt; and Thematic Breaks &lt;hr&gt; — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML line break (br) and thematic break (hr) elements: when to use them, common abuse cases, accessibility considerations, and modern CSS alternatives.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .support { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+    .support span {
+      background: #f1f5f9; border: 1px solid var(--line);
+      padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    }
+    .fancy-hr {
+      border: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2), transparent);
+      border-radius: 2px;
+      margin: 32px 0;
+    }
+    .dot-hr {
+      border: 0;
+      height: 12px;
+      background-image: radial-gradient(circle, var(--ink-soft) 2px, transparent 3px);
+      background-size: 16px 16px;
+      background-repeat: repeat-x;
+      background-position: center;
+      margin: 24px 0;
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 2.1 · Text Formatting</span>
+    <h1>Line Breaks <code>&lt;br&gt;</code> &amp; Thematic Breaks <code>&lt;hr&gt;</code></h1>
+    <p>Two void elements that look tiny but carry big semantic weight. <code>&lt;br&gt;</code> forces a line break inside text. <code>&lt;hr&gt;</code> marks a thematic shift between sections. Both are easy to abuse — here is how to use them well.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#br-intro">The <code>&lt;br&gt;</code> Element</a></li>
+        <li><a href="#br-syntax">Syntax</a></li>
+        <li><a href="#br-when">When to Use <code>&lt;br&gt;</code></a></li>
+        <li><a href="#br-abuse">Abuse Cases</a></li>
+        <li><a href="#br-clear">The Deprecated <code>clear</code> Attribute</a></li>
+        <li><a href="#hr-intro">The <code>&lt;hr&gt;</code> Element</a></li>
+        <li><a href="#hr-semantics">Semantics of <code>&lt;hr&gt;</code></a></li>
+        <li><a href="#hr-a11y">Accessibility</a></li>
+        <li><a href="#hr-style">Styling <code>&lt;hr&gt;</code></a></li>
+        <li><a href="#alternatives">Modern Alternatives</a></li>
+        <li><a href="#mistakes">Common Mistakes</a></li>
+        <li><a href="#exercise">Try It Yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="br-intro">
+        <h2><span class="num">1</span> The <code>&lt;br&gt;</code> Element</h2>
+        <p>The <code>&lt;br&gt;</code> element produces a <strong>line break</strong> within a run of text — the same effect as pressing Shift+Enter in a word processor. It is a <em>void element</em>, so it has no closing tag and cannot contain children.</p>
+        <p>Semantically, <code>&lt;br&gt;</code> means "the following text belongs to the same paragraph but starts on a new line." It is most commonly used for postal addresses, poems, song lyrics, and signatures.</p>
+        <div class="callout">
+          <strong>Info</strong>
+          In XHTML you wrote <code>&lt;br /&gt;</code>. In HTML5, <code>&lt;br&gt;</code> is correct. Both forms are accepted by the parser, but plain <code>&lt;br&gt;</code> is idiomatic in modern HTML.
+        </div>
+      </section>
+
+      <section id="br-syntax">
+        <h2><span class="num">2</span> Syntax</h2>
+        <pre><code>&lt;p&gt;
+  Ada Lovelace&lt;br&gt;
+  123 Analytical Engine Way&lt;br&gt;
+  London, UK
+&lt;/p&gt;</code></pre>
+        <div class="demo-box">
+          <p>
+            Ada Lovelace<br>
+            123 Analytical Engine Way<br>
+            London, UK
+          </p>
+        </div>
+        <p><code>&lt;br&gt;</code> accepts only global attributes. The most useful is <code>class</code> for styling hooks, and occasionally <code>title</code> for a tooltip.</p>
+      </section>
+
+      <section id="br-when">
+        <h2><span class="num">3</span> When to Use <code>&lt;br&gt;</code></h2>
+        <table>
+          <thead>
+            <tr><th>Use case</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Postal address</td><td><code>Ada Lovelace&lt;br&gt;London, UK</code></td></tr>
+            <tr><td>Poetry / lyrics</td><td><code>Roses are red,&lt;br&gt;Violets are blue,</code></td></tr>
+            <tr><td>Signature block</td><td><code>— Jane Doe&lt;br&gt;CEO, Acme Inc.</code></td></tr>
+            <tr><td>Code sample inline</td><td>Inside <code>&lt;pre&gt;</code> when needed (rare)</td></tr>
+            <tr><td>Form labels with hints</td><td><code>Email&lt;br&gt;&lt;small&gt;Required&lt;/small&gt;</code></td></tr>
+            <tr><td>Headlines with two visual lines</td><td><code>Build &amp; Ship&lt;br&gt;Faster</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If the content between two line breaks is a separate idea, use two paragraphs instead. <code>&lt;br&gt;</code> is for line breaks, <code>&lt;p&gt;</code> is for paragraph breaks.
+        </div>
+      </section>
+
+      <section id="br-abuse">
+        <h2><span class="num">4</span> Abuse Cases</h2>
+        <p>The most common beginner mistake is to use <code>&lt;br&gt;</code> as a substitute for margins. The browser will render it, but it produces broken semantics, awkward spacing, and screen-reader confusion.</p>
+        <pre><code>&lt;!-- ❌ Wrong: br for spacing --&gt;
+&lt;p&gt;Welcome to our shop.&lt;br&gt;&lt;br&gt;&lt;br&gt;
+   Check out our latest products.&lt;/p&gt;
+
+&lt;!-- ❌ Wrong: br instead of list items --&gt;
+&lt;p&gt;
+  Apples&lt;br&gt;
+  Oranges&lt;br&gt;
+  Bananas
+&lt;/p&gt;
+
+&lt;!-- ❌ Wrong: br for button spacing --&gt;
+&lt;button&gt;Buy&lt;/button&gt;&lt;br&gt;&lt;br&gt;&lt;button&gt;Cancel&lt;/button&gt;</code></pre>
+        <pre><code>&lt;!-- ✅ Correct: use paragraphs --&gt;
+&lt;p&gt;Welcome to our shop.&lt;/p&gt;
+&lt;p&gt;Check out our latest products.&lt;/p&gt;
+
+&lt;!-- ✅ Correct: use a list --&gt;
+&lt;ul&gt;
+  &lt;li&gt;Apples&lt;/li&gt;
+  &lt;li&gt;Oranges&lt;/li&gt;
+  &lt;li&gt;Bananas&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- ✅ Correct: use CSS margin on buttons --&gt;
+&lt;button style="margin-right: 12px;"&gt;Buy&lt;/button&gt;
+&lt;button&gt;Cancel&lt;/button&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Stacking multiple <code>&lt;br&gt;</code> tags for vertical space is the single most common HTML abuse. It produces inconsistent spacing across browsers, confuses screen readers (which read each break as a pause), and is impossible to maintain responsively.
+        </div>
+      </section>
+
+      <section id="br-clear">
+        <h2><span class="num">5</span> The Deprecated <code>clear</code> Attribute</h2>
+        <p>Older HTML supported <code>&lt;br clear="all"&gt;</code> to clear floated elements. This attribute is obsolete. Use the CSS <code>clear</code> property, or better yet, switch to modern flex/grid layout.</p>
+        <pre><code>&lt;!-- ❌ Deprecated --&gt;
+&lt;img src="photo.jpg" style="float:left"&gt;
+&lt;br clear="all"&gt;
+
+&lt;!-- ✅ Modern alternative --&gt;
+&lt;div style="overflow:hidden"&gt;
+  &lt;img src="photo.jpg" style="float:left"&gt;
+  &lt;p&gt;Caption...&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- ✅ Even better: flexbox --&gt;
+&lt;div style="display:flex; gap:16px; align-items:start;"&gt;
+  &lt;img src="photo.jpg"&gt;
+  &lt;p&gt;Caption...&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+      </section>
+
+      <section id="hr-intro">
+        <h2><span class="num">6</span> The <code>&lt;hr&gt;</code> Element</h2>
+        <p><code>&lt;hr&gt;</code> stands for "<strong>horizontal rule</strong>" but in modern HTML its semantic meaning is "<strong>thematic break</strong>" — a transition between two topics within the same section. Visually it renders as a horizontal line, but the meaning is structural, not decorative.</p>
+        <div class="demo-box">
+          <p>This is the end of the introduction.</p>
+          <hr>
+          <p>This is the beginning of the main content — a thematic shift.</p>
+        </div>
+        <pre><code>&lt;section&gt;
+  &lt;h2&gt;Chapter 1: The Beginning&lt;/h2&gt;
+  &lt;p&gt;It was the best of times…&lt;/p&gt;
+
+  &lt;hr&gt;
+
+  &lt;h2&gt;Chapter 2: The Middle&lt;/h2&gt;
+  &lt;p&gt;Years later, the protagonist returned…&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+      </section>
+
+      <section id="hr-semantics">
+        <h2><span class="num">7</span> Semantics of <code>&lt;hr&gt;</code></h2>
+        <p>Use <code>&lt;hr&gt;</code> only when there is a real shift in topic, scene, or section that you cannot express with a proper heading or section element. It is a fallback when no heading is appropriate.</p>
+        <table>
+          <thead>
+            <tr><th>Situation</th><th>Use <code>&lt;hr&gt;</code>?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Scene change in a story</td><td>✓ Yes</td></tr>
+            <tr><td>Switch from article to footer notes</td><td>✓ Yes</td></tr>
+            <tr><td>Separator between blog post and comments</td><td>✓ Yes</td></tr>
+            <tr><td>Decorative divider because it looks nice</td><td>✗ No — use a styled <code>&lt;div&gt;</code></td></tr>
+            <tr><td>Splitting sections with their own headings</td><td>✗ No — use <code>&lt;section&gt;</code> + headings</td></tr>
+            <tr><td>Top/bottom of a layout section</td><td>✗ No — use border or margin</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="hr-a11y">
+        <h2><span class="num">8</span> Accessibility of <code>&lt;hr&gt;</code></h2>
+        <p>Screen readers expose <code>&lt;hr&gt;</code> as an implicit <code>separator</code> landmark with role <code>separator</code>. Most screen readers announce something like "separator" or "horizontal separator" when they encounter one. This is helpful — it tells the user "we're moving to a new topic."</p>
+        <p>If your <code>&lt;hr&gt;</code> is purely decorative, hide it from assistive tech:</p>
+        <pre><code>&lt;hr aria-hidden="true"&gt;</code></pre>
+        <p>Conversely, if you want to add a meaningful label (rare), use <code>aria-label</code>:</p>
+        <pre><code>&lt;hr aria-label="End of introduction"&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When in doubt, ask: "Would a screen-reader user benefit from hearing 'separator' here?" If yes, leave it. If no, mark it <code>aria-hidden</code> or replace it with CSS.
+        </div>
+      </section>
+
+      <section id="hr-style">
+        <h2><span class="num">9</span> Styling <code>&lt;hr&gt;</code> with CSS</h2>
+        <p>Browser default styling for <code>&lt;hr&gt;</code> is unattractive: a thin gray line with a 3D border. Almost every design system overrides it. Because <code>&lt;hr&gt;</code> is a void element with no content, you style the box itself.</p>
+        <h3>Reset and customize</h3>
+        <pre><code>hr {
+  border: 0;             /* remove default 3D border */
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  margin: 2.5rem 0;
+  border-radius: 1px;
+}</code></pre>
+        <hr class="fancy-hr">
+        <h3>Dotted divider</h3>
+        <pre><code>hr.dots {
+  border: 0;
+  height: 12px;
+  background-image: radial-gradient(circle, #475569 2px, transparent 3px);
+  background-size: 16px 16px;
+  background-repeat: repeat-x;
+  background-position: center;
+}</code></pre>
+        <hr class="dot-hr">
+        <h3>Faded gradient with center icon</h3>
+        <pre><code>hr.ornament {
+  border: 0;
+  height: 24px;
+  background-image:
+    linear-gradient(to right, transparent, #cbd5e1, transparent);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 60% 1px;
+  position: relative;
+  margin: 3rem 0;
+}
+hr.ornament::after {
+  content: "✦";
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 0 12px;
+  color: #7c3aed;
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The safest cross-browser recipe is <code>border: 0; height: Npx; background: ...;</code>. Avoid setting both <code>border-bottom</code> and a <code>background</code> on the same <code>hr</code> — they will overlap unpredictably in older browsers.
+        </div>
+      </section>
+
+      <section id="alternatives">
+        <h2><span class="num">10</span> Modern Alternatives</h2>
+        <p>Often the best <code>&lt;hr&gt;</code> is no <code>&lt;hr&gt;</code> at all. Modern layout gives you several cleaner options:</p>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Section borders</h4>
+            <p>Use <code>border-top</code> on a <code>&lt;section&gt;</code> or <code>&lt;article&gt;</code> element for visual separation that is also semantically meaningful.</p>
+          </div>
+          <div class="card">
+            <h4>Spacing with margins</h4>
+            <p>Often all you need is generous <code>margin-top</code> on the next section. White space itself can be the divider.</p>
+          </div>
+          <div class="card">
+            <h4>Decorative <code>&lt;div&gt;</code></h4>
+            <p>If you only want a decorative line, use <code>&lt;div class="divider"&gt;&lt;/div&gt;</code> with <code>aria-hidden="true"</code>. No fake semantics.</p>
+          </div>
+          <div class="card">
+            <h4>Headings</h4>
+            <p>A new <code>&lt;h2&gt;</code> already signals a topic change. Don't add a redundant <code>&lt;hr&gt;</code> on top of it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why It Hurts</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;br&gt;&lt;br&gt;&lt;br&gt;</code> for spacing</td>
+              <td>Breaks semantics, awkward pausing for screen readers</td>
+              <td>Use CSS <code>margin</code> on real elements</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;br&gt;</code> for list items</td>
+              <td>No list semantics; no bullet/number; no navigation</td>
+              <td>Use <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code></td>
+            </tr>
+            <tr>
+              <td><code>&lt;br&gt;</code> inside <code>&lt;title&gt;</code> or <code>&lt;button&gt;</code> text</td>
+              <td>Does not render where expected; weird behavior</td>
+              <td>Use CSS <code>white-space</code> or restructure markup</td>
+            </tr>
+            <tr>
+              <td>Decorative <code>&lt;hr&gt;</code> without <code>aria-hidden</code></td>
+              <td>Screen reader announces pointless "separator"</td>
+              <td>Add <code>aria-hidden="true"</code></td>
+            </tr>
+            <tr>
+              <td><code>&lt;hr&gt;</code> next to a heading</td>
+              <td>Redundant — heading already signals topic change</td>
+              <td>Drop the <code>hr</code>, or style the heading instead</td>
+            </tr>
+            <tr>
+              <td><code>&lt;br clear="all"&gt;</code></td>
+              <td>Obsolete, removed from spec</td>
+              <td>Use modern flex/grid layout</td>
+            </tr>
+            <tr>
+              <td>Self-closing in HTML5: <code>&lt;br/&gt;</code></td>
+              <td>Valid but inconsistent with idiomatic HTML5</td>
+              <td>Use plain <code>&lt;br&gt;</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Fix the address</strong>
+          The snippet below uses the wrong element for line breaks. Rewrite it.
+          <pre><code>&lt;p class="address"&gt;
+  Ada Lovelace
+  123 Analytical Engine Way
+  London, UK
+&lt;/p&gt;</code></pre>
+          <p><strong>Hint:</strong> Use <code>&lt;br&gt;</code> inside the paragraph for line breaks.</p>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Replace br-spacing</strong>
+          Rewrite this bad markup using proper paragraphs and CSS:
+          <pre><code>&lt;p&gt;Welcome.&lt;br&gt;&lt;br&gt;Here are our products:&lt;br&gt;&lt;br&gt;
+  Apples&lt;br&gt;Oranges&lt;br&gt;Bananas&lt;/p&gt;</code></pre>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Style a beautiful <code>hr</code></strong>
+          Create three different styled <code>&lt;hr&gt;</code> elements: (a) a thin gradient line, (b) a dotted divider, (c) an ornament with a centered emoji. Test each in your browser and verify it looks consistent at narrow and wide widths.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Identify abuse</strong>
+          Find three real websites that use <code>&lt;br&gt;</code> or <code>&lt;hr&gt;</code> inappropriately. Use the browser's DevTools to inspect their markup. Write one sentence on what they should have used instead.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">13</span> Summary</h2>
+        <ul>
+          <li><code>&lt;br&gt;</code> forces a line break within text — perfect for addresses, poems, signatures.</li>
+          <li>Never use <code>&lt;br&gt;</code> for spacing between paragraphs — use CSS margins instead.</li>
+          <li><code>&lt;hr&gt;</code> marks a thematic break between sections of the same article.</li>
+          <li>Screen readers announce <code>&lt;hr&gt;</code> as a separator — add <code>aria-hidden="true"</code> if decorative.</li>
+          <li>Style <code>&lt;hr&gt;</code> with <code>border: 0</code> + <code>background</code> + <code>height</code> for predictable cross-browser results.</li>
+          <li>For purely visual dividers, prefer a styled <code>&lt;div&gt;</code> over fake semantic <code>&lt;hr&gt;</code>.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>Since HTML 2.0 (1995)</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="paragraphs.html">← Previous: Paragraphs</a>
+      <a href="../02-Formatting-Elements/strong-em.html">Next: Strong &amp; Em →</a>
+    </div>
+    <p>HTML Mastery · Section 2 · Text Formatting · Line Breaks &amp; HR</p>
+  </footer>
+</body>
+</html>

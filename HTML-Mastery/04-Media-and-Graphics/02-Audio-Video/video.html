@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video — HTML Mastery</title>
+  <meta name="description" content="Master the HTML video element: src, controls, autoplay, loop, muted, poster, preload, width, height, playsinline for iOS, multiple source elements for MP4 and WebM, track element for WebVTT captions, and picture-in-picture API.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 22px;
+      background: #f8fafc; margin: 14px 0;
+    }
+    .demo-box video {
+      width: 100%; max-width: 640px; display: block; margin: 0 auto;
+      background: #0f172a; aspect-ratio: 16/9;
+      background-image: linear-gradient(135deg, #1e293b, #312e81);
+      color: #e0e7ff; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+    }
+    .video-placeholder {
+      width: 100%; max-width: 640px; aspect-ratio: 16/9;
+      margin: 0 auto; border-radius: 8px;
+      background: linear-gradient(135deg, #1e293b, #312e81);
+      color: #e0e7ff; display: flex; align-items: center; justify-content: center;
+      font-family: monospace;
+    }
+    .support {
+      margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--ink-soft);
+    }
+    .support span {
+      background: #f1f5f9; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    footer {
+      background: #0f172a; color: #cbd5e1;
+      padding: 24px; text-align: center;
+    }
+    footer .nav {
+      max-width: 1200px; margin: 0 auto 12px;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    footer a { color: #93c5fd; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 4 · Media &amp; Graphics</span>
+    <h1>The <code>&lt;video&gt;</code> Element</h1>
+    <p>The web's native video player. Poster images, multiple codecs, captions via WebVTT, picture-in-picture, autoplay policies, and iOS Safari quirks — everything you need to ship reliable video.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#anatomy">Anatomy</a></li>
+        <li><a href="#src">src &amp; source</a></li>
+        <li><a href="#controls">controls</a></li>
+        <li><a href="#poster">poster</a></li>
+        <li><a href="#dimensions">width, height &amp; aspect-ratio</a></li>
+        <li><a href="#autoplay">autoplay, muted, loop</a></li>
+        <li><a href="#playsinline">playsinline (iOS)</a></li>
+        <li><a href="#preload">preload</a></li>
+        <li><a href="#track">&lt;track&gt; &amp; WebVTT</a></li>
+        <li><a href="#pip">Picture-in-picture</a></li>
+        <li><a href="#js">JavaScript API</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercise">Try it yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="anatomy">
+        <h2><span class="num">1</span> Anatomy</h2>
+        <pre><code>&lt;video
+  width="1280"
+  height="720"
+  controls
+  preload="metadata"
+  poster="cover.jpg"
+  playsinline
+&gt;
+  &lt;source src="movie.webm" type="video/webm"&gt;
+  &lt;source src="movie.mp4"  type="video/mp4"&gt;
+  &lt;track kind="captions" src="movie.en.vtt"
+         srclang="en" label="English" default&gt;
+  &lt;p&gt;Your browser doesn't support HTML5 video.
+     &lt;a href="movie.mp4"&gt;Download the MP4&lt;/a&gt;.&lt;/p&gt;
+&lt;/video&gt;</code></pre>
+        <div class="demo-box">
+          <div class="video-placeholder">[ movie.mp4 · 1280×720 ]</div>
+        </div>
+        <p>Just like <code>&lt;audio&gt;</code>, the inner content is fallback for ancient browsers. Modern browsers render the native player.</p>
+      </section>
+
+      <section id="src">
+        <h2><span class="num">2</span> <code>src</code> &amp; Multiple <code>&lt;source&gt;</code> Elements</h2>
+        <p>Use nested <code>&lt;source&gt;</code> elements so the browser can choose a format. Order matters — list the most desirable format first.</p>
+        <pre><code>&lt;video controls width="1280" height="720"&gt;
+  &lt;source src="movie.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"'&gt;
+  &lt;source src="movie.webm"     type="video/webm"&gt;
+  &lt;source src="movie.h264.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Including the <code>codecs</code> parameter in the <code>type</code> attribute lets the browser distinguish between H.264, H.265, and AV1 — all of which use the <code>video/mp4</code> container. Without <code>codecs</code>, the browser may have to download a few KB to test.
+        </div>
+      </section>
+
+      <section id="controls">
+        <h2><span class="num">3</span> The <code>controls</code> Attribute</h2>
+        <p>Boolean — when present, the browser shows the native player UI: play/pause, seek bar, volume, fullscreen, captions menu, picture-in-picture, and (in some browsers) playback rate and download.</p>
+        <pre><code>&lt;!-- With native UI --&gt;
+&lt;video src="movie.mp4" controls&gt;&lt;/video&gt;
+
+&lt;!-- Without UI (custom JS-driven player) --&gt;
+&lt;video id="v" src="movie.mp4"&gt;&lt;/video&gt;</code></pre>
+        <p>The native controls are keyboard accessible (space toggles, arrows seek), so prefer them over custom UI unless you have specific needs.</p>
+      </section>
+
+      <section id="poster">
+        <h2><span class="num">4</span> The <code>poster</code> Attribute</h2>
+        <p><code>poster</code> is the URL of an image shown in the player area <em>before</em> the video starts playing. Without it, the first frame is shown — which is often a black frame or a blurry thumbnail.</p>
+        <pre><code>&lt;video
+  src="movie.mp4"
+  poster="movie-cover.jpg"
+  controls
+  preload="metadata"
+&gt;
+&lt;/video&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Use a poster that's the same dimensions as the video. Use <code>preload="metadata"</code> so the browser fetches the first frame as a fallback if the poster fails. Generate the poster at design time — don't pick a frame from the middle of the video.
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          A poster image that's a different aspect ratio than the video. The result is letterboxing or distortion. Match dimensions exactly.
+        </div>
+      </section>
+
+      <section id="dimensions">
+        <h2><span class="num">5</span> Width, Height &amp; Aspect Ratio</h2>
+        <p>Just like images, set <code>width</code> and <code>height</code> attributes (in CSS pixels) so the browser reserves space and avoids layout shift while the video loads.</p>
+        <pre><code>&lt;video width="1280" height="720" controls&gt;
+  &lt;source src="movie.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+
+&lt;style&gt;
+  video {
+    max-width: 100%;
+    height: auto;   /* preserves 16:9 from attributes */
+  }
+&lt;/style&gt;</code></pre>
+        <p>Common aspect ratios: <code>16:9</code> (YouTube, Vimeo), <code>9:16</code> (vertical/phone video, Stories), <code>1:1</code> (Instagram square), <code>21:9</code> (cinematic).</p>
+      </section>
+
+      <section id="autoplay">
+        <h2><span class="num">6</span> <code>autoplay</code>, <code>muted</code>, <code>loop</code></h2>
+        <p>Same autoplay policies as <code>&lt;audio&gt;</code>: browsers block autoplay with sound unless the user has interacted with the page. The combo <code>autoplay muted</code> works everywhere.</p>
+        <pre><code>&lt;!-- Background hero video (muted autoplay + loop) --&gt;
+&lt;video autoplay muted loop playsinline
+       poster="hero.jpg"
+       width="1920" height="1080"&gt;
+  &lt;source src="hero.webm" type="video/webm"&gt;
+  &lt;source src="hero.mp4"  type="video/mp4"&gt;
+&lt;/video&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Setting only <code>autoplay</code> without <code>muted</code> on a hero video. Chrome, Firefox, and Safari all block it. The video will be paused and you'll see an uncaught Promise rejection in the console.
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Always include <code>playsinline</code> on autoplay videos — without it, iOS Safari may force the video into fullscreen mode, breaking your hero layout.
+        </div>
+      </section>
+
+      <section id="playsinline">
+        <h2><span class="num">7</span> <code>playsinline</code> — The iOS Quirk</h2>
+        <p>Historically, iOS Safari played all videos in the native fullscreen player. The <code>playsinline</code> attribute (a boolean) tells iOS to play the video inline within the page instead.</p>
+        <pre><code>&lt;video src="tutorial.mp4" controls playsinline&gt;&lt;/video&gt;</code></pre>
+        <p>Without <code>playsinline</code>:</p>
+        <ul>
+          <li>Autoplay-mute loops break on iOS — the video gets yanked into fullscreen.</li>
+          <li>Video-based animations or background videos don't work as designed.</li>
+          <li>Custom UI overlays (play buttons, captions) become invisible behind the native player.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Add <code>playsinline</code> to <em>every</em> video that should play within the page. There's no downside — desktop browsers ignore it.
+        </div>
+      </section>
+
+      <section id="preload">
+        <h2><span class="num">8</span> The <code>preload</code> Attribute</h2>
+        <p>Same values as <code>&lt;audio&gt;</code>: <code>none</code>, <code>metadata</code>, <code>auto</code>. Same hint semantics.</p>
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Behavior</th><th>Use case</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>none</code></td><td>Don't buffer; user must press play</td><td>Listing pages with many videos</td></tr>
+            <tr><td><code>metadata</code> (default)</td><td>Fetch first frames &amp; duration</td><td>Most pages</td></tr>
+            <tr><td><code>auto</code></td><td>Download the whole file</td><td>Rare; only when user is very likely to play</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          <code>preload="auto"</code> on a video index page. The browser downloads all videos, destroying your mobile users' data plans. Use <code>none</code> or <code>metadata</code>.
+        </div>
+      </section>
+
+      <section id="track">
+        <h2><span class="num">9</span> The <code>&lt;track&gt;</code> Element &amp; WebVTT</h2>
+        <p><code>&lt;track&gt;</code> adds timed text tracks to a video: captions, subtitles, descriptions, chapters. The track file format is <strong>WebVTT</strong> (<code>.vtt</code>) — a simple text format with timestamps.</p>
+        <pre><code>&lt;video controls poster="movie.jpg" width="1280" height="720"&gt;
+  &lt;source src="movie.mp4" type="video/mp4"&gt;
+  &lt;track kind="captions" src="movie.en.vtt"
+         srclang="en" label="English" default&gt;
+  &lt;track kind="subtitles" src="movie.es.vtt"
+         srclang="es" label="Español"&gt;
+  &lt;track kind="captions" src="movie.fr.vtt"
+         srclang="fr" label="Français"&gt;
+&lt;/video&gt;</code></pre>
+
+        <h3>WebVTT format example</h3>
+        <pre><code>WEBVTT
+
+00:00:00.000 --&gt; 00:00:03.500
+Welcome to the HTML Mastery course.
+
+00:00:03.500 --&gt; 00:00:07.200
+In this video we'll cover the &lt;video&gt; element.
+
+00:00:07.200 --&gt; 00:00:10.000
+&lt;c.highlight&gt;Let's get started.&lt;/c&gt;</code></pre>
+
+        <h3>The <code>kind</code> attribute</h3>
+        <table>
+          <thead>
+            <tr><th>kind</th><th>Meaning</th><th>Shown by default?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>subtitles</code></td><td>Translation of spoken audio</td><td>Only if user turns on</td></tr>
+            <tr><td><code>captions</code></td><td>Transcription incl. sound effects (for deaf users)</td><td>Only if user turns on</td></tr>
+            <tr><td><code>descriptions</code></td><td>Spoken description of video for blind users</td><td>Used by screen readers, not displayed</td></tr>
+            <tr><td><code>chapters</code></td><td>Chapter titles for navigation</td><td>Shown in chapter menu</td></tr>
+            <tr><td><code>metadata</code></td><th>Machine-readable, not shown</td><td>Used by scripts</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Hosting the <code>.vtt</code> file on a different domain without CORS headers. Browsers refuse to load it for security. Either serve from the same origin or send <code>Access-Control-Allow-Origin</code>.
+        </div>
+
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Mark one track <code>default</code> to enable it on first play. But also let users toggle it off — the native captions button does this automatically when <code>controls</code> is present.
+        </div>
+      </section>
+
+      <section id="pip">
+        <h2><span class="num">10</span> Picture-in-Picture API</h2>
+        <p>The Picture-in-Picture (PiP) API lets you programmatically pop a video out into a floating window that stays visible while the user browses other tabs or windows.</p>
+        <pre><code>// Trigger PiP on a button click (must be user-gesture)
+document.querySelector('#pip-btn').addEventListener('click', async () =&gt; {
+  const video = document.querySelector('video');
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      await video.requestPictureInPicture();
+    }
+  } catch (err) {
+    console.error('PiP failed:', err);
+  }
+});
+
+// Listen for enter/exit
+video.addEventListener('enterpictureinpicture', () =&gt; {
+  console.log('Entered PiP');
+});
+video.addEventListener('leavepictureinpicture', () =&gt; {
+  console.log('Exited PiP');
+});
+
+// Feature detection
+if ('pictureInPictureEnabled' in document) {
+  // safe to show PiP button
+}</code></pre>
+        <div class="callout info">
+          <strong>Hint attribute</strong>
+          The boolean <code>disablepictureinpicture</code> on <code>&lt;video&gt;</code> opts out of PiP entirely — useful for proprietary or sensitive content.
+        </div>
+      </section>
+
+      <section id="js">
+        <h2><span class="num">11</span> JavaScript Control</h2>
+        <p>The <code>HTMLVideoElement</code> interface extends <code>HTMLMediaElement</code> (same as audio) with video-specific properties.</p>
+        <pre><code>const v = document.querySelector('video');
+
+// Same API as audio
+v.play();
+v.pause();
+v.currentTime = 60;     // seek to 60s
+v.playbackRate = 2;      // 2× speed
+
+// Video-specific
+console.log(v.videoWidth, v.videoHeight);  // intrinsic px
+console.log(v.poster);                       // poster URL
+v.preservesPitch = true;  // keep audio pitch at non-1x rates
+
+// Fullscreen API (often paired with video)
+v.requestFullscreen();</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">12</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it's bad</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Only one source (no format fallback)</td><td>Safari may not play WebM; Chrome may not play H.265</td><td>Offer MP4 (H.264) + WebM (VP9)</td></tr>
+            <tr><td>Missing <code>playsinline</code></td><td>iOS forces fullscreen; breaks hero layouts</td><td>Always add <code>playsinline</code></td></tr>
+            <tr><td><code>autoplay</code> without <code>muted</code></td><td>Blocked by every browser</td><td>Add <code>muted</code> or wait for user gesture</td></tr>
+            <tr><td>Missing <code>poster</code></td><td>Black frame before play; ugly LCP</td><td>Provide a designed poster image</td></tr>
+            <tr><td>No <code>&lt;track&gt;</code> for captions</td><td>Excludes deaf users; legally required in some regions</td><td>Always include at least English captions</td></tr>
+            <tr><td>VTT on a different origin without CORS</td><td>Browser refuses to load captions</td><td>Serve same-origin or send CORS headers</td></tr>
+            <tr><td>Forgetting <code>width</code>/<code>height</code></td><td>Layout shift as video loads</td><td>Always set dimensions</td></tr>
+            <tr><td>Giant uncompressed video files</td><td>Multi-megabyte downloads; slow page</td><td>Compress with FFmpeg; use 720p baseline</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">13</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Multi-format video</strong>
+          Download a short video. Convert it to MP4 (H.264) and WebM (VP9) using FFmpeg: <code>ffmpeg -i input.mov -c:v libx264 -c:a aac movie.mp4</code> and <code>ffmpeg -i input.mov -c:v libvpx-vp9 -c:a libopus movie.webm</code>. Build a <code>&lt;video&gt;</code> with both sources.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Poster frame</strong>
+          Extract a frame from your video: <code>ffmpeg -i movie.mp4 -ss 00:00:02 -frames:v 1 poster.jpg</code>. Use it as the <code>poster</code> attribute. Verify the player shows the image before play.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — WebVTT captions</strong>
+          Write a <code>.vtt</code> file with 5 caption cues matching a 30-second video. Add it as a <code>&lt;track kind="captions" default&gt;</code>. Verify the captions display and can be toggled via the controls.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Picture-in-Picture button</strong>
+          Add a "Pop out" button below your video. Wire it to <code>video.requestPictureInPicture()</code> with feature detection. Test that clicking it pops the video into a floating window that stays visible when you switch tabs.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">14</span> Summary</h2>
+        <ul>
+          <li><code>&lt;video&gt;</code> embeds video with native player via <code>controls</code>.</li>
+          <li>Offer MP4 (H.264) + WebM (VP9) via <code>&lt;source&gt;</code> with <code>type</code> (and ideally <code>codecs</code>).</li>
+          <li><code>poster</code> shows a designed image before play; <code>width</code>/<code>height</code> prevent layout shift.</li>
+          <li><code>playsinline</code> is essential for iOS — without it videos force fullscreen.</li>
+          <li><code>autoplay muted loop playsinline</code> is the safe combo for hero videos.</li>
+          <li><code>&lt;track&gt;</code> with WebVTT provides captions, subtitles, descriptions, chapters.</li>
+          <li>Picture-in-Picture API lets users pop video into a floating window.</li>
+          <li>Always set <code>preload="metadata"</code>; use <code>none</code> on listing pages.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>playsinline since iOS 10</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="audio.html">← Previous: Audio</a>
+      <a href="media-formats.html">Next: Media Formats →</a>
+    </div>
+    <p>HTML Mastery · Section 4 · Media &amp; Graphics · Video</p>
+  </footer>
+</body>
+</html>

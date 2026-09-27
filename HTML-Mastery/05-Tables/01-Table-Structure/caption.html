@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caption — The Right Way to Title a Table — HTML Mastery</title>
+  <meta name="description" content="Learn the caption element: the semantic, accessible way to title an HTML table. Placement rules (immediately after table open), styling with caption-side, accessibility benefits, and when to use caption vs figcaption vs h3.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box .live-table { border-collapse: collapse; width: 100%; }
+    .demo-box .live-table th, .demo-box .live-table td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    .demo-box .live-table th { background: #f1f5f9; }
+    .demo-box .live-table caption { caption-side: top; text-align: left; padding: 8px 0 12px; font-weight: 700; font-size: 1.05rem; color: #0f172a; }
+    .demo-box .caption-bottom .live-table caption { caption-side: bottom; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 5 · Tables · Lesson 3</span>
+    <h1>The <code>&lt;caption&gt;</code> element</h1>
+    <p>The right way to title a table. Not an <code>&lt;h3&gt;</code> floating above it. Not a <code>&lt;p&gt;</code> outside the <code>&lt;table&gt;</code>. <code>&lt;caption&gt;</code> lives inside the table, binds semantically to it, and is announced by screen readers as the table's title.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why-caption">Why caption exists</a></li>
+        <li><a href="#placement">Placement rules</a></li>
+        <li><a href="#basic-example">Basic example</a></li>
+        <li><a href="#caption-vs-h3">caption vs h3 vs figcaption</a></li>
+        <li><a href="#caption-side">caption-side CSS</a></li>
+        <li><a href="#styling">Styling captions</a></li>
+        <li><a href="#a11y">Accessibility benefits</a></li>
+        <li><a href="#multiple">Multiple captions pattern</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why-caption">
+        <h2><span class="num">1</span> Why <code>&lt;caption&gt;</code> exists</h2>
+        <p>Every table needs a title — a short, human-readable description of what the data shows. Without a title, a screen reader user navigating by table element hears "Table with 4 rows and 3 columns" and has no idea what the data is about until they explore every cell.</p>
+        <p>The <code>&lt;caption&gt;</code> element provides that title <strong>semantically bound to the table</strong>. Screen readers announce it as the table's name when the user first encounters the table, giving context before they dive in.</p>
+        <div class="callout info">
+          <strong>Definition</strong>
+          The <code>&lt;caption&gt;</code> element represents the title of its parent <code>&lt;table&gt;</code>. It must be the <strong>first child</strong> of the table. Each table may have at most one caption.
+        </div>
+      </section>
+
+      <section id="placement">
+        <h2><span class="num">2</span> Placement rules</h2>
+        <p>The HTML spec is strict: a <code>&lt;caption&gt;</code> must be the <strong>first child</strong> of the <code>&lt;table&gt;</code> element — before any <code>&lt;tr&gt;</code>, <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, or <code>&lt;colgroup&gt;</code>.</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Monthly Sales Report — Q1 2025&lt;/caption&gt;   &lt;!-- first! --&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Month&lt;/th&gt;
+      &lt;th scope="col"&gt;Revenue&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;January&lt;/th&gt;&lt;td&gt;$48,200&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;February&lt;/th&gt;&lt;td&gt;$52,100&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th scope="row"&gt;March&lt;/th&gt;&lt;td&gt;$61,800&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Putting <code>&lt;caption&gt;</code> anywhere other than immediately after <code>&lt;table&gt;</code> is invalid HTML. Some browsers silently relocate stray captions; others drop them. Always place it first.
+        </div>
+      </section>
+
+      <section id="basic-example">
+        <h2><span class="num">3</span> Basic example</h2>
+        <div class="demo-box">
+          <div class="demo-label">Rendered with default browser styling (caption above, centered)</div>
+          <table class="live-table">
+            <caption>Top 3 cities by population</caption>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">City</th>
+              <th scope="col">Population</th>
+            </tr>
+            <tr><td>1</td><td>Tokyo</td><td>37.4M</td></tr>
+            <tr><td>2</td><td>Delhi</td><td>32.9M</td></tr>
+            <tr><td>3</td><td>Shanghai</td><td>28.5M</td></tr>
+          </table>
+        </div>
+        <p>Without any CSS, browsers render the caption above the table, centered, with normal text weight. Almost every real-world project restyles this — but the default is acceptable and accessible.</p>
+      </section>
+
+      <section id="caption-vs-h3">
+        <h2><span class="num">4</span> <code>&lt;caption&gt;</code> vs <code>&lt;h3&gt;</code> vs <code>&lt;figcaption&gt;</code></h2>
+        <p>Developers often title tables by sticking an <code>&lt;h3&gt;</code> above them:</p>
+        <pre><code>&lt;h3&gt;Monthly Sales Report&lt;/h3&gt;
+&lt;table&gt;
+  &lt;!-- ... --&gt;
+&lt;/table&gt;</code></pre>
+        <p>This works visually but is <strong>semantically wrong</strong>. The heading and the table are now separate elements — a screen reader user has no way to know the heading applies to the table. When they jump straight to the table (which screen readers let them do), they miss the title.</p>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>When to use</th><th>Accessibility</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;caption&gt;</code></td><td>Inside a <code>&lt;table&gt;</code>, providing its title</td><td>Announced as the table's name. Best practice.</td></tr>
+            <tr><td><code>&lt;h3&gt;</code> above table</td><td>Never — use <code>&lt;caption&gt;</code> instead</td><td>Disjointed from the table. Screen reader users may miss the link.</td></tr>
+            <tr><td><code>&lt;figcaption&gt;</code></td><td>Inside a <code>&lt;figure&gt;</code> wrapping the table, when the table is referenced by surrounding text</td><td>Good if you're treating the table as a figure with a number ("Table 1: ...")</td></tr>
+            <tr><td><code>&lt;p&gt;</code> above table</td><td>Never for titles</td><td>No semantic link to the table.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>&lt;caption&gt;</code> for "this is what this table shows". Use <code>&lt;figcaption&gt;</code> inside a <code>&lt;figure&gt;</code> when you're labeling the table as a numbered reference (e.g., in academic articles or technical reports). The patterns can be combined: a <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code> can wrap a <code>&lt;table&gt;</code> that has its own internal <code>&lt;caption&gt;</code>.
+        </div>
+      </section>
+
+      <section id="caption-side">
+        <h2><span class="num">5</span> The <code>caption-side</code> CSS property</h2>
+        <p>CSS lets you move the caption above or below the table without changing the HTML:</p>
+        <pre><code>table { caption-side: top; }    /* default */
+table { caption-side: bottom; } /* caption below */
+/* CSS Logical Properties (newer, supports RTL writing modes) */
+table { caption-side: inline-end; }
+table { caption-side: inline-start; }</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">caption-side: bottom (common in financial reports)</div>
+          <div class="caption-bottom">
+            <table class="live-table">
+              <caption>Source: WHO Global Health Observatory, 2024</caption>
+              <tr>
+                <th scope="col">Country</th>
+                <th scope="col">Life expectancy</th>
+              </tr>
+              <tr><td>Japan</td><td>84.6</td></tr>
+              <tr><td>Switzerland</td><td>83.9</td></tr>
+              <tr><td>Spain</td><td>83.6</td></tr>
+            </table>
+          </div>
+        </div>
+        <p>Move the caption to the bottom when it acts as a footnote (e.g., source citation) rather than a title. Keep it on top when it acts as a title.</p>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">6</span> Styling captions</h2>
+        <p>The caption inherits font properties from the table but is otherwise plain. Common styling patterns:</p>
+        <pre><code>caption {
+  text-align: left;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 8px 0 12px;
+  color: #0f172a;
+}
+
+/* Subtitle pattern: main title + description below */
+caption .subtitle {
+  display: block;
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 2px;
+}</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Styled caption with subtitle</div>
+          <table class="live-table">
+            <caption style="text-align:left; font-weight:600; font-size:1.05rem; padding:8px 0 12px; color:#0f172a;">
+              Q1 2025 Revenue Breakdown
+              <span style="display:block; font-weight:400; font-size:0.9rem; color:#64748b; margin-top:2px;">All figures in USD. Source: Internal Finance System.</span>
+            </caption>
+            <tr><th scope="col">Month</th><th scope="col">Revenue</th><th scope="col">YoY change</th></tr>
+            <tr><td>January</td><td>$48,200</td><td>+4.2%</td></tr>
+            <tr><td>February</td><td>$52,100</td><td>+5.8%</td></tr>
+            <tr><td>March</td><td>$61,800</td><td>+8.1%</td></tr>
+          </table>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          You can put <code>&lt;span&gt;</code>, <code>&lt;strong&gt;</code>, or even <code>&lt;a&gt;</code> inside <code>&lt;caption&gt;</code>. Avoid block elements like <code>&lt;div&gt;</code> or <code>&lt;p&gt;</code> — they're technically permitted in HTML5 but break rendering in some older browsers.
+        </div>
+      </section>
+
+      <section id="a11y">
+        <h2><span class="num">7</span> Accessibility benefits</h2>
+        <p>Screen readers expose tables as navigable landmarks. When the user presses their "next table" key (in NVDA: <kbd>T</kbd>; in JAWS: <kbd>T</kbd>; in VoiceOver: <kbd>VO</kbd>+<kbd>Cmd</kbd>+<kbd>T</kbd>), the first thing they hear is the caption.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Without caption</h4>
+            <p>"Table. 4 rows, 3 columns. Row 1 of 4. Rank, header. 1."</p>
+          </div>
+          <div class="card">
+            <h4>With caption</h4>
+            <p>"Top 3 cities by population. Table. 4 rows, 3 columns. Row 1 of 4. Rank, header. 1."</p>
+          </div>
+        </div>
+        <p>The difference is night and day. The caption gives users an immediate mental model of the data before they explore it.</p>
+        <div class="callout info">
+          <strong>WCAG 2.1</strong>
+          Success Criterion 1.3.1 (Info and Relationships) recommends captions for tables. SC 2.4.6 (Headings and Labels) requires that labels be descriptive — your caption must actually describe the table, not just say "Data".
+        </div>
+      </section>
+
+      <section id="multiple">
+        <h2><span class="num">8</span> Multiple captions pattern</h2>
+        <p>HTML allows only one <code>&lt;caption&gt;</code> per table. But you often need both a <em>title</em> and a <em>description</em>. The pattern is:</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;
+    &lt;!-- Main title --&gt;
+    Employee Salaries 2025
+    &lt;!-- Description as a styled inline span --&gt;
+    &lt;span class="desc"&gt;
+      Annual base salary in USD. Excludes bonuses and equity.
+    &lt;/span&gt;
+  &lt;/caption&gt;
+  ...
+&lt;/table&gt;</code></pre>
+        <p>For longer descriptions (e.g., methodology notes), use the <code>&lt;details&gt;</code> element inside or after the caption:</p>
+        <pre><code>&lt;table&gt;
+  &lt;caption&gt;Q1 Financial Summary&lt;/caption&gt;
+  &lt;colgroup&gt;&lt;col&gt;&lt;col&gt;&lt;/colgroup&gt;
+  &lt;tr&gt;&lt;th&gt;Metric&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Revenue&lt;/td&gt;&lt;td&gt;$162K&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;details&gt;
+  &lt;summary&gt;Methodology&lt;/summary&gt;
+  &lt;p&gt;Figures derived from internal Salesforce export...&lt;/p&gt;
+&lt;/details&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For tables inside <code>&lt;figure&gt;</code>, use <code>&lt;figcaption&gt;</code> for the figure caption AND <code>&lt;caption&gt;</code> for the table's own accessible name. They serve different roles: <code>&lt;figcaption&gt;</code> labels the figure (often "Table 1: ..."), while <code>&lt;caption&gt;</code> labels the table itself for screen readers.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>&lt;h3&gt;</code> above the table</td><td>Heading and table are separate elements; screen reader users miss the connection.</td><td>Use <code>&lt;caption&gt;</code> inside the table.</td></tr>
+            <tr><td>Putting <code>&lt;caption&gt;</code> after <code>&lt;thead&gt;</code> or <code>&lt;tr&gt;</code></td><td>Invalid HTML. Browser may move it or drop it.</td><td>Caption must be the first child of <code>&lt;table&gt;</code>.</td></tr>
+            <tr><td>Empty <code>&lt;caption&gt;</code></td><td>Screen reader announces "Table." with no title — confusing.</td><td>Always write a meaningful caption.</td></tr>
+            <tr><td>Vague captions like "Data"</td><td>Doesn't help users understand the table's purpose.</td><td>Write a descriptive title: "Q1 2025 Sales by Region".</td></tr>
+            <tr><td>Multiple <code>&lt;caption&gt;</code> elements</td><td>Invalid HTML; only the first is used.</td><td>Combine title + description into one caption with a span, or use <code>&lt;details&gt;</code>.</td></tr>
+            <tr><td>Putting block elements inside <code>&lt;caption&gt;</code></td><td>Permitted in HTML5 but renders inconsistently.</td><td>Use inline elements: <code>&lt;span&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;a&gt;</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Add a caption</strong>
+          Take any table you've built so far. Add a descriptive <code>&lt;caption&gt;</code> as the first child of the <code>&lt;table&gt;</code>. Verify in your browser that it renders above the table by default.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Move it below</strong>
+          Use <code>caption-side: bottom</code> to move the caption below the table. Add a small italic style to make it look like a source citation.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Caption with subtitle</strong>
+          Create a caption that shows a main title in bold and a smaller subtitle below it using a <code>&lt;span&gt;</code> with <code>display: block</code>. The subtitle should describe the units of measurement.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Caption vs h3</strong>
+          Build two versions of the same table: one with an <code>&lt;h3&gt;</code> above, and one with <code>&lt;caption&gt;</code> inside. Open the Web Developer Tools Accessibility tree (Firefox/Chrome) and notice how only the <code>&lt;caption&gt;</code> version shows the table with a proper accessible name.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Opera</span>
+          <span class="pill yes">All mobile browsers</span>
+          <span class="pill yes">NVDA / JAWS / VoiceOver</span>
+        </div>
+        <p>The <code>caption-side</code> property has full support including the newer logical-property values (<code>inline-start</code> / <code>inline-end</code>) in all modern browsers since 2021. The legacy <code>top</code> / <code>bottom</code> values are universally supported.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Financial reports</h4>
+            <p>Q1 earnings, balance sheets, cash flow tables. Caption doubles as the report title; subtitle gives units.</p>
+          </div>
+          <div class="card">
+            <h4>Sports standings</h4>
+            <p>"Premier League Table 2024/25" — screen reader users jump straight to it.</p>
+          </div>
+          <div class="card">
+            <h4>Schedule tables</h4>
+            <p>"Week 12 Bus Timetable" — captions help commuters using assistive tech find the right schedule.</p>
+          </div>
+          <div class="card">
+            <h4>Academic papers</h4>
+            <p>Combined with <code>&lt;figure&gt;</code>+<code>&lt;figcaption&gt;</code> for "Table 1: ..." numbering.</p>
+          </div>
+          <div class="card">
+            <h4>Admin dashboards</h4>
+            <p>"Recent orders" panel — caption identifies the table to screen reader users navigating by table landmark.</p>
+          </div>
+          <div class="card">
+            <h4>Pricing pages</h4>
+            <p>"Plan comparison" caption makes the comparison clear to everyone, including search engines.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="th-scope.html">← Previous: TH &amp; Scope</a>
+    <a class="next" href="../02-Grouping-Rows/thead-tbody-tfoot.html">Next: thead/tbody/tfoot →</a>
+  </footer>
+</body>
+</html>

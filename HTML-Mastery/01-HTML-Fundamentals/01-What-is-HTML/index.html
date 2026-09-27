@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is HTML? — Master Index — HTML Mastery</title>
+  <meta name="description" content="Section 1.1 master index — What is HTML? Explore history, anatomy of an HTML document, and what makes HTML different from other web technologies.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #0b1020;
+      --code-fg: #e2e8f0;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ul { margin: 0; padding-left: 18px; list-style: disc; }
+    nav.toc ul li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(2,6,23,0.08); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.1rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0 0 8px; }
+    .card a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    .card a:hover { text-decoration: underline; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+    th { background: #f1f5f9; font-weight: 600; }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 24px; text-align: center;
+      color: var(--ink-soft); background: #ffffff;
+    }
+    footer .nav { display: flex; justify-content: space-between; max-width: 1200px; margin: 0 auto 12px; }
+    footer a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 1.1 · What Is HTML</span>
+    <h1>What Is HTML?</h1>
+    <p>A 35-year-old language that powers the entire web. This sub-section answers the fundamental questions: where did HTML come from, what is it really, and how is an HTML document built?</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="In this section">
+      <h2>In this section</h2>
+      <ul>
+        <li><a href="#objectives">Learning Objectives</a></li>
+        <li><a href="#files">Files in This Folder</a></li>
+        <li><a href="#summary">Section Summary</a></li>
+        <li><a href="#quick">Quick Definitions</a></li>
+        <li><a href="#vs">HTML vs Other Tech</a></li>
+        <li><a href="#how">How Browsers Read HTML</a></li>
+        <li><a href="#prereq">Before You Start</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section id="objectives">
+        <h2><span class="num">1</span> Learning Objectives</h2>
+        <p>By the end of this sub-section you will be able to:</p>
+        <ul>
+          <li>Define HTML in one clear sentence and explain its role on the web.</li>
+          <li>Describe the major milestones in HTML's history (1989 → HTML5 → Living Standard).</li>
+          <li>Explain the difference between HTML, CSS, and JavaScript at a high level.</li>
+          <li>Identify the four core building blocks of every HTML document: tags, elements, attributes, and content.</li>
+          <li>Read a complete HTML document and explain what each part does.</li>
+          <li>Distinguish between the WHATWG Living Standard and the legacy W3C versioning system.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Before reading the other files in this folder, write down your own one-sentence definition of HTML. After you finish, rewrite it. The before/after contrast is a powerful learning signal.
+        </div>
+      </section>
+
+      <section id="files">
+        <h2><span class="num">2</span> Files in This Folder</h2>
+        <p>This sub-section is organised into the following pages. Read them in order:</p>
+        <div class="grid-2">
+          <div class="card">
+            <h4>1. Master Index <small>(this page)</small></h4>
+            <p>Overview, objectives, definitions, and a high-level comparison of HTML to related technologies.</p>
+          </div>
+          <div class="card">
+            <h4><a href="history.html">2. History of HTML →</a></h4>
+            <p>From Tim Berners-Lee's 1989 proposal at CERN to today's WHATWG Living Standard. Includes a visual timeline.</p>
+          </div>
+          <div class="card">
+            <h4><a href="anatomy.html">3. Anatomy of an HTML Document →</a></h4>
+            <p>Visual breakdown of a real HTML document — tags, elements, attributes, content, comments.</p>
+          </div>
+          <div class="card">
+            <h4>Next sub-section</h4>
+            <p><a href="../02-Document-Structure/doctype.html">Section 1.2 · Document Structure →</a> — DOCTYPE, html, head, body, metadata.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">3</span> Section Summary</h2>
+        <p><strong>HTML</strong> stands for <strong>HyperText Markup Language</strong>. It is the standard markup language for documents on the World Wide Web. HTML describes the <em>structure</em> and <em>meaning</em> (semantics) of web content — what is a heading, what is a paragraph, what is a link, what is an image — leaving the visual styling to <strong>CSS</strong> and the interactivity to <strong>JavaScript</strong>.</p>
+        <p>HTML is:</p>
+        <ul>
+          <li><strong>A markup language</strong>, not a programming language. There are no loops, no variables, no conditionals in HTML. It's a way to label parts of a document.</li>
+          <li><strong>Declarative</strong>. You describe what the page should look like, not how to build it.</li>
+          <li><strong>Forgiving</strong>. Browsers are designed to render almost any input without crashing. This is both a blessing (quick to learn) and a curse (easy to write invalid code).</li>
+          <li><strong>Living</strong>. Since 2019, HTML has no version numbers in the spec — it is continually updated as the WHATWG Living Standard.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't think of HTML as "programming". If you approach it expecting loops and functions, you'll be confused. Think of HTML as writing a structured document — like an outline for a book — that the browser turns into an interactive page.
+        </div>
+      </section>
+
+      <section id="quick">
+        <h2><span class="num">4</span> Quick Definitions</h2>
+        <table>
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td><strong>HTML</strong></td><td>The markup language of the web.</td></tr>
+            <tr><td><strong>Tag</strong></td><td>A keyword wrapped in angle brackets: <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;a&gt;</code>.</td></tr>
+            <tr><td><strong>Element</strong></td><td>A tag plus its content and any closing tag: <code>&lt;p&gt;Hello&lt;/p&gt;</code>.</td></tr>
+            <tr><td><strong>Attribute</strong></td><td>Extra info on a tag, in name="value" pairs: <code>&lt;a href="..."&gt;</code>.</td></tr>
+            <tr><td><strong>Document</strong></td><td>One <code>.html</code> file — the complete unit a browser loads.</td></tr>
+            <tr><td><strong>DOM</strong></td><td>Document Object Model — the tree of elements the browser builds from your HTML.</td></tr>
+            <tr><td><strong>WHATWG</strong></td><td>Web Hypertext Application Technology Working Group — maintains HTML today.</td></tr>
+            <tr><td><strong>W3C</strong></td><td>World Wide Web Consortium — original standards body, now defers to WHATWG for HTML.</td></tr>
+            <tr><td><strong>MDN</strong></td><td>Mozilla Developer Network — the best HTML reference on the web.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="vs">
+        <h2><span class="num">5</span> HTML vs Other Web Technologies</h2>
+        <p>Three core languages make up the front-end web. They have distinct, complementary roles:</p>
+        <table>
+          <thead><tr><th>Language</th><th>Role</th><th>Analogy</th></tr></thead>
+          <tbody>
+            <tr><td><strong>HTML</strong></td><td>Structure &amp; meaning</td><td>The skeleton and organs of a body</td></tr>
+            <tr><td><strong>CSS</strong></td><td>Style &amp; layout</td><td>The skin, clothes, makeup</td></tr>
+            <tr><td><strong>JavaScript</strong></td><td>Behaviour &amp; interactivity</td><td>The muscles and nervous system</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- HTML gives the page its structure --&gt;
+&lt;article&gt;
+  &lt;h1&gt;My First Blog Post&lt;/h1&gt;
+  &lt;p&gt;This is the content.&lt;/p&gt;
+  &lt;button&gt;Like&lt;/button&gt;
+&lt;/article&gt;
+
+/* CSS would style it: */
+article { max-width: 600px; margin: 0 auto; }
+h1 { color: navy; }
+
+// JavaScript would make it interactive:
+document.querySelector('button').addEventListener('click', () =&gt; {
+  alert('Thanks for liking!');
+});</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Learn HTML thoroughly before touching CSS or JavaScript. Trying to learn all three at once is the most common reason beginners quit. Master the foundation first.
+        </div>
+      </section>
+
+      <section id="how">
+        <h2><span class="num">6</span> How Browsers Read HTML</h2>
+        <p>When you point a browser at an HTML file, the following happens in roughly 50 milliseconds:</p>
+        <ol>
+          <li><strong>Fetch</strong> — the browser downloads the <code>.html</code> file over HTTP.</li>
+          <li><strong>Parse</strong> — the browser reads the raw bytes, decodes them as text, then tokenises the tags into a tree.</li>
+          <li><strong>Build the DOM</strong> — the tree of nodes is constructed in memory. This is the Document Object Model.</li>
+          <li><strong>Apply CSS</strong> — if any stylesheets are linked, they're fetched and matched against DOM nodes.</li>
+          <li><strong>Layout</strong> — the browser computes the geometry of each element (where it sits on screen).</li>
+          <li><strong>Paint</strong> — pixels are drawn to your screen.</li>
+          <li><strong>Execute JS</strong> — any <code>&lt;script&gt;</code> tags run, possibly modifying the DOM and triggering re-layouts.</li>
+        </ol>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't expect HTML changes to be visible until you refresh the page. The DOM is built once on load; only JavaScript (or CSS via :hover) modifies it after. To see edits to your <code>.html</code> file, save and refresh — or use Live Server to do it automatically.
+        </div>
+      </section>
+
+      <section id="prereq">
+        <h2><span class="num">7</span> Before You Start</h2>
+        <p>Make sure you've completed Section 0 (Getting Started). Specifically:</p>
+        <ul>
+          <li>VS Code and Live Server are installed.</li>
+          <li>You can open a <code>.html</code> file in a browser.</li>
+          <li>You know how to open DevTools (right-click → Inspect).</li>
+          <li>You've bookmarked <a href="https://developer.mozilla.org/" target="_blank" rel="noopener">MDN</a>.</li>
+        </ul>
+        <div class="callout exercise">
+          <strong>Try it yourself — 5 minutes</strong>
+          In your <code>html-mastery</code> folder, create a new file called <code>section-1-start.html</code>. Type out the boilerplate by hand (no Emmet):
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Section 1 Start&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;I am learning HTML&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          Open it with Live Server. You should see "I am learning HTML" rendered as a large heading. If yes — you're ready. Head to <a href="history.html">History of HTML</a>.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="../../00-Getting-Started/prerequisites.html">← Previous: Prerequisites</a>
+      <a href="history.html">Next: History of HTML →</a>
+    </div>
+    <p>HTML Mastery — Section 1.1 · What Is HTML · Master Index</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Formats — HTML Mastery</title>
+  <meta name="description" content="Compare media formats: video (MP4/H.264, WebM/VP9, AV1), audio (MP3, AAC, OGG/Vorbis, Opus, FLAC, WAV), image (JPEG, PNG, GIF, WebP, AVIF, SVG). Container vs codec, browser support matrix, when to choose each.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    .yes { color: var(--success); font-weight: 700; }
+    .no  { color: var(--warn);    font-weight: 700; }
+    .partial { color: var(--accent); font-weight: 700; }
+    .support {
+      margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--ink-soft);
+    }
+    .support span {
+      background: #f1f5f9; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    footer {
+      background: #0f172a; color: #cbd5e1;
+      padding: 24px; text-align: center;
+    }
+    footer .nav {
+      max-width: 1200px; margin: 0 auto 12px;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    footer a { color: #93c5fd; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 4 · Media &amp; Graphics</span>
+    <h1>Media Formats — Containers, Codecs &amp; Browser Support</h1>
+    <p>Every media file is two things: a <em>container</em> (the box) and a <em>codec</em> (how the bits inside are compressed). Knowing the difference is the key to choosing the right format.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#container-vs-codec">Container vs codec</a></li>
+        <li><a href="#video-formats">Video formats</a></li>
+        <li><a href="#audio-formats">Audio formats</a></li>
+        <li><a href="#image-formats">Image formats</a></li>
+        <li><a href="#support-matrix">Browser support matrix</a></li>
+        <li><a href="#encoding">Encoding basics</a></li>
+        <li><a href="#choose">When to choose each</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercise">Try it yourself</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="container-vs-codec">
+        <h2><span class="num">1</span> Container vs Codec</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Container</h4>
+            <p>The <strong>box</strong> that holds the media. Defines the file extension and how audio, video, subtitles, and metadata are interleaved. Examples: <code>.mp4</code>, <code>.webm</code>, <code>.ogg</code>, <code>.mkv</code>, <code>.wav</code>, <code>.flac</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Codec</h4>
+            <p>The <strong>algorithm</strong> that encodes/decodes the audio or video stream inside the container. Examples: H.264, H.265, VP9, AV1 (video); MP3, AAC, Opus, FLAC (audio). A container can hold different codecs.</p>
+          </div>
+        </div>
+        <pre><code>movie.mp4   ← container: MP4 │ codec: H.264 video + AAC audio
+movie.webm  ← container: WebM │ codec: VP9 video + Opus audio
+movie.mkv   ← container: MKV │ codec: AV1 video + AAC audio</code></pre>
+        <div class="callout info">
+          <strong>Why it matters</strong>
+          A browser that supports the <code>.mp4</code> container doesn't necessarily support every codec that can live inside an MP4. <code>video/mp4</code> alone is ambiguous — adding <code>codecs="avc1.42E01E"</code> tells the browser exactly which H.264 profile you used.
+        </div>
+      </section>
+
+      <section id="video-formats">
+        <h2><span class="num">2</span> Video Formats</h2>
+
+        <h3>H.264 (AVC) — in MP4 container</h3>
+        <p>The universal baseline. Every modern browser, device, and smart TV decodes H.264. Lossy, decent compression, hardware-accelerated everywhere.</p>
+        <ul>
+          <li><strong>Pros:</strong> Universal support; hardware decoding; mature tooling.</li>
+          <li><strong>Cons:</strong> Larger files than VP9/AV1; patent royalties (handled by browser makers, not authors).</li>
+          <li><strong>Use for:</strong> Universal fallback when you can only serve one file.</li>
+        </ul>
+
+        <h3>VP9 — in WebM container</h3>
+        <p>Google's open-source codec, ~30% smaller than H.264 at the same quality. Hardware decoding on most Android and ChromeOS devices.</p>
+        <ul>
+          <li><strong>Pros:</strong> Royalty-free; smaller files than H.264; YouTube default for HD.</li>
+          <li><strong>Cons:</strong> No Safari support historically (Safari 14+ added it for WebM only in macOS Sonoma / iOS 17).</li>
+          <li><strong>Use for:</strong> Primary format alongside H.264 fallback.</li>
+        </ul>
+
+        <h3>AV1 — in MP4 or WebM</h3>
+        <p>The next-generation royalty-free codec from the Alliance for Open Media. ~30% smaller than VP9, ~50% smaller than H.264.</p>
+        <ul>
+          <li><strong>Pros:</strong> Best compression; royalty-free; future-proof.</li>
+          <li><strong>Cons:</strong> Slow to encode; older devices lack hardware decoding; encoding requires modern FFmpeg.</li>
+          <li><strong>Use for:</strong> When you can afford encoding time and need maximum compression (4K HDR, streaming).</li>
+        </ul>
+
+        <h3>H.265 (HEVC)</h3>
+        <p>Better compression than H.264 but encumbered by patent pools. Native to Apple ecosystem; not supported in Chrome or Firefox without OS-level help.</p>
+        <ul>
+          <li><strong>Pros:</strong> Apple-native; ~50% smaller than H.264.</li>
+          <li><strong>Cons:</strong> Patent mess; not a web standard; only Safari/Edge support reliably.</li>
+          <li><strong>Use for:</strong> Apple-only delivery; otherwise avoid.</li>
+        </ul>
+
+        <div class="callout tip">
+          <strong>Pro tip — the modern triple</strong>
+          <pre><code>&lt;video controls width="1280" height="720"&gt;
+  &lt;source src="movie.av1.mp4"  type='video/mp4; codecs="av01.0.05M.08"'&gt;
+  &lt;source src="movie.webm"     type="video/webm"&gt;
+  &lt;source src="movie.h264.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="audio-formats">
+        <h2><span class="num">3</span> Audio Formats</h2>
+        <table>
+          <thead>
+            <tr><th>Format</th><th>Container</th><th>Type</th><th>Best for</th><th>File size</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>MP3</td><td><code>.mp3</code></td><td>Lossy</td><td>Universal music, podcasts</td><td>Medium</td></tr>
+            <tr><td>AAC</td><td><code>.m4a</code> / <code>.mp4</code></td><td>Lossy</td><td>iOS, low bitrate streaming</td><td>Small (better than MP3)</td></tr>
+            <tr><td>OGG/Vorbis</td><td><code>.ogg</code></td><td>Lossy</td><td>Open-source music; Wikipedia</td><td>Small</td></tr>
+            <tr><td>Opus</td><td><code>.opus</code> / <code>.ogg</code></td><td>Lossy</td><td>VoIP, podcasts, modern music</td><td>Tiny (best at low bitrate)</td></tr>
+            <tr><td>FLAC</td><td><code>.flac</code></td><td>Lossless</td><td>Audiophiles, archival</td><td>Large (50-60% of WAV)</td></tr>
+            <tr><td>WAV</td><td><code>.wav</code></td><td>Uncompressed</td><td>Short SFX, raw recording</td><td>Huge (10 MB/min CD-quality)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Opus is the modern king — at 64 kbps it sounds as good as MP3 at 128 kbps. Pair Opus + AAC + MP3 in <code>&lt;source&gt;</code> for maximum compatibility at minimum bandwidth.
+        </div>
+
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using WAV for music tracks on a website. A 3-minute song at CD quality is ~30 MB; the same in MP3 is ~3 MB; in Opus ~1.5 MB. Use WAV only for short sound effects.
+        </div>
+      </section>
+
+      <section id="image-formats">
+        <h2><span class="num">4</span> Image Formats</h2>
+        <table>
+          <thead>
+            <tr><th>Format</th><th>Type</th><th>Transparency</th><th>Animation</th><th>Best for</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>JPEG</td><td>Lossy raster</td><td>No</td><td>No</td><td>Photographs, natural images</td></tr>
+            <tr><td>PNG</td><td>Lossless raster</td><td>Yes (8-bit)</td><td>No</td><td>Graphics with sharp edges, logos, screenshots</td></tr>
+            <tr><td>GIF</td><td>Lossless raster (256 colors)</td><td>Yes (1-bit)</td><td>Yes</td><td>Memes; otherwise avoid (use WebP/MP4 instead)</td></tr>
+            <tr><td>WebP</td><td>Lossy or lossless raster</td><td>Yes</td><td>Yes</td><td>Universal modern format; replaces JPEG, PNG, GIF</td></tr>
+            <tr><td>AVIF</td><td>Lossy or lossless raster</td><td>Yes</td><td>Yes</td><td>Smallest photos; cutting-edge</td></tr>
+            <tr><td>SVG</td><td>Vector (XML)</td><td>Yes</td><td>Yes (with SMIL/CSS)</td><td>Icons, logos, illustrations, charts</td></tr>
+          </tbody>
+        </table>
+
+        <h3>JPEG</h3>
+        <p>The classic photo format. Lossy, 24-bit color, no transparency, no animation. Still universally supported.</p>
+        <p><strong>Use for:</strong> Photos when you can't generate modern formats. Quality 80-85 is a good default.</p>
+
+        <h3>PNG</h3>
+        <p>Lossless raster with 8-bit alpha transparency. Great for screenshots, UI mockups, logos with sharp edges. Files are large for photos.</p>
+        <p><strong>Use for:</strong> Anything with text or sharp lines that JPEG would smear.</p>
+
+        <h3>GIF</h3>
+        <p>Ancient 256-color format with 1-bit transparency and animation support. Universally supported but huge files for animations.</p>
+        <p><strong>Use for:</strong> Avoid. Convert animated GIFs to WebP or MP4 — typically 10-100× smaller.</p>
+
+        <h3>WebP</h3>
+        <p>Google's modern format. Supports lossy (like JPEG), lossless (like PNG), transparency, and animation. 25-35% smaller than JPEG/PNG at the same quality.</p>
+        <p><strong>Use for:</strong> Primary format alongside JPEG fallback. ~98% browser support.</p>
+
+        <h3>AVIF</h3>
+        <p>Based on the AV1 video codec. Best-in-class compression — 40-50% smaller than JPEG. Supports HDR, wide gamut, and 12-bit color.</p>
+        <p><strong>Use for:</strong> Photos where bandwidth matters most. ~95% browser support (Safari 16.4+).</p>
+
+        <h3>SVG</h3>
+        <p>Vector format — XML describing shapes, paths, text. Scales infinitely without quality loss. Styleable with CSS, scriptable with JS.</p>
+        <p><strong>Use for:</strong> Icons, logos, charts, illustrations, anything that needs to scale.</p>
+
+        <div class="callout tip">
+          <strong>Pro tip — the modern image pipeline</strong>
+          For each image: produce AVIF + WebP + JPEG (or PNG for transparency), then use <code>&lt;picture&gt;</code> with format negotiation. See the <a href="../01-Images/responsive-images.html">Responsive Images</a> page for the full pattern.
+        </div>
+      </section>
+
+      <section id="support-matrix">
+        <h2><span class="num">5</span> Browser Support Matrix</h2>
+        <table>
+          <thead>
+            <tr><th>Codec</th><th>Chrome</th><th>Firefox</th><th>Safari</th><th>Edge</th><th>Mobile Safari</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>H.264 (video)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>VP9 (video)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="partial">17+</td><td class="yes">Yes</td><td class="partial">iOS 17+</td></tr>
+            <tr><td>AV1 (video)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="partial">16.4+</td><td class="yes">Yes</td><td class="partial">iOS 17+</td></tr>
+            <tr><td>H.265 (video)</td><td class="partial">OS-only</td><td class="no">No</td><td class="yes">Yes</td><td class="partial">OS-only</td><td class="yes">Yes</td></tr>
+            <tr><td>MP3 (audio)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>AAC (audio)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>Vorbis (audio)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td><td class="yes">Yes</td><td class="no">No</td></tr>
+            <tr><td>Opus (audio)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="partial">17+</td><td class="yes">Yes</td><td class="partial">iOS 17+</td></tr>
+            <tr><td>FLAC (audio)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+            <tr><td>WebP (image)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">14+</td><td class="yes">Yes</td><td class="yes">14+</td></tr>
+            <tr><td>AVIF (image)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="partial">16.4+</td><td class="yes">Yes</td><td class="partial">16.4+</td></tr>
+            <tr><td>SVG (image)</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Reading the matrix</strong>
+          "iOS 17+" means only devices running iOS 17 or later. iPhone 6s/7/8 are stuck on iOS 16 and won't play Opus. Always provide a fallback.
+        </div>
+      </section>
+
+      <section id="encoding">
+        <h2><span class="num">6</span> Encoding Basics (with FFmpeg)</h2>
+        <p>FFmpeg is the de facto command-line tool for media encoding. Examples below cover the most common cases.</p>
+
+        <h3>Video: encode to MP4 + WebM</h3>
+        <pre><code># MP4 (H.264 + AAC) — universal baseline, 720p
+ffmpeg -i input.mov \
+  -c:v libx264 -preset slow -crf 22 \
+  -c:a aac -b:a 128k \
+  -movflags +faststart \
+  output.mp4
+
+# WebM (VP9 + Opus)
+ffmpeg -i input.mov \
+  -c:v libvpx-vp9 -crf 32 -b:v 0 \
+  -c:a libopus -b:a 96k \
+  output.webm</code></pre>
+
+        <h3>Audio: encode to MP3 + Opus</h3>
+        <pre><code># MP3 — universal
+ffmpeg -i input.wav -c:a libmp3lame -q:a 2 output.mp3
+
+# Opus — modern, smallest
+ffmpeg -i input.wav -c:a libopus -b:a 64k output.opus</code></pre>
+
+        <h3>Images: convert to WebP + AVIF</h3>
+        <pre><code># WebP
+cwebp -q 80 input.jpg -o output.webp
+
+# AVIF (requires libavif)
+avifenc --min 20 --max 40 input.jpg output.avif</code></pre>
+
+        <div class="callout tip">
+          <strong>Pro tip — <code>-movflags +faststart</code></strong>
+          This is essential for MP4. It moves the metadata (<code>moov</code> atom) to the front of the file so the browser can start playing before the download is complete. Without it, the entire file must download before playback begins.
+        </div>
+      </section>
+
+      <section id="choose">
+        <h2><span class="num">7</span> When to Choose Each</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Photos &amp; art</h4>
+            <p>AVIF → WebP → JPEG. Use <code>&lt;picture&gt;</code> with all three. Set dimensions to prevent layout shift.</p>
+          </div>
+          <div class="card">
+            <h4>Icons &amp; logos</h4>
+            <p>Inline SVG. Scales infinitely, CSS-stylable, tiny file size, scriptable for animations.</p>
+          </div>
+          <div class="card">
+            <h4>Screenshots</h4>
+            <p>PNG (lossless, sharp text). For web delivery, convert to AVIF/PNG via <code>&lt;picture&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Animated graphics</h4>
+            <p>WebP animation or short MP4 instead of GIF. 10-100× smaller for the same content.</p>
+          </div>
+          <div class="card">
+            <h4>Podcast audio</h4>
+            <p>Opus (64 kbps) + MP3 (128 kbps) via <code>&lt;source&gt;</code>. Opus for modern browsers, MP3 for legacy.</p>
+          </div>
+          <div class="card">
+            <h4>Streaming video</h4>
+            <p>AV1 → VP9 → H.264. For 4K HDR, AV1 is essential. For 720p baseline, H.264 alone is fine.</p>
+          </div>
+          <div class="card">
+            <h4>Music streaming</h4>
+            <p>Opus + AAC. AAC for Apple devices, Opus for everything else. Avoid MP3 unless you need Windows XP-era support.</p>
+          </div>
+          <div class="card">
+            <h4>Sound effects</h4>
+            <p>WAV for short SFX (&lt; 5 seconds). Opus for longer. Prefer small files — sounds preload eagerly.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">8</span> Common Mistakes</h2>
+        <table>
+          <thead>
+            <tr><th>Mistake</th><th>Why it's bad</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Serving only WebM video</td><td>No Safari support on older iOS</td><td>Provide H.264 MP4 fallback</td></tr>
+            <tr><td>Serving only H.265 video</td><td>No Chrome/Firefox support</td><td>Provide H.264 fallback</td></tr>
+            <tr><td>Serving only AVIF images</td><td>Older Safari/IE won't show them</td><td>Use <code>&lt;picture&gt;</code> with JPEG fallback</td></tr>
+            <tr><td>Animated GIFs for hero videos</td><td>Huge files, 256 colors, no audio</td><td>Convert to MP4 + WebM</td></tr>
+            <tr><td>WAV for music tracks</td><td>30 MB / 3-min song</td><td>Use Opus or MP3</td></tr>
+            <tr><td>Missing <code>-movflags +faststart</code> on MP4</td><td>Browser can't stream — waits for full download</td><td>Always add this flag</td></tr>
+            <tr><td>Forgetting <code>codecs</code> parameter on type</td><td>Browser may pick wrong source</td><td>Add <code>codecs="avc1..."</code> etc.</td></tr>
+            <tr><td>One-size-fits-all bitrate</td><td>Either blurry or wasteful</td><td>Tune CRF/bitrate per content type</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercise">
+        <h2><span class="num">9</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Format comparison</strong>
+          Take one source video. Encode it as H.264 MP4, VP9 WebM, and AV1 MP4 at the same target bitrate. Compare file sizes and visual quality at the same timecodes.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Multi-format image</strong>
+          Take one JPEG photo. Convert it to AVIF and WebP at the same quality target. Build a <code>&lt;picture&gt;</code> with all three. Compare file sizes in DevTools → Network.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Convert a GIF</strong>
+          Find an animated GIF (1-5 MB). Convert to WebP (<code>gif2webp input.gif -o output.webp</code>) and to MP4 (<code>ffmpeg -i input.gif -movflags +faststart output.mp4</code>). Compare sizes — you'll see 5-50× reduction.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Opus vs MP3</strong>
+          Encode a 3-minute WAV as Opus at 64 kbps and MP3 at 128 kbps. Compare file sizes and listen for quality differences. Opus should be ~half the size with similar perceived quality.
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">10</span> Summary</h2>
+        <ul>
+          <li>Every media file = container + codec. Container is the box; codec is how bits are compressed.</li>
+          <li>Video: H.264 universal baseline; VP9/AV1 for modern compression; H.265 only for Apple.</li>
+          <li>Audio: MP3 universal; Opus best-in-class; AAC for iOS; FLAC/WAV for archival.</li>
+          <li>Images: AVIF &lt; WebP &lt; JPEG in size; PNG for sharp graphics; SVG for vector; avoid GIF.</li>
+          <li>Always provide multiple formats via <code>&lt;source&gt;</code> with <code>type</code> (and <code>codecs</code> for video).</li>
+          <li>Use FFmpeg for encoding; always add <code>-movflags +faststart</code> to MP4.</li>
+          <li>Browser support matrices change — always check <code>caniuse.com</code> for the latest data.</li>
+        </ul>
+        <div class="support">
+          <span>Chrome ✓</span><span>Firefox ✓</span><span>Safari ✓</span><span>Edge ✓</span><span>WebP/AVIF ~95-98% global</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="video.html">← Previous: Video</a>
+      <a href="../03-Figures-Captions/figure-figcaption.html">Next: Figure &amp; Figcaption →</a>
+    </div>
+    <p>HTML Mastery · Section 4 · Media &amp; Graphics · Media Formats</p>
+  </footer>
+</body>
+</html>
