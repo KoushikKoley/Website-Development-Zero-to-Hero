@@ -1,6 +1,3 @@
-Below is the complete `README.md` in one copy-pasteable block, with the roadmap fixed so the diagram continues properly beyond **REAL-WORLD PROJECTS**.
-
-````
 # 🌐 Website Development — Zero to Hero
 
 <div align="center">
@@ -39,7 +36,7 @@ The project is being built as a massive collection of:
 - 🔧 Development tools
 - 🌍 Community contributions
 
-The long-term vision is to build a continuously growing repository containing **1M+ files** covering the complete journey of modern website development.
+The long-term vision is to create a continuously growing repository containing **1M+ files** covering the complete journey of modern web development.
 
 > **One repository. One journey. From writing your first HTML tag to building production-grade applications.**
 
@@ -108,10 +105,10 @@ This repository aims to provide a structured path from **absolute beginner to pr
                          🚀 PRODUCTION
                                 │
                                 ▼
-                    REAL-WORLD PROJECTS
+                    🏗️ REAL-WORLD PROJECTS
                                 │
                                 ▼
-                     🏗️ BUILD & DEPLOY
+                     🚀 BUILD & DEPLOY
                                 │
                                 ▼
                        🌍 OPEN SOURCE
@@ -121,49 +118,114 @@ This repository aims to provide a structured path from **absolute beginner to pr
                                 │
                                 ▼
                          ⭐ ZERO TO HERO
-````
+```
 
 ---
 
- # 🛠️ Technologies
+# 🛠️ Technologies
 
- ## 🌐 Frontend
+## 🌐 Frontend
 
- \<p align="left"\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="50" alt="HTML5"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="50" alt="CSS3"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="50" alt="JavaScript"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="50" alt="TypeScript"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="50" alt="React"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="50" alt="Next.js"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" width="50" alt="Vue.js"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angular/angular-original.svg" width="50" alt="Angular"/\> \</p\> **HTML5 • CSS3 • JavaScript • TypeScript • React • Next.js • Vue.js • Angular**
+<p align="left">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="50" alt="HTML5"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="50" alt="CSS3"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="50" alt="JavaScript"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="50" alt="TypeScript"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="50" alt="React"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="50" alt="Next.js"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" width="50" alt="Vue.js"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angular/angular-original.svg" width="50" alt="Angular"/>
+</p>
 
----
-
- # 🎨 CSS & UI Technologies
-
- \<p align="left"\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" width="50" alt="Bootstrap"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" width="50" alt="Tailwind CSS"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" width="50" alt="Sass"/\> \</p\> **CSS • Flexbox • CSS Grid • Responsive Design • Animations • Tailwind CSS • Bootstrap • Sass**
-
----
-
- # ⚙️ Backend Technologies
-
- \<p align="left"\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="50" alt="Node.js"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="50" alt="Express.js"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="50" alt="Python"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" width="50" alt="Django"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" width="50" alt="PHP"/\> \</p\> **Node.js • Express.js • Python • Django • PHP • REST APIs • GraphQL • WebSockets**
-
----
-
- # 🗄️ Databases
-
- \<p align="left"\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="50" alt="MySQL"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="50" alt="PostgreSQL"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" width="50" alt="MongoDB"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" width="50" alt="Redis"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg" width="50" alt="SQLite"/\> \</p\> **MySQL • PostgreSQL • MongoDB • Redis • SQLite • SQL • NoSQL**
+**HTML5 • CSS3 • JavaScript • TypeScript • React • Next.js • Vue.js • Angular**
 
 ---
 
- # ☁️ DevOps & Deployment
+# 🎨 CSS & UI Technologies
 
- \<p align="left"\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="50" alt="Git"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="50" alt="GitHub"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="50" alt="Docker"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" width="50" alt="Linux"/\> \<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" width="50" alt="Nginx"/\> \</p\> **Git • GitHub • Linux • Docker • Nginx • CI/CD • Cloud • Deployment • DevOps**
+<p align="left">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" width="50" alt="Bootstrap"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" width="50" alt="Tailwind CSS"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" width="50" alt="Sass"/>
+</p>
+
+**CSS • Flexbox • CSS Grid • Responsive Design • Animations • Tailwind CSS • Bootstrap • Sass**
 
 ---
 
- # 🔐 Security
+# ⚙️ Backend Technologies
 
- Security will be an important part of the learning path.
+<p align="left">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="50" alt="Node.js"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="50" alt="Express.js"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="50" alt="Python"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" width="50" alt="Django"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" width="50" alt="PHP"/>
+</p>
 
- Topics include:
+**Node.js • Express.js • Python • Django • PHP • REST APIs • GraphQL • WebSockets**
 
- - 🔑 Authentication
+---
+
+# 🗄️ Databases
+
+<p align="left">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="50" alt="MySQL"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="50" alt="PostgreSQL"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" width="50" alt="MongoDB"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" width="50" alt="Redis"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg" width="50" alt="SQLite"/>
+</p>
+
+**MySQL • PostgreSQL • MongoDB • Redis • SQLite • SQL • NoSQL**
+
+---
+
+# ☁️ DevOps & Deployment
+
+<p align="left">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="50" alt="Git"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="50" alt="GitHub"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="50" alt="Docker"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" width="50" alt="Linux"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" width="50" alt="Nginx"/>
+</p>
+
+**Git • GitHub • Linux • Docker • Nginx • CI/CD • Cloud • Deployment • DevOps**
+
+---
+
+# 🧰 Developer Tools & Engineering Practices
+
+The project will also cover the tools and practices developers use throughout the software-development lifecycle.
+
+- 🖥️ Command Line & Terminal
+- 📦 Package Managers
+- 🌿 Git Workflows
+- 🔀 Branching & Merging
+- 🧹 Code Formatting
+- 🔍 Linting
+- 📝 Documentation
+- 🐞 Debugging
+- 🧪 Automated Testing
+- 📊 Logging & Monitoring
+- 🔄 CI/CD
+- 🐳 Containerization
+- ☁️ Cloud Deployment
+- 🔐 Environment Variables
+- ⚙️ Configuration Management
+- 📦 Dependency Management
+- 🏗️ Project Architecture
+
+---
+
+# 🔐 Security
+
+Security will be an important part of the learning path.
+
+Topics include:
+
+- 🔑 Authentication
 - 🛡️ Authorization
 - 🔒 Password security
 - 🎫 Sessions & tokens
@@ -175,14 +237,61 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - 🔒 HTTPS & TLS
 - 🍪 Cookies & security
 - 🧪 Security testing
+- 🔐 Secrets management
+- 🛡️ Security headers
+- 🚦 Rate limiting
+- 🧩 CORS
+- 🛡️ CSRF
+- 🧹 Secure dependency management
 
 ---
 
- # 📚 What You Will Learn
+# ♿ Accessibility
 
- ## 🟢 Beginner
+Modern websites should be usable by as many people as possible.
 
- - HTML fundamentals
+The project will cover:
+
+- ♿ Semantic HTML
+- ⌨️ Keyboard navigation
+- 🔊 Screen-reader considerations
+- 🎨 Color contrast
+- 🏷️ Accessible forms
+- 🧭 Focus management
+- 🖱️ Mouse and pointer considerations
+- 📱 Responsive accessibility
+- 🧪 Accessibility testing
+- 📋 WCAG fundamentals
+
+---
+
+# ⚡ Performance
+
+Performance will be treated as a core engineering concern.
+
+Topics include:
+
+- ⚡ Page-load optimization
+- 🖼️ Image optimization
+- 📦 Asset optimization
+- 🧩 Code splitting
+- 💤 Lazy loading
+- 🗃️ Caching
+- 🌐 CDN concepts
+- 📡 Network optimization
+- 🧠 Browser rendering
+- 📊 Performance measurement
+- 🚀 Core Web Vitals
+- 🗄️ Database performance
+- 🔄 API performance
+
+---
+
+# 📚 What You Will Learn
+
+## 🟢 Beginner
+
+- HTML fundamentals
 - Semantic HTML
 - Forms
 - Tables
@@ -203,12 +312,15 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - Objects
 - DOM manipulation
 - Events
+- Browser fundamentals
+- Developer tools
+- Basic Git
 
 ---
 
- ## 🟡 Intermediate
+## 🟡 Intermediate
 
- - Modern JavaScript
+- Modern JavaScript
 - ES6+
 - Modules
 - Async/Await
@@ -226,13 +338,17 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - State
 - Hooks
 - Routing
+- Forms
 - Testing
+- API integration
+- Error handling
+- Code organization
 
 ---
 
- ## 🔴 Advanced
+## 🔴 Advanced
 
- - Next.js
+- Next.js
 - Node.js
 - Backend architecture
 - Authentication
@@ -248,16 +364,44 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - Docker
 - Cloud deployment
 - Production architecture
+- Observability
+- Scalability
+- System design
+- Accessibility
+- Reliability
 
 ---
 
- # 🚀 Real-World Projects
+# 🧠 Core Computer Science Foundations
 
- The repository will contain projects ranging from simple beginner exercises to complete production-style applications.
+Web development becomes much easier when developers understand the fundamentals behind the tools.
 
- ### 🌱 Beginner Projects
+The project may also cover:
 
- - Personal portfolio
+- 💻 How computers work
+- 🌐 How the internet works
+- 📡 HTTP & HTTPS
+- 🌍 DNS
+- 🧭 Browsers
+- 📦 Data structures
+- 🧮 Algorithms
+- 🧠 Programming concepts
+- 🧵 Processes & threads
+- 💾 Memory fundamentals
+- 🔢 Complexity basics
+- 🏗️ Software architecture
+- 🔄 Client-server architecture
+- 🌐 Networking fundamentals
+
+---
+
+# 🚀 Real-World Projects
+
+The repository will contain projects ranging from simple beginner exercises to complete production-style applications.
+
+## 🌱 Beginner Projects
+
+- Personal portfolio
 - Landing pages
 - Calculator
 - To-do application
@@ -266,10 +410,16 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - Quiz application
 - Form projects
 - Responsive websites
+- Image gallery
+- Countdown timer
+- Markdown previewer
+- Password generator
+- Unit converter
+- Expense calculator
 
- ### 🟡 Intermediate Projects
+## 🟡 Intermediate Projects
 
- - Blog
+- Blog
 - Admin dashboard
 - E-commerce frontend
 - Movie application
@@ -278,10 +428,15 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - REST API
 - Expense tracker
 - Task management system
+- Notes application
+- URL shortener
+- Real-time dashboard
+- Search application
+- File management application
 
- ### 🔴 Advanced Projects
+## 🔴 Advanced Projects
 
- - Full-stack e-commerce platform
+- Full-stack e-commerce platform
 - SaaS application
 - Social networking platform
 - Learning management system
@@ -291,12 +446,16 @@ This repository aims to provide a structured path from **absolute beginner to pr
 - API platform
 - Developer tools
 - Production-style applications
+- Multi-tenant SaaS platform
+- Real-time collaboration application
+- Subscription platform
+- Analytics platform
 
 ---
 
- # 🏗️ Repository Structure
+# 🏗️ Repository Structure
 
-```
+```text
 website-development-zero-to-hero/
 │
 ├── 01-html/
@@ -304,6 +463,7 @@ website-development-zero-to-hero/
 │   ├── elements/
 │   ├── forms/
 │   ├── semantic-html/
+│   ├── accessibility/
 │   └── projects/
 │
 ├── 02-css/
@@ -312,6 +472,7 @@ website-development-zero-to-hero/
 │   ├── grid/
 │   ├── responsive-design/
 │   ├── animations/
+│   ├── accessibility/
 │   └── projects/
 │
 ├── 03-javascript/
@@ -320,8 +481,10 @@ website-development-zero-to-hero/
 │   ├── arrays/
 │   ├── objects/
 │   ├── dom/
+│   ├── events/
 │   ├── async/
 │   ├── api/
+│   ├── modules/
 │   └── projects/
 │
 ├── 04-typescript/
@@ -348,6 +511,12 @@ website-development-zero-to-hero/
 │
 ├── 15-deployment/
 │
+├── 16-accessibility/
+│
+├── 17-performance/
+│
+├── 18-system-design/
+│
 ├── projects/
 │   ├── beginner/
 │   ├── intermediate/
@@ -361,19 +530,24 @@ website-development-zero-to-hero/
 ├── components/
 ├── experiments/
 ├── resources/
+├── cheat-sheets/
+├── interview-preparation/
+├── career/
 │
 ├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+├── SECURITY.md
 ├── LICENSE
 └── README.md
 ```
 
 ---
 
- # 🧩 Learning Philosophy
+# 🧩 Learning Philosophy
 
- This project follows a simple development philosophy:
+This project follows a simple development philosophy:
 
-```
+```text
 Learn
   ↓
 Understand
@@ -397,15 +571,15 @@ Share
 Repeat
 ```
 
- > **Don't just read code. Write it. Break it. Fix it. Understand it. Build something better.**
+> **Don't just read code. Write it. Break it. Fix it. Understand it. Build something better.**
 
 ---
 
- # 🧪 Learn Through Practice
+# 🧪 Learn Through Practice
 
- Every major topic will aim to include:
+Every major topic will aim to include:
 
-```
+```text
 📖 Concept
    ↓
 💡 Explanation
@@ -421,17 +595,125 @@ Repeat
 🚀 Real-world application
 ```
 
- This approach is intended to help learners move from **theory → practice → projects → production**.
+This approach is intended to help learners move from:
+
+**Theory → Practice → Projects → Production**
 
 ---
 
- # 🌍 Open Source
+# 🧪 Experiments & Playground
 
- This project is designed to become a community-driven open-source learning ecosystem.
+The repository will include a dedicated area for experimentation.
 
- Developers around the world will be able to:
+Possible areas include:
 
- - 📚 Learn from the source code
+- JavaScript experiments
+- CSS experiments
+- Browser APIs
+- Web animations
+- WebSockets
+- API experiments
+- Performance experiments
+- Database experiments
+- Security labs
+- UI experiments
+- Accessibility experiments
+- Framework experiments
+- Emerging web technologies
+
+> Experiments are allowed to be imperfect. The goal is to understand how things work.
+
+---
+
+# 🧰 Reusable Components & Templates
+
+The repository may contain reusable development resources such as:
+
+- UI components
+- Forms
+- Navigation bars
+- Modals
+- Cards
+- Tables
+- Dashboards
+- Authentication interfaces
+- Loading states
+- Error pages
+- Responsive layouts
+- Starter templates
+- Project boilerplates
+- API templates
+- Documentation templates
+
+---
+
+# 📝 Challenges & Exercises
+
+Practice material will be organized by difficulty.
+
+## 🟢 Beginner Challenges
+
+- HTML challenges
+- CSS challenges
+- Layout challenges
+- JavaScript fundamentals
+- DOM challenges
+- Basic debugging
+
+## 🟡 Intermediate Challenges
+
+- API integration
+- TypeScript exercises
+- React challenges
+- State management
+- Authentication
+- Testing
+- Data handling
+
+## 🔴 Advanced Challenges
+
+- Backend architecture
+- Database design
+- Security
+- Performance
+- Scalability
+- Real-time systems
+- DevOps
+- System design
+
+---
+
+# 💼 Interview Preparation
+
+A dedicated section will help learners prepare for technical interviews.
+
+Topics may include:
+
+- HTML interview questions
+- CSS interview questions
+- JavaScript interview questions
+- TypeScript interview questions
+- React interview questions
+- Node.js interview questions
+- Database questions
+- API questions
+- Security questions
+- Git questions
+- System design
+- Coding challenges
+- Practical debugging questions
+- Frontend architecture
+- Backend architecture
+
+---
+
+# 🌍 Open Source
+
+This project is designed to become a community-driven open-source learning ecosystem.
+
+Developers around the world will be able to:
+
+- 📚 Learn from the source code
 - 💻 Reuse examples
 - 🧩 Build on existing projects
 - 🐛 Fix bugs
@@ -441,16 +723,17 @@ Repeat
 - 🔬 Add experiments
 - 🤝 Contribute code
 - 🌍 Share knowledge
+- 🎓 Create educational resources
 
 ---
 
- # 🤝 Contributing
+# 🤝 Contributing
 
- Contributions are welcome.
+Contributions are welcome.
 
- Before contributing:
+Before contributing:
 
- 1. Read the contribution guidelines.
+1. Read the contribution guidelines.
 2. Check existing issues and pull requests.
 3. Keep contributions focused.
 4. Follow the repository structure.
@@ -458,16 +741,38 @@ Repeat
 6. Add documentation where appropriate.
 7. Test your changes.
 8. Submit a clear pull request.
+9. Respect other contributors.
+10. Keep educational quality in mind.
 
- Detailed contribution guidelines will be added as the project develops.
+Detailed contribution guidelines will be added as the project develops.
 
 ---
 
- # 📈 Long-Term Vision
+# 🛡️ Code of Conduct
 
- The long-term vision is to create one of the largest open-source collections dedicated to practical web development education.
+All contributors and community members are expected to maintain a respectful, welcoming, and constructive environment.
 
-```
+Harassment, discrimination, abuse, spam, malicious contributions, and intentionally harmful behavior will not be tolerated.
+
+The complete community guidelines will be maintained in `CODE_OF_CONDUCT.md`.
+
+---
+
+# 🔒 Security Policy
+
+Security issues should be reported responsibly.
+
+Please do not publicly disclose sensitive security vulnerabilities before they can be investigated.
+
+Security reporting instructions will be maintained in `SECURITY.md`.
+
+---
+
+# 📈 Long-Term Vision
+
+The long-term vision is to create one of the largest open-source collections dedicated to practical web development education.
+
+```text
                   📚 KNOWLEDGE
                        +
                   💻 SOURCE CODE
@@ -477,6 +782,8 @@ Repeat
                   🏗️ PROJECTS
                        +
                   🎯 CHALLENGES
+                       +
+                  📖 DOCUMENTATION
                        +
                   🌍 COMMUNITY
                        │
@@ -496,29 +803,106 @@ Repeat
                  ⭐ ZERO TO HERO
 ```
 
- The **1M+ files** goal is a long-term vision for a massive collection of examples, projects, exercises, components, experiments, documentation, templates, and learning resources.
+The **1M+ files** goal is a long-term vision for a massive collection of examples, projects, exercises, components, experiments, documentation, templates, and learning resources.
 
- > **Quality, educational value, organization, and maintainability will always be more important than simply increasing the file count.**
-
----
-
- # 📅 Development Status
-
- > 🚧 **THIS PROJECT IS CURRENTLY UNDER DEVELOPMENT**
-
- ## 🎉 Official Launch
-
- # **November 1, 2026**
-
- The repository is currently being structured and developed.
-
- The learning curriculum, examples, projects, documentation, and supporting resources will continue to evolve before the official launch.
+> **Quality, educational value, organization, and maintainability will always be more important than simply increasing the file count.**
 
 ---
 
- # 📊 Project Status
+# 📊 Learning Levels
 
- | Component | Status |
+| Level | Focus | Outcome |
+| --- | --- | --- |
+| 🟢 Beginner | HTML, CSS, JavaScript | Build basic websites |
+| 🟡 Intermediate | TypeScript, React, APIs | Build interactive applications |
+| 🟠 Advanced | Next.js, Node.js, Databases | Build full-stack systems |
+| 🔴 Professional | Security, DevOps, Testing, Performance | Build production-style applications |
+| 🚀 Expert | Architecture, Scalability, System Design | Design complex systems |
+
+---
+
+# 🗺️ Recommended Learning Path
+
+```text
+HTML
+ ↓
+CSS
+ ↓
+JavaScript
+ ↓
+Git & GitHub
+ ↓
+TypeScript
+ ↓
+React
+ ↓
+APIs
+ ↓
+Node.js
+ ↓
+Databases
+ ↓
+Authentication
+ ↓
+Testing
+ ↓
+Security
+ ↓
+Next.js
+ ↓
+DevOps
+ ↓
+Deployment
+ ↓
+Performance
+ ↓
+System Design
+ ↓
+Real-World Projects
+ ↓
+Open Source
+```
+
+> Learners are encouraged to build projects throughout the journey rather than waiting until the end.
+
+---
+
+# 📦 Project Quality Standards
+
+As the repository grows, projects should aim to include:
+
+- 📖 Clear README documentation
+- 🗂️ Organized source code
+- 🧹 Consistent formatting
+- 🔍 Linting where appropriate
+- 🧪 Tests where appropriate
+- 🔐 Security considerations
+- ♿ Accessibility considerations
+- 📱 Responsive design
+- ⚡ Performance considerations
+- 🌐 Deployment instructions
+- 📝 Environment configuration
+- 🐛 Troubleshooting guidance
+
+---
+
+# 📊 Development Status
+
+> 🚧 **THIS PROJECT IS CURRENTLY UNDER DEVELOPMENT**
+
+## 🎉 Official Launch
+
+# **November 1, 2026**
+
+The repository is currently being structured and developed.
+
+The learning curriculum, examples, projects, documentation, and supporting resources will continue to evolve before the official launch.
+
+---
+
+# 📋 Project Status
+
+| Component | Status |
 | --- | --- |
 | Repository architecture | 🚧 In Development |
 | Learning roadmap | 🚧 In Development |
@@ -531,30 +915,54 @@ Repeat
 | Database curriculum | 🚧 In Development |
 | Security curriculum | 🚧 In Development |
 | DevOps curriculum | 🚧 In Development |
+| Accessibility curriculum | 🚧 In Development |
+| Performance curriculum | 🚧 In Development |
 | Beginner projects | 🚧 In Development |
 | Advanced projects | 🚧 In Development |
 | Full-stack projects | 🚧 In Development |
+| Challenges | 🚧 In Development |
+| Exercises | 🚧 In Development |
 | Documentation | 🚧 In Development |
+| Interview preparation | 🚧 In Development |
 | Community contributions | 🔜 Coming |
 | Official launch | 📅 November 1, 2026 |
 
 ---
 
- # 📜 License
+# 🏆 Project Goals
 
- This project is intended to be released under the **GNU General Public License v3.0 (GPL-3.0)**.
+The project aims to provide:
 
- See the `LICENSE` file for the complete license text.
-
- Copyright © 2026 **Koushik Koley**
+- 📚 Structured learning
+- 💻 Practical coding
+- 🧪 Hands-on experimentation
+- 🏗️ Real-world projects
+- 🔐 Security awareness
+- ♿ Accessibility awareness
+- ⚡ Performance awareness
+- 🧪 Testing practices
+- ☁️ Deployment knowledge
+- 🌍 Open-source experience
+- 🤝 Community collaboration
+- 💼 Career preparation
 
 ---
 
- # ⭐ Support The Project
+# 📜 License
 
- If you find this project useful:
+This project is intended to be released under the **GNU General Public License v3.0 (GPL-3.0)**.
 
- - ⭐ Star the repository
+See the `LICENSE` file for the complete license text.
+
+Copyright © 2026 **Koushik Koley**
+
+---
+
+# ⭐ Support The Project
+
+If you find this project useful:
+
+- ⭐ Star the repository
 - 🍴 Fork the repository
 - 🐛 Report bugs
 - 💡 Suggest improvements
@@ -563,16 +971,18 @@ Repeat
 - 🏗️ Build projects
 - 📢 Share the project
 
- Every contribution helps make this project better for the next developer.
+Every contribution helps make this project better for the next developer.
 
 ---
 
- \<div align="center"\> # 🌐 Learn. Build. Create. Ship.
+<div align="center">
 
- ### From **Zero** to **Hero** in Web Development.
+# 🌐 Learn. Build. Create. Ship.
 
- **Launching November 1, 2026 🚀**
+### From **Zero** to **Hero** in Web Development.
 
- Made with ❤️ for developers everywhere.
+**Launching November 1, 2026 🚀**
 
- \</div\> \`\`\`
+Made with ❤️ for developers everywhere.
+
+</div>
