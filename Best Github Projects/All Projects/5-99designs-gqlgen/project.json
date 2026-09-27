@@ -1,0 +1,30 @@
+{
+  "id": 121086193,
+  "name": "gqlgen",
+  "full_name": "99designs/gqlgen",
+  "owner": "99designs",
+  "html_url": "https://github.com/99designs/gqlgen",
+  "description": "go generate based graphql server library",
+  "stars": 10765,
+  "forks": 1256,
+  "watchers": 10765,
+  "open_issues": 387,
+  "language": "Go",
+  "topics": [
+    "codegen",
+    "dataloader",
+    "gogenerate",
+    "golang",
+    "graphql",
+    "schema-first",
+    "subscriptions"
+  ],
+  "default_branch": "master",
+  "license": "MIT",
+  "homepage": "https://gqlgen.com",
+  "created_at": "2018-02-11T04:54:11Z",
+  "updated_at": "2026-09-27T17:58:11Z",
+  "pushed_at": "2026-09-23T19:47:18Z",
+  "archived": false,
+  "size": 27609
+}

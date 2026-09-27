@@ -1,0 +1,33 @@
+{
+  "id": 202429201,
+  "name": "airframe-react",
+  "full_name": "0wczar/airframe-react",
+  "owner": "0wczar",
+  "html_url": "https://github.com/0wczar/airframe-react",
+  "description": "Free Open Source High Quality Dashboard based on Bootstrap 4 & React 16: https://airframe-react-lime.vercel.app",
+  "stars": 3981,
+  "forks": 709,
+  "watchers": 3981,
+  "open_issues": 48,
+  "language": "JavaScript",
+  "topics": [
+    "admin",
+    "admin-dashboard",
+    "airframe",
+    "boostrap4",
+    "bootstrap",
+    "dashboard",
+    "react",
+    "react-components",
+    "reactjs",
+    "ui-components"
+  ],
+  "default_branch": "master",
+  "license": "MIT",
+  "homepage": "https://airframe.webkom.co",
+  "created_at": "2019-08-14T21:34:00Z",
+  "updated_at": "2026-09-24T04:36:23Z",
+  "pushed_at": "2025-04-04T10:21:10Z",
+  "archived": false,
+  "size": 7820
+}

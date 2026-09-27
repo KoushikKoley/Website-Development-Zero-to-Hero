@@ -1,0 +1,31 @@
+{
+  "id": 881053158,
+  "name": "neohtop",
+  "full_name": "Abdenasser/neohtop",
+  "owner": "Abdenasser",
+  "html_url": "https://github.com/Abdenasser/neohtop",
+  "description": "💪🏻 Blazing-fast system monitoring for your desktop (built with Rust, Tauri & Svelte)",
+  "stars": 9384,
+  "forks": 309,
+  "watchers": 9384,
+  "open_issues": 21,
+  "language": "Svelte",
+  "topics": [
+    "activity",
+    "btop",
+    "cross-platform",
+    "htop",
+    "monitoring",
+    "rust",
+    "svelte",
+    "system"
+  ],
+  "default_branch": "main",
+  "license": "MIT",
+  "homepage": "https://abdenasser.github.io/neohtop/",
+  "created_at": "2024-10-30T20:44:11Z",
+  "updated_at": "2026-09-27T17:12:06Z",
+  "pushed_at": "2026-03-30T08:15:15Z",
+  "archived": false,
+  "size": 13636
+}
