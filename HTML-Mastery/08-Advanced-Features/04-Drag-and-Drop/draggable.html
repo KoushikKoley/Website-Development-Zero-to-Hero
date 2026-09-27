@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The <code>draggable</code> Global Attribute — HTML Drag and Drop — HTML Mastery</title>
+  <meta name="description" content="The draggable global HTML attribute: true, false, and auto (default for images, text selections, links). Making any element draggable, visual cues, dragstart and dragend events on the source. Native browser behavior for text selection, images, and anchors.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.no { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    .demo-tile {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 80px; height: 80px; border-radius: 12px; margin: 4px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed); color: white;
+      font-weight: 600; user-select: none; cursor: grab;
+    }
+    .demo-tile:active { cursor: grabbing; }
+    .demo-tile[draggable="true"] { -webkit-user-drag: element; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Drag and Drop</span>
+    <h1>The <code>draggable</code> Global Attribute</h1>
+    <p>Every HTML element accepts <code>draggable="true"</code>, <code>"false"</code>, or <code>"auto"</code>. Some elements are draggable by default — images, links, and text selections. Everything else needs you to opt in.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#attribute">The <code>draggable</code> Attribute</a></li>
+        <li><a href="#values">Three Values</a></li>
+        <li><a href="#defaults">Native Defaults</a></li>
+        <li><a href="#making">Making Any Element Draggable</a></li>
+        <li><a href="#visual-cue">Visual Cues</a></li>
+        <li><a href="#source-events">Source Events</a></li>
+        <li><a href="#touch-support">Touch Support Caveat</a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="attribute">
+        <h2><span class="num">1</span> The draggable Attribute</h2>
+        <p><code>draggable</code> is a <em>global</em> HTML attribute — you can put it on any element. It tells the browser whether the user can grab the element with the mouse and drag it elsewhere on the page (or to another application).</p>
+        <pre><code>&lt;div draggable="true"&gt;Pick me up&lt;/div&gt;
+&lt;div draggable="false"&gt;Locked in place&lt;/div&gt;
+&lt;div draggable="auto"&gt;Browser decides&lt;/div&gt;</code></pre>
+        <p>The attribute alone does not complete a drag-and-drop interaction — you still need event handlers (covered in the <a href="drag-events.html">drag events</a> page) to define what happens during drag-over and on drop. But <code>draggable</code> is the on/off switch that gets you the first half.</p>
+      </section>
+
+      <section id="values">
+        <h2><span class="num">2</span> Three Values</h2>
+        <table class="info-table">
+          <thead><tr><th>Value</th><th>Effect</th></tr></thead>
+          <tbody>
+            <tr><td><code>true</code></td><td>The element is draggable regardless of its type.</td></tr>
+            <tr><td><code>false</code></td><td>The element cannot be dragged even if it would otherwise be draggable by default (e.g. an image).</td></tr>
+            <tr><td><code>auto</code></td><td>Use the element's default draggable behavior. The default for most elements is <code>false</code>; for images, links, and text selections it is <code>true</code>.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          If you omit the attribute entirely, the value is treated as <code>auto</code>. Writing <code>draggable</code> as a bare attribute (without a value) is treated as <code>true</code> — but for clarity, always write <code>draggable="true"</code>.
+        </div>
+      </section>
+
+      <section id="defaults">
+        <h2><span class="num">3</span> Native Default Behavior</h2>
+        <p>The browser makes certain elements draggable without any opt-in:</p>
+        <table class="info-table">
+          <thead><tr><th>Element / content</th><th>Default draggable?</th><th>What gets dragged</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;img&gt;</code></td><td>Yes</td><td>The image itself (often with a translucent ghost).</td></tr>
+            <tr><td><code>&lt;a href="…"&gt;</code></td><td>Yes</td><td>The link URL.</td></tr>
+            <tr><td>Text selected by the user</td><td>Yes</td><td>The selected text.</td></tr>
+            <tr><td><code>&lt;div&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;p&gt;</code></td><td>No</td><td>—</td></tr>
+            <tr><td><code>&lt;button&gt;</code></td><td>No</td><td>—</td></tr>
+            <tr><td>Form inputs</td><td>No</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p>Try selecting the text in this paragraph and dragging it — the browser will let you drop it into another text field or even into a file explorer on some operating systems.</p>
+        <p>Try dragging this image:</p>
+        <p><img src="https://picsum.photos/seed/dragdemo/120/80" alt="A sample image to drag" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(2,6,23,0.1);"></p>
+      </section>
+
+      <section id="making">
+        <h2><span class="num">4</span> Making Any Element Draggable</h2>
+        <pre><code>&lt;div class="tile" draggable="true"&gt;A&lt;/div&gt;
+&lt;div class="tile" draggable="true"&gt;B&lt;/div&gt;
+&lt;div class="tile" draggable="true"&gt;C&lt;/div&gt;</code></pre>
+
+        <pre><code>const tiles = document.querySelectorAll('.tile');
+tiles.forEach(tile =&gt; {
+  tile.addEventListener('dragstart', (e) =&gt; {
+    e.dataTransfer.setData('text/plain', tile.textContent);
+    tile.classList.add('dragging');
+  });
+  tile.addEventListener('dragend', () =&gt; {
+    tile.classList.remove('dragging');
+  });
+});</code></pre>
+
+        <div class="demo-output">
+          <h4>Live demo — drag these tiles around</h4>
+          <div class="tile" draggable="true">A</div>
+          <div class="tile" draggable="true">B</div>
+          <div class="tile" draggable="true">C</div>
+          <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:8px;">
+            Pick up a tile — note the <code>grab</code> cursor and the translucent ghost the browser creates. The drag-end handler resets the styling.
+          </p>
+        </div>
+
+        <style>
+          .demo-output .tile {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 60px; height: 60px; border-radius: 10px; margin: 4px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed); color: white;
+            font-weight: 700; cursor: grab; user-select: none;
+          }
+          .demo-output .tile.dragging { opacity: 0.4; }
+          .demo-output .tile:active { cursor: grabbing; }
+        </style>
+
+        <script>
+          document.querySelectorAll('.demo-output .tile').forEach(tile => {
+            tile.addEventListener('dragstart', (e) => {
+              e.dataTransfer.setData('text/plain', tile.textContent);
+              tile.classList.add('dragging');
+            });
+            tile.addEventListener('dragend', () => {
+              tile.classList.remove('dragging');
+            });
+          });
+        </script>
+      </section>
+
+      <section id="visual-cue">
+        <h2><span class="num">5</span> Visual Cues</h2>
+        <p>Good drag UX requires three cues:</p>
+        <ul>
+          <li><strong>Affordance</strong> — before drag, the element should look grabbable. Use <code>cursor: grab</code> on the source, and <code>cursor: grabbing</code> while active.</li>
+          <li><strong>Source feedback</strong> — while dragging, reduce opacity on the source so users see it is "in flight."</li>
+          <li><strong>Target feedback</strong> — when the cursor is over a valid drop zone, highlight the target (e.g. dashed border, background tint).</li>
+        </ul>
+        <pre><code>.tile {
+  cursor: grab;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.tile.dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+}
+.drop-zone.over {
+  background: #dbeafe;
+  border-color: #2563eb;
+  border-style: dashed;
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The browser renders its own "ghost" of the dragged element automatically. You can override the ghost image with <code>e.dataTransfer.setDragImage(element, x, y)</code> inside <code>dragstart</code> — useful for showing a custom multi-item preview.
+        </div>
+      </section>
+
+      <section id="source-events">
+        <h2><span class="num">6</span> Source-Side Events</h2>
+        <p>Two events fire on the draggable element itself:</p>
+        <table class="info-table">
+          <thead><tr><th>Event</th><th>Fires</th><th>Typical use</th></tr></thead>
+          <tbody>
+            <tr><td><code>dragstart</code></td><td>When the user begins dragging the element</td><td>Set the data payload on <code>dataTransfer</code>; add a "dragging" class for visual feedback.</td></tr>
+            <tr><td><code>dragend</code></td><td>When the drag ends (drop or cancel via ESC)</td><td>Clean up visual feedback; trigger any post-drag UI.</td></tr>
+          </tbody>
+        </table>
+        <pre><code>tile.addEventListener('dragstart', (e) =&gt; {
+  e.dataTransfer.setData('text/plain', tile.dataset.id);
+  e.dataTransfer.effectAllowed = 'move';
+  tile.classList.add('dragging');
+});
+
+tile.addEventListener('dragend', () =&gt; {
+  tile.classList.remove('dragging');
+  // Optional: re-render the source list, log analytics, etc.
+});</code></pre>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          <code>effectAllowed</code> sets what kinds of drops are allowed — <code>copy</code>, <code>move</code>, <code>link</code>, or combinations. The browser uses it to render the appropriate cursor (e.g. the green <code>+</code> for copy).
+        </div>
+      </section>
+
+      <section id="touch-support">
+        <h2><span class="num">7</span> Touch Support Caveat</h2>
+        <div class="callout warn">
+          <strong>Important</strong>
+          The HTML Drag and Drop API does <strong>not</strong> fire on touch devices. <code>dragstart</code>, <code>dragover</code>, and <code>drop</code> are pointer/mouse events only. On a phone or tablet, your draggable UI will silently not work.
+        </div>
+        <p>For cross-device drag-and-drop, you have three options:</p>
+        <ul>
+          <li>Use the <strong>Pointer Events API</strong> (<code>pointerdown</code>, <code>pointermove</code>, <code>pointerup</code>) and build drag manually — works everywhere.</li>
+          <li>Use a library like <a href="https://github.com/SortableJS/Sortable">SortableJS</a> or <a href="https://dndkit.com/">dnd-kit</a> that abstracts the differences.</li>
+          <li>Use HTML DnD as a progressive enhancement and provide a fallback "move up / move down" button UI for touch users.</li>
+        </ul>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome (all)</span>
+          <span class="pill yes">Firefox (all)</span>
+          <span class="pill yes">Safari (all)</span>
+          <span class="pill yes">Edge (all)</span>
+          <span class="pill no">Touch devices — no DnD events</span>
+        </div>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Forgetting <code>draggable="true"</code> on divs.</strong> Without it, the browser ignores <code>dragstart</code> handlers entirely.</li>
+          <li><strong>Setting <code>draggable="false"</code> on an image you want users to <em>not</em> drag.</strong> This is correct — but remember it also breaks some assistive tech interactions; pair with CSS <code>user-select: none</code> for full lock-down.</li>
+          <li><strong>Calling <code>setData</code> after <code>dragstart</code> returns.</strong> Data must be set synchronously inside the <code>dragstart</code> handler. After the event finishes, <code>dataTransfer</code> becomes read-only in some browsers.</li>
+          <li><strong>Expecting touch support.</strong> Plan a fallback from day one.</li>
+          <li><strong>Not setting <code>effectAllowed</code>.</strong> The default may not match what you want; explicit is better.</li>
+          <li><strong>Forgetting to clean up classes in <code>dragend</code>.</strong> If you add a <code>dragging</code> class in <code>dragstart</code>, always remove it in <code>dragend</code> — including the cancel case.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — First draggable</strong>
+          Add <code>draggable="true"</code> to a paragraph. Open your browser console and confirm <code>dragstart</code> fires when you drag it (add a <code>console.log</code>).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Visual feedback</strong>
+          Build three colored tiles. Add the <code>dragging</code> class with reduced opacity. Add <code>cursor: grab</code> and <code>cursor: grabbing</code> states.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Disable default</strong>
+          Add an <code>&lt;img&gt;</code> to the page. Notice you can drag it. Add <code>draggable="false"</code> and confirm the browser no longer lets you drag the image.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Custom drag image</strong>
+          Use <code>e.dataTransfer.setDragImage(customEl, 0, 0)</code> in <code>dragstart</code> to render a custom drag preview (e.g. an enlarged version of the tile). Inspect how the ghost differs from the default.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Touch fallback</strong>
+          Test your draggable tile on a phone or in DevTools mobile emulation. Confirm nothing happens. Add a "Move up / Move down" button fallback for touch users.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Kanban boards</h4><p>Trello, Linear, GitHub Projects — drag cards between columns.</p></div>
+          <div class="card"><h4>File uploads</h4><p>Drag a file from the desktop onto a drop zone — Gmail, Slack, Notion.</p></div>
+          <div class="card"><h4>Sortable lists</h4><p>Reorder playlist tracks, nav items, or photo galleries.</p></div>
+          <div class="card"><h4>Reorderable tables</h4><p>Drag rows to reorganize priorities or schedules.</p></div>
+          <div class="card"><h4>Page builders</h4><p>Drag blocks from a palette into the canvas — Webflow, Wix.</p></div>
+          <div class="card"><h4>Cross-app drops</h4><p>Drag an image from the browser into Photoshop, or text into another tab.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../03-Templates-Slots/slot-element.html">← Previous: &lt;slot&gt; Element</a>
+    <a class="next" href="drag-events.html">Next: Drag Events Lifecycle →</a>
+  </footer>
+</body>
+</html>

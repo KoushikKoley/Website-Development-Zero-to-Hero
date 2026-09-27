@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lazy Loading — loading="lazy", decoding="async", fetchpriority, Intersection Observer — HTML Mastery</title>
+  <meta name="description" content="Lazy loading in HTML: native loading=lazy on img and iframe, decoding=async, fetchpriority=high for LCP images, aspect-ratio CSS to prevent layout shift, picture element art direction, and Intersection Observer for custom lazy behavior.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.partial { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Performance</span>
+  <h1>Lazy <code>Loading</code></h1>
+  <p>Defer off-screen images and iframes until the user scrolls to them. Native <code>loading="lazy"</code>, <code>decoding="async"</code>, <code>fetchpriority="high"</code> for LCP, <code>aspect-ratio</code> to prevent layout shift, and Intersection Observer for custom lazy behavior.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why Lazy Load?</a></li>
+      <li><a href="#native">Native loading="lazy"</a></li>
+      <li><a href="#decoding">decoding="async"</a></li>
+      <li><a href="#fetchpriority">fetchpriority for LCP</a></li>
+      <li><a href="#aspect-ratio">aspect-ratio &amp; CLS</a></li>
+      <li><a href="#picture">&lt;picture&gt; art direction</a></li>
+      <li><a href="#iframe">Lazy iframes</a></li>
+      <li><a href="#intersection">Intersection Observer</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Browser Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="why">
+      <h2><span class="num">1</span> Why Lazy Load?</h2>
+      <p>By default, the browser downloads every <code>&lt;img&gt;</code> and <code>&lt;iframe&gt;</code> on the page as soon as it parses the HTML — even ones the user has to scroll three screens down to see. On a typical blog post with 20 images, that's 8 MB of bandwidth spent on content the user may never reach.</p>
+
+      <p>Lazy loading defers the fetch until the element is about to enter the viewport. The result:</p>
+      <ul>
+        <li>Faster initial page load (fewer simultaneous downloads compete for bandwidth)</li>
+        <li>Lower data usage for users on metered connections</li>
+        <li>Reduced server load (fewer requests for content that's never viewed)</li>
+        <li>Longer battery life on mobile devices</li>
+      </ul>
+    </section>
+
+    <section id="native">
+      <h2><span class="num">2</span> Native <code>loading="lazy"</code></h2>
+      <p>The browser handles everything — no JavaScript required. Add <code>loading="lazy"</code> to any <code>&lt;img&gt;</code> or <code>&lt;iframe&gt;</code> element. The browser fetches the resource only when it's about to enter the viewport.</p>
+
+      <pre><code>&lt;!-- Lazy-load an image --&gt;
+&lt;img src="hero.webp"
+     alt="Mountain landscape at sunrise"
+     width="1600" height="900"
+     loading="lazy"
+     decoding="async"&gt;
+
+&lt;!-- Lazy-load an iframe --&gt;
+&lt;iframe src="https://www.youtube.com/embed/abc123"
+        title="How to bake sourdough"
+        width="560" height="315"
+        loading="lazy"&gt;
+&lt;/iframe&gt;</code></pre>
+
+      <h3>When to NOT use lazy loading</h3>
+      <ul>
+        <li>The LCP image — it's the largest content element, lazy-loading it would delay LCP</li>
+        <li>Images above the fold (the first viewport's worth)</li>
+        <li>Images inside a print stylesheet that should always be available</li>
+        <li>Critical UI icons (favicons, logo, brand mark)</li>
+      </ul>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Pair <code>loading="lazy"</code> with explicit <code>width</code> and <code>height</code> attributes. The browser uses them to reserve space before the image loads, preventing layout shift. Without dimensions, the page reflows every time an image loads — a major Cumulative Layout Shift problem.
+      </div>
+    </section>
+
+    <section id="decoding">
+      <h2><span class="num">3</span> <code>decoding="async"</code></h2>
+      <p>Image decoding (turning compressed bytes into pixels) happens on the main thread by default. Large images can jank the UI for tens of milliseconds. <code>decoding="async"</code> tells the browser to decode the image off the main thread, freeing it for other work.</p>
+
+      <pre><code>&lt;img src="large-photo.webp"
+     alt="..."
+     loading="lazy"
+     decoding="async"&gt;</code></pre>
+
+      <p>Three values are accepted:</p>
+      <ul>
+        <li><code>async</code> — decode off the main thread (recommended for most images)</li>
+        <li><code>sync</code> — decode synchronously when the image is displayed (rarely needed)</li>
+        <li><code>auto</code> — browser picks (default, equivalent to no attribute)</li>
+      </ul>
+
+      <p>This attribute is independent of <code>loading="lazy"</code> — you can have one without the other.</p>
+    </section>
+
+    <section id="fetchpriority">
+      <h2><span class="num">4</span> <code>fetchpriority</code> for LCP</h2>
+      <p>The Largest Contentful Paint (LCP) element is the largest visible block when the page first renders. Often it's a hero image. By default, browsers can't easily tell which image will be LCP — they fetch images in document order. <code>fetchpriority="high"</code> tells the browser "this is critical, fetch it first".</p>
+
+      <pre><code>&lt;!-- Hero image: high priority, eager loading --&gt;
+&lt;img src="hero.webp"
+     alt="Sunrise over the mountain range"
+     width="1600" height="900"
+     fetchpriority="high"
+     decoding="async"&gt;
+
+&lt;!-- Background image: low priority --&gt;
+&lt;img src="footer-decor.webp"
+     alt=""
+     aria-hidden="true"
+     loading="lazy"
+     fetchpriority="low"
+     decoding="async"&gt;</code></pre>
+
+      <h3>fetchpriority values</h3>
+      <table class="info-table">
+        <thead><tr><th>Value</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td><code>high</code></td><td>LCP image, hero video poster, critical above-the-fold image</td></tr>
+          <tr><td><code>low</code></td><td>Below-the-fold images, decorative backgrounds</td></tr>
+          <tr><td><code>auto</code></td><td>Default — browser picks based on heuristics</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Setting <code>loading="lazy"</code> on the LCP image. This tells the browser to defer it — the opposite of what you want. The LCP image should be eagerly loaded with <code>fetchpriority="high"</code>.
+      </div>
+    </section>
+
+    <section id="aspect-ratio">
+      <h2><span class="num">5</span> <code>aspect-ratio</code> &amp; CLS</h2>
+      <p>When an image loads without explicit dimensions, the browser doesn't know how much space to reserve. The image starts at 0×0, content flows beneath it, then the image loads and shoves everything down. This is <strong>Cumulative Layout Shift (CLS)</strong> — a Core Web Vital.</p>
+
+      <h3>Three solutions</h3>
+
+      <pre><code>&lt;!-- 1. Explicit width and height attributes (best) --&gt;
+&lt;img src="hero.webp" width="1600" height="900" alt="..."&gt;
+
+&lt;!-- 2. CSS aspect-ratio (modern) --&gt;
+&lt;style&gt;
+  .card-image { aspect-ratio: 16 / 9; width: 100%; height: auto; }
+&lt;/style&gt;
+&lt;img class="card-image" src="card.webp" alt="..."&gt;
+
+&lt;!-- 3. Combined: explicit dims + CSS (fallback-safe) --&gt;
+&lt;img src="hero.webp"
+     width="1600" height="900"
+     style="aspect-ratio: 16/9; width:100%; height:auto;"
+     alt="..."&gt;</code></pre>
+
+      <p>The aspect ratio of the image's intrinsic dimensions should match the displayed aspect ratio. If they differ, the browser stretches or squishes — but at least layout is stable.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        For responsive images served at different resolutions by the same <code>&lt;img&gt;</code>, set explicit width/height matching the largest displayed size. CSS can scale down responsively while preserving the ratio.
+      </div>
+    </section>
+
+    <section id="picture">
+      <h2><span class="num">6</span> <code>&lt;picture&gt;</code> Art Direction</h2>
+      <p>The <code>&lt;picture&gt;</code> element lets you serve different images based on viewport size, density, or format. Combined with lazy loading, you ship a tiny mobile image on phones and a high-res one on desktops.</p>
+
+      <pre><code>&lt;picture&gt;
+  &lt;!-- Modern format first --&gt;
+  &lt;source type="image/avif"
+          srcset="hero-sm.avif 480w, hero-md.avif 960w, hero-lg.avif 1600w"
+          sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"&gt;
+  &lt;source type="image/webp"
+          srcset="hero-sm.webp 480w, hero-md.webp 960w, hero-lg.webp 1600w"
+          sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"&gt;
+  &lt;!-- Fallback for older browsers --&gt;
+  &lt;img src="hero-lg.jpg"
+       alt="Mountain landscape at sunrise"
+       width="1600" height="900"
+       loading="lazy"
+       decoding="async"&gt;
+&lt;/picture&gt;</code></pre>
+
+      <h3>Art direction: different images for different screens</h3>
+      <pre><code>&lt;picture&gt;
+  &lt;!-- Cropped close-up on mobile --&gt;
+  &lt;source media="(max-width: 600px)"
+          srcset="portrait-crop.webp"
+          width="600" height="900"&gt;
+  &lt;!-- Wide landscape on desktop --&gt;
+  &lt;source media="(min-width: 601px)"
+          srcset="wide-hero.webp"
+          width="1600" height="600"&gt;
+  &lt;img src="wide-hero.jpg" alt="..." loading="lazy" decoding="async"&gt;
+&lt;/picture&gt;</code></pre>
+
+      <p>Art direction (different crops) is different from resolution switching (same image, different sizes). Use <code>media</code> for art direction, <code>srcset</code> for resolution.</p>
+    </section>
+
+    <section id="iframe">
+      <h2><span class="num">7</span> Lazy iframes</h2>
+      <p>Third-party embeds (YouTube, Twitter, maps) are heavy: they pull in JS, CSS, fonts, and often third-party tracking. Lazy-loading iframes is one of the highest-impact performance wins on a content page.</p>
+
+      <pre><code>&lt;iframe src="https://www.youtube.com/embed/abc123"
+        title="Sourdough tutorial"
+        width="560" height="315"
+        loading="lazy"
+        allow="accelerometer; encrypted-media; picture-in-picture"
+        allowfullscreen&gt;
+&lt;/iframe&gt;
+
+&lt;iframe src="https://www.google.com/maps/embed?..."
+        title="Map to the venue"
+        width="600" height="450"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"&gt;
+&lt;/iframe&gt;</code></pre>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A blog with 5 YouTube embeds per post switched to <code>loading="lazy"</code> on the iframes. Initial page weight dropped from 4.2 MB to 0.8 MB (the embeds were loading 3.4 MB of YouTube JS/CSS even though the user hadn't watched anything). First Contentful Paint improved 1.6 seconds on mobile.
+      </div>
+
+      <h3>Facades for ultimate control</h3>
+      <p>For even faster load, replace embeds with a static thumbnail that becomes the iframe on click. This is called a "facade" — libraries like <code>lite-youtube-embed</code> implement it.</p>
+    </section>
+
+    <section id="intersection">
+      <h2><span class="num">8</span> Intersection Observer</h2>
+      <p>For custom lazy behavior beyond images and iframes (e.g. lazy-loading a complex widget, infinite scroll, triggering analytics), the <strong>Intersection Observer API</strong> is the modern tool. It replaces scroll-event listeners that thrash the main thread.</p>
+
+      <pre><code>&lt;!-- HTML --&gt;
+&lt;div class="lazy-widget" data-src="/api/summary" role="region"
+     aria-label="Summary widget"&gt;
+  Loading summary...
+&lt;/div&gt;</code></pre>
+
+      <pre><code>// JavaScript
+const observer = new IntersectionObserver((entries, obs) =&gt; {
+  entries.forEach(entry =&gt; {
+    if (!entry.isIntersecting) return;
+
+    const widget = entry.target;
+    const src = widget.dataset.src;
+
+    fetch(src)
+      .then(r =&gt; r.text())
+      .then(html =&gt; { widget.innerHTML = html; })
+      .finally(() =&gt; obs.unobserve(widget));
+  });
+}, {
+  root: null,
+  rootMargin: '200px',  // start loading 200px before visible
+  threshold: 0
+});
+
+document.querySelectorAll('.lazy-widget').forEach(el =&gt; observer.observe(el));</code></pre>
+
+      <h3>Why rootMargin?</h3>
+      <p>Without <code>rootMargin</code>, the resource starts fetching only when the element is <em>fully</em> on screen — too late, the user sees empty space. <code>rootMargin: '200px'</code> extends the observer's bounding box 200px outward, so loading starts before the element is visible.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        For backward compatibility with very old browsers, the IntersectionObserver polyfill is 3 KB. But all modern browsers (Chrome 51+, Firefox 55+, Safari 12.1+) support it natively. In 2024, you can ship without the polyfill.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">9</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Lazy-loading the LCP image</h4>
+          <p>Delays your largest visible element. Use <code>fetchpriority="high"</code> and no lazy on the hero.</p>
+        </div>
+        <div class="card">
+          <h4>No dimensions on images</h4>
+          <p>Causes Cumulative Layout Shift. Always set <code>width</code> + <code>height</code> or use <code>aspect-ratio</code>.</p>
+        </div>
+        <div class="card">
+          <h4>Lazy-loading first-screen content</h4>
+          <p>Anything visible on initial load should be eagerly fetched.</p>
+        </div>
+        <div class="card">
+          <h4>Missing alt text on lazy images</h4>
+          <p>Accessibility is independent of loading strategy. Always include <code>alt</code>.</p>
+        </div>
+        <div class="card">
+          <h4>JS-based lazy when native works</h4>
+          <p>Native <code>loading="lazy"</code> is faster, simpler, and works without JS. Use libraries only when you need art direction or analytics triggers.</p>
+        </div>
+        <div class="card">
+          <h4>Not respecting Save-Data</h4>
+          <p>Users with <code>Save-Data: on</code> want fewer images, not just lazy ones. Consider serving smaller images to these users.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">10</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Optimize a News Article</strong>
+        <p>Below is the markup of a typical news article. Identify the performance problems and rewrite the markup.</p>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Record Heat Wave Sweeps the Pacific Northwest&lt;/h1&gt;
+  &lt;img src="/img/hero-weather.jpg" alt="Sun over a city"&gt;
+
+  &lt;p&gt;Temperatures reached 112°F in Portland on Tuesday...&lt;/p&gt;
+
+  &lt;img src="/img/chart-1.png" alt="Temperature graph"&gt;
+  &lt;p&gt;The chart shows the 7-day forecast...&lt;/p&gt;
+
+  &lt;img src="/img/photo-portland.jpg" alt="Downtown Portland"&gt;
+  &lt;p&gt;Downtown Portland saw temperatures peak at 4pm...&lt;/p&gt;
+
+  &lt;iframe src="https://www.youtube.com/embed/heatwave"
+          width="560" height="315"&gt;&lt;/iframe&gt;
+&lt;/article&gt;</code></pre>
+        <p><strong>Tasks:</strong></p>
+        <ol>
+          <li>Decide which images should be eagerly loaded with <code>fetchpriority="high"</code> vs lazy-loaded.</li>
+          <li>Add explicit <code>width</code> and <code>height</code> attributes (you can assume standard sizes).</li>
+          <li>Add <code>decoding="async"</code> to all images.</li>
+          <li>Convert one of the inline images to a <code>&lt;picture&gt;</code> with AVIF, WebP, and JPG sources.</li>
+          <li>Lazy-load the YouTube iframe.</li>
+          <li>Add <code>title</code> to the iframe for accessibility.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">11</span> Browser Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">loading="lazy" (img): Chrome 76+, Firefox 75+, Safari 15.4+</span>
+        <span class="pill yes">loading="lazy" (iframe): Chrome 77+, Firefox 121+, Safari 15.4+</span>
+        <span class="pill yes">decoding="async": Chrome 65+, Firefox 63+, Safari 14+</span>
+        <span class="pill yes">fetchpriority: Chrome 101+, Edge 101+, Safari 17+</span>
+        <span class="pill partial">fetchpriority: Firefox — in development as of 2024</span>
+        <span class="pill yes">aspect-ratio CSS: all modern browsers</span>
+        <span class="pill yes">Intersection Observer: Chrome 51+, Firefox 55+, Safari 12.1+</span>
+        <span class="pill yes">&lt;picture&gt; element: all modern browsers</span>
+      </div>
+
+      <p>For browsers that don't support <code>loading="lazy"</code>, the attribute is ignored and images load normally — graceful degradation, no broken behavior.</p>
+
+      <h3>Testing tools</h3>
+      <ul>
+        <li><strong>Chrome DevTools → Network</strong> — verify that lazy images don't appear in network log until scrolled</li>
+        <li><strong>Lighthouse</strong> — flags images without dimensions, off-screen images that aren't lazy</li>
+        <li><strong>WebPageTest</strong> — filmstrip view shows when each image loads over time</li>
+        <li><strong>Chrome DevTools → Rendering → "Disable JavaScript"</strong> — confirms native lazy-loading still works without JS</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="preload-prefetch.html">← Previous: Resource Hints</a>
+  <a href="../03-Accessibility/wcag-basics.html">Next: WCAG Basics →</a>
+</footer>
+</body>
+</html>

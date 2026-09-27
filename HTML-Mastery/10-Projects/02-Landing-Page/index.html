@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskFlow — the project management tool that keeps fast-moving teams in flow state. Plan, ship, and learn without the busywork.">
+  <title>TaskFlow — Project management that keeps your team in flow</title>
+  <!--
+    TaskFlow Landing Page
+    Design decisions:
+    - Vibrant gradient identity (purple #7c3aed → pink #ec4899) on near-black text.
+    - Sticky header with a contrasting CTA button that stands out at all scroll positions.
+    - Hero uses an inline SVG illustration rather than a raster image so it scales crisp
+      on retina displays and ships in <2KB.
+    - Pricing preview is intentionally compact — the full matrix lives on pricing.html.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #faf5ff;
+      --color-surface-2: #fdf4ff;
+      --color-border: #ede9fe;
+      --color-text: #1e1b4b;
+      --color-muted: #6b7280;
+      --color-accent: #7c3aed;
+      --color-accent-2: #ec4899;
+      --color-accent-soft: #f5f3ff;
+      --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      --gradient-soft: linear-gradient(135deg, #f5f3ff 0%, #fce7f3 100%);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 1px 2px rgba(30, 27, 75, 0.05);
+      --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.12);
+      --shadow-lg: 0 24px 48px rgba(124, 58, 237, 0.18);
+      --max-width: 1180px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+    section { padding: 96px 0; }
+
+    /* ===== Header ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 68px;
+    }
+    .logo {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em;
+      color: var(--color-text);
+    }
+    .logo-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--gradient);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 800; font-size: 0.9rem;
+    }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 32px; list-style: none; }
+    .nav-menu a { color: var(--color-text); font-weight: 500; font-size: 0.95rem; opacity: 0.85; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { opacity: 1; color: var(--color-accent); text-decoration: none; }
+    .btn {
+      display: inline-block; padding: 12px 22px; border-radius: 999px;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--gradient); color: #fff;
+      box-shadow: var(--shadow-md);
+    }
+    .btn-primary:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    .btn-white { background: #fff; color: var(--color-accent); }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); text-decoration: none; }
+    .btn-large { padding: 14px 28px; font-size: 1rem; }
+    @media (max-width: 860px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 68px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta-desktop { display: none; }
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 80px 0 64px;
+      background: var(--gradient-soft);
+      position: relative; overflow: hidden;
+    }
+    .hero::before, .hero::after {
+      content: ""; position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.5;
+    }
+    .hero::before {
+      width: 320px; height: 320px; background: #c4b5fd;
+      top: -120px; right: -60px;
+    }
+    .hero::after {
+      width: 260px; height: 260px; background: #fbcfe8;
+      bottom: -100px; left: -40px;
+    }
+    .hero-inner {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px;
+      align-items: center;
+    }
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; color: var(--color-accent); font-weight: 600;
+      box-shadow: var(--shadow-sm); margin-bottom: 24px;
+      border: 1px solid var(--color-border);
+    }
+    .hero-pill::before {
+      content: "✦"; color: var(--color-accent-2);
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+      line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 20px;
+    }
+    .hero h1 .grad {
+      background: var(--gradient); -webkit-background-clip: text;
+      background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--color-muted); max-width: 540px;
+      margin-bottom: 32px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .hero-meta {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      color: var(--color-muted); font-size: 0.88rem;
+    }
+    .hero-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .hero-meta span::before {
+      content: "✓"; color: var(--color-accent); font-weight: 700;
+    }
+
+    .hero-visual {
+      background: #fff; border-radius: var(--radius); padding: 18px;
+      box-shadow: var(--shadow-lg); border: 1px solid var(--color-border);
+      position: relative;
+    }
+    .hero-visual .window-bar {
+      display: flex; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--color-border);
+      margin-bottom: 14px;
+    }
+    .hero-visual .window-bar span {
+      width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb;
+    }
+    .hero-visual .window-bar span:nth-child(1) { background: #f87171; }
+    .hero-visual .window-bar span:nth-child(2) { background: #fbbf24; }
+    .hero-visual .window-bar span:nth-child(3) { background: #34d399; }
+    .hero-visual .window-title {
+      margin-left: auto; font-size: 0.75rem; color: var(--color-muted); font-weight: 500;
+    }
+    .hero-visual svg { width: 100%; height: auto; display: block; }
+
+    @media (max-width: 860px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 36px; }
+      .hero-visual { max-width: 480px; margin: 0 auto; }
+    }
+
+    /* ===== Social proof ===== */
+    .social-proof {
+      padding: 48px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .social-proof p {
+      text-align: center; color: var(--color-muted);
+      font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px;
+    }
+    .logo-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 40px;
+    }
+    .logo-row span {
+      font-weight: 700; color: #94a3b8; font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    /* ===== Section heading ===== */
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto 56px; }
+    .section-eyebrow {
+      display: inline-block; color: var(--color-accent); font-weight: 600;
+      font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em;
+      line-height: 1.15; margin-bottom: 16px;
+    }
+    .section-intro { color: var(--color-muted); font-size: 1.05rem; }
+
+    /* ===== Features ===== */
+    .features { background: var(--color-bg); }
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    }
+    @media (max-width: 980px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .feature-grid { grid-template-columns: 1fr; } }
+    .feature-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 28px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--gradient-soft); display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 16px;
+    }
+    .feature-card h3 { font-size: 1.15rem; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .feature-card p { color: var(--color-muted); font-size: 0.95rem; }
+
+    /* ===== How it works ===== */
+    .how { background: var(--color-surface); }
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+      position: relative;
+    }
+    @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+    .step-card { text-align: center; position: relative; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--gradient); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; margin: 0 auto 20px;
+      box-shadow: var(--shadow-md);
+    }
+    .step-card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+    .step-card p { color: var(--color-muted); max-width: 320px; margin: 0 auto; }
+
+    /* ===== Testimonial ===== */
+    .testimonial { background: var(--color-bg); }
+    .quote-card {
+      background: var(--gradient); color: #fff;
+      border-radius: var(--radius); padding: 56px 48px;
+      max-width: 920px; margin: 0 auto; text-align: center;
+      position: relative; box-shadow: var(--shadow-lg);
+    }
+    .quote-card .stars {
+      color: #fde68a; font-size: 1.2rem; letter-spacing: 0.2em;
+      margin-bottom: 20px;
+    }
+    .quote-card blockquote {
+      font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+      line-height: 1.45; letter-spacing: -0.01em;
+      margin-bottom: 24px; font-style: normal;
+    }
+    .quote-author {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .quote-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff;
+    }
+    .quote-name { font-weight: 700; }
+    .quote-role { font-size: 0.88rem; opacity: 0.85; }
+    @media (max-width: 600px) { .quote-card { padding: 36px 24px; } }
+
+    /* ===== Pricing preview ===== */
+    .pricing-preview { background: var(--color-surface); }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+      max-width: 1080px; margin: 0 auto;
+    }
+    @media (max-width: 860px) { .pricing-grid { grid-template-columns: 1fr; max-width: 480px; } }
+    .price-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 32px; position: relative;
+      display: flex; flex-direction: column;
+    }
+    .price-card.featured {
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-md); transform: scale(1.02);
+    }
+    .price-card .ribbon {
+      position: absolute; top: -12px; right: 24px;
+      background: var(--gradient); color: #fff; font-size: 0.72rem;
+      padding: 4px 12px; border-radius: 999px; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .price-card h3 { font-size: 1.2rem; margin-bottom: 4px; }
+    .price-card .price-sub { color: var(--color-muted); font-size: 0.88rem; margin-bottom: 18px; }
+    .price-card .price {
+      font-size: 2.4rem; font-weight: 800; letter-spacing: -0.02em;
+      display: flex; align-items: baseline; gap: 4px;
+    }
+    .price-card .price small {
+      font-size: 0.85rem; font-weight: 500; color: var(--color-muted);
+    }
+    .price-features { list-style: none; margin: 24px 0; flex: 1; }
+    .price-features li {
+      padding: 8px 0; color: var(--color-text); font-size: 0.93rem;
+      display: flex; gap: 8px; align-items: flex-start;
+    }
+    .price-features li::before {
+      content: "✓"; color: var(--color-accent); font-weight: 700;
+    }
+    .price-features li.muted { color: var(--color-muted); }
+    .price-features li.muted::before { content: "—"; color: var(--color-muted); }
+    .pricing-cta { text-align: center; margin-top: 40px; }
+
+    /* ===== Final CTA ===== */
+    .final-cta { background: var(--color-bg); }
+    .cta-band {
+      background: var(--gradient); color: #fff;
+      border-radius: var(--radius); padding: 64px 48px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-band h2 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem); letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    .cta-band p { color: rgba(255, 255, 255, 0.92); max-width: 560px; margin: 0 auto 28px; font-size: 1.05rem; }
+    .email-form {
+      display: flex; gap: 8px; max-width: 480px; margin: 0 auto;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .email-form input {
+      flex: 1; min-width: 240px; padding: 14px 18px;
+      border-radius: 999px; border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15); color: #fff;
+      font-size: 1rem; font-family: inherit;
+    }
+    .email-form input::placeholder { color: rgba(255, 255, 255, 0.7); }
+    .email-form input:focus { outline: none; border-color: #fff; background: rgba(255, 255, 255, 0.25); }
+    .cta-note { color: rgba(255, 255, 255, 0.8); font-size: 0.85rem; margin-top: 16px; }
+
+    /* ===== Footer ===== */
+    .site-footer {
+      background: #1e1b4b; color: #c7d2fe;
+      padding: 64px 0 32px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px;
+    }
+    @media (max-width: 860px) {
+      .footer-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    .footer-brand-col .logo { color: #fff; }
+    .footer-brand-col p { color: #a5b4fc; margin-top: 12px; max-width: 280px; font-size: 0.92rem; }
+    .footer-col h4 {
+      color: #fff; font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a { color: #c7d2fe; font-size: 0.92rem; }
+    .footer-col a:hover { color: #fff; text-decoration: none; }
+    .footer-bottom {
+      margin-top: 48px; padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      color: #a5b4fc; font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">T</span>
+        TaskFlow
+      </a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="features.html">Features</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#">Docs</a></li>
+        </ul>
+      </nav>
+      <div class="header-cta-desktop" style="display:flex; gap:10px;">
+        <a href="#" class="btn btn-ghost">Sign in</a>
+        <a href="#" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-inner">
+          <div>
+            <span class="hero-pill">New: AI-powered sprint planning</span>
+            <h1>Project management that keeps your team <span class="grad">in flow state.</span></h1>
+            <p class="hero-sub">
+              TaskFlow brings your tasks, docs, and goals into one calm workspace — so
+              engineers spend less time in meetings and more time shipping.
+            </p>
+            <div class="hero-actions">
+              <a href="#" class="btn btn-white btn-large">Start free for 14 days</a>
+              <a href="#demo" class="btn btn-ghost btn-large" style="background:#fff;">▶ Watch demo</a>
+            </div>
+            <div class="hero-meta">
+              <span>No credit card required</span>
+              <span>SOC 2 Type II</span>
+              <span>Free for teams up to 10</span>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="window-bar" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <span class="window-title">TaskFlow · Sprint 24</span>
+            </div>
+            <!-- Inline SVG illustration: kanban board mockup -->
+            <svg viewBox="0 0 420 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mockup of the TaskFlow kanban board with three columns">
+              <rect x="0" y="0" width="420" height="280" fill="#faf5ff" rx="8"/>
+              <!-- Column 1: To do -->
+              <rect x="16" y="16" width="124" height="248" fill="#ffffff" rx="8"/>
+              <text x="28" y="38" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#7c3aed">TO DO · 4</text>
+              <rect x="28" y="52" width="100" height="42" rx="6" fill="#f5f3ff"/>
+              <rect x="36" y="62" width="60" height="6" rx="3" fill="#7c3aed"/>
+              <rect x="36" y="74" width="40" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="28" y="102" width="100" height="42" rx="6" fill="#f5f3ff"/>
+              <rect x="36" y="112" width="48" height="6" rx="3" fill="#ec4899"/>
+              <rect x="36" y="124" width="56" height="4" rx="2" fill="#c4b5fd"/>
+              <!-- Column 2: In progress -->
+              <rect x="148" y="16" width="124" height="248" fill="#ffffff" rx="8"/>
+              <text x="160" y="38" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#7c3aed">IN PROGRESS · 2</text>
+              <rect x="160" y="52" width="100" height="62" rx="6" fill="#fdf4ff"/>
+              <rect x="168" y="62" width="70" height="6" rx="3" fill="#7c3aed"/>
+              <rect x="168" y="74" width="80" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="168" y="82" width="60" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="168" y="90" width="40" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="160" y="124" width="100" height="48" rx="6" fill="#fdf4ff"/>
+              <rect x="168" y="134" width="56" height="6" rx="3" fill="#ec4899"/>
+              <rect x="168" y="146" width="72" height="4" rx="2" fill="#c4b5fd"/>
+              <!-- Column 3: Done -->
+              <rect x="280" y="16" width="124" height="248" fill="#ffffff" rx="8"/>
+              <text x="292" y="38" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#16a34a">DONE · 7</text>
+              <rect x="292" y="52" width="100" height="42" rx="6" fill="#f0fdf4"/>
+              <rect x="300" y="62" width="48" height="6" rx="3" fill="#16a34a"/>
+              <rect x="300" y="74" width="36" height="4" rx="2" fill="#bbf7d0"/>
+              <rect x="292" y="102" width="100" height="42" rx="6" fill="#f0fdf4"/>
+              <rect x="300" y="112" width="56" height="6" rx="3" fill="#16a34a"/>
+              <rect x="300" y="124" width="40" height="4" rx="2" fill="#bbf7d0"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Social proof ===== -->
+    <section class="social-proof">
+      <div class="container">
+        <p>Trusted by fast-moving teams at</p>
+        <div class="logo-row">
+          <span>Northwind</span>
+          <span>Hyperloop</span>
+          <span>Cobalt</span>
+          <span>Maple Labs</span>
+          <span>Skyline</span>
+          <span>Quartz</span>
+          <span>Lumen</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Features ===== -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Why TaskFlow</span>
+          <h2 class="section-title">Everything your team needs. Nothing it doesn't.</h2>
+          <p class="section-intro">
+            Built for product teams who'd rather ship than configure. TaskFlow gives you
+            just enough structure to move fast — and the calm to do your best work.
+          </p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">📋</div>
+            <h3>Boards that breathe</h3>
+            <p>Kanban, list, calendar, and timeline views share the same tasks. Switch views without losing context.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">⚡</div>
+            <h3>Sub-200ms everywhere</h3>
+            <p>Local-first sync means every interaction is instant, even on flaky coffee-shop Wi-Fi.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">🤖</div>
+            <h3>AI sprint planner</h3>
+            <p>Generate realistic sprint plans from your backlog in seconds, tuned to your team's velocity.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">🔒</div>
+            <h3>SOC 2 + SAML SSO</h3>
+            <p>Enterprise-grade security from day one. Granular roles, audit logs, and SAML SSO on every plan.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== How it works ===== -->
+    <section class="how">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">How it works</span>
+          <h2 class="section-title">From empty workspace to shipping in under 10 minutes</h2>
+        </div>
+        <div class="steps">
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">1</div>
+            <h3>Import your work</h3>
+            <p>Pull tasks from Jira, Linear, GitHub Issues, or a CSV. We'll preserve statuses, assignees, and history.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">2</div>
+            <h3>Shape your flow</h3>
+            <p>Set up cycles, automation rules, and views. Drag, drop, and rename — no admin panel required.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">3</div>
+            <h3>Ship and learn</h3>
+            <p>Auto-generated retrospectives and velocity charts help your team get a little better every cycle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Testimonial ===== -->
+    <section class="testimonial">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Loved by teams</span>
+          <h2 class="section-title">"We cut our standup time in half."</h2>
+        </div>
+        <div class="quote-card">
+          <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>
+            "We replaced three tools with TaskFlow and never looked back. The board loads
+            instantly, the AI sprint planner is genuinely useful, and our engineers
+            actually enjoy opening it on Monday mornings."
+          </blockquote>
+          <div class="quote-author">
+            <div class="quote-avatar" aria-hidden="true">PS</div>
+            <div style="text-align:left;">
+              <div class="quote-name">Priya Shankar</div>
+              <div class="quote-role">VP Engineering, Northwind Labs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Pricing preview ===== -->
+    <section class="pricing-preview">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Pricing</span>
+          <h2 class="section-title">Simple plans that scale with your team</h2>
+          <p class="section-intro">Start free. Upgrade when you're ready. Cancel anytime.</p>
+        </div>
+        <div class="pricing-grid">
+          <article class="price-card">
+            <h3>Starter</h3>
+            <p class="price-sub">For small teams getting started</p>
+            <div class="price">$0 <small>/month</small></div>
+            <ul class="price-features">
+              <li>Up to 10 members</li>
+              <li>3 active projects</li>
+              <li>Kanban + list views</li>
+              <li>7-day history</li>
+              <li class="muted">AI sprint planner</li>
+              <li class="muted">SAML SSO</li>
+            </ul>
+            <a href="#" class="btn btn-ghost">Get started</a>
+          </article>
+          <article class="price-card featured">
+            <span class="ribbon">Most popular</span>
+            <h3>Pro</h3>
+            <p class="price-sub">For growing product teams</p>
+            <div class="price">$12 <small>/user / mo</small></div>
+            <ul class="price-features">
+              <li>Unlimited members</li>
+              <li>Unlimited projects</li>
+              <li>All views + timeline</li>
+              <li>Unlimited history</li>
+              <li>AI sprint planner</li>
+              <li class="muted">SAML SSO</li>
+            </ul>
+            <a href="#" class="btn btn-primary">Start 14-day trial</a>
+          </article>
+          <article class="price-card">
+            <h3>Enterprise</h3>
+            <p class="price-sub">For orgs with scale &amp; security needs</p>
+            <div class="price">Custom</div>
+            <ul class="price-features">
+              <li>Everything in Pro</li>
+              <li>SAML SSO + SCIM</li>
+              <li>Dedicated CSM</li>
+              <li>99.9% uptime SLA</li>
+              <li>Custom data residency</li>
+              <li>Audit logs + DLP</li>
+            </ul>
+            <a href="contact.html" class="btn btn-ghost">Contact sales</a>
+          </article>
+        </div>
+        <div class="pricing-cta">
+          <a href="pricing.html" class="btn btn-ghost btn-large">Compare all features →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Final CTA ===== -->
+    <section class="final-cta">
+      <div class="container">
+        <div class="cta-band">
+          <h2>Ready to get your team in flow?</h2>
+          <p>
+            Join 14,000+ teams shipping calmer, faster, and with less context switching.
+            Start your 14-day free trial — no credit card required.
+          </p>
+          <form class="email-form" action="#" method="post">
+            <label for="cta-email" class="sr-only" style="position:absolute;left:-9999px;">Work email</label>
+            <input type="email" id="cta-email" name="email" required placeholder="you@company.com" autocomplete="email">
+            <button type="submit" class="btn btn-white btn-large">Start free trial →</button>
+          </form>
+          <p class="cta-note">By signing up you agree to our Terms &amp; Privacy Policy.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <a href="index.html" class="logo">
+            <span class="logo-mark">T</span>
+            TaskFlow
+          </a>
+          <p>The project management tool built for teams who'd rather ship than configure.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="#">Integrations</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Docs</a></li>
+            <li><a href="#">API reference</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Templates</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">DPA</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 TaskFlow, Inc. All rights reserved.</span>
+        <span>Made with care in San Francisco &amp; Berlin</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

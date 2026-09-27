@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Attributes — name, value, disabled, autocomplete &amp; more — HTML Mastery</title>
+  <meta name="description" content="Complete reference for universal HTML input attributes: name, value, disabled, readonly, required, placeholder, autofocus, autocomplete (50+ token values), inputmode, enterkeyhint, list, multiple, form.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; }
+    .info-table th, .info-table td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .info-table code { font-size: 0.85em; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 320px;
+    }
+    .demo-box input:disabled, .demo-box input[readonly] {
+      background: #f1f5f9; color: var(--ink-soft); cursor: not-allowed;
+    }
+    .demo-box input[readonly] { cursor: text; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 8</span>
+    <h1>Input Attributes</h1>
+    <p>Beyond <code>type</code>, every input accepts a shared set of universal attributes. <code>name</code> and <code>value</code> control submission; <code>disabled</code>, <code>readonly</code>, <code>required</code> shape behavior; <code>autocomplete</code> unlocks password-manager integration with 50+ token values. Master these and your forms become effortless to fill in.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Universal attributes overview</a></li>
+        <li><a href="#name">name</a></li>
+        <li><a href="#value">value</a></li>
+        <li><a href="#disabled">disabled</a></li>
+        <li><a href="#readonly">readonly</a></li>
+        <li><a href="#required">required</a></li>
+        <li><a href="#placeholder">placeholder</a></li>
+        <li><a href="#autofocus">autofocus</a></li>
+        <li><a href="#autocomplete">autocomplete (50+ tokens)</a></li>
+        <li><a href="#inputmode">inputmode</a></li>
+        <li><a href="#enterkeyhint">enterkeyhint</a></li>
+        <li><a href="#list">list</a></li>
+        <li><a href="#multiple">multiple</a></li>
+        <li><a href="#form-attr">form</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Universal attributes overview</h2>
+        <p>These attributes apply to (most) input types regardless of <code>type</code> value:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Attribute</th><th>Purpose</th><th>Affects submission?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>name</code></td><td>Key for the value pair</td><td>Yes — without it, value is not sent</td></tr>
+            <tr><td><code>value</code></td><td>Default value</td><td>Yes — sent unless changed</td></tr>
+            <tr><td><code>disabled</code></td><td>Grey-out & skip</td><td>No — disabled fields not submitted</td></tr>
+            <tr><td><code>readonly</code></td><td>Locked but submitted</td><td>Yes — value still sent</td></tr>
+            <tr><td><code>required</code></td><td>Must have value</td><td>Validation: blocks submit if empty</td></tr>
+            <tr><td><code>placeholder</code></td><td>Hint shown when empty</td><td>No</td></tr>
+            <tr><td><code>autofocus</code></td><td>Auto-focus on page load</td><td>No (UX)</td></tr>
+            <tr><td><code>autocomplete</code></td><td>Autofill hint</td><td>No (UX)</td></tr>
+            <tr><td><code>inputmode</code></td><td>Mobile keyboard hint</td><td>No (UX)</td></tr>
+            <tr><td><code>enterkeyhint</code></td><td>Enter key label</td><td>No (UX)</td></tr>
+            <tr><td><code>list</code></td><td>Reference to <code>&lt;datalist&gt;</code></td><td>No (UX)</td></tr>
+            <tr><td><code>multiple</code></td><td>Allow multiple values</td><td>Yes — affects format</td></tr>
+            <tr><td><code>form</code></td><td>Associate with form outside the DOM tree</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="name">
+        <h2><span class="num">2</span> name</h2>
+        <p>The most fundamental attribute — without it, the control's value never reaches the server. Use lowercase, hyphen-separated names that match your server's expected keys.</p>
+        <pre><code>&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;
+
+&lt;!-- Array-style names (server-side frameworks like PHP parse these) --&gt;
+&lt;input type="checkbox" name="tags[]" value="tech"&gt;
+&lt;input type="checkbox" name="tags[]" value="sports"&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using <code>id</code> in place of <code>name</code>. <code>id</code> is for DOM access and label association; <code>name</code> is for form submission. They can differ, and often should — <code>id</code> should be unique per page, while <code>name</code> can repeat (e.g., for checkbox groups).
+        </div>
+      </section>
+
+      <section id="value">
+        <h2><span class="num">3</span> value</h2>
+        <p>Sets the initial value of the control. For text inputs, the value users see; for checkboxes/radios, the value submitted when checked; for buttons, the label.</p>
+        <pre><code>&lt;input type="text" name="city" value="San Francisco"&gt;
+&lt;input type="checkbox" name="agree" value="yes"&gt;
+&lt;input type="radio" name="plan" value="pro"&gt;
+&lt;input type="submit" value="Save changes"&gt;
+&lt;input type="hidden" name="user_id" value="42"&gt;</code></pre>
+      </section>
+
+      <section id="disabled">
+        <h2><span class="num">4</span> disabled</h2>
+        <p>Greys out the control and <strong>excludes it from submission</strong>. Useful for buttons that should be visible but inactive (e.g., "Submit" disabled until form is valid).</p>
+        <pre><code>&lt;input type="text" name="locked" value="Cannot edit" disabled&gt;
+&lt;button type="submit" disabled&gt;Submit (incomplete)&lt;/button&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">disabled demo</div>
+          <label for="demo-disabled">Locked field</label>
+          <input type="text" id="demo-disabled" name="locked" value="Cannot edit" disabled>
+          <button disabled style="background:#e2e8f0; color:#94a3b8; border:none; padding:8px 16px; border-radius:8px; cursor:not-allowed; margin-top:8px;">Submit (disabled)</button>
+        </div>
+      </section>
+
+      <section id="readonly">
+        <h2><span class="num">5</span> readonly</h2>
+        <p>Locks the field against user editing but <strong>includes it in submission</strong>. Useful for displaying a value the user can't change but the server needs (e.g., username on a profile-edit form).</p>
+        <pre><code>&lt;label for="username"&gt;Username (cannot change)&lt;/label&gt;
+&lt;input type="text" id="username" name="username"
+       value="alice42" readonly&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">readonly demo — value still submitted</div>
+          <label for="demo-readonly">Username</label>
+          <input type="text" id="demo-readonly" name="username" value="alice42" readonly>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Difference table: <code>disabled</code> = not editable, not focused, not submitted, greyed out. <code>readonly</code> = not editable, focusable (can copy text), submitted, looks normal. Pick based on whether you need the value sent.
+        </div>
+      </section>
+
+      <section id="required">
+        <h2><span class="num">6</span> required</h2>
+        <p>Boolean attribute. The browser blocks submission and shows an error if the field is empty. Pair with a visible indicator (asterisk + accessible text).</p>
+        <pre><code>&lt;label for="email"&gt;Email &lt;span aria-hidden="true" style="color:red"&gt;*&lt;/span&gt;
+  &lt;span class="sr-only"&gt;(required)&lt;/span&gt;
+&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;</code></pre>
+      </section>
+
+      <section id="placeholder">
+        <h2><span class="num">7</span> placeholder</h2>
+        <p>Hint text shown inside the field when empty. Disappears on focus/input. Never use as a label substitute — covered in detail in <a href="text-inputs.html#placeholder">Text Inputs</a>.</p>
+        <pre><code>&lt;input type="email" name="email"
+       placeholder="you@example.com"&gt;</code></pre>
+      </section>
+
+      <section id="autofocus">
+        <h2><span class="num">8</span> autofocus</h2>
+       <p>Browser focuses this field on page load. Only one field per page can have it. Useful for search pages and login forms where users immediately start typing.</p>
+        <pre><code>&lt;input type="search" name="q" autofocus&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using <code>autofocus</code> on long forms. Screen-reader users get jumped to the form, missing the heading and intro text. Mobile users get the keyboard popping up over the page content. Reserve <code>autofocus</code> for forms that are the primary purpose of the page.
+        </div>
+      </section>
+
+      <section id="autocomplete">
+        <h2><span class="num">9</span> autocomplete (50+ tokens)</h2>
+        <p>Controls browser autofill and gives password managers hints about what each field contains. The token values are standardized by WHATWG — modern browsers recognize dozens:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Category</th><th>Tokens</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Username / password</td><td><code>username</code>, <code>current-password</code>, <code>new-password</code>, <code>one-time-code</code></td></tr>
+            <tr><td>Name</td><td><code>name</code>, <code>given-name</code>, <code>family-name</code>, <code>additional-name</code>, <code>honorific-prefix</code>, <code>honorific-suffix</code>, <code>nickname</code>, <code>organization-title</code></td></tr>
+            <tr><td>Email / phone</td><td><code>email</code>, <code>tel</code>, <code>tel-national</code>, <code>tel-country-code</code>, <code>tel-area</code>, <code>tel-local</code></td></tr>
+            <tr><td>Address</td><td><code>street-address</code>, <code>address-line1</code>, <code>address-line2</code>, <code>address-line3</code>, <code>address-level1</code> (state), <code>address-level2</code> (city), <code>address-level3</code>, <code>address-level4</code>, <code>country</code>, <code>country-name</code>, <code>postal-code</code></td></tr>
+            <tr><td>Organization</td><td><code>organization</code>, <code>organization-title</code>, <code>transaction-currency</code>, <code>transaction-amount</code></td></tr>
+            <tr><td>Credit card</td><td><code>cc-name</code>, <code>cc-number</code>, <code>cc-exp</code>, <code>cc-exp-month</code>, <code>cc-exp-year</code>, <code>cc-csc</code>, <code>cc-type</code></td></tr>
+            <tr><td>Date / time</td><td><code>bday</code>, <code>bday-day</code>, <code>bday-month</code>, <code>bday-year</code>, <code>sex</code></td></tr>
+            <tr><td>URL / IM</td><td><code>url</code>, <code>photo</code>, <code>impp</code></td></tr>
+            <tr><td>Grouping</td><td><code>section-*</code> (e.g., <code>section-shipping</code>), <code>shipping</code>, <code>billing</code>, <code>home</code>, <code>work</code>, <code>mobile</code>, <code>fax</code>, <code>pager</code></td></tr>
+            <tr><td>Other</td><td><code>on</code>, <code>off</code>, <code>one-time-code</code>, <code>webauthn</code></td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Full checkout form with proper autocomplete tokens --&gt;
+&lt;form action="/checkout" method="post" autocomplete="on"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Shipping address&lt;/legend&gt;
+    &lt;input type="text" name="ship-name" autocomplete="section-shipping name"&gt;
+    &lt;input type="text" name="ship-street" autocomplete="section-shipping street-address"&gt;
+    &lt;input type="text" name="ship-city" autocomplete="section-shipping address-level2"&gt;
+    &lt;input type="text" name="ship-state" autocomplete="section-shipping address-level1"&gt;
+    &lt;input type="text" name="ship-zip" autocomplete="section-shipping postal-code"&gt;
+    &lt;input type="text" name="ship-country" autocomplete="section-shipping country-name"&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;Billing address&lt;/legend&gt;
+    &lt;input type="text" name="bill-name" autocomplete="section-billing name"&gt;
+    &lt;input type="text" name="bill-cc" autocomplete="section-billing cc-number"&gt;
+    &lt;input type="text" name="bill-exp" autocomplete="section-billing cc-exp"&gt;
+    &lt;input type="text" name="bill-cvc" autocomplete="section-billing cc-csc"&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Setting <code>autocomplete</code> tokens dramatically improves conversion rates — users with saved autofill data can complete checkout in seconds. Skipping these tokens means users type everything manually, increasing abandonment.
+        </div>
+      </section>
+
+      <section id="inputmode">
+        <h2><span class="num">10</span> inputmode</h2>
+        <p>Hint to mobile browsers about which keyboard to show. Doesn't change validation or value — purely UX. Common values: <code>text</code>, <code>numeric</code>, <code>decimal</code>, <code>tel</code>, <code>email</code>, <code>url</code>, <code>search</code>, <code>none</code>. (Detailed in <a href="text-inputs.html#inputmode">Text Inputs</a>.)</p>
+        <pre><code>&lt;!-- PIN field: numeric keyboard, but stays a text input --&gt;
+&lt;input type="text" name="pin" inputmode="numeric"
+       pattern="[0-9]{4}" maxlength="4"&gt;</code></pre>
+      </section>
+
+      <section id="enterkeyhint">
+        <h2><span class="num">11</span> enterkeyhint</h2>
+        <p>Customizes the Enter key's label on mobile keyboards. Values: <code>enter</code>, <code>done</code>, <code>go</code>, <code>next</code>, <code>previous</code>, <code>search</code>, <code>send</code>. (See <a href="text-inputs.html#enterkeyhint">Text Inputs</a> for full table.)</p>
+        <pre><code>&lt;input type="search" name="q" enterkeyhint="search"&gt;
+&lt;input type="text" name="message" enterkeyhint="send"&gt;</code></pre>
+      </section>
+
+      <section id="list">
+        <h2><span class="num">12</span> list</h2>
+        <p>References the <code>id</code> of a <code>&lt;datalist&gt;</code> element, turning a text input into one with autocomplete suggestions. Covered in detail in <a href="choice-inputs.html#datalist">Choice Inputs</a>.</p>
+        <pre><code>&lt;input type="text" name="city" list="cities"&gt;
+&lt;datalist id="cities"&gt;
+  &lt;option value="New York"&gt;
+  &lt;option value="London"&gt;
+&lt;/datalist&gt;</code></pre>
+      </section>
+
+      <section id="multiple">
+        <h2><span class="num">13</span> multiple</h2>
+        <p>Allows multiple values. Applies to <code>type="email"</code> (comma-separated emails), <code>type="file"</code> (multiple files), and <code>&lt;select&gt;</code> (renders as multi-select list box).</p>
+        <pre><code>&lt;input type="email" name="recipients" multiple&gt;
+&lt;input type="file" name="photos" accept="image/*" multiple&gt;
+&lt;select name="skills" multiple&gt;
+  &lt;option&gt;HTML&lt;/option&gt;&lt;option&gt;CSS&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+      </section>
+
+      <section id="form-attr">
+        <h2><span class="num">14</span> form</h2>
+        <p>Associates a control with a <code>&lt;form&gt;</code> by id, even when the control is not a DOM descendant of the form. Useful for buttons outside the form area.</p>
+        <pre><code>&lt;form id="main-form" action="/save" method="post"&gt;
+  &lt;input type="text" name="title" required&gt;
+&lt;/form&gt;
+
+&lt;!-- Submit button lives outside the form --&gt;
+&lt;button type="submit" form="main-form"&gt;Save&lt;/button&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">15</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>name</code></td><td>Value never submitted</td><td>Always set name on every needed field</td></tr>
+            <tr><td>Using <code>disabled</code> when value needs to be sent</td><td>Field excluded from submission</td><td>Use <code>readonly</code></td></tr>
+            <tr><td>No <code>autocomplete</code> tokens</td><td>Users retype everything; password managers confused</td><td>Set proper tokens per field</td></tr>
+            <tr><td><code>autocomplete="off"</code> on passwords</td><td>Modern browsers ignore it; user can't use password manager</td><td>Use <code>current-password</code> / <code>new-password</code></td></tr>
+            <tr><td><code>autofocus</code> on long forms</td><td>Screen reader users jumped past heading/context</td><td>Reserve for primary-purpose forms</td></tr>
+            <tr><td>Placeholder as label</td><td>A11y failure; disappears on input</td><td>Always include real <code>&lt;label&gt;</code></td></tr>
+            <tr><td>Multiple controls with same <code>id</code></td><td>Labels and <code>for</code> attributes break</td><td>Unique <code>id</code> per element</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">16</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Full checkout form</strong>
+          Build a checkout form with shipping + billing addresses. Use proper <code>autocomplete</code> tokens including <code>section-shipping</code> and <code>section-billing</code> prefixes, so the browser fills them independently. Test by saving an address in your browser's autofill settings.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Login form</strong>
+          Build a login form with email + password. Set <code>autocomplete="username"</code> on the email and <code>autocomplete="current-password"</code> on the password. Verify your browser's password manager offers to save credentials on submit.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Disabled vs readonly</strong>
+          Build a small form with one disabled field and one readonly field. Submit the form (with <code>method="get"</code>) and observe the URL — verify that the disabled field's value is missing but the readonly field's value is sent.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">17</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">name, value, disabled, readonly, required — universal</span>
+          <span class="pill yes">placeholder, autofocus — universal</span>
+          <span class="pill yes">autocomplete — universal (token values: modern browsers)</span>
+          <span class="pill yes">inputmode — all modern mobile browsers</span>
+          <span class="pill yes">enterkeyhint — Chrome 77+, Safari 13.4+, Firefox 94+</span>
+          <span class="pill yes">list (datalist) — all modern browsers</span>
+          <span class="pill yes">multiple — universal</span>
+          <span class="pill yes">form attribute — universal</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">18</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>E-commerce checkout</h4>
+            <p>Full autocomplete tokens per field → 1-click autofill → higher conversion.</p>
+          </div>
+          <div class="card">
+            <h4>Login / signup</h4>
+            <p>Username + password tokens trigger password manager integration.</p>
+          </div>
+          <div class="card">
+            <h4>OTP / 2FA</h4>
+            <p><code>autocomplete="one-time-code"</code> auto-fills from SMS on iOS/Android.</p>
+          </div>
+          <div class="card">
+            <h4>Profile editors</h4>
+            <p>Use <code>readonly</code> for non-editable fields (username, created-at).</p>
+          </div>
+          <div class="card">
+            <h4>Multi-section forms</h4>
+            <p>Use <code>section-*</code> autocomplete prefix to keep shipping/billing distinct.</p>
+          </div>
+          <div class="card">
+            <h4>Search-focused pages</h4>
+            <p><code>autofocus</code> on search input — primary purpose of the page.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="special-inputs.html">← Previous: Special Inputs</a>
+    <a class="next" href="../03-Labels-Buttons/label.html">Next: The Label Element →</a>
+  </footer>
+</body>
+</html>

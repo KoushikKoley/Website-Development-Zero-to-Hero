@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Label Element — &lt;label&gt; — HTML Mastery</title>
+  <meta name="description" content="Complete guide to the HTML label element: explicit (for=id) and implicit (wrapping) association, why labels are critical for accessibility, clicking label focuses input, multiple labels anti-pattern, styling, required indicator patterns, aria-label vs label.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 320px;
+    }
+    .demo-box input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .demo-box .inline-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 400; cursor: pointer; margin-right: 14px;
+    }
+    .demo-box .inline-label input[type="checkbox"], .demo-box .inline-label input[type="radio"] {
+      width: 18px; height: 18px; margin: 0;
+    }
+    .required-star { color: var(--warn); margin-left: 2px; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 9</span>
+    <h1>The <code>&lt;label&gt;</code> Element</h1>
+    <p>The single most important element for form accessibility. A <code>&lt;label&gt;</code> gives every input a readable name, makes the click target larger, and unlocks screen-reader announcements. Skip labels and your form is unusable for keyboard, mobile, and assistive-tech users.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why-labels">Why labels matter</a></li>
+        <li><a href="#explicit">Explicit association (for="id")</a></li>
+        <li><a href="#implicit">Implicit association (wrapping)</a></li>
+        <li><a href="#explicit-vs-implicit">Which to use</a></li>
+        <li><a href="#click-focus">Clicking label focuses input</a></li>
+        <li><a href="#multiple-labels">Multiple labels (anti-pattern)</a></li>
+        <li><a href="#styling">Styling labels</a></li>
+        <li><a href="#required-indicators">Required indicator patterns</a></li>
+        <li><a href="#aria-label-vs-label">aria-label vs &lt;label&gt;</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why-labels">
+        <h2><span class="num">1</span> Why labels matter</h2>
+        <p>Without a label, an input is anonymous. A screen reader announces "edit text" with no context. Mobile users see a small target. Click-targets shrink. The form becomes harder to use for everyone — and impossible for assistive-tech users.</p>
+        <p>A <code>&lt;label&gt;</code> element fixes all of this:</p>
+        <ul>
+          <li><strong>Accessible name:</strong> Screen readers announce the label text when the input is focused.</li>
+          <li><strong>Larger click target:</strong> Clicking the label focuses the input — better for users with motor difficulties.</li>
+          <li><strong>Visual clarity:</strong> Users see what each field is for.</li>
+          <li><strong>Browser autofill:</strong> Password managers and autofill engines rely on labels to map fields to data.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using <code>placeholder</code> in place of a label. The placeholder disappears on input, has poor contrast by default, and may not be announced by screen readers. Always include a real <code>&lt;label&gt;</code>.
+        </div>
+      </section>
+
+      <section id="explicit">
+        <h2><span class="num">2</span> Explicit association (for="id")</h2>
+        <p>The most common pattern: a separate <code>&lt;label&gt;</code> element with a <code>for</code> attribute matching the input's <code>id</code>:</p>
+        <pre><code>&lt;label for="email"&gt;Email address&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;</code></pre>
+        <p>Best for:</p>
+        <ul>
+          <li>Labels that need to appear above (or beside) the input</li>
+          <li>Forms with consistent layout (CSS grid / flex)</li>
+          <li>Situations where the label text includes other elements (icons, links)</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Explicit label demo — click "Email address" to focus the input</div>
+          <label for="demo-exp-email">Email address</label>
+          <input type="email" id="demo-exp-email" name="email" placeholder="you@example.com">
+        </div>
+      </section>
+
+      <section id="implicit">
+        <h2><span class="num">3</span> Implicit association (wrapping)</h2>
+        <p>Wrap the input inside the <code>&lt;label&gt;</code>. The association is automatic — no <code>for</code> / <code>id</code> needed:</p>
+        <pre><code>&lt;label&gt;
+  Email address
+  &lt;input type="email" name="email" required&gt;
+&lt;/label&gt;
+
+&lt;!-- Or with the label text after the input (checkboxes/radios) --&gt;
+&lt;label&gt;&lt;input type="checkbox" name="agree" required&gt; I accept&lt;/label&gt;</code></pre>
+        <p>Best for:</p>
+        <ul>
+          <li>Checkboxes and radios (text appears right of the control naturally)</li>
+          <li>Layouts where label and input are tightly coupled</li>
+          <li>Avoiding the overhead of <code>id</code> management for many fields</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Implicit label demo</div>
+          <label>Full name
+            <input type="text" name="name" placeholder="Jane Doe" style="display:block; margin-top:4px;">
+          </label>
+          <div style="margin-top:14px;">
+            <label class="inline-label"><input type="checkbox" name="newsletter"> Subscribe to newsletter</label>
+            <label class="inline-label"><input type="radio" name="plan" value="free"> Free plan</label>
+            <label class="inline-label"><input type="radio" name="plan" value="pro"> Pro plan</label>
+          </div>
+        </div>
+      </section>
+
+      <section id="explicit-vs-implicit">
+        <h2><span class="num">4</span> Which to use</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Aspect</th><th>Explicit (for/id)</th><th>Implicit (wrapping)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Markup length</td><td>More verbose (needs id)</td><td>Concise</td></tr>
+            <tr><td>Layout flexibility</td><td>Label and input can be anywhere on the page</td><td>Must be adjacent in DOM</td></tr>
+            <tr><td>Styling</td><td>Easy to style independently</td><td>Slightly trickier (label wraps input)</td></tr>
+            <tr><td>Reusing labels</td><td>Can reference same input from multiple labels (anti-pattern)</td><td>One label per input</td></tr>
+            <tr><td>Accessibility</td><td>Universally supported</td><td>Universally supported</td></tr>
+            <tr><td>Best for</td><td>Multi-field forms with consistent layout</td><td>Checkboxes, radios, single-input forms</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Many teams prefer explicit labels for consistency: every input has an <code>id</code> anyway (useful for anchors, JS hooks), and the <code>for/id</code> pattern is visually clear in source.
+        </div>
+      </section>
+
+      <section id="click-focus">
+        <h2><span class="num">5</span> Clicking label focuses input</h2>
+        <p>When a label is properly associated, clicking anywhere on the label text focuses (or toggles) the input. This makes the click target much larger — a huge UX win, especially on mobile.</p>
+        <div class="demo-box">
+          <div class="demo-label">Click target demo — click the text, not the input</div>
+          <label for="demo-click">Username (click this text)</label>
+          <input type="text" id="demo-click" name="username" style="width:200px;">
+          <div style="margin-top:16px;">
+            <label class="inline-label"><input type="checkbox" name="opt-in"> Click this text to toggle the checkbox</label>
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          For checkboxes and radios, this is especially valuable — the visual checkbox is only ~16px, but the label might be 200px+ of clickable text. Use implicit labels for these to maximize the click area.
+        </div>
+      </section>
+
+      <section id="multiple-labels">
+        <h2><span class="num">6</span> Multiple labels (anti-pattern)</h2>
+        <p>Technically, multiple <code>&lt;label&gt;</code> elements can reference the same input via <code>for</code>. The spec allows it; the result is unpredictable — screen readers may pick only the first, or read them out of order.</p>
+        <pre><code>&lt;!-- AVOID: multiple labels per input --&gt;
+&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input type="email" id="email" name="email"&gt;
+&lt;label for="email"&gt;(required for account creation)&lt;/label&gt;
+
+&lt;!-- BETTER: single label with helper text via aria-describedby --&gt;
+&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input type="email" id="email" name="email"
+       aria-describedby="email-hint"&gt;
+&lt;small id="email-hint"&gt;Required for account creation&lt;/small&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Multiple labels per input cause inconsistent screen-reader behavior. Use one label per input, plus <code>aria-describedby</code> for additional context, hints, or error messages.
+        </div>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">7</span> Styling labels</h2>
+        <p>Labels are normal block elements — style them freely. Common patterns:</p>
+        <pre><code>/* Label above input */
+label { display: block; font-weight: 500; margin-bottom: 4px; }
+
+/* Label beside input (form-row pattern) */
+.form-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; }
+.form-row label { text-align: right; }
+
+/* Inline label for checkboxes */
+label.inline { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Required indicator */
+label .required::after { content: " *"; color: var(--warn); }</code></pre>
+      </section>
+
+      <section id="required-indicators">
+        <h2><span class="num">8</span> Required indicator patterns</h2>
+        <p>Marking required fields visually is good UX, but the indicator itself must be accessible. Patterns:</p>
+        <pre><code>&lt;!-- Pattern 1: asterisk with sr-only explanation --&gt;
+&lt;label for="email"&gt;Email &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;
+&lt;span class="sr-only"&gt;required&lt;/span&gt;
+
+&lt;!-- Pattern 2: word "(required)" --&gt;
+&lt;label for="email"&gt;Email (required)&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;
+
+&lt;!-- Pattern 3: required as part of label text (clearest) --&gt;
+&lt;label for="email"&gt;Email address (required)&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Required indicator demo</div>
+          <label for="demo-req-1">Email <span class="required-star" aria-hidden="true">*</span> <span class="sr-only">(required)</span></label>
+          <input type="email" id="demo-req-1" name="email" required>
+          <label for="demo-req-2" style="margin-top:12px;">Password (required)</label>
+          <input type="password" id="demo-req-2" name="password" required>
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Asterisk alone with no screen-reader text. Screen readers may skip the visual <code>*</code> entirely. Either hide it from AT (<code>aria-hidden="true"</code>) and add a sr-only "(required)" text, or include the word "(required)" in the label itself.
+        </div>
+      </section>
+
+      <section id="aria-label-vs-label">
+        <h2><span class="num">9</span> aria-label vs &lt;label&gt;</h2>
+        <p>Sometimes there's no visible label (icon-only buttons, search inputs in a toolbar). In these cases, use <code>aria-label</code> to provide an accessible name. But prefer a visible <code>&lt;label&gt;</code> whenever possible:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Aspect</th><th>&lt;label&gt;</th><th>aria-label</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Visible to sighted users</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Screen-reader support</td><td>Universal</td><td>Universal (modern AT)</td></tr>
+            <tr><td>Click target expansion</td><td>Yes (label click focuses input)</td><td>No</td></tr>
+            <tr><td>Best use case</td><td>Standard form fields</td><td>Icon-only buttons, search inputs in compact toolbars</td></tr>
+            <tr><td>Translation</td><td>Inherits page translation</td><td>Needs manual translation if hardcoded</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Visible label (preferred) --&gt;
+&lt;label for="q"&gt;Search&lt;/label&gt;
+&lt;input type="search" id="q" name="q"&gt;
+
+&lt;!-- No visible label (toolbar pattern) --&gt;
+&lt;input type="search" name="q"
+       aria-label="Search articles"
+       placeholder="Search..."&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Replacing visible labels with <code>aria-label</code> because "it looks cleaner." Visible labels help everyone — sighted users, low-vision users, and users who don't notice the placeholder. Reserve <code>aria-label</code> for genuinely label-free contexts (icon buttons, tight toolbars).
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Placeholder as label</td><td>Disappears, low contrast, AT may skip</td><td>Always include real &lt;label&gt;</td></tr>
+            <tr><td>Missing <code>for</code> on explicit label</td><td>Label and input not associated; clicking label doesn't focus</td><td>Match <code>for</code> to <code>id</code></td></tr>
+            <tr><td>Multiple labels per input</td><td>Inconsistent AT behavior</td><td>One label; use <code>aria-describedby</code> for extra text</td></tr>
+            <tr><td>Asterisk without sr-only text</td><td>Screen reader users miss the "required" cue</td><td>Add <code>(required)</code> text or sr-only note</td></tr>
+            <tr><td>Using <code>div</code> + click handler instead of label</td><td>Misses keyboard users and AT</td><td>Use real <code>&lt;label&gt;</code> element</td></tr>
+            <tr><td><code>aria-label</code> instead of visible label "for cleaner UI"</td><td>Loses visible cue, click target shrink</td><td>Keep visible labels; reserve aria-label for icon-only contexts</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Convert placeholder labels</strong>
+          Take any form you've built that uses placeholders as labels. Add proper <code>&lt;label&gt;</code> elements (explicit association). Test that clicking the label text focuses the input.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Checkbox group</strong>
+          Build a "Which topics interest you?" form with 5 checkboxes. Use implicit labels (wrapping) for each. Wrap them in a <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> for group labeling.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Required indicators</strong>
+          Build a registration form with required email, password, and optional phone. Mark required fields with both a visible asterisk (hidden from AT) and an sr-only "(required)" text. Verify with a screen reader that it announces "required."
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;label&gt; element — universal (HTML 4.01+)</span>
+          <span class="pill yes">for attribute — universal</span>
+          <span class="pill yes">Implicit wrapping — universal</span>
+          <span class="pill yes">Click-to-focus — universal</span>
+          <span class="pill yes">aria-label — universal in modern screen readers</span>
+          <span class="pill yes">aria-describedby — universal in modern screen readers</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Standard form fields</h4>
+            <p>Explicit <code>for/id</code> labels above inputs — most common pattern.</p>
+          </div>
+          <div class="card">
+            <h4>Checkbox groups</h4>
+            <p>Implicit labels wrapping each checkbox; fieldset for the group.</p>
+          </div>
+          <div class="card">
+            <h4>Search toolbars</h4>
+            <p>Icon-only inputs use <code>aria-label</code>; no visible label.</p>
+          </div>
+          <div class="card">
+            <h4>Settings panels</h4>
+            <p>Labels beside inputs in a grid — common in dashboards.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-language forms</h4>
+            <p>Visible labels translate naturally; aria-label needs manual translation.</p>
+          </div>
+          <div class="card">
+            <h4>Error states</h4>
+            <p>Pair label with <code>aria-describedby</code> pointing at error message element.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../02-Input-Types/input-attributes.html">← Previous: Input Attributes</a>
+    <a class="next" href="button.html">Next: The Button Element →</a>
+  </footer>
+</body>
+</html>

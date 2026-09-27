@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Elements API — <code>customElements.define()</code> &amp; Lifecycle — HTML Mastery</title>
+  <meta name="description" content="The Custom Elements API: customElements.define(), class extends HTMLElement, lifecycle callbacks (connectedCallback, disconnectedCallback, attributeChangedCallback, adoptedCallback), observedAttributes, autonomous vs customized built-in elements. The HTML-first foundation of web components.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .info-table td:first-child code { font-size: 0.85em; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.no { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    .live-demo { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                  background: #faf5ff; margin: 16px 0; }
+    .live-demo h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                     text-transform: uppercase; letter-spacing: 0.05em; }
+    time-pill { display: inline-block; background: linear-gradient(135deg, #2563eb, #7c3aed);
+                 color: white; padding: 4px 10px; border-radius: 999px; font-size: 0.85rem;
+                 font-weight: 600; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Web Components</span>
+    <h1>Custom Elements — <code>customElements.define()</code></h1>
+    <p>Define your own HTML tags with a single JavaScript call. The Custom Elements API is the foundation of every web component — autonomous custom tags like <code>&lt;my-tabs&gt;</code> and upgraded native elements like <code>&lt;button is="my-button"&gt;</code>.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why">Why Custom Elements</a></li>
+        <li><a href="#define">Defining an Element</a></li>
+        <li><a href="#autonomous-vs-customized">Autonomous vs Customized Built-in</a></li>
+        <li><a href="#lifecycle">Lifecycle Callbacks</a></li>
+        <li><a href="#observed-attributes">observedAttributes</a></li>
+        <li><a href="#when-defined">customElements.whenDefined()</a></li>
+        <li><a href="#html-first">HTML-First Authoring</a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why">
+        <h2><span class="num">1</span> Why Custom Elements?</h2>
+        <p>The platform already ships dozens of elements, but teams repeatedly build the same handful of patterns: tabbed interfaces, modals, toggles, accordions, toasts, date pickers. Custom Elements let you encapsulate those patterns behind a tag name that any team member — or any framework — can use without reading the source.</p>
+        <p>A custom element is just a JavaScript class that extends <code>HTMLElement</code> (or a specific built-in), registered with a name via <code>customElements.define()</code>. From that point on, the parser treats your tag as a first-class citizen: it works in <code>innerHTML</code>, in templates, in JSX, in Markdown that allows raw HTML, in server-rendered output — everywhere.</p>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          Custom elements are framework-agnostic. The same <code>&lt;my-date-picker&gt;</code> works inside React, Vue, Svelte, Angular, plain HTML, and server-rendered templates without adaptation. This is the key reason design systems increasingly ship as web components.
+        </div>
+      </section>
+
+      <section id="define">
+        <h2><span class="num">2</span> Defining an Element</h2>
+        <p>The minimum viable custom element has two parts: an ES class extending <code>HTMLElement</code>, and a call to <code>customElements.define()</code> with a tag name.</p>
+        <pre><code>class TimePill extends HTMLElement {
+  connectedCallback() {
+    const now = new Date();
+    this.textContent = now.toLocaleTimeString();
+  }
+}
+
+customElements.define('time-pill', TimePill);</code></pre>
+
+        <p>Now you can use it anywhere in your HTML:</p>
+        <pre><code>&lt;p&gt;The current time is &lt;time-pill&gt;&lt;/time-pill&gt;.&lt;/p&gt;</code></pre>
+
+        <div class="live-demo">
+          <h4>Live demo (rendered in this page)</h4>
+          <p>The time right now is <time-pill>—</time-pill>.</p>
+        </div>
+
+        <script>
+          class TimePill extends HTMLElement {
+            connectedCallback() {
+              const tick = () => { this.textContent = new Date().toLocaleTimeString(); };
+              tick();
+              this._timer = setInterval(tick, 1000);
+            }
+            disconnectedCallback() { clearInterval(this._timer); }
+          }
+          customElements.define('time-pill', TimePill);
+        </script>
+
+        <h3>Naming rules</h3>
+        <ul>
+          <li>The tag name <strong>must contain a hyphen</strong> (e.g. <code>time-pill</code>, <code>my-tabs</code>). This guarantees your name can never clash with current or future HTML elements.</li>
+          <li>Letters must be lowercase ASCII.</li>
+          <li>The class name can be anything — only the tag name is constrained.</li>
+          <li>Re-defining an existing name throws <code>NotSupportedError</code>.</li>
+        </ul>
+      </section>
+
+      <section id="autonomous-vs-customized">
+        <h2><span class="num">3</span> Autonomous vs Customized Built-in Elements</h2>
+        <p>There are two flavors of custom element, each created differently:</p>
+        <table class="info-table">
+          <thead><tr><th>Flavor</th><th>Extends</th><th>Usage in HTML</th><th>Behavior inherited</th></tr></thead>
+          <tbody>
+            <tr><td>Autonomous</td><td><code>HTMLElement</code></td><td><code>&lt;my-tag&gt;</code></td><td>Generic div-like behavior</td></tr>
+            <tr><td>Customized built-in</td><td>e.g. <code>HTMLButtonElement</code></td><td><code>&lt;button is="my-button"&gt;</code></td><td>Full native behavior of the base tag</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Customized built-in example</h3>
+        <pre><code>class LoadingButton extends HTMLButtonElement {
+  connectedCallback() {
+    this.addEventListener('click', async () =&gt; {
+      this.disabled = true;
+      const original = this.textContent;
+      this.textContent = 'Saving…';
+      // simulate async work
+      await new Promise(r =&gt; setTimeout(r, 1200));
+      this.textContent = original;
+      this.disabled = false;
+    });
+  }
+}
+
+customElements.define('loading-button', LoadingButton,
+                       { extends: 'button' });</code></pre>
+
+        <pre><code>&lt;button is="loading-button"&gt;Save&lt;/button&gt;</code></pre>
+
+        <div class="callout warn">
+          <strong>Browser Support Caveat</strong>
+          Safari historically refused to implement customized built-in elements. As of recent Safari versions, support exists but check your target browsers. Workarounds include using autonomous elements wrapping a native button inside a shadow root.
+        </div>
+      </section>
+
+      <section id="lifecycle">
+        <h2><span class="num">4</span> Lifecycle Callbacks</h2>
+        <p>The platform calls four "reaction" methods on your class at specific moments. Override them to do work.</p>
+        <table class="info-table">
+          <thead><tr><th>Callback</th><th>When it fires</th><th>Typical use</th></tr></thead>
+          <tbody>
+            <tr><td><code>constructor()</code></td><td>Element instantiated (before attributes/children exist)</td><td>Set up internal state, attach shadow root. Never read attributes here.</td></tr>
+            <tr><td><code>connectedCallback()</code></td><td>Inserted into the DOM</td><td>Fetch data, start timers, add global listeners, render.</td></tr>
+            <tr><td><code>disconnectedCallback()</code></td><td>Removed from the DOM</td><td>Stop timers, release references, clean up listeners.</td></tr>
+            <tr><td><code>attributeChangedCallback(name, old, new)</code></td><td>An <em>observed</em> attribute changed</td><td>Re-render when props change.</td></tr>
+            <tr><td><code>adoptedCallback()</code></td><td>Moved to a new document (e.g. via an <code>&lt;iframe&gt;</code> adoption)</td><td>Rare. Re-bind document-scoped listeners.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Full lifecycle demo</h3>
+        <pre><code>class MyCounter extends HTMLElement {
+  static get observedAttributes() { return ['count']; }
+
+  constructor() {
+    super();               // ALWAYS call super() first
+    this._shadow = this.attachShadow({ mode: 'open' });
+    this._shadow.innerHTML = `
+      &lt;style&gt;
+        :host { display: inline-block; padding: 8px 14px;
+                 border-radius: 8px; background: #2563eb; color: white;
+                 font-weight: 600; cursor: pointer; user-select: none; }
+      &lt;/style&gt;
+      &lt;span&gt;&lt;slot name="label"&gt;Count&lt;/slot&gt;: &lt;span class="n"&gt;0&lt;/span&gt;&lt;/span&gt;
+    `;
+    this._n = this._shadow.querySelector('.n');
+    this.addEventListener('click', () =&gt; {
+      this.count = (this.count || 0) + 1;
+    });
+  }
+
+  // Reflect the count attribute to a JS property for ergonomics
+  get count() { return Number(this.getAttribute('count')) || 0; }
+  set count(v) { this.setAttribute('count', String(v)); }
+
+  attributeChangedCallback(name, oldV, newV) {
+    if (name === 'count' &amp;&amp; this._n) this._n.textContent = newV;
+  }
+
+  connectedCallback() {
+    console.log('my-counter attached');
+    this._n.textContent = String(this.count);
+  }
+  disconnectedCallback() { console.log('my-counter detached'); }
+  adoptedCallback()      { console.log('my-counter adopted'); }
+}
+
+customElements.define('my-counter', MyCounter);</code></pre>
+
+        <pre><code>&lt;my-counter count="3"&gt;&lt;/my-counter&gt;
+&lt;my-counter&gt;&lt;span slot="label"&gt;Clicks&lt;/span&gt;&lt;/my-counter&gt;</code></pre>
+      </section>
+
+      <section id="observed-attributes">
+        <h2><span class="num">5</span> observedAttributes</h2>
+        <p>For performance, the browser does <em>not</em> watch every attribute. It only calls <code>attributeChangedCallback</code> for attributes listed in a static getter:</p>
+        <pre><code>static get observedAttributes() {
+  return ['open', 'disabled', 'value'];
+}</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Authors forget the static getter and wonder why attribute changes do nothing. Without <code>observedAttributes</code>, the callback <strong>never fires</strong> — silently.
+        </div>
+        <h3>Reflecting attributes to properties</h3>
+        <p>It's idiomatic to mirror each attribute to a JavaScript property so consumers can use either API:</p>
+        <pre><code>get open() { return this.hasAttribute('open'); }
+set open(v) {
+  if (v) this.setAttribute('open', '');
+  else   this.removeAttribute('open');
+}</code></pre>
+      </section>
+
+      <section id="when-defined">
+        <h2><span class="num">6</span> customElements.whenDefined()</h2>
+        <p>Returns a Promise that resolves when a given tag name is registered. Useful when you depend on another component's API:</p>
+        <pre><code>// Wait until &lt;my-charts&gt; is upgraded before configuring it
+customElements.whenDefined('my-charts').then(() =&gt; {
+  document.querySelector('my-charts').configure({ theme: 'dark' });
+});</code></pre>
+        <p>This avoids the "FOUC" problem of calling methods on elements whose class hasn't loaded yet.</p>
+      </section>
+
+      <section id="html-first">
+        <h2><span class="num">7</span> HTML-First Authoring</h2>
+        <p>Although custom elements require a small amount of JavaScript to register, you should design the <em>markup contract</em> first. Ask: what attributes does the element accept? What does its default content look like? What events does it emit? The HTML contract is what consumers interact with — JS is the implementation.</p>
+        <pre><code>&lt;!-- Author-facing API of a hypothetical &lt;my-modal&gt; --&gt;
+&lt;my-modal open&gt;
+  &lt;h2 slot="title"&gt;Confirm deletion&lt;/h2&gt;
+  &lt;p&gt;Are you sure? This cannot be undone.&lt;/p&gt;
+  &lt;button slot="footer" data-action="cancel"&gt;Cancel&lt;/button&gt;
+  &lt;button slot="footer" data-action="confirm"&gt;Delete&lt;/button&gt;
+&lt;/my-modal&gt;</code></pre>
+        <p>This markup must work even before the script tag runs (progressive enhancement). When the class upgrades the element, the existing children should be slotted into the shadow DOM rather than wiped.</p>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 54+</span>
+          <span class="pill yes">Edge 79+</span>
+          <span class="pill yes">Firefox 63+</span>
+          <span class="pill yes">Safari 10.1+ (autonomous)</span>
+          <span class="pill no">Safari — customized built-in: partial / polyfill needed</span>
+        </div>
+        <p>For legacy browsers, include the <a href="https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements">custom-elements polyfill</a> as a feature-detection shim. It uses MutationObserver to upgrade elements retroactively.</p>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Forgetting <code>super()</code> in the constructor.</strong> Throws immediately.</li>
+          <li><strong>Reading attributes in the constructor.</strong> Attributes are not guaranteed present yet. Use <code>connectedCallback</code> or <code>attributeChangedCallback</code>.</li>
+          <li><strong>Not implementing <code>observedAttributes</code>.</strong> Your callback silently never fires.</li>
+          <li><strong>Tag name without a hyphen.</strong> <code>customElements.define('tabs', …)</code> throws <code>SyntaxError</code>.</li>
+          <li><strong>Defining twice.</strong> The second call throws <code>NotSupportedError</code>. Guard with <code>if (!customElements.get('my-tag'))</code>.</li>
+          <li><strong>Heavy work in <code>connectedCallback</code> without guards.</strong> The element may connect/disconnect many times (e.g. during re-renders). Idempotent setup avoids leaks.</li>
+          <li><strong>Forgetting to clean up in <code>disconnectedCallback</code>.</strong> Listeners attached to <code>window</code> or <code>document</code> will leak.</li>
+          <li><strong>Using arrow functions as class methods.</strong> Class fields with arrows create per-instance methods — fine, but they break inheritance. Use regular methods and <code>.bind(this)</code> or arrow-bound listeners at call sites.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Hello world element</strong>
+          Create <code>&lt;hello-world&gt;</code> whose <code>connectedCallback</code> sets <code>this.textContent = "Hello, world!"</code>. Use it in a page. Verify it works inside <code>innerHTML</code> assignments.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Reactive count</strong>
+          Build the <code>&lt;my-counter&gt;</code> shown in section 4. Add a button that programmatically sets <code>el.count = 10</code> and confirm the visible number updates without you calling a render method.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Customized button</strong>
+          Define a customized built-in <code>&lt;button is="copy-button"&gt;</code> that copies <code>data-target</code>'s text content to the clipboard on click and shows a temporary "Copied!" label.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Lifecycle log</strong>
+          Add <code>console.log</code> calls in all four lifecycle callbacks. Move your element between two documents using <code>document.adoptNode</code> in an iframe to trigger <code>adoptedCallback</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Progressive enhancement</strong>
+          Author an element's HTML contract first (children, slots, attributes). Load the page <em>without</em> the script tag and confirm the content still makes sense. Then add the script — the upgrade should be invisible to the user.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Design systems</h4><p>Shoelace, Spectrum Web Components, Lion, Material Web Components — all custom elements.</p></div>
+          <div class="card"><h4>Cross-framework UI</h4><p>Micro-frontends sharing one widget across React/Vue/Angular apps.</p></div>
+          <div class="card"><h4>CMS plugins</h4><p>Embed rich widgets in WordPress/Drupal/Craft via a single tag, no React bundle required.</p></div>
+          <div class="card"><h4>Email-style previews</h4><p>Server-rendered HTML with custom tags that progressively enhance on the client.</p></div>
+          <div class="card"><h4>Interactive articles</h4><p>Code playgrounds, syntax highlighters, and chart embeds in editorial content.</p></div>
+          <div class="card"><h4>Internal tooling</h4><p>Status badges, employee pickers, time-off widgets reused across many intranet apps.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../01-Metadata-OpenGraph/structured-data.html">← Previous: Structured Data</a>
+    <a class="next" href="shadow-dom.html">Next: Shadow DOM →</a>
+  </footer>
+</body>
+</html>

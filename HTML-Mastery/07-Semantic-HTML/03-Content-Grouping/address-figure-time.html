@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;address&gt;, &lt;figure&gt;, &lt;time&gt;, &lt;mark&gt; — Content With Meaning — HTML Mastery</title>
+  <meta name="description" content="The address element holds contact info for the article or page author — NOT arbitrary addresses. figure (review) groups captioned content. time carries a machine-readable datetime attribute (pubdate is deprecated, duration syntax supported). mark highlights text in a semantic context.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 2px dashed var(--line); border-radius: 12px; padding: 18px;
+                background: #f8fafc; margin: 14px 0; }
+    .demo-box h4 { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.8rem;
+                   text-transform: uppercase; letter-spacing: 0.06em; }
+    .demo-box address { font-style: italic; line-height: 1.7; }
+    .demo-box mark { background: #fef08a; padding: 0 4px; border-radius: 3px; }
+    .demo-box time { font-variant-numeric: tabular-nums; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Content Grouping · Lesson 2</span>
+    <h1><code>&lt;address&gt;</code>, <code>&lt;figure&gt;</code>, <code>&lt;time&gt;</code>, <code>&lt;mark&gt;</code></h1>
+    <p>Four content-with-meaning elements. <code>&lt;address&gt;</code> is the most misused — it's for <em>contact info for the page or article author</em>, not arbitrary addresses. <code>&lt;time&gt;</code> carries machine-readable datetimes. <code>&lt;figure&gt;</code> groups captioned content. <code>&lt;mark&gt;</code> highlights text semantically.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#address">address</a></li>
+        <li><a href="#figure">figure (review)</a></li>
+        <li><a href="#time">time</a></li>
+        <li><a href="#mark">mark</a></li>
+        <li><a href="#comparison">Element comparison</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="address">
+        <h2><span class="num">1</span> <code>&lt;address&gt;</code> — Author Contact Info</h2>
+        <p>Of all the elements covered here, <code>&lt;address&gt;</code> is the most consistently misused. The HTML spec is crystal clear:</p>
+
+        <div class="callout info">
+          <strong>Definition</strong>
+          The <code>&lt;address&gt;</code> element represents contact information for the author(s) of the current <code>&lt;article&gt;</code> or <code>&lt;body&gt;</code>. This includes physical addresses, email, phone, URL, social media handle, or geocoordinates — as long as it's how to contact the author.
+        </div>
+
+        <h3>The #1 misunderstanding</h3>
+        <p><code>&lt;address&gt;</code> is NOT a generic wrapper for any postal address on the page. A company's office address, a list of store locations, or a customer's shipping address are <em>not</em> what this element is for. Use a plain <code>&lt;p&gt;</code> with <code>&lt;br&gt;</code> or a structured format for those.</p>
+
+        <div class="demo-box">
+          <h4>Rendered output (correct usage)</h4>
+          <address>
+            Written by <a href="/authors/jane">Jane Doe</a>.<br>
+            Email: <a href="mailto:jane@example.com">jane@example.com</a><br>
+            Visit us at: <a href="https://example.com">example.com</a>
+          </address>
+        </div>
+        <pre><code>&lt;footer&gt;
+  &lt;address&gt;
+    Written by &lt;a href="/authors/jane"&gt;Jane Doe&lt;/a&gt;.&lt;br&gt;
+    Email: &lt;a href="mailto:jane@example.com"&gt;jane@example.com&lt;/a&gt;&lt;br&gt;
+    Visit us at: &lt;a href="https://example.com"&gt;example.com&lt;/a&gt;
+  &lt;/address&gt;
+&lt;/footer&gt;</code></pre>
+
+        <h3>What goes inside <code>&lt;address&gt;</code></h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Allowed</th><th>Not allowed</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Email links, phone links, web URLs, physical mailing address, social media handle, geocoordinates (lat/long), publication date</td>
+              <td>Arbitrary text, document publication dates (use <code>&lt;time&gt;</code>), company mailing address when it's not the author's contact, addresses inside fictional content</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Article-scoped vs page-scoped</h3>
+        <p>If <code>&lt;address&gt;</code> is inside an <code>&lt;article&gt;</code>, it represents the contact info for that article's author. If it's directly in the <code>&lt;body&gt;</code> (not nested in an article), it represents the contact info for the entire document — typically placed in the <code>&lt;footer&gt;</code>.</p>
+
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;How to brew pour-over coffee&lt;/h1&gt;
+  &lt;p&gt;...&lt;/p&gt;
+  &lt;footer&gt;
+    &lt;address&gt;
+      By &lt;a href="/authors/alice"&gt;Alice Ray&lt;/a&gt; —
+      &lt;a href="mailto:alice@example.com"&gt;alice@example.com&lt;/a&gt;
+    &lt;/address&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using <code>&lt;address&gt;</code> to mark up a customer's shipping address on an invoice, or the office address on a "Contact Us" page. These are NOT author contact details. Use <code>&lt;p&gt;</code>, optionally paired with structured data (JSON-LD <code>PostalAddress</code>) for SEO.
+        </div>
+
+        <h3>Default styling</h3>
+        <p>Browsers render <code>&lt;address&gt;</code> as <code>display:block</code> with <code>font-style:italic</code>. This is one of the few UA styles you should usually leave alone — italics signal "this is meta-information".</p>
+      </section>
+
+      <section id="figure">
+        <h2><span class="num">2</span> <code>&lt;figure&gt;</code> — Review</h2>
+        <p>The <code>&lt;figure&gt;</code> element was covered in depth in <a href="../../04-Media-and-Graphics/03-Figures-Captions/figure-figcaption.html">Section 4 — Figure &amp; Figcaption</a>. Here's a focused recap as part of the content-grouping family.</p>
+
+        <p>A <code>&lt;figure&gt;</code> represents content that is <em>optionally captioned</em> and is <em>referenced from the main flow as a single unit</em>. Its position in the document is independent of where it's referenced from — it could move to the top, side, or appendix without breaking the surrounding prose.</p>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <figure style="margin:0; padding:12px; border:1px solid var(--line); border-radius:8px;">
+            <blockquote style="margin:0; font-style:italic; color:#475569;">
+              "The best way to predict the future is to invent it."
+            </blockquote>
+            <figcaption style="margin-top:8px; font-size:0.9rem; color:var(--ink-soft);">
+              — Alan Kay, 1971 Xerox PARC meeting
+            </figcaption>
+          </figure>
+        </div>
+        <pre><code>&lt;figure&gt;
+  &lt;blockquote&gt;
+    "The best way to predict the future is to invent it."
+  &lt;/blockquote&gt;
+  &lt;figcaption&gt;— Alan Kay, 1971 Xerox PARC meeting&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+
+        <h3>What goes inside <code>&lt;figure&gt;</code></h3>
+        <p>Any flow content: <code>&lt;img&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;code&gt;</code> (a code listing), <code>&lt;blockquote&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;svg&gt;</code>, even another <code>&lt;figure&gt;</code>. The key test is: <em>could this content be moved to an appendix without breaking the surrounding text?</em></p>
+
+        <h3>Figure vs aside vs main content</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Test</th><th>figure</th><th>aside</th><th>main content</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Referenced from main text?</td><td>Yes (as a unit)</td><td>Not necessarily</td><td>N/A — it IS the main text</td></tr>
+            <tr><td>Position-independent?</td><td>Yes</td><td>Somewhat</td><td>No</td></tr>
+            <tr><td>Captioned?</td><td>Optionally, via <code>&lt;figcaption&gt;</code></td><td>Usually not</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="time">
+        <h2><span class="num">3</span> <code>&lt;time&gt;</code> — Machine-Readable Dates</h2>
+        <p>The <code>&lt;time&gt;</code> element represents a specific moment in time (a date, a date with time, a duration, or a time without a date). Its superpower is the <code>datetime</code> attribute, which lets you give the same value in a machine-readable form while displaying it however you like for humans.</p>
+
+        <h3>Basic usage</h3>
+        <pre><code>&lt;p&gt;Published on &lt;time&gt;2024-03-15&lt;/time&gt;.&lt;/p&gt;
+
+&lt;p&gt;Event starts at &lt;time datetime="2024-03-15 19:30"&gt;
+  March 15th at 7:30 PM&lt;/time&gt;.&lt;/p&gt;
+
+&lt;p&gt;The meeting lasted &lt;time datetime="PT2H30M"&gt;two and a half hours&lt;/time&gt;.&lt;/p&gt;</code></pre>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <p>Published on <time>2024-03-15</time>.</p>
+          <p>Event starts at <time datetime="2024-03-15 19:30">March 15th at 7:30 PM</time>.</p>
+          <p>The meeting lasted <time datetime="PT2H30M">two and a half hours</time>.</p>
+        </div>
+
+        <h3>The <code>datetime</code> attribute — machine-readable formats</h3>
+        <p>The <code>datetime</code> attribute uses a strict subset of ISO 8601. The visible text can be anything (e.g. "yesterday", "last Tuesday", "Spring 2024"), but the attribute value must follow these formats:</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Format</th><th>Example</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Year only</td><td><code>2024</code></td><td>The year 2024</td></tr>
+            <tr><td>Year + month</td><td><code>2024-03</code></td><td>March 2024</td></tr>
+            <tr><td>Full date</td><td><code>2024-03-15</code></td><td>March 15, 2024</td></tr>
+            <tr><td>Date + time (local)</td><td><code>2024-03-15 19:30</code></td><td>March 15, 2024 at 7:30 PM (no timezone)</td></tr>
+            <tr><td>Date + time + timezone</td><td><code>2024-03-15T19:30:00-05:00</code></td><td>March 15, 2024 at 7:30 PM, US Eastern</td></tr>
+            <tr><td>UTC</td><td><code>2024-03-15T19:30:00Z</code></td><td>March 15, 2024 at 7:30 PM UTC</td></tr>
+            <tr><td>Time only</td><td><code>19:30</code> or <code>19:30:00</code></td><td>7:30 PM (no date)</td></tr>
+            <tr><td>Duration (basic)</td><td><code>PT2H30M</code></td><td>2 hours, 30 minutes</td></tr>
+            <tr><td>Duration (alt)</td><td><code>P2DT4H</code></td><td>2 days, 4 hours</td></tr>
+            <tr><td>Recurring time</td><td><code>09:00</code> with text "every weekday"</td><td>9 AM, daily</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Duration syntax explained</h3>
+        <p>Durations use the pattern <code>P[n]Y[n]M[n]DT[n]H[n]M[n]S</code> — the <code>P</code> marks the start of the period, <code>T</code> separates date parts from time parts:</p>
+        <pre><code>P1Y2M3D       — 1 year, 2 months, 3 days
+PT4H30M       — 4 hours, 30 minutes
+PT30S         — 30 seconds
+P1DT12H       — 1 day, 12 hours
+P1M           — 1 month (note: ambiguous with minutes, but minutes need the T prefix)
+PT1M          — 1 minute</code></pre>
+
+        <h3>The <code>pubdate</code> attribute — deprecated!</h3>
+        <p>An early HTML5 draft had a boolean <code>pubdate</code> attribute on <code>&lt;time&gt;</code>, marking the publication date of the nearest <code>&lt;article&gt;</code> ancestor. It was <strong>deprecated and removed</strong> from the spec in 2013.</p>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Some tutorials still show <code>&lt;time datetime="..." pubdate&gt;</code>. This attribute does nothing in modern browsers. To indicate publication date, use structured data instead:
+          <pre><code>&lt;meta property="article:published_time" content="2024-03-15T19:30:00Z"&gt;
+
+&lt;!-- or JSON-LD --&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "datePublished": "2024-03-15T19:30:00Z"
+}
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <h3>Why does machine-readable matter?</h3>
+        <ul>
+          <li><strong>Search engines</strong> can extract event times for rich results.</li>
+          <li><strong>Calendar apps</strong> can offer "Add to calendar" buttons from a page.</li>
+          <li><strong>Browsers</strong> can offer to convert times to the user's timezone.</li>
+          <li><strong>Assistive tech</strong> can announce dates more usefully.</li>
+        </ul>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When the visible text already matches the ISO format (e.g. "2024-03-15"), you can omit the <code>datetime</code> attribute — the parser will use the text content. But explicit is better than implicit; include <code>datetime</code> for any value more complex than a bare date.
+        </div>
+      </section>
+
+      <section id="mark">
+        <h2><span class="num">4</span> <code>&lt;mark&gt;</code> — Semantic Highlight</h2>
+        <p>The <code>&lt;mark&gt;</code> element represents a run of text that is <em>marked or highlighted for reference or notation purposes</em>, due to its relevance in another context. Browsers render it with a yellow background by default, mimicking a highlighter pen.</p>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <p>When you search for <mark>semantic HTML</mark>, the result page highlights the matching term in each result snippet.</p>
+        </div>
+
+        <h3>The three semantic contexts</h3>
+
+        <h4>1. Search-result highlighting</h4>
+        <pre><code>&lt;p&gt;The page describes &lt;mark&gt;accessibility&lt;/mark&gt;
+   best practices for web developers.&lt;/p&gt;</code></pre>
+        <p>The most common use case: when showing a search result snippet, the matching query term is highlighted with <code>&lt;mark&gt;</code>.</p>
+
+        <h4>2. Quotation emphasis (not in the original)</h4>
+        <pre><code>&lt;blockquote&gt;
+  "The most important thing is to ship. Everything else is detail.
+   &lt;mark&gt;Ship early, ship often.&lt;/mark&gt;"
+&lt;/blockquote&gt;
+&lt;p&gt;[emphasis added]&lt;/p&gt;</code></pre>
+        <p>When quoting a passage and adding your own emphasis to part of it, <code>&lt;mark&gt;</code> makes the addition explicit. (Use the <code>cite</code> attribute or a footnote to disclose "[emphasis added]" for full transparency.)</p>
+
+        <h4>3. Marked as currently relevant in context</h4>
+        <pre><code>&lt;p&gt;Today we're reviewing the &lt;mark&gt;2024 audit&lt;/mark&gt;
+   findings. Please turn to page 12.&lt;/p&gt;</code></pre>
+        <p>Used to draw the reader's attention to a particular phrase because of the current viewing context (e.g. the same word elsewhere on the page is being discussed).</p>
+
+        <h3>mark vs strong vs em</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Semantics</th><th>Default styling</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;mark&gt;</code></td><td>Relevant in a different context (search hit, quote emphasis)</td><td>Yellow background</td></tr>
+            <tr><td><code>&lt;strong&gt;</code></td><td>Important, serious, urgent</td><td>Bold</td></tr>
+            <tr><td><code>&lt;em&gt;</code></td><td>Stress emphasis (would change pronunciation)</td><td>Italic</td></tr>
+            <tr><td><code>&lt;b&gt;</code></td><td>Stylistically offset, no extra meaning</td><td>Bold</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using <code>&lt;mark&gt;</code> purely as a yellow highlighter for aesthetic effect. If you just want a yellow background, use <code>&lt;span class="highlight"&gt;</code> with CSS. Reserve <code>&lt;mark&gt;</code> for cases where the highlighting has semantic meaning (search hit, quote emphasis).
+        </div>
+      </section>
+
+      <section id="comparison">
+        <h2><span class="num">5</span> Element Comparison</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Purpose</th><th>Default styling</th><th>Key attribute</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;address&gt;</code></td><td>Author contact info</td><td>italic, block</td><td>—</td></tr>
+            <tr><td><code>&lt;figure&gt;</code></td><td>Self-contained captioned content</td><td>margin, block</td><td>—</td></tr>
+            <tr><td><code>&lt;time&gt;</code></td><td>Date/time/duration</td><td>inline (none)</td><td><code>datetime</code></td></tr>
+            <tr><td><code>&lt;mark&gt;</code></td><td>Highlighted for relevance in another context</td><td>yellow background</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">6</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;address&gt; — all browsers, all versions</span>
+          <span class="pill yes">&lt;figure&gt; — IE 9+, all modern</span>
+          <span class="pill yes">&lt;time&gt; — IE 9+, all modern</span>
+          <span class="pill yes">&lt;mark&gt; — IE 9+, all modern</span>
+        </div>
+        <p>All four elements have universal support. <code>&lt;time&gt;</code>'s <code>datetime</code> duration syntax is the only feature with any nuance — older parsers may not recognize all duration forms, but browsers do.</p>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">7</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Fix the address</strong>
+          This snippet misuses <code>&lt;address&gt;</code>. Rewrite it correctly, separating the author contact info from the store locations:
+          <pre><code>&lt;address&gt;
+  Author: Jane Doe
+  HQ: 123 Main St, Anytown, USA
+  Store 1: 456 Oak Ave, Springfield
+  Store 2: 789 Pine Rd, Shelbyville
+&lt;/address&gt;</code></pre>
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Mark up an event card</strong>
+          Build an event listing with: title, a date/time marked up with <code>&lt;time datetime="..."&gt;</code> (visible text in friendly format), and a brief description. Make sure your <code>datetime</code> value is a valid ISO 8601 string with timezone.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Search results page</strong>
+          Build a fake search results page where the user searched for "CSS grid". Each result snippet should use <code>&lt;mark&gt;</code> to highlight the matching term. Add a result count: "About 1,240,000 results (0.42 seconds)" with the time value wrapped in <code>&lt;time datetime="PT0.42S"&gt;</code>.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Quotation emphasis</strong>
+          Find a quote you love and present it as a <code>&lt;figure&gt;</code> with <code>&lt;blockquote&gt;</code> inside, using <code>&lt;mark&gt;</code> to highlight one phrase you want to draw attention to. Add a <code>&lt;figcaption&gt;</code> with the attribution.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">8</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>address</h4>
+            <p>Footer "About the author" block on a blog post; article footer contact info on news sites.</p>
+          </div>
+          <div class="card">
+            <h4>figure</h4>
+            <p>Captioned images in articles, pull-quotes in long-form posts, code listings in documentation.</p>
+          </div>
+          <div class="card">
+            <h4>time</h4>
+            <p>Blog post publication dates, event start times, comment timestamps, cooking recipe durations.</p>
+          </div>
+          <div class="card">
+            <h4>mark</h4>
+            <p>Search result snippets, quotation emphasis, scroll-to-text fragments.</p>
+          </div>
+          <div class="card">
+            <h4>Combined: article footer</h4>
+            <p>News article footer typically uses <code>&lt;address&gt;</code> (author), <code>&lt;time&gt;</code> (pub date), sometimes <code>&lt;figure&gt;</code> for related photo credit.</p>
+          </div>
+          <div class="card">
+            <h4>SEO rich results</h4>
+            <p>Combined with JSON-LD Article schema, <code>&lt;time&gt;</code> + <code>&lt;address&gt;</code> power event rich results in Google.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="div-span.html">← Previous: div &amp; span</a>
+    <a class="next" href="hr-other-grouping.html">Next: hr, bdi, bdo, wbr, ruby →</a>
+  </footer>
+</body>
+</html>

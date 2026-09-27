@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Button Element — &lt;button&gt; — HTML Mastery</title>
+  <meta name="description" content="Complete guide to the HTML button element: types submit, reset, button. Differences between &lt;button&gt; and &lt;input type=submit&gt;. Inner HTML content (icons allowed), disabled, formaction, formenctype, formmethod, formtarget, formnovalidate, styling, focus, accessibility.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 320px;
+    }
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem; cursor: pointer;
+      font-family: inherit; border: none; display: inline-flex; align-items: center; gap: 6px;
+      margin-right: 8px; margin-top: 8px;
+    }
+    .btn-primary { background: var(--brand); color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary { background: #f1f5f9; color: var(--ink); border: 1px solid var(--line); }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-danger { background: var(--warn); color: white; }
+    .btn[disabled] { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+    .btn svg { width: 16px; height: 16px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 10</span>
+    <h1>The <code>&lt;button&gt;</code> Element</h1>
+    <p>Buttons are the action verbs of forms. The <code>&lt;button&gt;</code> element is more powerful than its older cousin <code>&lt;input type="submit"&gt;</code> — it supports HTML content, icons, and per-button overrides of the form's action, method, enctype, and validation.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#button-types">Button types</a></li>
+        <li><a href="#submit">type="submit" (default)</a></li>
+        <li><a href="#reset">type="reset"</a></li>
+        <li><a href="#button">type="button"</a></li>
+        <li><a href="#button-vs-input">button vs input type=submit</a></li>
+        <li><a href="#inner-html">Inner HTML content</a></li>
+        <li><a href="#disabled">disabled</a></li>
+        <li><a href="#form-overrides">formaction / formenctype / formmethod / formtarget / formnovalidate</a></li>
+        <li><a href="#styling">Styling &amp; focus</a></li>
+        <li><a href="#accessibility">Accessibility</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="button-types">
+        <h2><span class="num">1</span> Button types</h2>
+        <p>The <code>type</code> attribute on <code>&lt;button&gt;</code> controls what happens when the button is activated:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Type</th><th>Behavior</th><th>Submits form?</th><th>Default?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>submit</code></td><td>Submits the form</td><td>Yes</td><td>Yes (inside a form)</td></tr>
+            <tr><td><code>reset</code></td><td>Resets all form fields to defaults</td><td>No</td><td>—</td></tr>
+            <tr><td><code>button</code></td><td>Does nothing by default; JS attaches behavior</td><td>No</td><td>Yes (outside a form)</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;button type="submit"&gt;Save&lt;/button&gt;
+&lt;button type="reset"&gt;Clear&lt;/button&gt;
+&lt;button type="button" onclick="toggle()"&gt;Toggle&lt;/button&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Forgetting <code>type="button"</code> on a button inside a form whose only purpose is to trigger JavaScript. Without it, the button defaults to <code>type="submit"</code> and submits the form on every click — usually not what you want.
+        </div>
+      </section>
+
+      <section id="submit">
+        <h2><span class="num">2</span> type="submit" (default)</h2>
+        <p>Inside a form, <code>&lt;button&gt;</code> with no <code>type</code> defaults to submit. Clicking it (or pressing Enter on a single-line input) triggers form submission. If the button has a <code>name</code> attribute, its <code>value</code> (or text content) is included in the submission.</p>
+        <pre><code>&lt;form action="/save" method="post"&gt;
+  &lt;input type="text" name="title" required&gt;
+  &lt;button type="submit"&gt;Save&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="submit" demo</div>
+          <form onsubmit="event.preventDefault(); alert('Submitted!');">
+            <label for="demo-s-title">Title</label>
+            <input type="text" id="demo-s-title" name="title" required>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="reset">
+        <h2><span class="num">3</span> type="reset"</h2>
+        <p>Resets all fields to their default values (the <code>value</code> attributes in HTML). Use sparingly — accidental clicks erase all user input with no undo. Better patterns exist: a "Clear" button with a confirm dialog, or omitting reset entirely.</p>
+        <pre><code>&lt;button type="reset"&gt;Clear form&lt;/button&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="reset" demo — type something then click Clear</div>
+          <form>
+            <label for="demo-r-name">Name</label>
+            <input type="text" id="demo-r-name" name="name">
+            <button type="reset" class="btn btn-secondary">Clear</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="button">
+        <h2><span class="num">4</span> type="button"</h2>
+        <p>A button with no default behavior — only does what JavaScript attaches. Use for: opening modals, toggling UI, triggering calculations, opening menus, etc. <strong>Always</strong> set <code>type="button"</code> explicitly when the button is inside a form but should not submit.</p>
+        <pre><code>&lt;button type="button" onclick="openModal()"&gt;
+  Open dialog
+&lt;/button&gt;
+
+&lt;button type="button" id="calculate"&gt;Calculate total&lt;/button&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="button" demo</div>
+          <button type="button" class="btn btn-secondary" onclick="alert('Just a button — no form submit.')">Click me</button>
+        </div>
+      </section>
+
+      <section id="button-vs-input">
+        <h2><span class="num">5</span> button vs input type="submit"</h2>
+        <p>The two ways to make a submit control:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Aspect</th><th>&lt;button type="submit"&gt;</th><th>&lt;input type="submit"&gt;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>HTML content inside</td><td>Yes — icons, spans, SVG</td><td>No — only <code>value</code> string</td></tr>
+            <tr><td>CSS pseudo-elements (<code>::before</code>, <code>::after</code>)</td><td>Yes</td><td>Limited</td></tr>
+            <tr><td>Default label when no <code>value</code> set</td><td>Browser-localized "Submit"</td><td>Browser-localized "Submit"</td></tr>
+            <tr><td>Per-button overrides</td><td>Yes (<code>formaction</code>, <code>formmethod</code>, etc.)</td><td>Yes (same attributes)</td></tr>
+            <tr><td>Recommendation</td><td>Modern default — prefer this</td><td>Legacy code only</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Old: limited --&gt;
+&lt;input type="submit" value="Save"&gt;
+
+&lt;!-- Modern: rich content allowed --&gt;
+&lt;button type="submit"&gt;
+  &lt;svg aria-hidden="true"&gt;&lt;use href="#save-icon"&gt;&lt;/use&gt;&lt;/svg&gt;
+  Save changes
+&lt;/button&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          In old Internet Explorer (6-7), <code>&lt;button&gt;</code> submitted its <em>text content</em> as the value rather than its <code>value</code> attribute — a famous bug. This is no longer a concern in modern browsers; reach for <code>&lt;button&gt;</code> freely.
+        </div>
+      </section>
+
+      <section id="inner-html">
+        <h2><span class="num">6</span> Inner HTML content</h2>
+        <p>The killer feature of <code>&lt;button&gt;</code>: rich content. Add icons, spans, line breaks, anything that's "phrasing content":</p>
+        <pre><code>&lt;!-- Icon + text --&gt;
+&lt;button type="submit"&gt;
+  &lt;svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"&gt;
+    &lt;path d="M2 2 L8 11 L14 2" stroke="currentColor" fill="none"/&gt;
+  &lt;/svg&gt;
+  Submit
+&lt;/button&gt;
+
+&lt;!-- Icon-only (must have aria-label) --&gt;
+&lt;button type="button" aria-label="Close dialog"&gt;
+  &lt;svg aria-hidden="true"&gt;...&lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;!-- Multi-line text --&gt;
+&lt;button type="button"&gt;
+  &lt;strong&gt;Delete account&lt;/strong&gt;&lt;br&gt;
+  &lt;small&gt;This action cannot be undone&lt;/small&gt;
+&lt;/button&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Inner HTML demo — icons + text, multi-line</div>
+          <button type="button" class="btn btn-primary">
+            <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg>
+            Submit
+          </button>
+          <button type="button" class="btn btn-secondary" aria-label="Close">
+            <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4 L12 12 M12 4 L4 12"/></svg>
+          </button>
+          <button type="button" class="btn btn-danger">
+            <strong>Delete account</strong>
+          </button>
+        </div>
+      </section>
+
+      <section id="disabled">
+        <h2><span class="num">7</span> disabled</h2>
+        <p>A boolean attribute that prevents interaction and excludes the button from form submission. Disabled buttons don't fire click events and aren't focusable. Useful for "Submit" buttons that should be inactive until the form is valid.</p>
+        <pre><code>&lt;button type="submit" disabled&gt;Submit (incomplete)&lt;/button&gt;
+
+&lt;!-- Enable via JS once form is valid --&gt;
+&lt;script&gt;
+  const form = document.querySelector('form');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  form.addEventListener('input', () =&gt; {
+    submitBtn.disabled = !form.checkValidity();
+  });
+&lt;/script&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">disabled demo</div>
+          <button type="button" class="btn btn-primary" disabled>Submit (disabled)</button>
+          <button type="button" class="btn btn-primary">Submit (enabled)</button>
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Disabling the submit button until form is valid <em>sounds</em> like good UX, but it hides the problem — users can't see what's wrong. Better: enable the button always; show validation errors on submit attempt. Disabled buttons also fail accessibility audits (keyboard users can't focus them to discover they exist).
+        </div>
+      </section>
+
+      <section id="form-overrides">
+        <h2><span class="num">8</span> formaction / formenctype / formmethod / formtarget / formnovalidate</h2>
+        <p>Five attributes that override the form's settings for this one button only:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Attribute</th><th>Overrides</th><th>Use case</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>formaction</code></td><td>form's <code>action</code></td><td>Multiple submit destinations (Save vs Publish)</td></tr>
+            <tr><td><code>formenctype</code></td><td>form's <code>enctype</code></td><td>One button uploads files, another doesn't</td></tr>
+            <tr><td><code>formmethod</code></td><td>form's <code>method</code></td><td>GET button vs POST button</td></tr>
+            <tr><td><code>formtarget</code></td><td>form's <code>target</code></td><td>Open result in new tab for one button only</td></tr>
+            <tr><td><code>formnovalidate</code></td><td>form's <code>novalidate</code></td><td>"Save Draft" skips validation; "Publish" validates</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;form action="/publish" method="post"&gt;
+  &lt;input type="text" name="title" required&gt;
+  &lt;textarea name="body" required&gt;&lt;/textarea&gt;
+
+  &lt;!-- Save draft: skips validation, different endpoint --&gt;
+  &lt;button type="submit" name="action" value="draft"
+          formaction="/save-draft"
+          formnovalidate&gt;Save draft&lt;/button&gt;
+
+  &lt;!-- Publish: full validation, default action --&gt;
+  &lt;button type="submit" name="action" value="publish"&gt;Publish&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          These overrides let one form have multiple submit destinations with different validation rules — no JavaScript required. Server-side, check the <code>action</code> field value to determine which button was clicked.
+        </div>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">9</span> Styling &amp; focus</h2>
+        <p>Buttons accept full CSS. Reset the default look first, then style:</p>
+        <pre><code>/* Reset cross-browser defaults */
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Build your design system */
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: var(--brand);
+  color: white;
+  transition: background 0.15s;
+}
+.btn:hover { background: #1d4ed8; }
+.btn:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+.btn:active { transform: translateY(1px); }</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Setting <code>outline: none</code> on buttons and forgetting a replacement. Keyboard users lose the visible focus indicator. Always style <code>:focus-visible</code> explicitly.
+        </div>
+      </section>
+
+      <section id="accessibility">
+        <h2><span class="num">10</span> Accessibility</h2>
+        <p>Rules for accessible buttons:</p>
+        <ul>
+          <li><strong>Always have an accessible name.</strong> Either visible text or an <code>aria-label</code> for icon-only buttons.</li>
+          <li><strong>Use <code>&lt;button&gt;</code> for actions, <code>&lt;a&gt;</code> for navigation.</strong> Don't fake buttons with <code>&lt;div onclick&gt;</code> — they miss keyboard support.</li>
+          <li><strong>Don't nest interactive elements.</strong> A <code>&lt;button&gt;</code> inside another <code>&lt;button&gt;</code> is invalid HTML. Same for <code>&lt;a&gt;</code> inside <code>&lt;button&gt;</code>.</li>
+          <li><strong>Disabled buttons aren't focusable.</strong> If you want them discoverable by keyboard users, use <code>aria-disabled="true"</code> + custom JS instead of <code>disabled</code>.</li>
+          <li><strong>Pressing Enter and Space both activate buttons.</strong> The browser handles this — don't reimplement with JS.</li>
+          <li><strong>Visible focus state.</strong> Always style <code>:focus-visible</code>.</li>
+        </ul>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>type="button"</code> on JS-only buttons</td><td>Submits the form unexpectedly</td><td>Always set <code>type="button"</code> for non-submit buttons</td></tr>
+            <tr><td>Using <code>&lt;div onclick&gt;</code> as a button</td><td>No keyboard support, no AT announcement</td><td>Use real <code>&lt;button&gt;</code></td></tr>
+            <tr><td>Icon-only button with no <code>aria-label</code></td><td>Screen reader announces "button" with no name</td><td>Always set <code>aria-label</code></td></tr>
+            <tr><td>Nesting <code>&lt;a&gt;</code> inside <code>&lt;button&gt;</code></td><td>Invalid HTML; unpredictable behavior</td><td>Use one or the other</td></tr>
+            <tr><td>Disabled submit button</td><td>Hides validation issues; not keyboard-focusable</td><td>Enable button; show errors on submit attempt</td></tr>
+            <tr><td>Removing focus outline</td><td>Keyboard users can't see focus</td><td>Style <code>:focus-visible</code> explicitly</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">12</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Button types</strong>
+          Build a small form with a submit button, a reset button, and a "Help" button (type="button" that opens an alert). Verify that only the submit button submits the form.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Icon + text button</strong>
+          Create a "Save changes" button with an inline SVG checkmark icon. Add an icon-only "Close" button (×) with an <code>aria-label</code>. Verify both are announced correctly by a screen reader.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Per-button overrides</strong>
+          Build a form with two submit buttons. One ("Save Draft") uses <code>formaction="/draft"</code> + <code>formnovalidate</code>. The other ("Publish") uses the default action. Test that draft works without filling required fields; publish fails validation.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">13</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;button&gt; element — universal</span>
+          <span class="pill yes">type="submit" / "reset" / "button" — universal</span>
+          <span class="pill yes">formaction, formmethod, formenctype, formtarget, formnovalidate — universal</span>
+          <span class="pill yes">disabled — universal</span>
+          <span class="pill yes">:focus-visible — modern browsers</span>
+          <span class="pill yes">Icon buttons (SVG content) — universal</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">14</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Form submission</h4>
+            <p><code>type="submit"</code> button at the end of any form.</p>
+          </div>
+          <div class="card">
+            <h4>Modal triggers</h4>
+            <p><code>type="button"</code> opens dialogs, tooltips, menus.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-action toolbars</h4>
+            <p>Multiple submit buttons with different <code>formaction</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Save Draft / Publish</h4>
+            <p>One form, two buttons — draft uses <code>formnovalidate</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Icon buttons</h4>
+            <p>Close, settings, share — needs <code>aria-label</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Inline editor actions</h4>
+            <p>Cancel / Save button pair; cancel uses type="button", save type="submit".</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="label.html">← Previous: The Label Element</a>
+    <a class="next" href="fieldset-legend.html">Next: Fieldset &amp; Legend →</a>
+  </footer>
+</body>
+</html>

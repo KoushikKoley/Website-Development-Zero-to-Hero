@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Anatomy — The &lt;form&gt; Element — HTML Mastery</title>
+  <meta name="description" content="Learn the anatomy of the HTML form element: opening/closing tags, why every control should live inside a form (or be associated via the form attribute), default submission behavior, GET vs POST overview, and accessibility considerations for keyboard and screen reader users.">
+  <style>
+    :root {
+      --card: #ffffff;
+      --ink: #0f172a;
+      --ink-soft: #475569;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --accent: #f59e0b;
+      --success: #16a34a;
+      --warn: #dc2626;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      padding: 56px 24px 72px;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout {
+      max-width: 1200px; margin: -40px auto 0;
+      padding: 0 24px 80px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 32px;
+    }
+    nav.toc {
+      position: sticky; top: 16px; align-self: start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+      max-height: calc(100vh - 32px); overflow: auto;
+    }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    }
+    section h2 {
+      margin: 0 0 14px; font-size: 1.7rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; font-size: 1rem;
+    }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2ff; color: #1e3a8a;
+      padding: 2px 6px; border-radius: 6px; font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg); color: var(--code-fg);
+      padding: 18px 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout {
+      border-left: 4px solid var(--brand);
+      background: #eff6ff; padding: 14px 18px;
+      border-radius: 8px; margin: 18px 0;
+    }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 18px; background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box {
+      border: 1px dashed var(--line); border-radius: 12px;
+      padding: 18px; background: #fcfcfd; margin: 14px 0;
+    }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 10px 0 4px; }
+    .demo-box input[type="text"], .demo-box input[type="email"] {
+      width: 100%; max-width: 320px; padding: 8px 10px;
+      border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: inherit;
+    }
+    .demo-box button {
+      background: var(--brand); color: white; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem;
+      cursor: pointer; font-family: inherit; margin-top: 12px;
+    }
+    .demo-box button:hover { background: #1d4ed8; }
+    .demo-form-output {
+      margin-top: 14px; padding: 10px 12px; background: #f8fafc;
+      border: 1px solid var(--line); border-radius: 8px;
+      font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.85rem;
+      color: var(--ink-soft); min-height: 24px;
+    }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill {
+      background: #f1f5f9; border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px 12px; font-size: 0.8rem;
+    }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav {
+      max-width: 1200px; margin: 0 auto; padding: 24px;
+      display: flex; justify-content: space-between; gap: 16px;
+      border-top: 1px solid var(--line);
+    }
+    footer.page-nav a {
+      color: var(--brand); text-decoration: none; font-weight: 500;
+      padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+      border: 1px solid #dbeafe;
+    }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 1</span>
+    <h1>Form Anatomy — The <code>&lt;form&gt;</code> Element</h1>
+    <p>Every form you've ever filled out — login, checkout, contact, search — starts with the humble <code>&lt;form&gt;</code> element. Learn its anatomy, its default behavior, and the accessibility rules that separate a usable form from a frustrating one.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what-is-form">What is a form?</a></li>
+        <li><a href="#anatomy">Form element anatomy</a></li>
+        <li><a href="#controls">Form controls</a></li>
+        <li><a href="#form-attribute">The form attribute (out-of-form controls)</a></li>
+        <li><a href="#default-behavior">Default behavior</a></li>
+        <li><a href="#get-vs-post">GET vs POST overview</a></li>
+        <li><a href="#accessibility">Accessibility considerations</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what-is-form">
+        <h2><span class="num">1</span> What is a form?</h2>
+        <p>An HTML <code>&lt;form&gt;</code> element is a semantic container that groups input controls and defines what happens when the user submits them. It's the bridge between the user interface (what people see and click) and the server (where data is processed and stored).</p>
+        <p>Crucially, <code>&lt;form&gt;</code> is more than a <code>&lt;div&gt;</code> with extra meaning: it triggers browser-native behaviors — Enter key submission, autofill integration, validation, and accessibility groupings — that no other element provides.</p>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          A <code>&lt;form&gt;</code> doesn't <em>send</em> data by itself. The browser does — using the form's <code>action</code>, <code>method</code>, and <code>enctype</code> attributes to build an HTTP request. JavaScript can intercept and customize the entire process, but the default behavior is fully functional without a single line of JS.
+        </div>
+      </section>
+
+      <section id="anatomy">
+        <h2><span class="num">2</span> Form element anatomy</h2>
+        <p>The <code>&lt;form&gt;</code> element is a paired (non-void) element with an opening tag, content (form controls), and a closing tag:</p>
+        <pre><code>&lt;form action="/api/login" method="post"&gt;
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input type="email" id="email" name="email" required&gt;
+
+  &lt;label for="password"&gt;Password&lt;/label&gt;
+  &lt;input type="password" id="password" name="password" required&gt;
+
+  &lt;button type="submit"&gt;Sign in&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <p>Anatomy breakdown:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Part</th><th>Purpose</th><th>Required?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;form&gt;</code> opening tag</td><td>Opens the form, may carry attributes</td><td>Yes</td></tr>
+            <tr><td><code>action</code> attribute</td><td>URL where data is sent. Defaults to current page.</td><td>Optional</td></tr>
+            <tr><td><code>method</code> attribute</td><td>HTTP verb: <code>GET</code> or <code>POST</code>. Defaults to <code>GET</code>.</td><td>Optional</td></tr>
+            <tr><td>Form controls</td><td><code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;button&gt;</code></td><td>At least one named control for submission to do anything useful</td></tr>
+            <tr><td><code>&lt;/form&gt;</code> closing tag</td><td>Closes the form boundary</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          A <code>&lt;form&gt;</code> with no <code>action</code> submits to the current URL. This is useful for search filters and self-processing pages, but always set <code>method="post"</code> for any state-changing action.
+        </div>
+      </section>
+
+      <section id="controls">
+        <h2><span class="num">3</span> Form controls</h2>
+        <p>A form is only as useful as the controls inside it. HTML provides a small but powerful set of elements for collecting user input:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;input&gt;</code></td><td>Universal input — type attribute chooses the variant</td><td><code>&lt;input type="text"&gt;</code></td></tr>
+            <tr><td><code>&lt;textarea&gt;</code></td><td>Multi-line free text</td><td>Comments, messages</td></tr>
+            <tr><td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td><td>Dropdown picker</td><td>Country selector</td></tr>
+            <tr><td><code>&lt;button&gt;</code></td><td>Submit, reset, or generic button</td><td><code>&lt;button type="submit"&gt;</code></td></tr>
+            <tr><td><code>&lt;output&gt;</code></td><td>Calculated result display</td><td>Live form calculation</td></tr>
+            <tr><td><code>&lt;progress&gt;</code></td><td>Progress bar (file upload, async task)</td><td>Upload progress</td></tr>
+            <tr><td><code>&lt;meter&gt;</code></td><td>Scalar value in known range (e.g., 0–100%)</td><td>Password strength</td></tr>
+            <tr><td><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code></td><td>Group of related controls with shared label</td><td>Address fields, radio groups</td></tr>
+            <tr><td><code>&lt;label&gt;</code></td><td>Text label for a control (accessibility critical)</td><td>Field captions</td></tr>
+            <tr><td><code>&lt;datalist&gt;</code></td><td>Suggestions for text inputs</td><td>Country autocomplete</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Only <strong>named</strong> controls (those with a <code>name</code> attribute) are submitted. A control with no <code>name</code> is purely visual — its value never reaches the server.
+        </div>
+      </section>
+
+      <section id="form-attribute">
+        <h2><span class="num">4</span> The form attribute (out-of-form controls)</h2>
+        <p>Normally a control must be a descendant of <code>&lt;form&gt;</code> to be submitted with it. The <code>form</code> attribute on a control lets you associate it with a form even when it lives elsewhere in the DOM:</p>
+        <pre><code>&lt;form id="search-form" action="/search" method="get"&gt;
+  &lt;label for="q"&gt;Search&lt;/label&gt;
+  &lt;input type="search" id="q" name="q"&gt;
+&lt;/form&gt;
+
+&lt;!-- Submit button lives outside the form element --&gt;
+&lt;button type="submit" form="search-form"&gt;Go&lt;/button&gt;</code></pre>
+        <p>Why use this? Common scenarios:</p>
+        <ul>
+          <li><strong>Toolbar buttons</strong> outside the main form area (e.g., a "Save" button in a sticky footer).</li>
+          <li><strong>Tabbed forms</strong> where controls live in different panels but submit together.</li>
+          <li><strong>DOM constraints</strong> — when CSS layout forces controls outside the form tree (rare, but happens with table layouts and certain grid scenarios).</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Live demo: button outside form using form attribute</div>
+          <form id="demo-form" onsubmit="event.preventDefault(); document.getElementById('demo-output').textContent = 'Submitted: q=' + encodeURIComponent(document.getElementById('demo-q').value);">
+            <label for="demo-q">Search term</label>
+            <input type="search" id="demo-q" name="q" placeholder="Try typing then click Go">
+          </form>
+          <button type="submit" form="demo-form">Go (outside form)</button>
+          <div class="demo-form-output" id="demo-output">Not submitted yet.</div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          The <code>form</code> attribute is supported by all form controls: <code>&lt;input&gt;</code>, <code>&lt;button&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;output&gt;</code>, <code>&lt;fieldset&gt;</code>, <code>&lt;label&gt;</code>. Use it to keep markup clean when layout demands separation.
+        </div>
+      </section>
+
+      <section id="default-behavior">
+        <h2><span class="num">5</span> Default behavior</h2>
+        <p>Without any attributes, <code>&lt;form&gt;</code> defaults to:</p>
+        <ul>
+          <li><code>action</code> = current URL (submits to itself)</li>
+          <li><code>method</code> = <code>GET</code> (appends data to URL as query string)</li>
+          <li><code>enctype</code> = <code>application/x-www-form-urlencoded</code></li>
+          <li><code>target</code> = <code>_self</code> (replaces current page)</li>
+          <li><code>autocomplete</code> = <code>on</code> (browser may autofill)</li>
+        </ul>
+        <pre><code>&lt;!-- These two forms are functionally equivalent --&gt;
+&lt;form&gt;...&lt;/form&gt;
+&lt;form action="" method="get"
+      enctype="application/x-www-form-urlencoded"
+      target="_self" autocomplete="on"&gt;...&lt;/form&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Submitting a form with <code>method="GET"</code> puts user data in the URL — visible to browser history, server logs, referrer headers, and shoulder-surfers. <strong>Never</strong> use GET for passwords, tokens, or sensitive data. Use <code>POST</code>.
+        </div>
+      </section>
+
+      <section id="get-vs-post">
+        <h2><span class="num">6</span> GET vs POST overview</h2>
+        <p>The <code>method</code> attribute chooses how the browser sends form data:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Aspect</th><th>GET</th><th>POST</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Data location</td><td>URL query string: <code>?name=value&amp;...</code></td><td>HTTP request body</td></tr>
+            <tr><td>Visibility</td><td>Visible in address bar, history, logs</td><td>Hidden from address bar</td></tr>
+            <tr><td>Length limit</td><td>~2,000–8,000 chars (browser/server dependent)</td><td>Effectively unlimited (server config)</td></tr>
+            <tr><td>Caching</td><td>Cacheable, bookmarkable</td><td>Never cached, never bookmarked</td></tr>
+            <tr><td>Idempotency</td><td>Should be idempotent (safe to retry)</td><td>Not idempotent (re-submit may duplicate)</td></tr>
+            <tr><td>Use cases</td><td>Search, filters, pagination, view actions</td><td>Login, register, checkout, content creation</td></tr>
+            <tr><td>File uploads</td><td>Not supported</td><td>Requires <code>enctype="multipart/form-data"</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          There's also a third method value: <code>method="dialog"</code>. It's used when a form lives inside a <code>&lt;dialog&gt;</code> element — submitting it closes the dialog without an HTTP request. We'll cover it in detail in <a href="form-attributes.html">Form Attributes</a>.
+        </div>
+      </section>
+
+      <section id="accessibility">
+        <h2><span class="num">7</span> Accessibility considerations</h2>
+        <p>Forms are where accessibility matters most. A user with motor impairments may rely entirely on the keyboard. A screen-reader user navigates by field name. Someone with cognitive differences benefits from clear labels, predictable layouts, and visible focus states.</p>
+        <p>Essential rules:</p>
+        <ul>
+          <li><strong>Every control has a <code>&lt;label&gt;</code></strong> associated via <code>for="id"</code> or wrapping. Never rely on <code>placeholder</code> alone — it disappears on input and is read inconsistently.</li>
+          <li><strong>Logical tab order</strong> follows source order. Avoid <code>tabindex</code> hacks unless absolutely necessary.</li>
+          <li><strong>Visible focus indicator</strong>. Never set <code>outline: none</code> without a replacement.</li>
+          <li><strong>Group related fields</strong> with <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> — screen readers announce "legend, label, input" giving context like "Shipping address, Street, [input]".</li>
+          <li><strong>Required fields</strong> marked with both <code>required</code> attribute and visual indicator (asterisk + accessible text).</li>
+          <li><strong>Error messages</strong> linked to fields via <code>aria-describedby</code> and <code>role="alert"</code> for live announcements.</li>
+          <li><strong>Buttons</strong> have descriptive text, not just icons.</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Accessible form demo — try tabbing through</div>
+          <form onsubmit="event.preventDefault(); this.querySelector('.success').hidden = false;">
+            <fieldset>
+              <legend>Sign in to your account</legend>
+              <label for="a11y-email">Email address <span aria-hidden="true" style="color:var(--warn)">*</span></label>
+              <input type="email" id="a11y-email" name="email" required autocomplete="email" aria-describedby="a11y-email-hint">
+              <small id="a11y-email-hint" style="color:var(--ink-soft); display:block; font-size:0.85rem;">We'll never share your email.</small>
+              <label for="a11y-pw" style="margin-top:12px;">Password <span aria-hidden="true" style="color:var(--warn)">*</span></label>
+              <input type="password" id="a11y-pw" name="password" required autocomplete="current-password" minlength="8">
+              <button type="submit">Sign in</button>
+              <p class="success" hidden role="status" style="color:var(--success); margin-top:12px;">✓ Form is valid and would submit.</p>
+            </fieldset>
+          </form>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">8</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Why it breaks</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Using <code>&lt;div&gt;</code> instead of <code>&lt;form&gt;</code></td><td>Loses native submission, validation, autofill. Requires JS for everything.</td><td>Always use <code>&lt;form&gt;</code> for input collection.</td></tr>
+            <tr><td>Forgetting <code>name</code> on controls</td><td>Value never submitted.</td><td>Always set <code>name</code>.</td></tr>
+            <tr><td><code>method="GET"</code> for passwords</td><td>Password visible in URL, history, logs.</td><td>Use <code>method="POST"</code> for sensitive data.</td></tr>
+            <tr><td>Multiple submit buttons without <code>formaction</code></td><td>Buttons all submit to same URL, behavior unclear.</td><td>Use <code>formaction</code> per button or JS handler.</td></tr>
+            <tr><td>No <code>&lt;label&gt;</code> on inputs</td><td>Screen readers announce "edit text blank" with no context.</td><td>Pair every control with a <code>&lt;label for="id"&gt;</code>.</td></tr>
+            <tr><td>Nesting a <code>&lt;form&gt;</code> inside another form</td><td>Invalid HTML — browsers ignore inner form; behavior undefined.</td><td>One form per region; use <code>form</code> attribute for out-of-tree controls.</td></tr>
+            <tr><td>Removing <code>:focus</code> outline</td><td>Keyboard users can't see where they are.</td><td>Always provide a visible focus style.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Spot the missing attribute</strong>
+          Below, the password field won't be submitted. Why? Fix it.
+          <pre><code>&lt;form action="/login" method="post"&gt;
+  &lt;label for="user"&gt;Username&lt;/label&gt;
+  &lt;input type="text" id="user" name="username"&gt;
+
+  &lt;label for="pw"&gt;Password&lt;/label&gt;
+  &lt;input type="password" id="pw"&gt;
+
+  &lt;button&gt;Sign in&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Out-of-form button</strong>
+          Create a search form with the input inside the <code>&lt;form&gt;</code> but the submit button placed outside it (after the closing tag). Use the <code>form</code> attribute to wire it up. Verify it works.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Accessibility audit</strong>
+          Open the accessible demo above. Use only your keyboard: press Tab to move between fields, Enter to submit. Does the visible focus move predictably? Try a screen reader (VoiceOver on Mac, NVDA on Windows) and listen for how each field is announced.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">10</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;form&gt; — universal (since HTML 2.0, 1995)</span>
+          <span class="pill yes">action / method — universal</span>
+          <span class="pill yes">form attribute on controls — all modern browsers</span>
+          <span class="pill yes">method="dialog" — Chrome 37+, Firefox 59+, Safari 15.4+</span>
+          <span class="pill yes">autocomplete — universal (with token values in modern browsers)</span>
+          <span class="pill yes">novalidate — universal</span>
+        </div>
+        <p>The <code>&lt;form&gt;</code> element and its core attributes work everywhere. The <code>form</code> attribute for out-of-tree controls is the most underused feature — it has been supported for over a decade but is rarely taught.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">11</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Login screens</h4>
+            <p>POST form with email + password, autocomplete tokens, password manager integration.</p>
+          </div>
+          <div class="card">
+            <h4>Search boxes</h4>
+            <p>GET form, single text input, submits on Enter, URL bookmarkable.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-step checkout</h4>
+            <p>One form per step, server validates each, last step commits.</p>
+          </div>
+          <div class="card">
+            <h4>Settings panels</h4>
+            <p>Multiple forms (one per section) so users can save individual preferences.</p>
+          </div>
+          <div class="card">
+            <h4>File upload</h4>
+            <p>POST with <code>enctype="multipart/form-data"</code>, <code>&lt;input type="file"&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Inline filters</h4>
+            <p>GET form on listing pages; URL changes drive server-side filtering.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../../05-Tables/03-Accessible-Tables/responsive-tables.html">← Previous: Responsive Tables</a>
+    <a class="next" href="form-attributes.html">Next: Form Attributes →</a>
+  </footer>
+</body>
+</html>

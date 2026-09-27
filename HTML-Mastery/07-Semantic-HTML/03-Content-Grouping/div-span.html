@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;div&gt; &amp; &lt;span&gt; — The Elements That Aren't Banned — HTML Mastery</title>
+  <meta name="description" content="div and span are NOT banned — use them when no semantic element fits. The class and id global attributes, common patterns (containers, wrappers, JS hooks), and the dangerous anti-patterns: div for headings, div for buttons, divsoup layouts.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Content Grouping · Lesson 1</span>
+    <h1><code>&lt;div&gt;</code> &amp; <code>&lt;span&gt;</code></h1>
+    <p>They have been maligned, blamed, and called "non-semantic". But <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are not banned — they are essential escape hatches for when no semantic element fits. The trick is knowing <em>when</em> they're the right tool, and when they're a code smell hiding a missing semantic.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What they are</a></li>
+        <li><a href="#when">When to use them</a></li>
+        <li><a href="#div-vs-span">div vs span</a></li>
+        <li><a href="#class-id">class &amp; id attributes</a></li>
+        <li><a href="#patterns">Common patterns</a></li>
+        <li><a href="#anti-patterns">Anti-patterns</a></li>
+        <li><a href="#replacement">The replacement table</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What They Are</h2>
+        <p><code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are the two generic, semantics-free elements in HTML. They have <em>no inherent meaning</em> — they are pure containers, used purely as hooks for styling, scripting, or grouping.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Display</th><th>Content category</th><th>Use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;div&gt;</code></td><td>block</td><td>Flow</td><td>Group block-level content</td></tr>
+            <tr><td><code>&lt;span&gt;</code></td><td>inline</td><td>Phrasing</td><td>Group inline content</td></tr>
+          </tbody>
+        </table>
+
+        <p>By themselves, they tell the browser nothing about the content's role. Screen readers do not announce them. Search engines do not extract meaning from them. They are invisible to semantics.</p>
+
+        <div class="callout info">
+          <strong>Key idea</strong>
+          They are not bad. They are the <em>last-resort</em> semantic escape hatch. The rule is: prefer a semantic element when one exists; use a <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> when none does.
+        </div>
+      </section>
+
+      <section id="when">
+        <h2><span class="num">2</span> When to Use Them</h2>
+        <p>Use <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> when:</p>
+        <ul>
+          <li>No HTML element exists that captures the meaning you need (e.g. a card component, a layout grid cell, a decorative wrapper).</li>
+          <li>You need a CSS or JavaScript hook on a group of elements without changing their semantics.</li>
+          <li>You're building application-level UI (dashboard widgets, modal panels, drag-and-drop containers) where semantic HTML has nothing to offer.</li>
+          <li>You need to wrap a set of elements so they can be styled as a single unit (e.g. a "row" or "column" inside a CSS Grid layout).</li>
+        </ul>
+
+        <p>Avoid them when a semantic alternative exists:</p>
+        <pre><code>&lt;!-- ❌ Anti-pattern: div for navigation --&gt;
+&lt;div class="nav"&gt;
+  &lt;div class="nav-item"&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/div&gt;
+  &lt;div class="nav-item"&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ✅ Use semantic &lt;nav&gt; and &lt;ul&gt; --&gt;
+&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+      </section>
+
+      <section id="div-vs-span">
+        <h2><span class="num">3</span> div vs span — When to Pick Which</h2>
+        <p>The only meaningful difference between the two is display behaviour and which content model they allow. Pick based on what's going <em>inside</em> them.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Criterion</th><th>&lt;div&gt;</th><th>&lt;span&gt;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Default display</td><td><code>block</code></td><td><code>inline</code></td></tr>
+            <tr><td>Allowed children</td><td>Flow content (most elements)</td><td>Phrasing content (text, inline elements)</td></tr>
+            <tr><td>Can contain block-level elements?</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Can contain a heading?</td><td>Yes (but consider if a section is better)</td><td>No</td></tr>
+            <tr><td>Can contain a paragraph?</td><td>Yes</td><td>No</td></tr>
+            <tr><td>Used for</td><td>Layout containers, wrappers, grouping blocks</td><td>Inline styling hooks, micro-formatting</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Putting block-level content (like <code>&lt;p&gt;</code> or <code>&lt;ul&gt;</code>) inside a <code>&lt;span&gt;</code>. The HTML parser will close your <code>&lt;span&gt;</code> early, leading to mysterious layout bugs.
+        </div>
+
+        <div class="comparison">
+          <div class="comparison bad">
+            <h4>❌ Wrong: span wrapping blocks</h4>
+            <pre><code>&lt;span class="card"&gt;
+  &lt;p&gt;Title&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Item 1&lt;/li&gt;
+    &lt;li&gt;Item 2&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/span&gt;</code></pre>
+          </div>
+          <div class="comparison good">
+            <h4>✅ Right: div wrapping blocks</h4>
+            <pre><code>&lt;div class="card"&gt;
+  &lt;p&gt;Title&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Item 1&lt;/li&gt;
+    &lt;li&gt;Item 2&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="class-id">
+        <h2><span class="num">4</span> The <code>class</code> and <code>id</code> Attributes</h2>
+        <p>Without attributes, <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are nearly useless. The two attributes that bring them to life are <code>class</code> and <code>id</code>.</p>
+
+        <h3>class</h3>
+        <p>A space-separated list of identifiers. An element can have many classes. Multiple elements can share a class. Use for styling groups and JS hooks.</p>
+        <pre><code>&lt;div class="card product-card featured"&gt;
+  ...
+&lt;/div&gt;
+
+&lt;span class="badge badge--new"&gt;NEW&lt;/span&gt;</code></pre>
+
+        <h3>id</h3>
+        <p>A single, page-unique identifier. Use for: anchor targets, form label association, ARIA references (<code>aria-labelledby</code>), and JS direct-element selection.</p>
+        <pre><code>&lt;div id="app-root"&gt;&lt;/div&gt;
+
+&lt;button aria-controls="menu-panel"&gt;Toggle&lt;/button&gt;
+&lt;div id="menu-panel" hidden&gt;...&lt;/div&gt;</code></pre>
+
+        <h3>Naming conventions</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Convention</th><th>Example</th><th>Used by</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>BEM</td><td><code>card__title card--featured</code></td><td>Many enterprise codebases</td></tr>
+            <tr><td>Utility-first</td><td><code>flex items-center gap-4</code></td><td>Tailwind CSS, WindiCSS</td></tr>
+            <tr><td>Hyphen-case</td><td><code>site-header</code></td><td>Most traditional CSS</td></tr>
+            <tr><td>camelCase</td><td><code>siteHeader</code></td><td>Common in JS frameworks</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Whatever convention you pick, be consistent within a codebase. Mixing BEM and utility classes in the same file is a maintenance nightmare.
+        </div>
+      </section>
+
+      <section id="patterns">
+        <h2><span class="num">5</span> Common Patterns</h2>
+
+        <h3>Pattern 1 — Layout containers</h3>
+        <pre><code>&lt;div class="page"&gt;
+  &lt;div class="page__header"&gt;...&lt;/div&gt;
+  &lt;div class="page__main"&gt;...&lt;/div&gt;
+  &lt;div class="page__footer"&gt;...&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p>This is the canonical use of <code>&lt;div&gt;</code> for layout: a hierarchy of generic containers that CSS Grid or Flexbox can position. The semantics are in the children (e.g. <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>), not the wrapper.</p>
+
+        <h3>Pattern 2 — Component wrapper</h3>
+        <pre><code>&lt;article class="card"&gt;
+  &lt;div class="card__media"&gt;
+    &lt;img src="..." alt="..."&gt;
+  &lt;/div&gt;
+  &lt;div class="card__body"&gt;
+    &lt;h3&gt;Title&lt;/h3&gt;
+    &lt;p&gt;Body text&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</code></pre>
+        <p>The wrapper <code>&lt;div&gt;</code>s group media and text for styling, but the semantic content (the <code>&lt;article&gt;</code>, <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>) is intact.</p>
+
+        <h3>Pattern 3 — JavaScript hook</h3>
+        <pre><code>&lt;button data-js="copy-btn" data-target="#snippet-1"&gt;Copy&lt;/button&gt;
+&lt;pre&gt;&lt;code id="snippet-1"&gt;...&lt;/code&gt;&lt;/pre&gt;</code></pre>
+        <pre><code>// event delegation - cleanest pattern
+document.addEventListener('click', e =&gt; {
+  const btn = e.target.closest('[data-js="copy-btn"]');
+  if (!btn) return;
+  const target = document.querySelector(btn.dataset.target);
+  navigator.clipboard.writeText(target.textContent);
+});</code></pre>
+        <p>Note: modern conventions often use <code>data-*</code> attributes for JS hooks rather than classes — this keeps "styling" and "behaviour" concerns separate.</p>
+
+        <h3>Pattern 4 — Inline styling hook</h3>
+        <pre><code>&lt;p&gt;
+  The result was
+  &lt;span class="num num--positive"&gt;+12.4%&lt;/span&gt;
+  compared to last quarter's
+  &lt;span class="num num--negative"&gt;-3.1%&lt;/span&gt;.
+&lt;/p&gt;</code></pre>
+        <p><code>&lt;span&gt;</code> is the right tool here because the styling is purely visual (color) and doesn't change the meaning of the words.</p>
+
+        <h3>Pattern 5 — Tooltip / popover target</h3>
+        <pre><code>&lt;span class="term" tabindex="0"
+      role="button"
+      aria-describedby="tt-1"&gt;cache&lt;/span&gt;
+&lt;span id="tt-1" role="tooltip" hidden&gt;
+  A small, fast storage layer.
+&lt;/span&gt;</code></pre>
+      </section>
+
+      <section id="anti-patterns">
+        <h2><span class="num">6</span> Anti-Patterns (a.k.a. Div Soup)</h2>
+
+        <h3>1. div for headings</h3>
+        <div class="comparison">
+          <div class="comparison bad">
+            <h4>❌ Wrong</h4>
+            <pre><code>&lt;div class="title"&gt;
+  Welcome back
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="comparison good">
+            <h4>✅ Right</h4>
+            <pre><code>&lt;h1&gt;Welcome back&lt;/h1&gt;</code></pre>
+          </div>
+        </div>
+        <p>Headings carry SEO weight and screen-reader navigation. A <code>&lt;div&gt;</code> styled to look big is invisible to both.</p>
+
+        <h3>2. div for buttons</h3>
+        <div class="comparison">
+          <div class="comparison bad">
+            <h4>❌ Wrong</h4>
+            <pre><code>&lt;div class="btn"
+     onclick="submit()"&gt;
+  Submit
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="comparison good">
+            <h4>✅ Right</h4>
+            <pre><code>&lt;button type="button"
+        onclick="submit()"&gt;
+  Submit
+&lt;/button&gt;</code></pre>
+          </div>
+        </div>
+        <p>A <code>&lt;div&gt;</code>-as-button is unfocusable by keyboard, doesn't fire on Space/Enter, and isn't announced as a button. You'd have to bolt on <code>role="button"</code>, <code>tabindex="0"</code>, and key handlers — and you'd still get it wrong.</p>
+
+        <h3>3. div for lists</h3>
+        <div class="comparison">
+          <div class="comparison bad">
+            <h4>❌ Wrong</h4>
+            <pre><code>&lt;div class="list"&gt;
+  &lt;div class="item"&gt;Milk&lt;/div&gt;
+  &lt;div class="item"&gt;Eggs&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="comparison good">
+            <h4>✅ Right</h4>
+            <pre><code>&lt;ul&gt;
+  &lt;li&gt;Milk&lt;/li&gt;
+  &lt;li&gt;Eggs&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+          </div>
+        </div>
+
+        <h3>4. div for links</h3>
+        <pre><code>&lt;!-- ❌ Anti-pattern --&gt;
+&lt;div class="link" onclick="location='/about'"&gt;About&lt;/div&gt;
+
+&lt;!-- ✅ Right --&gt;
+&lt;a href="/about"&gt;About&lt;/a&gt;</code></pre>
+        <p>Real <code>&lt;a&gt;</code> tags support middle-click-to-open-tab, right-click "copy link", search-engine crawling, and no-JS fallback. <code>onclick</code> divs break all of those.</p>
+
+        <h3>5. span for emphasis</h3>
+        <div class="comparison">
+          <div class="comparison bad">
+            <h4>❌ Wrong</h4>
+            <pre><code>&lt;span class="bold"&gt;
+  Warning: do not touch
+&lt;/span&gt;</code></pre>
+          </div>
+          <div class="comparison good">
+            <h4>✅ Right</h4>
+            <pre><code>&lt;strong&gt;
+  Warning: do not touch
+&lt;/strong&gt;</code></pre>
+          </div>
+        </div>
+        <p><code>&lt;strong&gt;</code> conveys importance. A styled <code>&lt;span&gt;</code> conveys nothing.</p>
+      </section>
+
+      <section id="replacement">
+        <h2><span class="num">7</span> The Replacement Table</h2>
+        <p>Before reaching for a <code>&lt;div&gt;</code>, scan this table. If any row matches your use case, use the semantic element instead.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>What you're building</th><th>Don't use div</th><th>Use this</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Page header / nav / footer</td><td><code>div class="header"</code></td><td><code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;footer&gt;</code></td></tr>
+            <tr><td>Main content area</td><td><code>div id="main"</code></td><td><code>&lt;main&gt;</code></td></tr>
+            <tr><td>Sidebar / related content</td><td><code>div.sidebar</code></td><td><code>&lt;aside&gt;</code></td></tr>
+            <tr><td>Self-contained article</td><td><code>div.post</code></td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>Thematic section</td><td><code>div.section</code></td><td><code>&lt;section&gt;</code> (with heading)</td></tr>
+            <tr><td>A clickable action</td><td><code>div.btn</code></td><td><code>&lt;button&gt;</code></td></tr>
+            <tr><td>A navigation link</td><td><code>div.link</code></td><td><code>&lt;a&gt;</code></td></tr>
+            <tr><td>A list of items</td><td><code>div.list &gt; div.item</code></td><td><code>&lt;ul&gt; / &lt;ol&gt; / &lt;li&gt;</code></td></tr>
+            <tr><td>A heading</td><td><code>div.title</code></td><td><code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code></td></tr>
+            <tr><td>A paragraph</td><td><code>div.text</code></td><td><code>&lt;p&gt;</code></td></tr>
+            <tr><td>Emphasis / important text</td><td><code>span.bold</code></td><td><code>&lt;strong&gt;</code> or <code>&lt;em&gt;</code></td></tr>
+            <tr><td>An image with caption</td><td><code>div.figure</code></td><td><code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code></td></tr>
+            <tr><td>A form input with label</td><td><code>div.field</code></td><td><code>&lt;label&gt;</code> + <code>&lt;input&gt;</code></td></tr>
+            <tr><td>Inline quote</td><td><code>span.quote</code></td><td><code>&lt;q&gt;</code></td></tr>
+            <tr><td>Block quote</td><td><code>div.quote</code></td><td><code>&lt;blockquote&gt;</code></td></tr>
+            <tr><td>Date / time</td><td><code>span.date</code></td><td><code>&lt;time&gt;</code></td></tr>
+            <tr><td>Highlighted search term</td><td><code>span.hl</code></td><td><code>&lt;mark&gt;</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <strong>Pro Tip: the "naked HTML" test</strong>
+          Disable all CSS on your page. If you can still understand the structure, semantics, and reading order from the bare HTML alone — you've used <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> sparingly enough. If the page looks like undifferentiated blocks of text, you've overused them.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser Support</h2>
+        <p>Both elements are older than HTML 4. They have universal support on every browser ever shipped.</p>
+        <div class="browser-support">
+          <span class="pill yes">All modern browsers</span>
+          <span class="pill yes">IE 1+</span>
+          <span class="pill yes">Netscape 2+</span>
+          <span class="pill yes">All mobile browsers</span>
+        </div>
+        <p>Neither element has any default user-agent styling beyond <code>display:block</code> (<code>&lt;div&gt;</code>) and <code>display:inline</code> (<code>&lt;span&gt;</code>).</p>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Spot the div soup</strong>
+          Rewrite this snippet using semantic HTML, then add <code>&lt;div&gt;</code> only where genuinely needed:
+          <pre><code>&lt;div class="nav"&gt;
+  &lt;div class="nav-item" onclick="go('/')"&gt;Home&lt;/div&gt;
+  &lt;div class="nav-item" onclick="go('/blog')"&gt;Blog&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="page-title"&gt;My Blog&lt;/div&gt;
+&lt;div class="post"&gt;
+  &lt;div class="post-title"&gt;Hello world&lt;/div&gt;
+  &lt;div class="post-body"&gt;This is my first post&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Component wrapper</strong>
+          Build a product card component with a media slot (image), a body slot (title, description, price), and an action slot (Add to cart button). Use semantic elements throughout, and only reach for <code>&lt;div&gt;</code> as a wrapper where no semantic alternative fits.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — JS hook strategy</strong>
+          Refactor the following code to use <code>data-js="..."</code> attributes for JavaScript selection instead of class names, keeping the classes for styling only:
+          <pre><code>&lt;button class="btn btn-primary copy-btn"&gt;Copy&lt;/button&gt;
+&lt;script&gt;
+  document.querySelector('.copy-btn').addEventListener(...);
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Naked HTML test</strong>
+          Open a page you built recently. Add <code>?nocss</code> via a stylesheet-disabled bookmarklet. Note any place where the unstyled page is unreadable — those are exactly the places you overused <code>&lt;div&gt;</code>.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">10</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>CSS Grid / Flexbox layout</h4>
+            <p>Generic containers are the bread and butter of any modern layout. The <code>&lt;div&gt;</code> wraps content the way you'd wrap text in a div for layout.</p>
+          </div>
+          <div class="card">
+            <h4>Third-party widgets</h4>
+            <p>Map embeds, chat widgets, video players — the JS SDK usually requires a <code>&lt;div id="root"&gt;</code> mount point.</p>
+          </div>
+          <div class="card">
+            <h4>Component composition</h4>
+            <p>A card with media + body + footer slots uses <code>&lt;div&gt;</code> as the inner wrappers because no semantic element captures "card body".</p>
+          </div>
+          <div class="card">
+            <h4>Inline decoration</h4>
+            <p>Colored numbers, status indicators, currency symbols — inline spans for purely visual styling.</p>
+          </div>
+          <div class="card">
+            <h4>Animation targets</h4>
+            <p>When you need to fade or move a piece of text without changing its meaning, wrap it in a <code>&lt;span&gt;</code> and animate the span.</p>
+          </div>
+          <div class="card">
+            <h4>JS event delegation</h4>
+            <p>Generic containers are the natural parents for event-delegation patterns in vanilla JS apps.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../02-Sectioning/hgroup.html">← Previous: hgroup</a>
+    <a class="next" href="address-figure-time.html">Next: address, figure, time →</a>
+  </footer>
+</body>
+</html>

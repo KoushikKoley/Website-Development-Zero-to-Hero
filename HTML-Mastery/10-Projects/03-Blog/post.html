@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Long Road Between Idea and Shipped — an essay by Maya Kowalski on the messy middle of software development, where most projects quietly die.">
+  <title>The Long Road Between Idea and Shipped — The Margin Notes</title>
+  <style>
+    :root {
+      --cream: #fbf7f0;
+      --cream-2: #f4ede0;
+      --ink: #1f1b16;
+      --ink-soft: #5b544a;
+      --rule: #e6dccb;
+      --accent: #c2410c;
+      --accent-soft: #fff1e6;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    /* ===== Header ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(251, 247, 240, 0.92);
+      backdrop-filter: saturate(180%) blur(10px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 72px;
+    }
+    .logo { font-family: var(--serif); font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em; color: var(--ink); }
+    .logo em { font-style: italic; color: var(--accent); }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--ink); }
+    .nav-menu { display: flex; gap: 28px; list-style: none; }
+    .nav-menu a { color: var(--ink-soft); font-weight: 500; font-size: 0.95rem; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { color: var(--accent); text-decoration: none; }
+    @media (max-width: 760px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 72px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: var(--cream);
+        border-bottom: 1px solid var(--rule);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--rule); }
+      .nav-menu a { display: block; padding: 14px 24px; }
+    }
+
+    /* ===== Article hero ===== */
+    .article-hero { padding: 56px 0 32px; border-bottom: 1px solid var(--rule); }
+    .article-hero-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+    .post-category-pill {
+      display: inline-block; font-size: 0.74rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent); font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .article-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15; letter-spacing: -0.02em;
+      margin: 0 0 20px;
+    }
+    .article-hero .dek {
+      font-family: var(--serif); font-style: italic;
+      font-size: 1.18rem; color: var(--ink-soft);
+      margin-bottom: 28px; line-height: 1.5;
+    }
+    .byline {
+      display: inline-flex; align-items: center; gap: 14px;
+      font-size: 0.92rem; color: var(--ink-soft);
+      padding: 14px 22px; background: var(--cream-2); border-radius: 999px;
+      border: 1px solid var(--rule);
+    }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #c2410c, #ea580c);
+      color: #fff; display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .byline strong { color: var(--ink); font-weight: 600; }
+    .byline .dot { color: var(--rule); }
+
+    /* ===== Featured image ===== */
+    .featured-image {
+      margin: 32px auto 0;
+      max-width: 960px;
+      aspect-ratio: 16 / 8;
+      border-radius: 8px; overflow: hidden;
+      background: linear-gradient(135deg, #f4ede0 0%, #e8dcc4 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .featured-image svg { width: 50%; height: 50%; opacity: 0.85; }
+    .caption {
+      max-width: 960px; margin: 12px auto 0;
+      font-size: 0.85rem; color: var(--ink-soft); font-style: italic;
+      text-align: center;
+    }
+
+    /* ===== Article body ===== */
+    .article-body {
+      max-width: 700px; margin: 40px auto 0;
+      font-family: var(--serif); font-size: 1.18rem; line-height: 1.75;
+      color: var(--ink);
+    }
+    .article-body > * { margin-bottom: 22px; }
+    .article-body p:first-of-type::first-letter {
+      font-size: 3.6rem; line-height: 0.9; font-weight: 700;
+      float: left; margin: 6px 8px 0 0; color: var(--accent);
+      font-family: var(--serif);
+    }
+    .article-body h2 {
+      font-family: var(--serif); font-size: 1.7rem;
+      letter-spacing: -0.01em; margin: 40px 0 16px;
+    }
+    .article-body h3 {
+      font-family: var(--serif); font-size: 1.32rem;
+      letter-spacing: -0.01em; margin: 28px 0 12px;
+    }
+    .article-body a { text-decoration: underline; text-underline-offset: 3px; }
+    .article-body ul, .article-body ol { padding-left: 28px; }
+    .article-body li { margin-bottom: 10px; }
+    .article-body blockquote {
+      margin: 30px -24px; padding: 18px 28px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      font-style: italic; color: var(--ink);
+      font-size: 1.22rem; line-height: 1.5;
+    }
+    @media (max-width: 760px) { .article-body blockquote { margin: 24px 0; } }
+    .article-body pre {
+      background: #1e1e2e; color: #cdd6f4;
+      padding: 18px 20px; border-radius: 8px; overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.86rem; line-height: 1.6;
+      border: 1px solid #313244;
+    }
+    .article-body pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+    .article-body code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: var(--cream-2); color: #9a3412;
+      padding: 2px 6px; border-radius: 4px; font-size: 0.92em;
+    }
+    .article-body figure { margin: 30px -24px; }
+    @media (max-width: 760px) { .article-body figure { margin: 24px 0; } }
+    .article-body figure img,
+    .article-body figure .placeholder {
+      width: 100%; aspect-ratio: 16 / 9; border-radius: 8px;
+      background: linear-gradient(135deg, #f4ede0, #e8dcc4);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .article-body figure .placeholder svg { width: 40%; height: 40%; opacity: 0.7; }
+    .article-body figcaption {
+      font-family: var(--sans); font-size: 0.85rem; color: var(--ink-soft);
+      font-style: italic; text-align: center; margin-top: 10px;
+    }
+
+    /* ===== Tags + share ===== */
+    .post-footer-meta {
+      max-width: 700px; margin: 40px auto 0;
+      padding: 20px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+      font-size: 0.9rem;
+    }
+    .tag-list { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .tag-list span { color: var(--ink-soft); margin-right: 4px; }
+    .tag-list a {
+      background: var(--cream-2); border: 1px solid var(--rule);
+      padding: 4px 12px; border-radius: 999px;
+      color: var(--ink-soft); font-size: 0.82rem;
+    }
+    .tag-list a:hover { background: var(--accent); color: #fff; border-color: var(--accent); text-decoration: none; }
+    .share-links { display: flex; gap: 10px; align-items: center; color: var(--ink-soft); }
+    .share-links a {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--cream-2); border: 1px solid var(--rule);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--ink-soft); font-weight: 700; font-size: 0.82rem;
+    }
+    .share-links a:hover { background: var(--accent); color: #fff; border-color: var(--accent); text-decoration: none; }
+
+    /* ===== Author bio ===== */
+    .author-bio {
+      max-width: 760px; margin: 40px auto 0;
+      padding: 28px; background: var(--cream-2); border-radius: 12px;
+      border: 1px solid var(--rule);
+      display: grid; grid-template-columns: 80px 1fr; gap: 24px; align-items: start;
+    }
+    @media (max-width: 600px) { .author-bio { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+    .author-bio .avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #c2410c, #ea580c);
+      color: #fff; font-size: 1.6rem;
+    }
+    .author-bio h3 { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 6px; }
+    .author-bio .role { font-size: 0.85rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .author-bio p { font-size: 0.96rem; color: var(--ink-soft); margin-bottom: 12px; }
+    .author-bio .links { display: flex; gap: 14px; font-size: 0.88rem; flex-wrap: wrap; }
+    .author-bio .links a { color: var(--accent); }
+    @media (max-width: 600px) { .author-bio .links { justify-content: center; } }
+
+    /* ===== Related ===== */
+    .related { max-width: 960px; margin: 56px auto 0; }
+    .related h2 { font-family: var(--serif); font-size: 1.6rem; margin-bottom: 20px; letter-spacing: -0.01em; }
+    .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    @media (max-width: 760px) { .related-grid { grid-template-columns: 1fr; } }
+    .related-card { border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: #fff; }
+    .related-card .img {
+      aspect-ratio: 16 / 9; background: linear-gradient(135deg, #f4ede0, #e8dcc4);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .related-card .img svg { width: 40%; height: 40%; opacity: 0.7; }
+    .related-card .body { padding: 18px; }
+    .related-card .cat { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+    .related-card h3 { font-family: var(--serif); font-size: 1.12rem; line-height: 1.3; margin: 8px 0 10px; letter-spacing: -0.01em; }
+    .related-card h3 a { color: var(--ink); }
+    .related-card h3 a:hover { color: var(--accent); text-decoration: none; }
+    .related-card .meta { font-size: 0.82rem; color: var(--ink-soft); }
+
+    /* ===== Comments ===== */
+    .comments { max-width: 760px; margin: 56px auto 0; padding-top: 32px; border-top: 1px solid var(--rule); }
+    .comments h2 { font-family: var(--serif); font-size: 1.6rem; margin-bottom: 6px; }
+    .comments .count { font-size: 0.9rem; color: var(--ink-soft); margin-bottom: 24px; }
+    .comment { display: grid; grid-template-columns: 48px 1fr; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--rule); }
+    .comment .avatar { width: 48px; height: 48px; font-size: 1rem; }
+    .comment header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; font-size: 0.9rem; }
+    .comment header strong { font-weight: 600; color: var(--ink); }
+    .comment header time { color: var(--ink-soft); font-size: 0.85rem; }
+    .comment p { font-size: 0.98rem; color: var(--ink); margin: 0; }
+    .comment-form { margin-top: 24px; background: var(--cream-2); padding: 20px; border-radius: 8px; border: 1px solid var(--rule); }
+    .comment-form h3 { font-family: var(--serif); font-size: 1.15rem; margin-bottom: 12px; }
+    .comment-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    @media (max-width: 600px) { .comment-form .row { grid-template-columns: 1fr; } }
+    .comment-form input, .comment-form textarea {
+      width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--rule);
+      background: #fff; font-family: inherit; font-size: 0.95rem; color: var(--ink);
+    }
+    .comment-form input:focus, .comment-form textarea:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+    .comment-form label { display: block; font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 4px; font-weight: 500; }
+    .comment-form textarea { min-height: 100px; resize: vertical; }
+    .comment-form button {
+      padding: 10px 20px; border: 0; border-radius: 6px;
+      background: var(--accent); color: #fff; font-weight: 600;
+      cursor: pointer; font-family: inherit; font-size: 0.95rem;
+    }
+    .comment-form button:hover { background: #9a3412; }
+
+    /* ===== Footer ===== */
+    .site-footer {
+      border-top: 1px solid var(--rule); background: var(--cream-2);
+      padding: 40px 0 28px; margin-top: 64px;
+    }
+    .site-footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .site-footer .logo { font-size: 1.1rem; }
+    .site-footer p { font-size: 0.85rem; color: var(--ink-soft); }
+    .site-footer nav ul { display: flex; gap: 18px; list-style: none; }
+    .site-footer nav a { color: var(--ink-soft); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo">The Margin <em>Notes</em></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </label>
+    <nav aria-label="Primary">
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="archive.html">Archive</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <article>
+    <header class="article-hero">
+      <div class="article-hero-inner">
+        <span class="post-category-pill">Engineering · Essay</span>
+        <h1>The Long Road Between Idea and Shipped</h1>
+        <p class="dek">Most software never ships. Of the software that ships, most is unrecognizable from the original idea. This essay is about the messy middle — the gap where most projects quietly die.</p>
+        <div class="byline">
+          <span class="avatar">MK</span>
+          <span>By <strong>Maya Kowalski</strong></span>
+          <span class="dot">·</span>
+          <time datetime="2025-03-12">March 12, 2025</time>
+          <span class="dot">·</span>
+          <span>14 min read</span>
+        </div>
+      </div>
+      <div class="featured-image" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M10 80 Q30 30 50 60 T90 20" stroke="#c2410c" stroke-width="4" fill="none" opacity="0.85"/>
+          <circle cx="10" cy="80" r="5" fill="#c2410c"/>
+          <circle cx="50" cy="60" r="5" fill="#c2410c" opacity="0.6"/>
+          <circle cx="90" cy="20" r="5" fill="#c2410c"/>
+        </svg>
+      </div>
+      <p class="caption">A sketch from a project notebook. The line never goes where you expect.</p>
+    </header>
+
+    <div class="article-body">
+      <p>The idea was simple. Three engineers, one designer, six weeks, a small internal tool that would save the support team forty hours a month. We wrote the spec in an afternoon. The team was excited. The work, we agreed, was the easy part.</p>
+
+      <p>It shipped fifteen months later. Two of the original engineers had left. The designer had moved to a different product. The tool did roughly half of what the spec described, and did a great many things the spec never mentioned. It saved the support team closer to twelve hours a month. Everyone agreed it was a success.</p>
+
+      <h2>The Middle Is the Project</h2>
+      <p>Conferences are full of beginnings and ends. There are talks about the initial insight — the moment the team saw the problem clearly. There are talks about the launch — the dashboard, the press cycle, the lessons distilled into three clean bullet points. There are very few talks about the eleven months in between, because the eleven months in between are mostly a series of awkward conversations and bad decisions that nobody wants to relive on stage.</p>
+
+      <p>But the middle is where the software actually gets made. The beginning is a story you tell afterwards. The end is a press release. The middle is a project.</p>
+
+      <blockquote>The map is not the territory. The spec is not the software. The kickoff is not the work. The middle, where everything is uncertain and everyone is tired, is where the thing that ships gets built.</blockquote>
+
+      <h2>Three Things That Kill the Middle</h2>
+      <p>After watching this project (and a dozen others) go sideways, I've come to believe the middle dies for three reasons. None of them are technical.</p>
+
+      <h3>1. The team stops agreeing on what they're building</h3>
+      <p>This one is invisible because it happens slowly. In the kickoff meeting everyone nodded at the same slides. By month four, each person is carrying a slightly different version of the project in their head — and none of those versions is the spec, because nobody has read the spec since week two.</p>
+
+      <p>The fix is mundane: write down what you're building, share it, and rewrite it together every two weeks. The artifact doesn't matter (a one-page brief is fine). The shared rewriting is what does the work.</p>
+
+      <h3>2. The work gets quieter than the meetings</h3>
+      <p>By month three, a project that started as a small team building a small thing has accumulated a weekly sync, a bi-weekly stakeholder review, a monthly all-hands update, and an asynchronous standup. The calendar fills up. The commits slow down. People start describing their work instead of doing it.</p>
+
+      <pre><code>// A project health check I now run monthly:
+const signalRatio = commitsThisWeek / meetingsThisWeek;
+if (signalRatio &lt; 1.5) {
+  cancelSomething();  // anything
+}</code></pre>
+
+      <p>The arithmetic is harsh. A team of five in twelve hours of meetings a week is sixty person-hours of meeting. That's one and a half full-time engineers, gone. The fix isn't to abolish meetings. It's to notice when the ratio crosses the line, and cancel something — anything — to put it back.</p>
+
+      <h3>3. Nobody is allowed to be tired</h3>
+      <p>This is the one I see least discussed. The middle of a project is exhausting. The initial excitement is gone, the end is not yet in sight, and the work has gotten harder than anyone promised. Most teams have no language for this. They push through. They burn out. They ship a worse version of the thing and call it done.</p>
+
+      <p>The teams that ship the good version, in my experience, are the ones that name the tiredness out loud. "We are in the boring part. We are tired. The work is still good." Saying it doesn't fix it, but it stops the slow poisoning that comes from pretending everything is fine.</p>
+
+      <figure>
+        <div class="placeholder" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><path d="M20 70 Q35 50 50 60 T80 30" stroke="#c2410c" stroke-width="4" fill="none"/><circle cx="50" cy="60" r="3" fill="#c2410c"/></svg>
+        </div>
+        <figcaption>Figure 1: The shape of a real project. The dip in the middle is where most teams give up or ship the wrong thing.</figcaption>
+      </figure>
+
+      <h2>What to Do Instead</h2>
+      <p>I don't have a framework. I have three habits, learned the hard way:</p>
+
+      <ul>
+        <li><strong>Write the brief again, every two weeks, with the team.</strong> Not because the spec changed — because the people did. They need to re-agree.</li>
+        <li><strong>Measure meetings against commits.</strong> When the ratio crosses one meeting per commit, something is wrong and you should fix it before the next standup.</li>
+        <li><strong>Name the tiredness.</strong> Say it out loud at the weekly sync. The team will exhale. The work will go better.</li>
+      </ul>
+
+      <p>None of these will save your project. But they will make the middle less lonely. And the middle, I have come to believe, is where software either becomes real or quietly doesn't.</p>
+
+      <h2>Coda</h2>
+      <p>The internal tool I started this essay with saved the support team twelve hours a month, not forty. It is still running. The support team loves it. The engineer who finally shipped it was not on the original team. He read the brief, asked three questions, and built the half that mattered.</p>
+
+      <p>That, I think, is the real lesson. The road between idea and shipped is long, and most of the people who walk it aren't the people who started the journey. Ship something anyway. The next team will thank you for the parts you got right.</p>
+    </div>
+
+    <!-- Tags + share -->
+    <div class="post-footer-meta">
+      <div class="tag-list">
+        <span>Filed under:</span>
+        <a href="archive.html">Engineering</a>
+        <a href="archive.html">Process</a>
+        <a href="archive.html">Field Notes</a>
+      </div>
+      <div class="share-links">
+        <span>Share:</span>
+        <a href="#" aria-label="Share on Mastodon">M</a>
+        <a href="#" aria-label="Share on X">X</a>
+        <a href="#" aria-label="Copy link">#</a>
+        <a href="#" aria-label="Email">✉</a>
+      </div>
+    </div>
+
+    <!-- Author bio -->
+    <section class="author-bio" aria-label="About the author">
+      <span class="avatar">MK</span>
+      <div>
+        <h3>Maya Kowalski</h3>
+        <p class="role">Founding Editor</p>
+        <p>Maya has been writing software for fifteen years and writing about it for ten. She has shipped three products that worked, two that didn't, and one she still isn't sure about. Before The Margin Notes she led infrastructure at a company you've heard of, and a few you haven't.</p>
+        <div class="links">
+          <a href="about.html#team">More from Maya →</a>
+          <a href="#">Follow on Mastodon</a>
+          <a href="#">Website</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related -->
+    <section class="related" aria-label="Related essays">
+      <h2>Read next</h2>
+      <div class="related-grid">
+        <article class="related-card">
+          <div class="img" aria-hidden="true">
+            <svg viewBox="0 0 100 100"><rect x="20" y="40" width="60" height="20" fill="#c2410c" opacity="0.8"/><rect x="30" y="46" width="40" height="8" fill="#fbf7f0"/></svg>
+          </div>
+          <div class="body">
+            <span class="cat">Engineering</span>
+            <h3><a href="post.html">Why We Rewrote Our Build System Three Times</a></h3>
+            <p class="meta">Devi Rao · 9 min read</p>
+          </div>
+        </article>
+        <article class="related-card">
+          <div class="img" aria-hidden="true">
+            <svg viewBox="0 0 100 100"><polygon points="50,20 80,80 20,80" fill="#c2410c" opacity="0.8"/></svg>
+          </div>
+          <div class="body">
+            <span class="cat">Process</span>
+            <h3><a href="post.html">Pair Programming Is a Management Tool</a></h3>
+            <p class="meta">Aaron Tate · 11 min read</p>
+          </div>
+        </article>
+        <article class="related-card">
+          <div class="img" aria-hidden="true">
+            <svg viewBox="0 0 100 100"><rect x="20" y="20" width="20" height="60" fill="#c2410c" opacity="0.7"/><rect x="44" y="20" width="20" height="60" fill="#c2410c" opacity="0.5"/></svg>
+          </div>
+          <div class="body">
+            <span class="cat">Engineering</span>
+            <h3><a href="post.html">A Calm Defense of the Monolith</a></h3>
+            <p class="meta">Maya Kowalski · 13 min read</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Comments -->
+    <section class="comments" aria-label="Comments">
+      <h2>Discussion</h2>
+      <p class="count">4 responses</p>
+
+      <article class="comment">
+        <span class="avatar">JL</span>
+        <div>
+          <header><strong>Jules Lin</strong> <time datetime="2025-03-12T14:22">2 hours ago</time></header>
+          <p>The "name the tiredness" line is going on my wall. I've never seen anyone write about the boring middle honestly. Most essays pretend the project ended where the talk ended.</p>
+        </div>
+      </article>
+
+      <article class="comment">
+        <span class="avatar">DR</span>
+        <div>
+          <header><strong>Devi Rao</strong> <time datetime="2025-03-12T15:40">1 hour ago</time></header>
+          <p>Curious about the brief-rewriting habit — do you mean a literal rewrite, or just a review? We've tried weekly status updates and they don't seem to do the re-aligning work you're describing.</p>
+        </div>
+      </article>
+
+      <article class="comment">
+        <span class="avatar">MK</span>
+        <div>
+          <header><strong>Maya Kowalski</strong> <time datetime="2025-03-12T16:05">45 min ago</time></header>
+          <p>Devi — a literal rewrite. Delete the old brief, write a new one from scratch in the same doc. The act of starting from a blank page is what forces re-agreement. Reviewing an existing doc mostly produces nods.</p>
+        </div>
+      </article>
+
+      <article class="comment">
+        <span class="avatar">AT</span>
+        <div>
+          <header><strong>Aaron Tate</strong> <time datetime="2025-03-12T16:30">20 min ago</time></header>
+          <p>The signal ratio idea is great but I'd extend it — commits isn't always the right denominator. For design work it might be pixels shipped, for research it might be notes reviewed. Pick the artifact that actually represents forward motion.</p>
+        </div>
+      </article>
+
+      <form class="comment-form" action="#" method="post">
+        <h3>Join the discussion</h3>
+        <div class="row">
+          <div>
+            <label for="c-name">Name</label>
+            <input type="text" id="c-name" name="name" required>
+          </div>
+          <div>
+            <label for="c-email">Email (not published)</label>
+            <input type="email" id="c-email" name="email" required>
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label for="c-body">Comment</label>
+          <textarea id="c-body" name="comment" placeholder="Add to the conversation..." required></textarea>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <button type="submit">Post comment</button>
+          <span style="font-size: 0.82rem; color: var(--ink-soft);">Comments are moderated. We never publish emails.</span>
+        </div>
+      </form>
+    </section>
+
+  </article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <a href="index.html" class="logo">The Margin <em>Notes</em></a>
+    <p>© 2025 The Margin Notes · CC BY 4.0</p>
+    <nav aria-label="Footer">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="archive.html">Archive</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

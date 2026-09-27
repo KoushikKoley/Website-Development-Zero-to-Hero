@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Comments — Syntax, What to Comment, Conditional Comments, Performance — HTML Mastery</title>
+  <meta name="description" content="HTML comments in depth: &lt;!-- --&gt; syntax, what to comment (section starts/ends, complex markup intent, TODOs, browser-specific hacks), what NOT to comment (obvious things, secrets, sensitive info), deprecated IE conditional comments, and the performance impact of comments that are still downloaded.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.deprecated { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Code Quality</span>
+  <h1>HTML <code>Comments</code></h1>
+  <p>Comments are the only way to write human-readable notes inside HTML. Used well, they make large files navigable. Used poorly, they leak secrets, bloat downloads, and confuse future maintainers. Here's how to comment like a professional.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#syntax">Comment Syntax</a></li>
+      <li><a href="#what">What to Comment</a></li>
+      <li><a href="#not">What NOT to Comment</a></li>
+      <li><a href="#section">Section Markers</a></li>
+      <li><a href="#todos">TODOs and FIXMEs</a></li>
+      <li><a href="#hacks">Browser-Specific Hacks</a></li>
+      <li><a href="#conditional">IE Conditional Comments</a></li>
+      <li><a href="#performance">Performance Impact</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Browser Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="syntax">
+      <h2><span class="num">1</span> Comment Syntax</h2>
+      <p>HTML comments start with <code>&lt;!--</code> and end with <code>--&gt;</code>. They can span multiple lines. The browser does not render them visually, but they appear in the source and in the DOM as <code>Comment</code> nodes.</p>
+
+      <pre><code>&lt;!-- A single-line comment --&gt;
+
+&lt;!--
+  A multi-line comment.
+  Often used to describe a section
+  or temporarily disable code.
+--&gt;
+
+&lt;p&gt;This renders.&lt;/p&gt;
+&lt;!-- &lt;p&gt;This does not render.&lt;/p&gt; --&gt;</code></pre>
+
+      <h3>What you CAN'T put in a comment</h3>
+      <p>Comments cannot contain the sequence <code>--</code> (two hyphens) anywhere inside them — this is the closing delimiter and confuses the parser. The sequence <code>--&gt;</code> ends the comment immediately.</p>
+
+      <pre><code>&lt;!-- INVALID: nested --&gt; inside comment ends it early --&gt;
+
+&lt;!-- INVALID: -- inside the comment --&gt;
+                 ^^^ parser may misinterpret
+
+&lt;!-- VALID but weird: - is fine, only -- is special --&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Trying to nest comments. <code>&lt;!-- outer &lt;!-- inner --&gt; more outer --&gt;</code> doesn't work — the first <code>--&gt;</code> ends the outer comment, and "more outer --&gt;" renders as visible text. To "comment out" code that contains comments, use a build step or temporarily rename the inner <code>--&gt;</code>.
+      </div>
+    </section>
+
+    <section id="what">
+      <h2><span class="num">2</span> What to Comment</h2>
+      <p>Comments should answer <em>why</em>, not <em>what</em>. The HTML itself already shows what the code does. Comments add the context the code can't show: intent, history, gotchas, and section structure.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Section starts/ends</h4>
+          <p>In large files, mark the beginning and end of major sections so a reader can scroll-jump and orient quickly.</p>
+        </div>
+        <div class="card">
+          <h4>Complex markup intent</h4>
+          <p>When a chunk of HTML exists for a non-obvious reason — browser workaround, A/B test variant, legacy support — say so.</p>
+        </div>
+        <div class="card">
+          <h4>TODOs and FIXMEs</h4>
+          <p>Mark incomplete or known-buggy code with a discoverable prefix.</p>
+        </div>
+        <div class="card">
+          <h4>External references</h4>
+          <p>Link to design docs, ticket numbers, specs, or pull requests that explain the markup.</p>
+        </div>
+        <div class="card">
+          <h4>Browser-specific hacks</h4>
+          <p>Code that exists to work around a specific browser bug deserves a comment explaining what bug, what browser, and when it can be removed.</p>
+        </div>
+        <div class="card">
+          <h4>Templating placeholders</h4>
+          <p>In server-rendered templates, mark where dynamic content goes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="not">
+      <h2><span class="num">3</span> What NOT to Comment</h2>
+      <p>Comments have a cost — they're downloaded by every visitor, they get stale, and they can leak information. Don't comment:</p>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Never comment these</h4>
+          <ul>
+            <li><strong>Obvious things</strong>: <code>&lt;!-- close div --&gt;</code></li>
+            <li><strong>Secrets</strong>: API keys, database passwords, internal URLs</li>
+            <li><strong>Sensitive info</strong>: customer names, internal employee names, unreleased dates</li>
+            <li><strong>Rants</strong>: complaints about coworkers, management, or the codebase</li>
+            <li><strong>Changelogs</strong>: use git for history, not HTML</li>
+            <li><strong>Removed code</strong>: delete it, rely on git history</li>
+          </ul>
+        </div>
+        <div class="good">
+          <h4>✓ Comment these instead</h4>
+          <ul>
+            <li><strong>Why this hack exists</strong>: "Safari 15 box-shadow bug"</li>
+            <li><strong>What a complex template outputs</strong>: "Renders the user's first 5 orders"</li>
+            <li><strong>Removal conditions</strong>: "Remove when IE11 support dropped (Q3 2025)"</li>
+            <li><strong>Cross-references</strong>: "See /docs/api/auth.md §3.2"</li>
+            <li><strong>Warnings</strong>: "Editing this breaks the build pipeline"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Committing comments like <code>&lt;!-- TODO: ask marketing for the real price --&gt;</code> or <code>&lt;!-- HACK: this is wrong but management wanted it --&gt;</code> into production. These end up in your public HTML, visible to anyone who clicks "View Source". Customers, competitors, and security researchers all see them.
+      </div>
+    </section>
+
+    <section id="section">
+      <h2><span class="num">4</span> Section Markers</h2>
+      <p>In long HTML files (landing pages, email templates, complex layouts), comment markers help maintainers find sections quickly. A common pattern:</p>
+
+      <pre><code>&lt;!-- ============================= --&gt;
+&lt;!-- HERO SECTION                  --&gt;
+&lt;!-- ============================= --&gt;
+&lt;section class="hero"&gt;
+  ...
+&lt;/section&gt;
+&lt;!-- /HERO SECTION --&gt;
+
+
+&lt;!-- ============================= --&gt;
+&lt;!-- FEATURES GRID                 --&gt;
+&lt;!-- ============================= --&gt;
+&lt;section class="features"&gt;
+  ...
+&lt;/section&gt;
+&lt;!-- /FEATURES GRID --&gt;</code></pre>
+
+      <p>Notice the matching end marker <code>&lt;!-- /HERO SECTION --&gt;</code> — closing the section with a slash makes it easy to find both the open and close with editor search.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        If you find yourself needing dozens of section markers, consider splitting the file into partials/includes. Comments are a workaround for files that are too big.
+      </div>
+    </section>
+
+    <section id="todos">
+      <h2><span class="num">5</span> TODOs and FIXMEs</h2>
+      <p>Use standardized prefixes so tools can find them. Most IDEs highlight <code>TODO</code>, <code>FIXME</code>, and <code>XXX</code> in comment scanning.</p>
+
+      <pre><code>&lt;!-- TODO: replace placeholder copy with marketing's final text --&gt;
+&lt;h1&gt;Lorem ipsum dolor sit amet&lt;/h1&gt;
+
+&lt;!-- FIXME: this layout breaks on iOS Safari 14, see ticket #4521 --&gt;
+&lt;div class="grid"&gt;...&lt;/div&gt;
+
+&lt;!-- HACK: extra wrapper div needed for IE11 flexbox bug.
+     Remove when IE11 support drops (planned Q4 2024). --&gt;
+&lt;div class="ie11-wrapper"&gt;
+  &lt;div class="grid"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- XXX: this ARIA pattern is suspect. Re-check against
+     WAI-ARIA Authoring Practices 1.2 --&gt;
+&lt;div role="combobox" ...&gt;...&lt;/div&gt;</code></pre>
+
+      <h3>Standard prefixes</h3>
+      <table class="info-table">
+        <thead><tr><th>Prefix</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>TODO</code></td><td>Work that needs to be done</td></tr>
+          <tr><td><code>FIXME</code></td><td>Known broken code that needs fixing</td></tr>
+          <tr><td><code>HACK</code></td><td>Working but ugly workaround — should be refactored</td></tr>
+          <tr><td><code>XXX</code></td><td>Warning — this code is suspect</td></tr>
+          <tr><td><code>NOTE</code></td><td>Informational note for future readers</td></tr>
+          <tr><td><code>OPTIMIZE</code></td><td>Performance improvement opportunity</td></tr>
+          <tr><td><code>REVIEW</code></td><td>Needs code review or design review</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="hacks">
+      <h2><span class="num">6</span> Browser-Specific Hacks</h2>
+      <p>When you must include markup that exists only for a specific browser, comment what bug you're working around and when it can be removed.</p>
+
+      <pre><code>&lt;!-- Safari 15 box-shadow render bug.
+     See https://bugs.webkit.org/show_bug.cgi?id=234567
+     Remove when Safari 17 adoption &gt; 95% (estimate: Jan 2025) --&gt;
+&lt;div class="safari-shadow-fix"&gt;...&lt;/div&gt;</code></pre>
+
+      <p>Three critical pieces:</p>
+      <ol>
+        <li><strong>What browser/bug</strong></li>
+        <li><strong>Reference link</strong> (bug tracker, MDN, caniuse)</li>
+        <li><strong>Removal condition</strong> (date, version, metric)</li>
+      </ol>
+
+      <p>Without all three, the hack lives forever because no one knows it's safe to remove.</p>
+    </section>
+
+    <section id="conditional">
+      <h2><span class="num">7</span> IE Conditional Comments</h2>
+      <p>Internet Explorer (5 through 9) supported a special comment syntax that only IE parsed as content:</p>
+
+      <pre><code>&lt;!--[if IE]&gt;
+  &lt;link rel="stylesheet" href="ie-only.css"&gt;
+&lt;![endif]--&gt;
+
+&lt;!--[if lt IE 9]&gt;
+  &lt;script src="html5shiv.js"&gt;&lt;/script&gt;
+&lt;![endif]--&gt;
+
+&lt;!--[if !IE]&gt;&lt;!--&gt;
+  &lt;p&gt;Shown in all non-IE browsers.&lt;/p&gt;
+&lt;!--&lt;![endif]--&gt;</code></pre>
+
+      <p>These are <strong>deprecated and removed in IE 10+</strong>. Modern browsers see them as ordinary comments and ignore the contents. Conditional comments are a relic of the past — don't use them.</p>
+
+      <h3>Modern alternatives</h3>
+      <ul>
+        <li><strong>Feature detection</strong> via JavaScript (<code>@supports</code> in CSS, <code>Modernizr</code> or native checks in JS)</li>
+        <li><strong>Progressive enhancement</strong> — serve a baseline that works everywhere, enhance for modern browsers</li>
+        <li><strong>Polyfills</strong> loaded conditionally based on user agent or feature detection</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Using IE conditional comments in 2024 code. They're no-ops in every modern browser (IE itself is unsupported by Microsoft). If you see them in a codebase, they can be safely deleted along with the IE-specific code they loaded.
+      </div>
+    </section>
+
+    <section id="performance">
+      <h2><span class="num">8</span> Performance Impact</h2>
+      <p>Comments are <strong>still downloaded</strong> by every visitor. They're part of the HTML response, even though they're not rendered. A 200-line comment block on every page is 8 KB of bandwidth per page view.</p>
+
+      <p>Performance implications:</p>
+      <ul>
+        <li><strong>Bandwidth</strong>: comments are bytes shipped to every client</li>
+        <li><strong>Parse time</strong>: minimal — the HTML tokenizer skips comments in microseconds</li>
+        <li><strong>DOM size</strong>: comments become <code>Comment</code> nodes in the DOM, slightly increasing memory</li>
+        <li><strong>HTTP compression</strong>: gzip and brotli compress comments aggressively — usually by 80%+</li>
+      </ul>
+
+      <h3>Removing comments in production</h3>
+      <p>Most build tools strip comments in production builds:</p>
+
+      <pre><code>// vite.config.js
+import { defineConfig } from 'vite';
+import htmlMinifier from 'vite-plugin-html-minifier';
+
+export default defineConfig({
+  plugins: [
+    htmlMinifier({
+      collapseWhitespace: true,
+      removeComments: true,        // strip all comments
+      removeCommentsFromCDATA: true,
+      // To preserve specific comments (like IE conditional or license):
+      // ignoreCustomComments: [/^license:/i]
+    })
+  ]
+});</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Configure your minifier to preserve license comments. Many open-source libraries require their license notice to be included. Use a pattern like <code>/*! license: ... */</code> (with the leading exclamation mark in some tools) to keep these in production.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">9</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Leaking secrets in comments</h4>
+          <p><code>&lt;!-- API_KEY=sk_abc123 --&gt;</code> ships to every visitor. Strip comments or use env vars.</p>
+        </div>
+        <div class="card">
+          <h4>Nesting comments</h4>
+          <p>HTML doesn't support it. The first <code>--&gt;</code> ends the comment, the rest renders as text.</p>
+        </div>
+        <div class="card">
+          <h4>Comment-out instead of delete</h4>
+          <p>"Just in case I need it later" — that's what git history is for. Dead code in comments accumulates.</p>
+        </div>
+        <div class="card">
+          <h4>Commenting the obvious</h4>
+          <p><code>&lt;!-- this is a button --&gt;</code> before <code>&lt;button&gt;</code> adds zero value.</p>
+        </div>
+        <div class="card">
+          <h4>Stale comments</h4>
+          <p>Code changes, comment doesn't. Now the comment contradicts the code. Worse than no comment.</p>
+        </div>
+        <div class="card">
+          <h4>Internal jargon in production</h4>
+          <p>Comments that reference internal team names, ticket systems, or trade secrets are visible to all visitors.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">10</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Audit a Page's Comments</strong>
+        <p>Below is a section of HTML with problematic comments. Identify each issue and rewrite the comments appropriately.</p>
+        <pre><code>&lt;!-- begin hero section --&gt;
+&lt;section class="hero"&gt;
+  &lt;!-- TODO: replace this with the real headline --&gt;
+  &lt;h1&gt;Lorem ipsum dolor&lt;/h1&gt;
+  &lt;!-- API_KEY=sk_live_abc123, used for /v1/checkout --&gt;
+  &lt;!-- HACK: this div has display:none because the
+       old design had an image here that marketing
+       didn't want to remove yet --&gt;
+  &lt;div style="display:none"&gt;&lt;img src="old-hero.png"&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;!-- end hero section --&gt;
+
+&lt;!--[if IE]&gt;
+  &lt;link rel="stylesheet" href="ie.css"&gt;
+&lt;![endif]--&gt;
+
+&lt;!-- TODO: ask @mike from billing for the correct price --&gt;
+&lt;span class="price"&gt;$99&lt;/span&gt;</code></pre>
+        <p><strong>Issues to find:</strong></p>
+        <ul>
+          <li><code>begin hero section</code> / <code>end hero section</code> — redundant; the section tag is obvious</li>
+          <li><code>API_KEY=...</code> — secret leaked in production HTML</li>
+          <li><code>HACK</code> comment is fine but should specify removal condition</li>
+          <li><code>display:none</code> image is dead code — should be deleted, not commented or hidden</li>
+          <li>IE conditional comment is deprecated — remove it</li>
+          <li>"ask @mike from billing" — internal reference visible to all visitors</li>
+        </ul>
+        <p><strong>Deliverable:</strong> Rewrite the markup with minimal, professional comments that don't leak information.</p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">11</span> Browser Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">HTML comments: supported in every browser ever</span>
+        <span class="pill yes">Multi-line comments: all browsers</span>
+        <span class="pill deprecated">IE conditional comments: IE 5–9 only, removed in IE 10+</span>
+        <span class="pill yes">Comment stripping (minification): supported by all major build tools</span>
+      </div>
+
+      <p>Comments are universally supported. The only deprecated feature is the IE conditional comment syntax, which is silently ignored by all modern browsers (including modern IE 10/11).</p>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A startup's production HTML leaked <code>&lt;!-- TODO: replace dummy price $99 with the real $149 --&gt;</code> for three months. A customer noticed it in "View Source", took a screenshot, and posted it on social media. The CEO had to issue a public apology. After the incident, the company added <code>html-minifier-terser</code> with <code>removeComments: true</code> to their build pipeline. Production comments are now stripped automatically — developers can comment freely without worrying about leaks.
+      </div>
+
+      <h3>Tools for stripping comments</h3>
+      <ul>
+        <li><strong>html-minifier-terser</strong> — the most popular HTML minifier, used by Webpack, Vite plugins</li>
+        <li><strong>Vite plugin: vite-plugin-html-minifier</strong></li>
+        <li><strong>Webpack: html-webpack-plugin</code> with minify option</strong></li>
+        <li><strong>Server-side rendering</strong> — most frameworks (Next.js, Nuxt, Astro) strip comments in production builds by default</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="validation.html">← Previous: HTML Validation</a>
+  <a href="formatting.html">Next: Code Formatting →</a>
+</footer>
+</body>
+</html>

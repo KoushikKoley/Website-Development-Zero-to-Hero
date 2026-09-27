@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML5 Landmark Elements &amp; Their ARIA Roles — HTML Mastery</title>
+  <meta name="description" content="HTML5 sectioning elements map to ARIA landmark roles automatically: header→banner, nav→navigation, main→main, article→article, aside→complementary, footer→contentinfo, section→region, form→form, search→search. How screen readers use landmarks for navigation.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .role-table th { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; }
+    .role-table td:first-child { font-family: monospace; color: var(--brand); font-weight: 600; }
+    .role-table td:nth-child(2) { font-family: monospace; color: var(--brand-2); font-weight: 600; }
+    .demo-box { border: 2px dashed var(--line); border-radius: 12px; padding: 18px;
+                background: #f8fafc; margin: 14px 0; }
+    .demo-box h4 { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.8rem;
+                   text-transform: uppercase; letter-spacing: 0.06em; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.partial { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Accessibility · Lesson 1</span>
+    <h1>HTML5 Landmark Elements &amp; ARIA Roles</h1>
+    <p>The biggest accessibility win in HTML5 wasn't a new attribute — it was new <em>elements</em>. <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>, and friends map automatically to ARIA landmark roles, letting screen-reader users jump straight to the part of the page they need without listening to every line.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What are landmarks?</a></li>
+        <li><a href="#mapping">Element → Role mapping</a></li>
+        <li><a href="#how-used">How screen readers use them</a></li>
+        <li><a href="#banner">banner (header)</a></li>
+        <li><a href="#navigation">navigation (nav)</a></li>
+        <li><a href="#main">main</a></li>
+        <li><a href="#contentinfo">contentinfo (footer)</a></li>
+        <li><a href="#complementary">complementary (aside)</a></li>
+        <li><a href="#region-form">region &amp; form</a></li>
+        <li><a href="#search">search (new)</a></li>
+        <li><a href="#tips">Practical tips</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Are Landmarks?</h2>
+        <p>Landmarks are ARIA roles that identify the major structural regions of a page — the header, navigation, main content, sidebar, footer, and so on. Once a region is marked as a landmark, screen-reader users can:</p>
+        <ul>
+          <li><strong>Jump directly to it</strong> via keyboard shortcut (e.g., <kbd>D</kbd> in NVDA cycles landmarks, <kbd>VO+U</kbd> in VoiceOver opens a landmark rotor).</li>
+          <li><strong>Get a list of all landmarks</strong> on the page to navigate by structure.</li>
+          <li><strong>Skip repetitive content</strong> like site-wide headers and nav menus to reach the main content.</li>
+        </ul>
+
+        <p>Before HTML5, developers had to manually add <code>role="banner"</code>, <code>role="main"</code>, etc. to <code>&lt;div&gt;</code> elements. Today, native HTML5 elements expose these roles automatically — you get them for free.</p>
+
+        <div class="callout info">
+          <strong>Key principle</strong>
+          If you use the right HTML5 element, you don't need to add the corresponding <code>role</code> attribute. In fact, the W3C HTML5 spec explicitly tells authors NOT to add redundant ARIA roles — the browser already does the mapping.
+        </div>
+      </section>
+
+      <section id="mapping">
+        <h2><span class="num">2</span> Element → Role Mapping</h2>
+        <p>The HTML Accessibility API Mappings (HTML-AAM) specification defines which ARIA role each HTML element exposes. Here's the complete landmark mapping:</p>
+
+        <table class="info-table role-table">
+          <thead>
+            <tr><th>HTML element</th><th>Implicit ARIA role</th><th>Condition</th><th>Landmark type</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt;header&gt;</td><td>banner</td><td>Only when not nested in <code>&lt;article&gt;</code>/<code>&lt;aside&gt;</code>/<code>&lt;nav&gt;</code>/<code>&lt;section&gt;</code></td><td>Page-level header</td></tr>
+            <tr><td>&lt;nav&gt;</td><td>navigation</td><td>Always</td><td>Navigation region</td></tr>
+            <tr><td>&lt;main&gt;</td><td>main</td><td>Always (one per page)</td><td>Main content</td></tr>
+            <tr><td>&lt;article&gt;</td><td>article</td><td>Always</td><td>Self-contained composition</td></tr>
+            <tr><td>&lt;aside&gt;</td><td>complementary</td><td>Always</td><td>Side content</td></tr>
+            <tr><td>&lt;footer&gt;</td><td>contentinfo</td><td>Only when not nested (same as header)</td><td>Page-level footer</td></tr>
+            <tr><td>&lt;section&gt;</td><td>region</td><td>Only when it has an accessible name (via <code>aria-label</code> or <code>aria-labelledby</code>)</td><td>Named region</td></tr>
+            <tr><td>&lt;form&gt;</td><td>form</td><td>Only when it has an accessible name (otherwise <code>generic</code> in newer specs)</td><td>Named form region</td></tr>
+            <tr><td>&lt;search&gt;</td><td>search</td><td>Always</td><td>Search region (new in 2023)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Adding <code>role="main"</code> to a <code>&lt;main&gt;</code> element (or <code>role="navigation"</code> to a <code>&lt;nav&gt;</code>). It's redundant, makes your markup noisier, and some screen readers may double-announce the region. Trust the implicit mapping.
+        </div>
+      </section>
+
+      <section id="how-used">
+        <h2><span class="num">3</span> How Screen Readers Use Landmarks</h2>
+        <p>Here's the workflow a screen-reader user follows on a well-landmarked page:</p>
+
+        <div class="demo-box">
+          <h4>NVDA (free, Windows)</h4>
+          <p><kbd>D</kbd> — jump to next landmark<br>
+          <kbd>Shift+D</kbd> — jump to previous landmark<br>
+          <kbd>Insert+F7</kbd> — open elements list, filter by landmarks</p>
+        </div>
+
+        <div class="demo-box">
+          <h4>JAWS (Windows, commercial)</h4>
+          <p><kbd>R</kbd> — jump to next landmark region<br>
+          <kbd>Insert+R</kbd> — cycle landmark regions<br>
+          <kbd>Insert+Ctrl+R</kbd> — list landmarks</p>
+        </div>
+
+        <div class="demo-box">
+          <h4>VoiceOver (macOS / iOS)</h4>
+          <p><kbd>VO+U</kbd> — open rotor, swipe to "Landmarks"<br>
+          On iOS: two-finger swipe up/down jumps to next/prev landmark</p>
+        </div>
+
+        <div class="demo-box">
+          <h4>TalkBack (Android)</h4>
+          <p>Swipe up then right (or down then left) → "Landmarks" menu → tap a landmark to jump to it.</p>
+        </div>
+
+        <p>Without landmarks, users have only two ways to navigate: tab through every focusable element (exhausting) or read linearly from the top (painful on long pages). Landmarks give them a third option — <em>structural navigation</em> — that approaches the experience of a sighted user glancing at the page layout.</p>
+      </section>
+
+      <section id="banner">
+        <h2><span class="num">4</span> <code>banner</code> — The Page Header</h2>
+        <p>Only one <code>&lt;header&gt;</code> per page should be the page-level header. When it's a direct child of <code>&lt;body&gt;</code> (not nested in <code>&lt;article&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;nav&gt;</code>, or <code>&lt;section&gt;</code>), it exposes the <code>banner</code> role.</p>
+
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;              &lt;!-- ← exposes banner --&gt;
+    &lt;h1&gt;Acme Corp&lt;/h1&gt;
+    &lt;nav&gt;...&lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;...&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+
+        <h3>The "one banner per page" rule</h3>
+        <p>The ARIA spec says: <em>"In a document, the author MUST mark no more than one element with the banner role."</em> If you nest <code>&lt;header&gt;</code> inside an <code>&lt;article&gt;</code>, it does <strong>not</strong> expose <code>banner</code> — it becomes a generic <code>group</code>. This is exactly what you want: each article can have its own header without creating extra banners.</p>
+
+        <pre><code>&lt;article&gt;
+  &lt;header&gt;             &lt;!-- ← exposes "group", NOT "banner" --&gt;
+    &lt;h2&gt;Article title&lt;/h2&gt;
+    &lt;p&gt;By Jane Doe&lt;/p&gt;
+  &lt;/header&gt;
+  ...
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="navigation">
+        <h2><span class="num">5</span> <code>navigation</code> — The &lt;nav&gt; Element</h2>
+        <p>Every <code>&lt;nav&gt;</code> element exposes the <code>navigation</code> landmark. Multiple <code>&lt;nav&gt;</code> elements per page are fine — but each should have a distinguishing accessible name so users can pick the one they want.</p>
+
+        <pre><code>&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;nav aria-label="Footer"&gt;
+  &lt;ul&gt;...&lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;...&lt;/ol&gt;
+&lt;/nav&gt;</code></pre>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When the visible text already names the navigation clearly (e.g. a visible "Site Sections" heading above the <code>&lt;nav&gt;</code>), use <code>aria-labelledby</code> pointing to that heading's <code>id</code> instead of <code>aria-label</code>. This avoids duplicating the text and keeps the label in sync automatically.
+        </div>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Wrapping every list of links in <code>&lt;nav&gt;</code>. The spec is clear: <code>&lt;nav&gt;</code> is for <em>major</em> navigation blocks. A list of social-media icons in the footer, or links inside a paragraph, should be a plain <code>&lt;ul&gt;</code> with anchors — not a <code>&lt;nav&gt;</code>.
+        </div>
+      </section>
+
+      <section id="main">
+        <h2><span class="num">6</span> <code>main</code> — The Main Content</h2>
+        <p>The <code>&lt;main&gt;</code> element exposes the <code>main</code> landmark. Per spec, exactly one <code>&lt;main&gt;</code> per page. Its content should be unique to that page (not repeated across the site).</p>
+
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;nav aria-label="Primary"&gt;...&lt;/nav&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Page title&lt;/h1&gt;
+    &lt;article&gt;...&lt;/article&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+        <h3>"Skip to main content" link</h3>
+        <p>Even with landmarks, sighted keyboard users benefit from a visible "skip link" as the first focusable element on the page. It's a redundant affordance — landmarks cover screen-reader users, but keyboard-only sighted users without a screen reader still need it.</p>
+        <pre><code>&lt;body&gt;
+  &lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;main id="main" tabindex="-1"&gt;...&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+        <p>The <code>tabindex="-1"</code> on <code>&lt;main&gt;</code> lets it receive focus programmatically when the skip link is activated — without it, focus moves but the browser may not scroll to it on all browsers.</p>
+      </section>
+
+      <section id="contentinfo">
+        <h2><span class="num">7</span> <code>contentinfo</code> — The Page Footer</h2>
+        <p>Like the header, the page-level <code>&lt;footer&gt;</code> exposes the <code>contentinfo</code> landmark only when it's not nested in a sectioning element. Nested footers (e.g. inside an <code>&lt;article&gt;</code>) become <code>group</code> instead.</p>
+
+        <pre><code>&lt;body&gt;
+  ...
+  &lt;footer&gt;              &lt;!-- ← exposes contentinfo --&gt;
+    &lt;address&gt;...&lt;/address&gt;
+    &lt;p&gt;© 2024 Acme Corp.&lt;/p&gt;
+    &lt;nav aria-label="Footer"&gt;...&lt;/nav&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+        <p>The <code>contentinfo</code> landmark typically contains: copyright, privacy/terms links, contact information (via <code>&lt;address&gt;</code>), social media links, language switcher.</p>
+      </section>
+
+      <section id="complementary">
+        <h2><span class="num">8</span> <code>complementary</code> — The &lt;aside&gt; Element</h2>
+        <p>Each <code>&lt;aside&gt;</code> exposes the <code>complementary</code> landmark — content that's related to the main content but not strictly part of it. Sidebars, pull quotes, related-content boxes, ads.</p>
+
+        <pre><code>&lt;main&gt;
+  &lt;article&gt;
+    &lt;h1&gt;Main article&lt;/h1&gt;
+    ...
+    &lt;aside&gt;            &lt;!-- ← complementary landmark --&gt;
+      &lt;h2&gt;About the author&lt;/h2&gt;
+      ...
+    &lt;/aside&gt;
+  &lt;/article&gt;
+&lt;/main&gt;</code></pre>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If you have multiple <code>&lt;aside&gt;</code> elements on a page (e.g. a sidebar AND a pull quote AND a "related posts" widget), add an <code>aria-label</code> to each so users can distinguish them in the landmark rotor: <code>aria-label="Author bio"</code>, <code>aria-label="Pull quote"</code>, <code>aria-label="Related posts"</code>.
+        </div>
+      </section>
+
+      <section id="region-form">
+        <h2><span class="num">9</span> <code>region</code> &amp; <code>form</code> — The Conditional Landmarks</h2>
+
+        <h3>section → region (only when named)</h3>
+        <p>A bare <code>&lt;section&gt;</code> does <em>not</em> expose the <code>region</code> landmark — it becomes a generic group. The reason: there are usually many <code>&lt;section&gt;</code>s per page, and exposing all of them as landmarks would clutter the rotor.</p>
+
+        <pre><code>&lt;!-- ❌ NOT a region — just a styled group --&gt;
+&lt;section class="card"&gt;
+  &lt;h2&gt;Title&lt;/h2&gt;
+  ...
+&lt;/section&gt;
+
+&lt;!-- ✅ A region — has an accessible name --&gt;
+&lt;section aria-labelledby="weather-heading"&gt;
+  &lt;h2 id="weather-heading"&gt;Weather forecast&lt;/h2&gt;
+  ...
+&lt;/section&gt;</code></pre>
+
+        <p>Use this when you have a section that warrants landmark status (e.g. a "Latest news" widget that users may want to jump to directly).</p>
+
+        <h3>form → form (only when named)</h3>
+        <p>Same rule. A <code>&lt;form&gt;</code> with an accessible name (via <code>aria-label</code> or <code>aria-labelledby</code>) exposes the <code>form</code> landmark. A bare form becomes a generic group.</p>
+
+        <pre><code>&lt;form aria-label="Newsletter signup" action="..." method="post"&gt;
+  &lt;label&gt;Email: &lt;input type="email" name="email"&gt;&lt;/label&gt;
+  &lt;button&gt;Subscribe&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Wrapping every form in <code>role="form"</code>. Don't. Use <code>aria-label</code> on a real <code>&lt;form&gt;</code> element, and the browser will expose the landmark automatically. Adding <code>role="form"</code> on a <code>&lt;div&gt;</code> is the older pattern; with HTML5 it's unnecessary.
+        </div>
+      </section>
+
+      <section id="search">
+        <h2><span class="num">10</span> <code>search</code> — The New Landmark (2023)</h2>
+        <p>The <code>&lt;search&gt;</code> element is the newest HTML5 landmark. It exposes the <code>search</code> role (which itself was added to ARIA 1.3 in 2023). Wrap any search interface in it — site-wide search, filter forms, search-as-you-type widgets.</p>
+
+        <pre><code>&lt;search&gt;
+  &lt;form role="search" action="/search" method="get"&gt;
+    &lt;label for="q"&gt;Search this site&lt;/label&gt;
+    &lt;input type="search" id="q" name="q"&gt;
+    &lt;button type="submit"&gt;Search&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/search&gt;</code></pre>
+
+        <p>Before <code>&lt;search&gt;</code> existed, authors had to apply <code>role="search"</code> to a <code>&lt;form&gt;</code> or <code>&lt;div&gt;</code>. Now it's a native element, and you can drop the role attribute (the implicit mapping handles it).</p>
+
+        <div class="callout info">
+          <strong>Note on the role attribute</strong>
+          Some screen readers still want <code>role="search"</code> on the inner form for older AT compatibility. The current best practice is: use <code>&lt;search&gt;</code>, and also add <code>role="search"</code> on the inner form if you want maximum backwards compatibility. Once AT support catches up (within ~2 years of the element shipping widely in 2023), the role attribute becomes redundant.
+        </div>
+      </section>
+
+      <section id="tips">
+        <h2><span class="num">11</span> Practical Tips</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>One main per page</h4>
+            <p>If you find yourself with two <code>&lt;main&gt;</code> elements, you have a layout problem. Reorganize so there's exactly one.</p>
+          </div>
+          <div class="card">
+            <h4>Name your duplicate landmarks</h4>
+            <p>Multiple <code>&lt;nav&gt;</code>, <code>&lt;aside&gt;</code>, or named <code>&lt;section&gt;</code> per page is fine — just give each a distinct <code>aria-label</code> so users can tell them apart.</p>
+          </div>
+          <div class="card">
+            <h4>Don't nest landmarks pointlessly</h4>
+            <p>A <code>&lt;nav&gt;</code> inside another <code>&lt;nav&gt;</code> rarely makes sense. Flatten if possible.</p>
+          </div>
+          <div class="card">
+            <h4>Keep the visible label aligned</h4>
+            <p>If you have a visible heading "Section Menu" above a <code>&lt;nav&gt;</code>, point <code>aria-labelledby</code> at the heading instead of inventing a separate <code>aria-label</code> like "Section nav". They should match.</p>
+          </div>
+          <div class="card">
+            <h4>Test with the rotor</h4>
+            <p>Open your page in VoiceOver (<kbd>VO+U</kbd>) or NVDA (<kbd>Ins+F7</kbd>) and look at the landmark list. It should look like a sensible table of contents for the page — no junk entries.</p>
+          </div>
+          <div class="card">
+            <h4>Use the W3C validator</h4>
+            <p>Run your page through <code>validator.w3.org/nu</code>. It will flag duplicate <code>main</code>s, redundant roles, and other landmark issues.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;header&gt; banner — Chrome/Firefox/Safari/Edge</span>
+          <span class="pill yes">&lt;nav&gt; navigation — all</span>
+          <span class="pill yes">&lt;main&gt; main — all (IE 11 with role fallback)</span>
+          <span class="pill yes">&lt;aside&gt; complementary — all</span>
+          <span class="pill yes">&lt;footer&gt; contentinfo — all</span>
+          <span class="pill yes">&lt;section&gt; region when named — all</span>
+          <span class="pill yes">&lt;form&gt; form when named — all</span>
+          <span class="pill partial">&lt;search&gt; — Chrome 118+, Firefox 118+, Safari 17+</span>
+        </div>
+        <p>All landmark mappings except <code>&lt;search&gt;</code> have been stable since ~2014. <code>&lt;search&gt;</code> shipped in browsers in late 2023; for older browsers it gracefully degrades to a generic container (just add <code>role="search"</code> as a fallback if you support pre-2023 browsers).</p>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">13</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Audit a page</strong>
+          Open any popular website (a news site, an e-commerce front page). View source and count how many landmark elements (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>) appear. Identify any missing landmarks (e.g., no <code>&lt;main&gt;</code>, or multiple unnamed <code>&lt;nav&gt;</code>s).
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build the canonical page skeleton</strong>
+          Create an HTML5 page with exactly one <code>&lt;header&gt;</code> (banner), one primary <code>&lt;nav&gt;</code>, one <code>&lt;main&gt;</code> containing an <code>&lt;article&gt;</code> and an <code>&lt;aside&gt;</code> (complementary), one <code>&lt;search&gt;</code>, and one <code>&lt;footer&gt;</code> (contentinfo). Verify with the W3C validator that all roles are exposed correctly (no need to add explicit <code>role</code> attributes).
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Name your landmarks</strong>
+          Take your exercise 2 page and add a second <code>&lt;nav&gt;</code> in the footer. Add appropriate <code>aria-label</code> values to both navs so screen-reader users can tell them apart.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Test with a screen reader</strong>
+          Install NVDA (Windows, free) or enable VoiceOver (macOS). Open your page. Use the landmark rotor (NVDA: <kbd>Ins+F7</kbd> → Landmarks; VoiceOver: <kbd>VO+U</kbd> → Landmarks). Confirm that every region appears with a meaningful name.
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="num">14</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>News sites</h4>
+            <p>Header (masthead), primary nav, main (article), aside (related stories), search (site search), footer.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce</h4>
+            <p>Header (logo + cart), nav (categories), main (product list or product detail), aside (filters), search (catalog), footer (legal links).</p>
+          </div>
+          <div class="card">
+            <h4>SaaS dashboards</h4>
+            <p>Header (account), nav (sidebar menu), main (current view), aside (help panel), search (cmd-K palette), footer (status bar).</p>
+          </div>
+          <div class="card">
+            <h4>Blogs</h4>
+            <p>Header (masthead), nav (categories), main (post), aside (sidebar with about + recent), search (site search), footer (contact via <code>&lt;address&gt;</code>).</p>
+          </div>
+          <div class="card">
+            <h4>Documentation sites</h4>
+            <p>Header (product name), nav (sidebar TOC), main (current page), aside (right-side TOC or related), search (full-text search), footer (version switcher).</p>
+          </div>
+          <div class="card">
+            <h4>Web apps</h4>
+            <p>Single-page apps should still expose landmarks — they're especially valuable for users navigating dynamic UIs.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../03-Content-Grouping/hr-other-grouping.html">← Previous: hr, bdi, bdo, wbr, ruby</a>
+    <a class="next" href="aria-patterns.html">Next: ARIA Patterns →</a>
+  </footer>
+</body>
+</html>

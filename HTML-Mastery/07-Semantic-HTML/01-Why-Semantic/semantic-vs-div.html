@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic HTML vs Div Soup — HTML Mastery</title>
+  <meta name="description" content="What 'semantic' means in HTML, why div and span are not semantic, the cost of building everything out of divs (poor accessibility, worse SEO, harder maintenance), and a side-by-side before/after code comparison.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .compare .col { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .compare .col .head { padding: 10px 14px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .compare .col.bad  .head { background: #fef2f2; color: #b91c1c; border-bottom: 1px solid #fecaca; }
+    .compare .col.good .head { background: #f0fdf4; color: #15803d; border-bottom: 1px solid #bbf7d0; }
+    .compare .col pre { margin: 0; border: none; border-radius: 0; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3, .compare { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Semantic HTML · Lesson 1</span>
+    <h1>Semantic HTML vs Div Soup</h1>
+    <p>If your markup reads like <code>&lt;div class="header"&gt;&lt;div class="title"&gt;…&lt;/div&gt;&lt;/div&gt;</code>, you have div soup. Semantic HTML replaces those divs with elements that <em>convey meaning</em> — to browsers, to assistive tech, to search engines, and to the next developer who opens your file.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What "semantic" means</a></li>
+        <li><a href="#div-span">Why <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> aren't semantic</a></li>
+        <li><a href="#costs">The cost of div soup</a></li>
+        <li><a href="#before-after">Before / after comparison</a></li>
+        <li><a href="#checker">The "would a stranger understand this?" test</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What "semantic" means</h2>
+        <p>A semantic element describes <strong>what its content means</strong>, not how it should look. The element name itself carries meaning:</p>
+        <table class="info-table">
+          <thead><tr><th>Element</th><th>What it tells you</th><th>What it does NOT tell you</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;h1&gt;</code></td><td>"This is the most important heading on the page"</td><td>What font size to use</td></tr>
+            <tr><td><code>&lt;nav&gt;</code></td><td>"This is a major navigation block"</td><td>Whether it should be horizontal or vertical</td></tr>
+            <tr><td><code>&lt;article&gt;</code></td><td>"This is a self-contained, distributable piece of content"</td><td>Whether it has a border</td></tr>
+            <tr><td><code>&lt;button&gt;</code></td><td>"This is a clickable control that triggers an action"</td><td>What color it is</td></tr>
+            <tr><td><code>&lt;time&gt;</code></td><td>"This is a date or duration"</td><td>How to format it</td></tr>
+          </tbody>
+        </table>
+        <p>Presentation is the job of CSS. Meaning is the job of HTML. When you mix them — by choosing <code>&lt;div class="big-text"&gt;</code> instead of <code>&lt;h2&gt;</code> — you've made a div soup. The browser sees a div. The screen reader sees a div. Google sees a div. Everyone loses.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          A semantic element is one whose tag name alone, with no <code>class</code> or <code>role</code> attributes, tells you why it exists. <code>&lt;div class="hero"&gt;</code> doesn't qualify. <code>&lt;header&gt;</code> does.
+        </div>
+      </section>
+
+      <section id="div-span">
+        <h2><span class="num">2</span> Why <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> aren't semantic</h2>
+        <p><code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are the only two elements in HTML that have <strong>no inherent meaning</strong>. They exist for when you genuinely need a generic grouping element — usually as a CSS hook or for layout (flex/grid containers). They are not inherently evil. They become evil when used <em>instead of</em> a more meaningful element.</p>
+        <div class="compare">
+          <div class="col bad">
+            <div class="head">Div soup — no meaning</div>
+            <pre><code>&lt;div class="header"&gt;
+  &lt;div class="nav"&gt;
+    &lt;div class="nav-item"&gt;Home&lt;/div&gt;
+    &lt;div class="nav-item"&gt;About&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="main"&gt;
+  &lt;div class="article"&gt;
+    &lt;div class="title"&gt;Hello&lt;/div&gt;
+    &lt;div class="body"&gt;Welcome.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="col good">
+            <div class="head">Semantic — meaning is explicit</div>
+            <pre><code>&lt;header&gt;
+  &lt;nav&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;article&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;p&gt;Welcome.&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/main&gt;</code></pre>
+          </div>
+        </div>
+        <h3>When div and span ARE appropriate</h3>
+        <table class="info-table">
+          <thead><tr><th>Use a <code>&lt;div&gt;</code> when…</th><th>Use a <code>&lt;span&gt;</code> when…</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>You need a layout wrapper (flex/grid container) with no semantic role</td>
+              <td>You need a phrasing-level CSS hook or JS target inside text</td>
+            </tr>
+            <tr>
+              <td>No existing element describes your content (e.g. a card grid container)</td>
+              <td>You want to apply <code>lang</code>, <code>dir</code>, or styling to a slice of inline text</td>
+            </tr>
+            <tr>
+              <td>You're wrapping multiple elements that need a common parent for styling or scripting</td>
+              <td>You're isolating a fragment for JS without breaking phrasing flow</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Wrapping every section in a div "just in case you need it for CSS later". You usually don't. The semantic element is itself a valid CSS target — <code>header { ... }</code> works perfectly fine.
+        </div>
+      </section>
+
+      <section id="costs">
+        <h2><span class="num">3</span> The cost of div soup</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h4>1. Poor accessibility</h4>
+            <p>Screen reader users navigate by landmarks (<code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code>) and by headings. A div has no landmark role and no heading level. The user has to read every div top to bottom — useless for a 5,000-word article.</p>
+          </div>
+          <div class="card">
+            <h4>2. Poor SEO</h4>
+            <p>Search engines weight <code>&lt;h1&gt;</code> heavily and use semantic structure to understand what a page is about. A div with <code>class="title"</code> tells Google nothing.</p>
+          </div>
+          <div class="card">
+            <h4>3. Harder to maintain</h4>
+            <p>When every section is a div, the only way to know which div is which is to read its class name and hope the original author was consistent. <code>&lt;nav&gt;</code> needs no such guessing.</p>
+          </div>
+          <div class="card">
+            <h4>4. Worse default behavior</h4>
+            <p>A <code>&lt;button&gt;</code> is keyboard-focusable, submits forms, fires <code>click</code> on Enter/Space, and is announced as "button". A <code>&lt;div onclick&gt;</code> is none of those things unless you bolt on a dozen attributes.</p>
+          </div>
+          <div class="card">
+            <h4>5. No Reader Mode support</h4>
+            <p>Browser "Reader" modes extract <code>article</code>, <code>main</code>, headings, and paragraphs. Div soup confuses them and your content won't be readable in reader mode.</p>
+          </div>
+          <div class="card">
+            <h4>6. Misses browser features</h4>
+            <p>Features like <code>:focus-visible</code>, <code>tabindex</code> defaults, form reset, autofill, and printing behavior are wired to specific elements. Choosing divs opts you out of all of it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="before-after">
+        <h2><span class="num">4</span> Before / after comparison</h2>
+        <p>Same rendered output. Radically different markup. The "before" version requires re-implementing semantics through ARIA, classes, and JS. The "after" version gets it for free.</p>
+
+        <h3>Case A: A site header with navigation</h3>
+        <div class="compare">
+          <div class="col bad">
+            <div class="head">Before — div soup</div>
+            <pre><code>&lt;div id="site-header" class="header"&gt;
+  &lt;div class="logo"&gt;Acme Corp&lt;/div&gt;
+  &lt;div class="navigation" role="navigation"&gt;
+    &lt;div class="nav-link" role="link"
+         tabindex="0"
+         onclick="go('/')"&gt;Home&lt;/div&gt;
+    &lt;div class="nav-link" role="link"
+         tabindex="0"
+         onclick="go('/about')"&gt;About&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="col good">
+            <div class="head">After — semantic</div>
+            <pre><code>&lt;header&gt;
+  &lt;a href="/" class="logo"&gt;Acme Corp&lt;/a&gt;
+  &lt;nav&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+          </div>
+        </div>
+
+        <h3>Case B: A blog post</h3>
+        <div class="compare">
+          <div class="col bad">
+            <div class="head">Before — div soup</div>
+            <pre><code>&lt;div class="post"&gt;
+  &lt;div class="post-title"&gt;Why Semantic HTML&lt;/div&gt;
+  &lt;div class="post-meta"&gt;
+    By &lt;span class="author"&gt;Ada&lt;/span&gt;
+    on &lt;span class="date"&gt;2024-03-12&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="post-content"&gt;
+    &lt;div class="paragraph"&gt;Semantic HTML matters.&lt;/div&gt;
+    &lt;div class="paragraph"&gt;Here is why.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="col good">
+            <div class="head">After — semantic</div>
+            <pre><code>&lt;article&gt;
+  &lt;h2&gt;Why Semantic HTML&lt;/h2&gt;
+  &lt;p&gt;By &lt;span&gt;Ada&lt;/span&gt;
+     on &lt;time datetime="2024-03-12"&gt;
+       March 12, 2024
+     &lt;/time&gt;.&lt;/p&gt;
+  &lt;p&gt;Semantic HTML matters.&lt;/p&gt;
+  &lt;p&gt;Here is why.&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+          </div>
+        </div>
+
+        <h3>Case C: A call-to-action button</h3>
+        <div class="compare">
+          <div class="col bad">
+            <div class="head">Before — div button</div>
+            <pre><code>&lt;div class="btn btn-primary"
+     role="button"
+     tabindex="0"
+     onclick="submit()"&gt;
+  Submit
+&lt;/div&gt;
+
+&lt;!-- And you still need to handle: --&gt;
+&lt;!-- - Enter key fires click         --&gt;
+&lt;!-- - Space key fires click         --&gt;
+&lt;!-- - Disabled state                --&gt;
+&lt;!-- - Focus ring styling            --&gt;
+&lt;!-- - Form submission on Enter      --&gt;</code></pre>
+          </div>
+          <div class="col good">
+            <div class="head">After — real button</div>
+            <pre><code>&lt;button type="submit"
+        class="btn btn-primary"&gt;
+  Submit
+&lt;/button&gt;
+
+&lt;!-- That's it. Keyboard, focus, --&gt;
+&lt;!-- disabled, form submission,  --&gt;
+&lt;!-- and screen reader support   --&gt;
+&lt;!-- are all built in.           --&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="checker">
+        <h2><span class="num">5</span> The "would a stranger understand this?" test</h2>
+        <p>Strip every <code>class</code> and <code>id</code> from your HTML, then hand it to a stranger with no CSS. Can they answer these questions?</p>
+        <ol>
+          <li>What is the title of this page? (Should be an <code>&lt;h1&gt;</code>)</li>
+          <li>Where is the main navigation? (Should be <code>&lt;nav&gt;</code>)</li>
+          <li>Where does the main content start? (Should be <code>&lt;main&gt;</code>)</li>
+          <li>Is this a clickable action? (Should be <code>&lt;button&gt;</code> or <code>&lt;a&gt;</code>)</li>
+          <li>Is this a form? (Should be <code>&lt;form&gt;</code>)</li>
+          <li>Is this content self-contained, like a blog post? (Should be <code>&lt;article&gt;</code>)</li>
+          <li>Is this content tangentially related, like a sidebar? (Should be <code>&lt;aside&gt;</code>)</li>
+          <li>What's the copyright info at the bottom? (Should be <code>&lt;footer&gt;</code>)</li>
+        </ol>
+        <p>If the stranger can't tell, you've used divs where semantic elements belong.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Turn off CSS in your browser (DevTools → Rendering → Emulate CSS media print, or use a "disable styles" extension). The page should still be usable and its structure should be obvious. Headings should be bigger; lists should have bullets; links should be underlined and blue; buttons should look like gray buttons. This is "naked HTML", and it's the test of whether your semantics hold up.
+        </div>
+        <div class="demo-box">
+          <div class="demo-label">A handy "div-to-semantic" replacement table</div>
+          <table class="info-table">
+            <thead><tr><th>If you wrote…</th><th>Use this instead</th></tr></thead>
+            <tbody>
+              <tr><td><code>&lt;div class="header"&gt;</code></td><td><code>&lt;header&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="nav"&gt;</code></td><td><code>&lt;nav&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="main"&gt;</code></td><td><code>&lt;main&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="footer"&gt;</code></td><td><code>&lt;footer&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="article"&gt;</code></td><td><code>&lt;article&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="sidebar"&gt;</code></td><td><code>&lt;aside&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="section"&gt;</code></td><td><code>&lt;section&gt;</code> (only if it has a heading)</td></tr>
+              <tr><td><code>&lt;div class="title"&gt;</code></td><td><code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="button" onclick&gt;</code></td><td><code>&lt;button&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="dialog"&gt;</code></td><td><code>&lt;dialog&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="figure"&gt;</code></td><td><code>&lt;figure&gt;</code></td></tr>
+              <tr><td><code>&lt;div class="date"&gt;</code></td><td><code>&lt;time&gt;</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">6</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;div onclick="..."&gt;</code></td>
+              <td>Not keyboard-accessible, not announced as a control</td>
+              <td>Use <code>&lt;button&gt;</code> for actions, <code>&lt;a&gt;</code> for navigation</td>
+            </tr>
+            <tr>
+              <td><code>&lt;div class="h1"&gt;Title&lt;/div&gt;</code></td>
+              <td>No heading semantics; loses SEO + a11y</td>
+              <td>Use <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code></td>
+            </tr>
+            <tr>
+              <td><code>&lt;div role="navigation"&gt;</code> with no nav element</td>
+              <td>You're adding semantics via ARIA when an element already does the job</td>
+              <td>Use <code>&lt;nav&gt;</code> directly (it has <code>role="navigation"</code> by default)</td>
+            </tr>
+            <tr>
+              <td>Wrapping every section in <code>&lt;div class="container"&gt;</code></td>
+              <td>Often unnecessary; the semantic element can be styled directly</td>
+              <td>Apply styles to the semantic element; only add divs when truly needed for layout</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;div&gt;</code> for list items</td>
+              <td>Loses list semantics, screen reader count announcements</td>
+              <td>Use <code>&lt;ul&gt;</code>/<code>&lt;ol&gt;</code> + <code>&lt;li&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Replacing all divs with sections</td>
+              <td><code>&lt;section&gt;</code> requires a heading — without one it's no better than a div</td>
+              <td>Use <code>&lt;section&gt;</code> only when there's a heading; otherwise <code>&lt;div&gt;</code> is fine</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">7</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Spot the soup</strong>
+          Open any random web page in your browser. View source. Find three places where the author used a div instead of a semantic element. Write down what semantic element would have been better.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Naked HTML test</strong>
+          Take a page you've built. Disable all CSS (DevTools → Cmd/Ctrl+Shift+P → "Disable CSS"). Does the page still make sense? Is the heading hierarchy visible? Are nav links clearly links? Fix any structure that breaks when CSS is off.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Div soup → semantic</strong>
+          Rewrite this markup semantically:
+          <pre style="margin-top:10px;"><code>&lt;div class="card"&gt;
+  &lt;div class="card-image"&gt;&lt;img src="cat.jpg"&gt;&lt;/div&gt;
+  &lt;div class="card-body"&gt;
+    &lt;div class="card-title"&gt;My Cat&lt;/div&gt;
+    &lt;div class="card-text"&gt;A photo of my cat.&lt;/div&gt;
+    &lt;div class="card-button" onclick="like()"&gt;Like&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          Hint: <code>figure</code>, <code>figcaption</code>, <code>h3</code>, <code>p</code>, <code>button</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Screen reader pass</strong>
+          Install a screen reader (NVDA on Windows, VoiceOver on Mac, or use the "Read aloud" feature). Navigate your page by landmark (in NVDA: press <code>D</code> to jump to next landmark). Did the screen reader find your header, nav, main, and footer? If not, replace the corresponding divs.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">All mobile browsers</span>
+        </div>
+        <p>Semantic HTML elements (<code>header</code>, <code>nav</code>, <code>main</code>, <code>article</code>, <code>aside</code>, <code>section</code>, <code>footer</code>, <code>figure</code>, <code>time</code>, <code>mark</code>, etc.) are supported in every browser made since roughly 2011. There is no browser-compatibility excuse for using divs instead.</p>
+        <p>The only legacy concern is Internet Explorer 8 and earlier, which didn't recognize these elements as block-level. For IE8 support you needed the "HTML5 shiv" — a tiny script that registered the new elements via <code>document.createElement</code>. IE8 reached end of life in 2016. You don't need this anymore.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">9</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Marketing site redesigns</h4>
+            <p>The classic refactor: take a div-soup landing page and rebuild with <code>header</code>/<code>nav</code>/<code>main</code>/<code>footer</code>. SEO and a11y improve overnight.</p>
+          </div>
+          <div class="card">
+            <h4>Component libraries</h4>
+            <p>Design systems that emit semantic elements (Card → <code>article</code>, Modal → <code>dialog</code>, List → <code>ul</code>) need less ARIA bolted on by consumers.</p>
+          </div>
+          <div class="card">
+            <h4>Reader Mode compatibility</h4>
+            <p>News sites that use <code>article</code> + headings get reliably extracted by Safari Reader, Firefox Reader View, and Pocket.</p>
+          </div>
+          <div class="card">
+            <h4>Accessibility audits</h4>
+            <p>WCAG audits flag "no main landmark", "no h1", "div with onclick" — all fixable by switching from divs to semantic elements.</p>
+          </div>
+          <div class="card">
+            <h4>Migrations to React/Vue/Svelte</h4>
+            <p>When porting templates to components, semantic elements become obvious component boundaries: <code>&lt;Article&gt;</code>, <code>&lt;Nav&gt;</code>, <code>&lt;Footer&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Email templates</h4>
+            <p>Even email clients — limited though they are — increasingly support <code>article</code>, <code>section</code>, and semantic headings. Use them where supported, fall back to tables only where needed.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../../06-Forms/05-Advanced-Forms/progress-meter.html">← Previous: Output, Progress &amp; Meter</a>
+    <a class="next" href="benefits.html">Next: Benefits of Semantic HTML →</a>
+  </footer>
+</body>
+</html>

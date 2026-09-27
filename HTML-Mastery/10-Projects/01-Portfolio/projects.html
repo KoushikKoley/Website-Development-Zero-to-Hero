@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Selected work by Maya Chen — design systems, dashboards, apps, and accessibility audits.">
+  <title>Projects — Maya Chen</title>
+  <!--
+    Projects Page
+    Design decisions:
+    - CSS-only filtering via :checked radio buttons + sibling selector — no JS needed.
+    - Featured project gets a full-width card; the rest flow into a responsive grid.
+    - Tag colors match the indigo accent to keep the visual language cohesive.
+    - Cards use only semantic <article> + <h3> for an accessible reading order.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-text: #0f172a;
+      --color-muted: #64748b;
+      --color-accent: #4f46e5;
+      --color-accent-hover: #4338ca;
+      --color-accent-soft: #eef2ff;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --max-width: 1120px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+
+    /* ===== Header (shared) ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 64px;
+    }
+    .brand { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--color-text); }
+    .brand span { color: var(--color-accent); }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 28px; list-style: none; }
+    .nav-menu a { color: var(--color-muted); font-weight: 500; font-size: 0.95rem; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { color: var(--color-accent); text-decoration: none; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; transition: transform 0.15s ease, background 0.15s ease; }
+    .btn-primary { background: var(--color-accent); color: #fff; }
+    .btn-primary:hover { background: var(--color-accent-hover); text-decoration: none; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    @media (max-width: 768px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 64px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta { display: none; }
+    }
+
+    /* ===== Page hero ===== */
+    .page-hero { padding: 64px 0 24px; }
+    .breadcrumb { color: var(--color-muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .breadcrumb a { color: var(--color-muted); }
+    .page-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -0.02em; line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .page-hero p { color: var(--color-muted); max-width: 640px; font-size: 1.1rem; }
+
+    /* ===== Featured project ===== */
+    .featured { margin-top: 32px; margin-bottom: 48px; }
+    .featured-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .featured-grid {
+      display: grid; grid-template-columns: 1.1fr 1fr; gap: 0;
+      align-items: stretch;
+    }
+    .featured-thumb {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      min-height: 320px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 3rem; font-weight: 800; letter-spacing: -0.04em;
+    }
+    .featured-body { padding: 40px; }
+    .featured-badge {
+      display: inline-block; background: var(--color-accent-soft);
+      color: var(--color-accent); font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
+    }
+    .featured-body h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 12px; letter-spacing: -0.01em; }
+    .featured-body p { color: var(--color-muted); margin-bottom: 20px; }
+    .featured-stats {
+      display: flex; gap: 28px; margin: 20px 0; padding: 16px 0;
+      border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);
+    }
+    .featured-stats div .num { font-weight: 700; color: var(--color-text); font-size: 1.2rem; }
+    .featured-stats div .lbl { color: var(--color-muted); font-size: 0.8rem; }
+    .featured-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    @media (max-width: 800px) {
+      .featured-grid { grid-template-columns: 1fr; }
+      .featured-body { padding: 28px; }
+      .featured-thumb { min-height: 200px; font-size: 2rem; }
+    }
+
+    /* ===== Filter bar ===== */
+    .filter-bar {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      padding: 16px 0; margin-bottom: 32px;
+      border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);
+    }
+    .filter-bar .label {
+      font-size: 0.85rem; color: var(--color-muted); margin-right: 8px;
+      font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .filter-bar input[type="radio"] {
+      position: absolute; opacity: 0; pointer-events: none;
+    }
+    .filter-bar label {
+      display: inline-block; padding: 8px 16px; border-radius: 999px;
+      border: 1px solid var(--color-border); cursor: pointer;
+      font-size: 0.9rem; font-weight: 500; color: var(--color-muted);
+      transition: all 0.15s ease;
+    }
+    .filter-bar label:hover { color: var(--color-accent); border-color: var(--color-accent); }
+    .filter-bar input[type="radio"]:checked + label {
+      background: var(--color-accent); border-color: var(--color-accent);
+      color: #fff;
+    }
+    .filter-bar .count {
+      margin-left: auto; font-size: 0.85rem; color: var(--color-muted);
+    }
+
+    /* ===== Project grid ===== */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    @media (max-width: 900px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .projects-grid { grid-template-columns: 1fr; } }
+
+    .project-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      display: flex; flex-direction: column;
+    }
+    .project-card:hover {
+      transform: translateY(-4px); box-shadow: var(--shadow-md);
+      border-color: var(--color-accent);
+    }
+    .project-thumb {
+      aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.04em;
+    }
+    .thumb-1 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .thumb-2 { background: linear-gradient(135deg, #ec4899, #f97316); }
+    .thumb-3 { background: linear-gradient(135deg, #14b8a6, #0ea5e9); }
+    .thumb-4 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .thumb-5 { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+    .thumb-6 { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
+    .project-body { padding: 22px; display: flex; flex-direction: column; flex: 1; }
+    .project-card h3 { font-size: 1.2rem; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .project-card .desc { color: var(--color-muted); font-size: 0.95rem; margin-bottom: 14px; flex: 1; }
+    .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tag {
+      font-size: 0.72rem; padding: 4px 10px; border-radius: 999px;
+      background: var(--color-accent-soft); color: var(--color-accent);
+      font-weight: 600;
+    }
+    .project-links { display: flex; gap: 12px; font-size: 0.9rem; }
+    .project-links a { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+
+    /* ===== Filter logic — pure CSS ===== */
+    /* Each card carries data attributes used to hide based on the active filter */
+    #filter-all:checked    ~ .projects-grid .project-card { display: flex; }
+    #filter-design:checked ~ .projects-grid .project-card:not([data-cat~="design"]) { display: none; }
+    #filter-web:checked    ~ .projects-grid .project-card:not([data-cat~="web"]) { display: none; }
+    #filter-app:checked    ~ .projects-grid .project-card:not([data-cat~="app"]) { display: none; }
+    #filter-viz:checked    ~ .projects-grid .project-card:not([data-cat~="viz"]) { display: none; }
+    #filter-a11y:checked   ~ .projects-grid .project-card:not([data-cat~="a11y"]) { display: none; }
+
+    /* ===== CTA band ===== */
+    .cta-band {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff; border-radius: var(--radius);
+      padding: 56px 48px; text-align: center; margin: 72px 0;
+    }
+    .cta-band h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 12px; }
+    .cta-band p { color: rgba(255, 255, 255, 0.9); margin-bottom: 28px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .cta-band .btn-primary { background: #fff; color: var(--color-accent); }
+    .cta-band .btn-primary:hover { background: #f1f5f9; }
+    @media (max-width: 600px) { .cta-band { padding: 36px 24px; } }
+
+    /* ===== Footer (shared) ===== */
+    .site-footer { border-top: 1px solid var(--color-border); padding: 48px 0 32px; }
+    .footer-grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-start; }
+    .footer-brand p { color: var(--color-muted); max-width: 320px; margin-top: 8px; font-size: 0.95rem; }
+    .footer-social { display: flex; gap: 18px; list-style: none; }
+    .footer-social a { color: var(--color-muted); font-weight: 500; }
+    .footer-social a:hover { color: var(--color-accent); text-decoration: none; }
+    .footer-bottom {
+      margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-border);
+      color: var(--color-muted); font-size: 0.85rem;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html" aria-current="page">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="contact.html" class="btn btn-primary header-cta">Let's talk</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb"><a href="index.html">Home</a> / Projects</p>
+        <h1>Selected work, 2018–2025.</h1>
+        <p>
+          A rotating selection of design systems, dashboards, and small apps I've shipped —
+          with the constraints, decisions, and outcomes that mattered most.
+        </p>
+      </div>
+    </section>
+
+    <section class="container">
+      <!-- ===== Featured project ===== -->
+      <article class="featured">
+        <div class="featured-card">
+          <div class="featured-grid">
+            <div class="featured-thumb" aria-hidden="true">Aurora</div>
+            <div class="featured-body">
+              <span class="featured-badge">Featured · Design system</span>
+              <h2>Aurora Design System</h2>
+              <p>
+                A token-driven component library adopted across four product teams at Northwind Labs.
+                Aurora ships 84 accessible components, three themes, and a docs site that doubles as
+                a live playground — all rendered from a single source of design tokens.
+              </p>
+              <div class="featured-stats">
+                <div><div class="num">84</div><div class="lbl">Components shipped</div></div>
+                <div><div class="num">−38%</div><div class="lbl">UI bug volume</div></div>
+                <div><div class="num">4</div><div class="lbl">Teams migrated</div></div>
+              </div>
+              <div class="tag-row">
+                <span class="tag">React</span>
+                <span class="tag">TypeScript</span>
+                <span class="tag">Storybook</span>
+                <span class="tag">Style Dictionary</span>
+                <span class="tag">WCAG 2.2 AA</span>
+              </div>
+              <div class="featured-actions">
+                <a href="#" class="btn btn-primary">View case study</a>
+                <a href="#" class="btn btn-ghost">↗ Live docs</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== Filter bar (CSS-only filtering) ===== -->
+      <input type="radio" name="filter" id="filter-all" checked>
+      <input type="radio" name="filter" id="filter-design">
+      <input type="radio" name="filter" id="filter-web">
+      <input type="radio" name="filter" id="filter-app">
+      <input type="radio" name="filter" id="filter-viz">
+      <input type="radio" name="filter" id="filter-a11y">
+
+      <div class="filter-bar" role="group" aria-label="Filter projects by category">
+        <span class="label">Filter:</span>
+        <label for="filter-all">All</label>
+        <label for="filter-design">Design systems</label>
+        <label for="filter-web">Web apps</label>
+        <label for="filter-app">Mobile / PWA</label>
+        <label for="filter-viz">Data viz</label>
+        <label for="filter-a11y">Accessibility</label>
+        <span class="count" aria-hidden="true">7 projects</span>
+      </div>
+
+      <!-- ===== Project grid ===== -->
+      <div class="projects-grid">
+        <article class="project-card" data-cat="web viz a11y">
+          <div class="project-thumb thumb-1" aria-hidden="true">Tideline</div>
+          <div class="project-body">
+            <h3>Tideline Climate Dashboard</h3>
+            <p class="desc">
+              Interactive coastal-flood visualizations for a climate nonprofit, presented to
+              three municipal climate offices along the West Coast.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Next.js</span>
+              <span class="tag">D3</span>
+              <span class="tag">Mapbox</span>
+            </div>
+            <div class="project-links">
+              <a href="#">↗ Live</a>
+              <a href="#">{} Code</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card" data-cat="app a11y">
+          <div class="project-thumb thumb-2" aria-hidden="true">Pace</div>
+          <div class="project-body">
+            <h3>Pace — Runner's Companion</h3>
+            <p class="desc">
+              Offline-first PWA for marathon training. Stores plans locally with IndexedDB
+              and syncs when connectivity returns. 4.8★ average across 18k installs.
+            </p>
+            <div class="tag-row">
+              <span class="tag">PWA</span>
+              <span class="tag">Vue 3</span>
+              <span class="tag">IndexedDB</span>
+            </div>
+            <div class="project-links">
+              <a href="#">↗ Live</a>
+              <a href="#">{} Code</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card" data-cat="design a11y">
+          <div class="project-thumb thumb-3" aria-hidden="true">Aurora</div>
+          <div class="project-body">
+            <h3>Aurora Tokens</h3>
+            <p class="desc">
+              The token layer beneath the Aurora design system — a single source of truth
+              consumed by web, iOS, and Android apps via Style Dictionary transforms.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Style Dictionary</span>
+              <span class="tag">JSON</span>
+              <span class="tag">CI</span>
+            </div>
+            <div class="project-links">
+              <a href="#">{} Code</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card" data-cat="web a11y">
+          <div class="project-thumb thumb-4" aria-hidden="true">Lumen</div>
+          <div class="project-body">
+            <h3>Lumen Accessibility Audit Toolkit</h3>
+            <p class="desc">
+              An open-source CLI and Node API that runs a curated rule set against any URL
+              and produces a developer-friendly report. Used internally by 3 companies.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Node</span>
+              <span class="tag">axe-core</span>
+              <span class="tag">Playwright</span>
+            </div>
+            <div class="project-links">
+              <a href="#">↗ Live</a>
+              <a href="#">{} Code</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card" data-cat="web viz">
+          <div class="project-thumb thumb-5" aria-hidden="true">Ferry</div>
+          <div class="project-body">
+            <h3>Ferry — Realtime Transit Map</h3>
+            <p class="desc">
+              Side project mapping Washington State Ferries in realtime. SVG + WebSockets;
+              ships in under 40KB of JS on first paint.
+            </p>
+            <div class="tag-row">
+              <span class="tag">SVG</span>
+              <span class="tag">WebSockets</span>
+              <span class="tag">Vite</span>
+            </div>
+            <div class="project-links">
+              <a href="#">↗ Live</a>
+              <a href="#">{} Code</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card" data-cat="design web">
+          <div class="project-thumb thumb-6" aria-hidden="true">Cedar</div>
+          <div class="project-body">
+            <h3>Cedar Studio Marketing Site</h3>
+            <p class="desc">
+              A rebuild of a small studio's marketing site, cutting bundle size by 71%
+              and lifting organic search traffic by 2.3× in six months.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Astro</span>
+              <span class="tag">Tailwind</span>
+              <span class="tag">SEO</span>
+            </div>
+            <div class="project-links">
+              <a href="#">↗ Live</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card" data-cat="app a11y">
+          <div class="project-thumb thumb-2" aria-hidden="true">Tendril</div>
+          <div class="project-body">
+            <h3>Tendril Plant Care</h3>
+            <p class="desc">
+              A small iOS-first PWA for houseplant enthusiasts. VoiceOver-reviewed by
+              three low-vision beta testers in the design phase.
+            </p>
+            <div class="tag-row">
+              <span class="tag">PWA</span>
+              <span class="tag">Svelte</span>
+              <span class="tag">Service Worker</span>
+            </div>
+            <div class="project-links">
+              <a href="#">↗ Live</a>
+              <a href="#">{} Code</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="cta-band">
+        <h2>Want to see more?</h2>
+        <p>
+          I keep older work on GitHub and write occasional deep-dives on the build process.
+          Tell me what you're curious about and I'll point you in the right direction.
+        </p>
+        <a href="contact.html" class="btn btn-primary">Get in touch</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+          <p>Senior Frontend Engineer crafting accessible, performant interfaces from Portland, Oregon.</p>
+        </div>
+        <nav aria-label="Footer">
+          <ul class="footer-social">
+            <li><a href="https://github.com/" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+            <li><a href="https://dribbble.com/" rel="noopener">Dribbble</a></li>
+            <li><a href="https://bsky.app/" rel="noopener">Bluesky</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Maya Chen. Crafted with semantic HTML &amp; CSS.</span>
+        <span>Built mobile-first · Lighthouse 100/100</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The &lt;dialog&gt; Element — Modal &amp; Non-Modal Dialogs — HTML Mastery</title>
+  <meta name="description" content="The HTML dialog element: open attribute for non-modal dialogs, showModal() for true modal with backdrop and focus trap, ESC to close, the close event, returnValue, the ::backdrop pseudo-element, form method='dialog'. Native modal dialogs without JavaScript libraries.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    .demo-btn {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; border: 0; padding: 10px 16px; border-radius: 8px;
+      font-weight: 600; cursor: pointer; font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+    .demo-btn:hover { filter: brightness(1.08); }
+    /* Style the dialogs */
+    dialog {
+      border: 0; border-radius: 16px; padding: 0; max-width: 460px; width: calc(100% - 32px);
+      box-shadow: 0 20px 50px rgba(2,6,23,0.25);
+      background: white; color: var(--ink);
+    }
+    dialog::backdrop {
+      background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(2px);
+    }
+    dialog[open] { animation: dialog-in 0.18s ease-out; }
+    @keyframes dialog-in {
+      from { transform: translateY(-10px) scale(0.97); opacity: 0; }
+      to   { transform: none; opacity: 1; }
+    }
+    dialog .dlg-head { padding: 20px 24px 0; }
+    dialog .dlg-head h3 { margin: 0; font-size: 1.15rem; }
+    dialog .dlg-body { padding: 12px 24px; color: var(--ink-soft); }
+    dialog .dlg-foot {
+      padding: 12px 24px 20px; display: flex; gap: 8px; justify-content: flex-end;
+      border-top: 1px solid var(--line);
+    }
+    dialog .dlg-foot button {
+      padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line);
+      background: white; color: var(--ink); cursor: pointer; font-weight: 600;
+    }
+    dialog .dlg-foot button.primary {
+      background: var(--brand); color: white; border-color: var(--brand);
+    }
+    dialog .dlg-foot button.danger {
+      background: var(--warn); color: white; border-color: var(--warn);
+    }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Details &amp; Summary</span>
+    <h1>The <code>&lt;dialog&gt;</code> Element</h1>
+    <p>Native modal dialogs — focus trap, ESC-to-close, inert background, and a backdrop pseudo-element — all built into the browser. No more jQuery UI Bootstrap React-Modal ARIA-trap boilerplate.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#two-modes">Two Modes: Non-Modal vs Modal</a></li>
+        <li><a href="#open-attr">The <code>open</code> Attribute</a></li>
+        <li><a href="#show-modal"><code>showModal()</code></a></li>
+        <li><a href="#backdrop">The <code>::backdrop</code> Pseudo</a></li>
+        <li><a href="#esc">ESC to Close</a></li>
+        <li><a href="#close-event">The <code>close</code> Event</a></li>
+        <li><a href="#return-value"><code>returnValue</code></a></li>
+        <li><a href="#form-method">Form <code>method="dialog"</code></a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="two-modes">
+        <h2><span class="num">1</span> Two Modes: Non-Modal vs Modal</h2>
+        <table class="info-table">
+          <thead><tr><th>Property</th><th><code>show()</code> (non-modal)</th><th><code>showModal()</code> (modal)</th></tr></thead>
+          <tbody>
+            <tr><td>Background interaction</td><td>Allowed — page still clickable</td><td>Blocked — background is inert</td></tr>
+            <tr><td>Backdrop</td><td>No backdrop</td><td>Darkened <code>::backdrop</code></td></tr>
+            <tr><td>Focus trap</td><td>No — Tab can leave the dialog</td><td>Yes — focus stays inside</td></tr>
+            <tr><td>ESC closes</td><td>No</td><td>Yes</td></tr>
+            <tr><td>Stacking context</td><td>Normal flow</td><td>Top layer (above all other content)</td></tr>
+            <tr><td>Common use</td><td>Pop-out panels, non-blocking toasts</td><td>Confirmations, forms, lightboxes</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          The "top layer" concept is key: modal dialogs render above <em>everything</em>, including elements with <code>z-index: 99999</code>. You no longer have to play the z-index arms race with sticky headers and dropdowns.
+        </div>
+      </section>
+
+      <section id="open-attr">
+        <h2><span class="num">2</span> The open Attribute (Non-Modal)</h2>
+        <pre><code>&lt;dialog open&gt;
+  &lt;p&gt;I'm a non-modal dialog. The page behind me is still interactive.&lt;/p&gt;
+&lt;/dialog&gt;</code></pre>
+        <p>The <code>open</code> attribute marks the dialog as showing in non-modal mode. It's the declarative equivalent of calling <code>dialog.show()</code> from JavaScript:</p>
+        <pre><code>const dialog = document.querySelector('dialog');
+dialog.show();        // non-modal — equivalent to setting `open`
+dialog.close();       // hides the dialog</code></pre>
+
+        <button class="demo-btn" id="open-non-modal">Open non-modal dialog</button>
+
+        <dialog id="non-modal-dialog">
+          <div class="dlg-head"><h3>Non-modal</h3></div>
+          <div class="dlg-body">
+            Try clicking the page behind me — it still works. Press Tab; focus can leave this dialog. ESC does nothing.
+          </div>
+          <div class="dlg-foot">
+            <button onclick="document.getElementById('non-modal-dialog').close()">Dismiss</button>
+          </div>
+        </dialog>
+
+        <script>
+          document.getElementById('open-non-modal').addEventListener('click', () => {
+            document.getElementById('non-modal-dialog').show();
+          });
+        </script>
+      </section>
+
+      <section id="show-modal">
+        <h2><span class="num">3</span> showModal() — True Modal</h2>
+        <pre><code>const dialog = document.querySelector('dialog');
+dialog.showModal();   // modal — inert background, focus trap, ESC closes</code></pre>
+
+        <button class="demo-btn" id="open-modal">Open modal dialog</button>
+
+        <dialog id="modal-dialog">
+          <div class="dlg-head"><h3>Confirm deletion</h3></div>
+          <div class="dlg-body">
+            This action cannot be undone. The page behind me is inert — try clicking it. Press ESC to dismiss. Try Tabbing; focus stays inside.
+          </div>
+          <div class="dlg-foot">
+            <button onclick="document.getElementById('modal-dialog').close('cancel')">Cancel</button>
+            <button class="danger" onclick="document.getElementById('modal-dialog').close('delete')">Delete</button>
+          </div>
+        </dialog>
+
+        <script>
+          document.getElementById('open-modal').addEventListener('click', () => {
+            document.getElementById('modal-dialog').showModal();
+          });
+          document.getElementById('modal-dialog').addEventListener('close', (e) => {
+            const v = e.target.returnValue;
+            if (v) console.log('Dialog closed with:', v);
+          });
+        </script>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Calling <code>showModal()</code> on a dialog that already has the <code>open</code> attribute (from <code>show()</code> or HTML) throws an <code>InvalidStateError</code>. Always call <code>close()</code> first, or use only one method per dialog instance.
+        </div>
+      </section>
+
+      <section id="backdrop">
+        <h2><span class="num">4</span> The ::backdrop Pseudo-Element</h2>
+        <p>When shown via <code>showModal()</code>, the dialog has a backdrop that you can style with the <code>::backdrop</code> pseudo-element. It is rendered in the top layer behind the dialog but above all other page content.</p>
+        <pre><code>dialog::backdrop {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* Vary backdrop per dialog */
+dialog.confirm::backdrop { background: rgba(220, 38, 38, 0.4); }
+dialog.success::backdrop { background: rgba(22, 163, 74, 0.4); }</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Backdrop styling works only for <code>showModal()</code>. Non-modal dialogs have no backdrop at all — which is exactly why background interaction is allowed.
+        </div>
+      </section>
+
+      <section id="esc">
+        <h2><span class="num">5</span> ESC to Close</h2>
+        <p>Modal dialogs close automatically when the user presses Escape. The browser fires the <code>cancel</code> event first — you can prevent default to refuse dismissal:</p>
+        <pre><code>dialog.addEventListener('cancel', (e) =&gt; {
+  // e.g. user has unsaved form changes
+  if (formIsDirty()) {
+    e.preventDefault();     // keep dialog open
+    showUnsavedWarning();
+  }
+});</code></pre>
+        <p>If the <code>cancel</code> event is not prevented, the browser calls <code>dialog.close()</code> and the <code>close</code> event fires.</p>
+      </section>
+
+      <section id="close-event">
+        <h2><span class="num">6</span> The close Event</h2>
+        <p>The <code>close</code> event fires whenever the dialog closes — via <code>close()</code>, ESC, or a submit button with <code>method="dialog"</code>. It is non-cancelable and does <strong>not</strong> bubble.</p>
+        <pre><code>dialog.addEventListener('close', () =&gt; {
+  console.log('Closed. returnValue =', dialog.returnValue);
+});</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Authors attach click handlers to their Cancel / Save buttons and call <code>close()</code>, then expect a custom event to fire. The platform already gives you <code>close</code> — and the <code>returnValue</code> lets you know which button was clicked.
+        </div>
+      </section>
+
+      <section id="return-value">
+        <h2><span class="num">7</span> returnValue</h2>
+        <p><code>dialog.close(value)</code> accepts an optional value that becomes <code>dialog.returnValue</code>. Combined with <code>method="dialog"</code> forms, this provides a clean way to know which button closed the dialog.</p>
+        <pre><code>// Programmatic
+dialog.close('confirmed');
+console.log(dialog.returnValue);   // "confirmed"
+
+// Form button (see next section)
+&lt;form method="dialog"&gt;
+  &lt;button value="save"&gt;Save&lt;/button&gt;
+  &lt;button value="cancel"&gt;Cancel&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </section>
+
+      <section id="form-method">
+        <h2><span class="num">8</span> Form method="dialog"</h2>
+        <p>A <code>&lt;form&gt;</code> with <code>method="dialog"</code> closes its containing dialog automatically when submitted. Each submit button's <code>value</code> becomes the dialog's <code>returnValue</code>.</p>
+        <pre><code>&lt;dialog id="confirm"&gt;
+  &lt;form method="dialog"&gt;
+    &lt;p&gt;Delete this file?&lt;/p&gt;
+    &lt;menu&gt;
+      &lt;button value="cancel"&gt;Cancel&lt;/button&gt;
+      &lt;button value="delete"&gt;Delete&lt;/button&gt;
+    &lt;/menu&gt;
+  &lt;/form&gt;
+&lt;/dialog&gt;
+
+&lt;script&gt;
+  const d = document.getElementById('confirm');
+  d.addEventListener('close', () =&gt; {
+    if (d.returnValue === 'delete') {
+      actuallyDeleteFile();
+    }
+  });
+  d.showModal();
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>method="dialog"</code> skips form validation by design — it never actually submits data anywhere. If you need validation, use a regular form with <code>addEventListener('submit', …)</code> and call <code>dialog.close(value)</code> manually once validation passes.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">9</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 37+</span>
+          <span class="pill yes">Firefox 98+ (March 2022)</span>
+          <span class="pill yes">Safari 15.4+ (March 2022)</span>
+          <span class="pill yes">Edge 79+</span>
+          <span class="pill yes">Universal since 2022</span>
+        </div>
+        <p>Firefox shipped full <code>showModal()</code> support in version 98. If your project supports older Firefox/Safari, include the <a href="https://github.com/GoogleChrome/dialog-polyfill">dialog-polyfill</a> as a fallback — it patches <code>showModal()</code> with manual inert/focus management.</p>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Using <code>open</code> attribute for modal behavior.</strong> HTML <code>open</code> only opens in non-modal mode. Always use <code>showModal()</code> for true modals.</li>
+          <li><strong>Calling <code>showModal()</code> when already open.</strong> Throws <code>InvalidStateError</code>. Call <code>close()</code> first.</li>
+          <li><strong>Expecting <code>close</code> event to bubble.</strong> It does not — listen directly on the dialog.</li>
+          <li><strong>Not handling ESC.</strong> The browser closes the dialog for you. If you have unsaved state, listen for <code>cancel</code> and <code>preventDefault</code>.</li>
+          <li><strong>Using huge <code>z-index</code> on custom modal divs.</strong> With native <code>&lt;dialog&gt;</code>, the top layer is automatic; z-index is irrelevant.</li>
+          <li><strong>Forgetting to focus the first input.</strong> <code>showModal()</code> moves focus to the dialog (or its first focusable child). Verify the focus order matches your visual order.</li>
+          <li><strong>Nesting modal dialogs.</strong> Technically allowed, but UX is usually awful. Avoid stacking more than two.</li>
+          <li><strong>Skipping the polyfill for older browsers.</strong> Pre-2022 Firefox/Safari users see a non-functional dialog.</li>
+          <li><strong>Putting critical navigation inside a modal.</strong> Modal = "block the world for this one decision." Use it sparingly.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — First dialog</strong>
+          Create a <code>&lt;dialog&gt;</code> with a paragraph inside. Open it with both <code>dialog.show()</code> and <code>dialog.showModal()</code>. Notice the difference in background interactivity.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Confirm modal</strong>
+          Build a delete-confirmation modal. Use two buttons with <code>value="cancel"</code> and <code>value="delete"</code> inside a <code>method="dialog"</code> form. Log the <code>returnValue</code> on close.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Styled backdrop</strong>
+          Style <code>dialog::backdrop</code> with a blurred dark overlay. Add a class to the dialog and style its backdrop differently (e.g. red for destructive, green for success).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Dirty-form guard</strong>
+          Put a form inside a modal. If the user has typed something and tries to ESC, intercept the <code>cancel</code> event and show a "discard changes?" sub-confirm before closing.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Lightbox</strong>
+          Build an image lightbox: clicking a thumbnail opens a modal dialog containing the full-size image. Add Close on backdrop click (listen for click on the dialog and check <code>e.target === dialog</code>).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Focus management</strong>
+          Open a modal with three inputs. Verify Tab cycles only inside the dialog. Then dynamically add a fourth input via JS while the dialog is open — confirm focus trapping still works.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">12</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Confirm destructive actions</h4><p>Delete account, discard draft, revoke token — anywhere a click needs a second confirmation.</p></div>
+          <div class="card"><h4>Login / signup forms</h4><p>Pop a sign-in modal over a paywalled article without navigating away.</p></div>
+          <div class="card"><h4>Image lightboxes</h4><p>Click a thumbnail → full-resolution image with backdrop.</p></div>
+          <div class="card"><h4>Settings panels</h4><p>Edit preferences in a modal without leaving the current page.</p></div>
+          <div class="card"><h4>Cookie banners</h4><p>Non-modal cookie consent popups that allow continued reading.</p></div>
+          <div class="card"><h4>Tutorial overlays</h4><p>Step-by-step onboarding inside a focused dialog.</p></div>
+          <div class="card"><h4>Media pickers</h4><p>WordPress-style media library, emoji picker, color picker.</p></div>
+          <div class="card"><h4>Wizards &amp; multi-step forms</h4><p>Stepper UIs that benefit from focus isolation.</p></div>
+          <div class="card"><h4>Command palettes</h4><p>VS Code-style <code>Cmd+K</code> palettes built atop <code>&lt;dialog&gt;</code>.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="details-summary.html">← Previous: &lt;details&gt; &amp; &lt;summary&gt;</a>
+    <a class="next" href="menu-element.html">Next: &lt;menu&gt; Element →</a>
+  </footer>
+</body>
+</html>

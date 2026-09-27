@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Numeric &amp; Temporal Inputs — number, range, date, time — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML numeric and temporal inputs: number, range, date, time, datetime-local, month, week. min/max/step attributes, browser UI differences, native pickers vs custom widgets, range slider for tactile input.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      width: 100%; max-width: 280px; padding: 8px 10px;
+      border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: inherit;
+    }
+    .demo-box input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .demo-box .value-display { font-family: "JetBrains Mono", monospace; font-size: 0.85rem;
+                                background: #0f172a; color: #cbd5e1; padding: 6px 10px;
+                                border-radius: 6px; margin-top: 6px; display: inline-block; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.partial { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 5</span>
+    <h1>Numeric &amp; Temporal Inputs</h1>
+    <p>Numbers, dates, and times deserve dedicated input types. The browser provides native pickers, keyboard hints, and validation — but UI differs widely across browsers. Learn when to trust native pickers and when to reach for a custom widget.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Numeric &amp; temporal types overview</a></li>
+        <li><a href="#number">type="number"</a></li>
+        <li><a href="#range">type="range" (sliders)</a></li>
+        <li><a href="#date">type="date"</a></li>
+        <li><a href="#time">type="time"</a></li>
+        <li><a href="#datetime-local">type="datetime-local"</a></li>
+        <li><a href="#month-week">type="month" and type="week"</a></li>
+        <li><a href="#min-max-step">min, max, step</a></li>
+        <li><a href="#ui-differences">Browser UI differences</a></li>
+        <li><a href="#native-vs-custom">Native pickers vs custom widgets</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Numeric &amp; temporal types overview</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Type</th><th>What it collects</th><th>Format submitted</th><th>Native picker</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>number</code></td><td>Numeric value</td><td>Plain number string ("42" or "3.14")</td><td>Spinner arrows</td></tr>
+            <tr><td><code>range</code></td><td>Number within range</td><td>Plain number string</td><td>Slider</td></tr>
+            <tr><td><code>date</code></td><td>Calendar date (no time)</td><td>YYYY-MM-DD</td><td>Calendar widget</td></tr>
+            <tr><td><code>time</code></td><td>Time of day</td><td>HH:MM (24-hour)</td><td>Time picker</td></tr>
+            <tr><td><code>datetime-local</code></td><td>Date + time, no timezone</td><td>YYYY-MM-DDTHH:MM</td><td>Combined widget</td></tr>
+            <tr><td><code>month</code></td><td>Year + month</td><td>YYYY-MM</td><td>Month picker</td></tr>
+            <tr><td><code>week</code></td><td>Year + week number</td><td>YYYY-Www (e.g., 2024-W12)</td><td>Week picker</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          All temporal types submit <strong>fixed-format strings</strong> (ISO 8601 variants), not localized text. The browser handles localization in the UI but always sends a parseable, locale-independent string to the server. This is one of HTML5's most underappreciated wins.
+        </div>
+      </section>
+
+      <section id="number">
+        <h2><span class="num">2</span> type="number"</h2>
+        <p>For genuine numeric quantities: quantity, age, price, score. Browser shows spinner arrows (up/down) and validates that the value parses as a number. Mobile shows a numeric keyboard.</p>
+        <pre><code>&lt;label for="qty"&gt;Quantity&lt;/label&gt;
+&lt;input type="number" id="qty" name="qty"
+       min="1" max="100" step="1" value="1"&gt;
+
+&lt;label for="price"&gt;Price (USD)&lt;/label&gt;
+&lt;input type="number" id="price" name="price"
+       min="0" step="0.01" value="9.99"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="number" demo — try the arrows</div>
+          <label for="demo-qty">Quantity (1-100)</label>
+          <input type="number" id="demo-qty" name="qty" min="1" max="100" step="1" value="1">
+          <label for="demo-price">Price ($)</label>
+          <input type="number" id="demo-price" name="price" min="0" step="0.01" value="9.99">
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using <code>type="number"</code> for things that look numeric but aren't quantities: ZIP codes (leading zeros stripped), phone numbers (formats vary), credit card numbers (16 digits risk precision loss). Use <code>type="text"</code> with <code>inputmode="numeric"</code> instead.
+        </div>
+      </section>
+
+      <section id="range">
+        <h2><span class="num">3</span> type="range" (sliders)</h2>
+        <p>Renders a horizontal slider. Ideal for imprecise numeric input where the exact value matters less than the rough feel: volume, opacity, brightness, "rate from 1-10."</p>
+        <pre><code>&lt;label for="volume"&gt;Volume: &lt;output for="volume" id="vol-out"&gt;50&lt;/output&gt;%&lt;/label&gt;
+&lt;input type="range" id="volume" name="volume"
+       min="0" max="100" step="1" value="50"
+       oninput="document.getElementById('vol-out').value = this.value"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="range" demo — drag the slider</div>
+          <label for="demo-vol">Volume: <output for="demo-vol" id="vol-out">50</output>%</label>
+          <input type="range" id="demo-vol" name="volume" min="0" max="100" step="1" value="50" style="max-width:340px;" oninput="document.getElementById('vol-out').value = this.value">
+          <label for="demo-bright" style="margin-top:16px;">Brightness (step 5): <output for="demo-bright" id="bright-out">75</output></label>
+          <input type="range" id="demo-bright" name="brightness" min="0" max="100" step="5" value="75" style="max-width:340px;" oninput="document.getElementById('bright-out').value = this.value">
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Sliders show no value by default. Users have no idea what they're picking. Always pair with an <code>&lt;output&gt;</code> element (or visible text) that updates via <code>oninput</code>.
+        </div>
+      </section>
+
+      <section id="date">
+        <h2><span class="num">4</span> type="date"</h2>
+        <p>Calendar date picker. The browser renders a native calendar widget. The submitted value is always <code>YYYY-MM-DD</code> regardless of how it's displayed to the user.</p>
+        <pre><code>&lt;label for="birthday"&gt;Birthday&lt;/label&gt;
+&lt;input type="date" id="birthday" name="birthday"
+       min="1900-01-01" max="2024-12-31"&gt;
+
+&lt;!-- Restrict to weekdays only (with JS fallback) --&gt;
+&lt;label for="appointment"&gt;Appointment (Mon-Fri)&lt;/label&gt;
+&lt;input type="date" id="appointment" name="appointment"
+       min="2024-01-01" max="2024-12-31"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="date" demo — click the field to open calendar</div>
+          <label for="demo-date">Choose a date</label>
+          <input type="date" id="demo-date" name="date" min="2024-01-01" max="2025-12-31">
+        </div>
+      </section>
+
+      <section id="time">
+        <h2><span class="num">5</span> type="time"</h2>
+        <p>Time-of-day picker. Value submitted as 24-hour <code>HH:MM</code> (or <code>HH:MM:SS</code> if <code>step</code> includes seconds). The browser may display it in the user's locale (12-hour with AM/PM) but always submits canonical 24-hour format.</p>
+        <pre><code>&lt;label for="wake"&gt;Wake-up time&lt;/label&gt;
+&lt;input type="time" id="wake" name="wake" value="07:00"&gt;
+
+&lt;!-- Allow second precision --&gt;
+&lt;label for="lap-time"&gt;Lap time&lt;/label&gt;
+&lt;input type="time" id="lap-time" name="lap-time" step="1"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="time" demo</div>
+          <label for="demo-time">Pick a time</label>
+          <input type="time" id="demo-time" name="time" value="09:00">
+        </div>
+      </section>
+
+      <section id="datetime-local">
+        <h2><span class="num">6</span> type="datetime-local"</h2>
+        <p>Combined date + time picker, <strong>without</strong> timezone. The submitted value is <code>YYYY-MM-DDTHH:MM</code> (an ISO 8601 "local" datetime string). The browser interprets this as the user's local time — you must decide on the server whether to treat it as UTC or local.</p>
+        <pre><code>&lt;label for="meeting"&gt;Meeting time&lt;/label&gt;
+&lt;input type="datetime-local" id="meeting" name="meeting"
+       min="2024-01-01T00:00" max="2024-12-31T23:59"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="datetime-local" demo</div>
+          <label for="demo-dtl">Pick a date and time</label>
+          <input type="datetime-local" id="demo-dtl" name="meeting">
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using <code>type="datetime-local"</code> when you need timezone awareness. The value has no timezone info — if a user in Tokyo and a user in New York both submit "2024-06-15T14:00", they mean different absolute moments. For timezone-aware datetimes, capture the timezone separately (e.g., a separate <code>&lt;select&gt;</code>) or use a custom widget.
+        </div>
+      </section>
+
+      <section id="month-week">
+        <h2><span class="num">7</span> type="month" and type="week"</h2>
+        <p>Two less-common temporal types:</p>
+        <ul>
+          <li><strong><code>type="month"</code></strong> — collects year + month. Value submitted as <code>YYYY-MM</code> (e.g., <code>2024-06</code>). Useful for credit card expiration.</li>
+          <li><strong><code>type="week"</code></strong> — collects ISO week. Value submitted as <code>YYYY-Www</code> (e.g., <code>2024-W23</code>). Useful for shift scheduling, payroll.</li>
+        </ul>
+        <pre><code>&lt;label for="cc-exp"&gt;Card expiration&lt;/label&gt;
+&lt;input type="month" id="cc-exp" name="cc-exp"
+       autocomplete="cc-exp"
+       min="2024-01" max="2034-12" required&gt;
+
+&lt;label for="pay-week"&gt;Pay week&lt;/label&gt;
+&lt;input type="week" id="pay-week" name="pay-week" required&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="month" demo</div>
+          <label for="demo-month">Card expiration month</label>
+          <input type="month" id="demo-month" name="cc-exp" autocomplete="cc-exp" min="2024-01" max="2034-12">
+          <label for="demo-week" style="margin-top:14px;">Week of year</label>
+          <input type="week" id="demo-week" name="pay-week">
+        </div>
+      </section>
+
+      <section id="min-max-step">
+        <h2><span class="num">8</span> min, max, step</h2>
+        <p>Three attributes constrain numeric and temporal values:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Attribute</th><th>Purpose</th><th>Applies to</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>min</code></td><td>Minimum allowed value</td><td>number, range, date/time types</td><td>Validation error if below; slider/number can't go lower</td></tr>
+            <tr><td><code>max</code></td><td>Maximum allowed value</td><td>number, range, date/time types</td><td>Validation error if above; slider/number can't go higher</td></tr>
+            <tr><td><code>step</code></td><td>Granularity</td><td>number, range, date/time types</td><td>Spinner increments by step; slider snaps; validation fails on mismatched values</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Quantity in dozens --&gt;
+&lt;input type="number" name="qty" min="12" max="120" step="12" value="12"&gt;
+
+&lt;!-- Price to nearest cent --&gt;
+&lt;input type="number" name="price" min="0" step="0.01"&gt;
+
+&lt;!-- Time in 15-minute intervals --&gt;
+&lt;input type="time" name="slot" min="09:00" max="17:00" step="900"&gt;  &lt;!-- 900 sec = 15 min --&gt;
+
+&lt;!-- Slider 0-10 in 0.5 steps --&gt;
+&lt;input type="range" name="rating" min="0" max="10" step="0.5"&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          <code>step="any"</code> disables step validation while keeping min/max. Useful for floating-point values where any precision is fine (e.g., scientific measurements).
+        </div>
+      </section>
+
+      <section id="ui-differences">
+        <h2><span class="num">9</span> Browser UI differences</h2>
+        <p>Native pickers look quite different across browsers:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Browser</th><th>date picker</th><th>time picker</th><th>range slider</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Chrome</td><td>Calendar popup with month nav</td><td>Dropdown with up/down arrows + AM/PM</td><td>Flat blue slider</td></tr>
+            <tr><td>Firefox</td><td>Similar calendar, slightly different styling</td><td>Text input with spinner</td><td>Gray slider, blue thumb</td></tr>
+            <tr><td>Safari (desktop)</td><td>Calendar popup, compact</td><td>Text input with spinners</td><td>Native macOS slider</td></tr>
+            <tr><td>Safari (iOS)</td><td>Wheel picker at bottom of screen</td><td>Three-wheel column picker</td><td>iOS-style slider</td></tr>
+            <tr><td>Chrome (Android)</td><td>Material calendar dialog</td><td>Material clock dialog</td><td>Material slider</td></tr>
+          </tbody>
+        </table>
+        <p>The <em>submitted value format</em> is identical across browsers — only the UI differs. This is by design: respect the user's platform conventions unless you have a compelling reason not to.</p>
+      </section>
+
+      <section id="native-vs-custom">
+        <h2><span class="num">10</span> Native pickers vs custom widgets</h2>
+        <p>When to use native HTML5 pickers vs a JS library (Flatpickr, react-day-picker, Pikaday, etc.):</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Use native when</th><th>Use custom when</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Basic date/time selection is enough</td><td>You need range selection (start + end on one calendar)</td></tr>
+            <tr><td>Performance and bundle size matter (no JS)</td><td>You need blocked-out dates (holidays, blackout)</td></tr>
+            <tr><td>Mobile UX is critical (native pickers beat custom on touch)</td><td>You need date+time+timezone all together</td></tr>
+            <tr><td>Progressive enhancement (works without JS)</td><td>You need consistent cross-browser UI for branding</td></tr>
+            <tr><td>Browser autofill integration matters</td><td>You need to restrict to weekdays / custom calendar rules</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Hybrid approach: use <code>type="date"</code> as the base, then progressively enhance with a JS library if it loaded successfully. Users without JS still get a working native picker. Many libraries detect and respect the input type.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">11</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>type="number"</code> for ZIP / phone / credit card</td><td>Leading zeros stripped, scientific notation for long numbers, spinner UX is odd</td><td>Use <code>type="text" inputmode="numeric"</code></td></tr>
+            <tr><td>Slider with no value display</td><td>Users can't see what they picked</td><td>Pair with <code>&lt;output&gt;</code> updated via <code>oninput</code></td></tr>
+            <tr><td><code>type="datetime-local"</code> for events across timezones</td><td>No timezone info; ambiguity</td><td>Capture timezone separately or use custom widget</td></tr>
+            <tr><td>Skipping <code>min</code>/<code>max</code> on sliders</td><td>Default min=0, max=100 may not match intent</td><td>Always set explicit min/max/step</td></tr>
+            <tr><td>Trusting client-side numeric validation</td><td>Users can bypass via dev tools</td><td>Always re-validate on the server</td></tr>
+            <tr><td>Using <code>step="1"</code> for currency</td><td>Rejects decimal values like 9.99</td><td>Use <code>step="0.01"</code> (or <code>step="any"</code>)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">12</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Booking form</strong>
+          Build a booking form: appointment date (no past dates), time (15-min intervals, 9am-5pm only), and number of guests (1-10). Add proper <code>min</code>, <code>max</code>, <code>step</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Live slider</strong>
+          Create a slider 0-100 in steps of 5. Use an <code>&lt;output&gt;</code> element that updates as the slider moves. Add a checkbox that toggles between "steps of 5" and "steps of 1" (changing the <code>step</code> attribute dynamically).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Date range restriction</strong>
+          Create a "start date" and "end date" pair. When the user picks a start date, dynamically set the end date's <code>min</code> attribute to that date (preventing end-before-start).
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">13</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">type="number" — universal</span>
+          <span class="pill yes">type="range" — universal</span>
+          <span class="pill yes">type="date" — all modern browsers (IE11 partial)</span>
+          <span class="pill yes">type="time" — Chrome, Firefox, Edge, Safari 14.1+</span>
+          <span class="pill yes">type="datetime-local" — all modern browsers</span>
+          <span class="pill partial">type="month" — Chrome, Edge, Safari desktop; partial elsewhere</span>
+          <span class="pill partial">type="week" — Chrome, Edge, Opera; not Safari/Firefox</span>
+          <span class="pill yes">min / max / step — universal on supported types</span>
+        </div>
+        <p><code>type="week"</code> and <code>type="month"</code> have the weakest support; gracefully degrade to <code>type="text"</code> in unsupported browsers (server-side validation must always be present anyway).</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">14</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Quantity pickers</h4>
+            <p>E-commerce cart: number input with min=1, max=stock.</p>
+          </div>
+          <div class="card">
+            <h4>Range sliders</h4>
+            <p>Audio volume, image opacity, price filters on search.</p>
+          </div>
+          <div class="card">
+            <h4>Booking systems</h4>
+            <p>Date + time pickers for hotels, flights, appointments.</p>
+          </div>
+          <div class="card">
+            <h4>Credit card forms</h4>
+            <p><code>type="month"</code> for expiration with <code>autocomplete="cc-exp"</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Shift scheduling</h4>
+            <p><code>type="week"</code> for payroll periods.</p>
+          </div>
+          <div class="card">
+            <h4>Surveys / ratings</h4>
+            <p>Slider 1-10 for satisfaction; step=1 for whole numbers.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="text-inputs.html">← Previous: Text Inputs</a>
+    <a class="next" href="choice-inputs.html">Next: Choice Inputs →</a>
+  </footer>
+</body>
+</html>

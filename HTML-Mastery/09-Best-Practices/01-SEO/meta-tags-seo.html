@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Meta Tags — title, description, canonical, robots, viewport, hreflang — HTML Mastery</title>
+  <meta name="description" content="SEO meta tags in depth: the title element (50-60 chars), meta description (150-160 chars), canonical link, robots directives (index/noindex, follow/nofollow), viewport meta, html lang attribute, and hreflang for international SEO.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .serp-preview { border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px;
+                    background: #fff; margin: 14px 0; font-family: Arial, sans-serif; }
+    .serp-preview .url { color: #202124; font-size: 0.85rem; }
+    .serp-preview .url cite { color: #4d5156; font-style: normal; }
+    .serp-preview .title { color: #1a0dab; font-size: 1.15rem; margin: 2px 0; }
+    .serp-preview .desc { color: #4d5156; font-size: 0.9rem; line-height: 1.45; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · SEO</span>
+  <h1>SEO <code>Meta Tags</code></h1>
+  <p>Meta tags are the single most powerful on-page SEO lever. They define how your page appears in search results, which pages Google indexes, and how international audiences discover your content.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#title">The <code>&lt;title&gt;</code> Element</a></li>
+      <li><a href="#description">Meta Description</a></li>
+      <li><a href="#canonical">Canonical URLs</a></li>
+      <li><a href="#robots">Robots Directives</a></li>
+      <li><a href="#viewport">Viewport Meta</a></li>
+      <li><a href="#lang">The lang Attribute</a></li>
+      <li><a href="#hreflang">hreflang for International</a></li>
+      <li><a href="#full">Complete Head Template</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Browser &amp; Crawler Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="title">
+      <h2><span class="num">1</span> The <code>&lt;title&gt;</code> Element</h2>
+      <p>The <code>&lt;title&gt;</code> element is the most important on-page SEO signal. It appears as the clickable headline in search results, in browser tabs, and when the page is shared. Google weights title text heavily when ranking.</p>
+
+      <h3>Length guidelines</h3>
+      <p>Google typically displays the first <strong>50–60 characters</strong> of a title. Anything longer gets truncated with an ellipsis. Pixel width matters more than character count, but ~55 characters is a safe target.</p>
+
+      <div class="serp-preview">
+        <div class="url">https://example.com <cite>› blog › seo › meta-tags</cite></div>
+        <div class="title">SEO Meta Tags: The Complete 2024 Guide to Title, Description</div>
+        <div class="desc">Learn every meta tag that matters for SEO: title length, descriptions, canonical, robots, hreflang, and viewport.</div>
+      </div>
+
+      <pre><code>&lt;!-- Good: 56 characters, includes keyword and brand --&gt;
+&lt;title&gt;SEO Meta Tags: The Complete Guide for 2024 | Acme&lt;/title&gt;
+
+&lt;!-- Bad: 142 characters — will be truncated --&gt;
+&lt;title&gt;Everything You Ever Wanted to Know About SEO Meta Tags
+But Were Afraid to Ask — A Comprehensive Guide Covering Title,
+Description, Canonical, Robots, Viewport, and More&lt;/title&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Put the most important keywords first. "SEO Meta Tags: The Complete Guide | Acme" outranks "Acme | The Complete Guide to SEO Meta Tags" for a search on "SEO meta tags" because keyword prominence matters.
+      </div>
+
+      <h3>Title patterns by page type</h3>
+      <table class="info-table">
+        <thead><tr><th>Page type</th><th>Pattern</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Homepage</td><td>Brand | Tagline</td><td>Acme | CRM Software for Modern Teams</td></tr>
+          <tr><td>Article</td><td>Title | Brand</td><td>SEO Meta Tags Guide | Acme Blog</td></tr>
+          <tr><td>Product</td><td>Product Name — Category | Brand</td><td>Whisper-Q Headphones — Audio | Acme</td></tr>
+          <tr><td>Category</td><td>Category Name | Brand</td><td>Running Shoes | Acme Athletics</td></tr>
+          <tr><td>Tool/Calculator</td><td>Tool Name — Action | Brand</td><td>Mortgage Calculator — Estimate Payments | Acme</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="description">
+      <h2><span class="num">2</span> Meta Description</h2>
+      <p>The meta description doesn't directly influence rankings, but it heavily influences click-through rate (CTR). Higher CTR is a positive ranking signal — so good descriptions indirectly boost SEO.</p>
+
+      <pre><code>&lt;meta name="description" content="Master SEO meta tags in 2024:
+complete guide to title, description, canonical, robots, viewport,
+lang, and hreflang with real examples."&gt;</code></pre>
+
+      <h3>Length and best practices</h3>
+      <ul>
+        <li>Target <strong>150–160 characters</strong> on desktop, ~120 on mobile.</li>
+        <li>Match search intent — answer the user's implied question.</li>
+        <li>Include the primary keyword naturally (Google bolds matches in results).</li>
+        <li>Write a unique description for every page. Don't repeat across the site.</li>
+        <li>Google may override your description with on-page text if it deems theirs more relevant. That's normal — keep writing good ones.</li>
+      </ul>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Weak</h4>
+          <pre><code>&lt;meta name="description"
+  content="Our website offers a wide
+  range of products and services
+  for customers worldwide."&gt;</code></pre>
+          <p>Generic, no keywords, no intent match.</p>
+        </div>
+        <div class="good">
+          <h4>✓ Strong</h4>
+          <pre><code>&lt;meta name="description"
+  content="Compare 23 wireless headphones
+  under $200. Tested battery life, ANC
+  performance, and sound quality with
+  frequency response graphs."&gt;</code></pre>
+          <p>Specific, keyword-rich, intent-driven.</p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Stuffing keywords into descriptions: "Buy cheap running shoes, best running shoes, running shoes online, discounted running shoes." Google may flag this as spam, and humans won't click.
+      </div>
+    </section>
+
+    <section id="canonical">
+      <h2><span class="num">3</span> Canonical URLs</h2>
+      <p>The <code>&lt;link rel="canonical"&gt;</code> tag tells search engines "this URL is the master version of this content". It consolidates ranking signals across duplicate or near-duplicate pages (URL parameters, mobile/desktop variants, syndicated copies).</p>
+
+      <pre><code>&lt;link rel="canonical" href="https://example.com/blog/seo-meta-tags"&gt;</code></pre>
+
+      <h3>When you need it</h3>
+      <ul>
+        <li><strong>URL parameters</strong> — <code>?sort=price</code>, <code>?page=2</code>, UTM tracking codes</li>
+        <li><strong>HTTPS vs HTTP</strong>, <code>www</code> vs non-www, trailing slash variations</li>
+        <li><strong>Mobile/desktop</strong> parallel sites</li>
+        <li><strong>Syndicated content</strong> — if you publish on Medium, point the canonical back to your original</li>
+      </ul>
+
+      <h3>Absolute vs relative URLs</h3>
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Avoid relative</h4>
+          <pre><code>&lt;link rel="canonical"
+  href="/blog/seo-meta-tags"&gt;</code></pre>
+          <p>Fragile if scraped, ambiguous to some crawlers.</p>
+        </div>
+        <div class="good">
+          <h4>✓ Use absolute</h4>
+          <pre><code>&lt;link rel="canonical"
+  href="https://example.com/blog/seo-meta-tags"&gt;</code></pre>
+          <p>Unambiguous, survives scraping, follows Google's guidance.</p>
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        A page should canonical to itself if it's the master version. Don't leave canonical out — Google will guess, and may guess wrong.
+      </div>
+    </section>
+
+    <section id="robots">
+      <h2><span class="num">4</span> Robots Directives</h2>
+      <p>The <code>&lt;meta name="robots"&gt;</code> tag controls whether a page is indexed and whether its links are followed. It's the page-level complement to <code>robots.txt</code> (which controls crawling).</p>
+
+      <pre><code>&lt;!-- Default: index and follow (no tag needed) --&gt;
+
+&lt;!-- Don't index but follow links --&gt;
+&lt;meta name="robots" content="noindex, follow"&gt;
+
+&lt;!-- Index but don't follow links --&gt;
+&lt;meta name="robots" content="index, nofollow"&gt;
+
+&lt;!-- Don't index, don't follow --&gt;
+&lt;meta name="robots" content="noindex, nofollow"&gt;
+
+&lt;!-- Don't show cached copy or snippet in results --&gt;
+&lt;meta name="robots" content="noindex, nosnippet, noarchive"&gt;</code></pre>
+
+      <h3>Available directives</h3>
+      <table class="info-table">
+        <thead><tr><th>Directive</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>index</code> / <code>noindex</code></td><td>Allow/prevent inclusion in search results</td></tr>
+          <tr><td><code>follow</code> / <code>nofollow</code></td><td>Allow/prevent crawling outbound links</td></tr>
+          <tr><td><code>noarchive</code></td><td>Don't show a "Cached" link in results</td></tr>
+          <tr><td><code>nosnippet</code></td><td>Don't show a text snippet in results</td></tr>
+          <tr><td><code>max-snippet:[N]</code></td><td>Limit snippet length to N characters</td></tr>
+          <tr><td><code>max-image-preview:[size]</code></td><td>none/standard/large — controls image preview</td></tr>
+          <tr><td><code>unavailable_after: [date]</code></td><td>Stop indexing after a specific date</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Blocking a page in <code>robots.txt</code> and also using <code>noindex</code>. If robots.txt blocks crawling, Google can never see the <code>noindex</code> tag — so the page may still be indexed from inbound links. Use <code>noindex</code> alone, and allow crawling.
+      </div>
+    </section>
+
+    <section id="viewport">
+      <h2><span class="num">5</span> Viewport Meta</h2>
+      <p>The viewport meta tag controls how the page scales on mobile devices. Without it, mobile browsers render at desktop width and zoom out — producing unreadable tiny text. Google considers mobile-friendliness a ranking factor.</p>
+
+      <pre><code>&lt;!-- Universal standard --&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+
+&lt;!-- Disable user zoom (ACCESSIBILITY PROBLEM — avoid) --&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1,
+  maximum-scale=1, user-scalable=no"&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Disabling <code>user-scalable=no</code> prevents users with low vision from zooming in. This violates WCAG 1.4.4 (Resize Text). Never disable user zoom.
+      </div>
+
+      <p>For responsive images and proper layout, viewport must be paired with CSS that uses relative units (<code>%</code>, <code>vw</code>, <code>rem</code>) and media queries.</p>
+    </section>
+
+    <section id="lang">
+      <h2><span class="num">6</span> The <code>lang</code> Attribute</h2>
+      <p>The <code>&lt;html lang="..."&gt;</code> attribute declares the page's primary language. It influences:</p>
+      <ul>
+        <li>Search engine filtering by language preference</li>
+        <li>Browser translation prompts</li>
+        <li>Screen reader pronunciation (critical for accessibility)</li>
+        <li>Default hyphenation and quotation marks in CSS</li>
+      </ul>
+
+      <pre><code>&lt;!-- English --&gt;
+&lt;html lang="en"&gt;
+
+&lt;!-- British English --&gt;
+&lt;html lang="en-GB"&gt;
+
+&lt;!-- Simplified Chinese --&gt;
+&lt;html lang="zh-Hans"&gt;
+
+&lt;!-- Arabic, right-to-left --&gt;
+&lt;html lang="ar" dir="rtl"&gt;
+
+&lt;!-- Override per element when mixing languages --&gt;
+&lt;p&gt;The French word &lt;span lang="fr"&gt;déjà vu&lt;/span&gt; means "already seen".&lt;/p&gt;</code></pre>
+
+      <p>Use <a href="https://en.wikipedia.org/wiki/IETF_language_tag">IETF language tags</a>: <code>language-REGION</code>, like <code>pt-BR</code> (Portuguese, Brazil) or <code>zh-Hant</code> (Traditional Chinese).</p>
+    </section>
+
+    <section id="hreflang">
+      <h2><span class="num">7</span> hreflang for International SEO</h2>
+      <p>When you have equivalent pages in multiple languages, <code>&lt;link rel="alternate" hreflang="..."&gt;</code> tells Google which version to show users in each locale. Without it, Google may show the wrong language version.</p>
+
+      <pre><code>&lt;!-- On the English page --&gt;
+&lt;link rel="alternate" hreflang="en" href="https://example.com/en/page"&gt;
+&lt;link rel="alternate" hreflang="es" href="https://example.com/es/page"&gt;
+&lt;link rel="alternate" hreflang="fr" href="https://example.com/fr/page"&gt;
+&lt;link rel="alternate" hreflang="x-default" href="https://example.com/en/page"&gt;</code></pre>
+
+      <h3>Rules</h3>
+      <ul>
+        <li>Every language version must list <em>all</em> other versions including itself — bidirectional.</li>
+        <li>Always include <code>hreflang="x-default"</code> for users whose locale you don't explicitly target.</li>
+        <li>Use ISO 639-1 language codes, optionally with region: <code>en-GB</code>, <code>es-MX</code>, <code>de-AT</code>.</li>
+        <li>Alternatively declare hreflang in the XML sitemap — useful for very large sites.</li>
+      </ul>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        hreflang does not consolidate duplicate content — that's canonical's job. Use both: canonical to point to the master, and hreflang to point to language equivalents. They solve different problems.
+      </div>
+    </section>
+
+    <section id="full">
+      <h2><span class="num">8</span> Complete SEO <code>&lt;head&gt;</code> Template</h2>
+      <p>A production-ready head section combining every best practice in this guide:</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+
+  &lt;!-- Primary SEO --&gt;
+  &lt;title&gt;SEO Meta Tags: The Complete Guide for 2024 | Acme&lt;/title&gt;
+  &lt;meta name="description" content="Master every SEO meta tag: title,
+    description, canonical, robots, viewport, lang, and hreflang with
+    real examples and a production-ready template."&gt;
+  &lt;link rel="canonical" href="https://example.com/blog/seo-meta-tags"&gt;
+
+  &lt;!-- Robots --&gt;
+  &lt;meta name="robots" content="index, follow, max-image-preview:large"&gt;
+
+  &lt;!-- International --&gt;
+  &lt;link rel="alternate" hreflang="en" href="https://example.com/blog/seo-meta-tags"&gt;
+  &lt;link rel="alternate" hreflang="es" href="https://example.com/es/blog/seo-meta-tags"&gt;
+  &lt;link rel="alternate" hreflang="x-default" href="https://example.com/blog/seo-meta-tags"&gt;
+
+  &lt;!-- Open Graph (social sharing) --&gt;
+  &lt;meta property="og:title" content="SEO Meta Tags: The Complete Guide"&gt;
+  &lt;meta property="og:description" content="Master every SEO meta tag..."&gt;
+  &lt;meta property="og:url" content="https://example.com/blog/seo-meta-tags"&gt;
+  &lt;meta property="og:type" content="article"&gt;
+  &lt;meta property="og:image" content="https://example.com/img/seo-meta.png"&gt;
+
+  &lt;!-- Twitter --&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:site" content="@acme"&gt;
+
+  &lt;!-- Performance hints --&gt;
+  &lt;link rel="preconnect" href="https://cdn.example.com"&gt;
+  &lt;link rel="preload" as="image" href="/img/hero.webp"&gt;
+
+  &lt;!-- Structured data --&gt;
+  &lt;script type="application/ld+json"&gt;
+  { "@context": "https://schema.org", "@type": "Article",
+    "headline": "SEO Meta Tags: The Complete Guide",
+    "datePublished": "2024-09-15" }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  ...
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">9</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Duplicate titles &amp; descriptions</h4>
+          <p>Each page should have a unique title and description. Templates that produce "Page 2 — Acme" hurt crawl budget and confuse users.</p>
+        </div>
+        <div class="card">
+          <h4>Keyword stuffing</h4>
+          <p>"SEO meta tags, best meta tags, top meta tags 2024" — Google may demote the page or rewrite the title entirely.</p>
+        </div>
+        <div class="card">
+          <h4>Missing canonical on duplicates</h4>
+          <p>Parameter URLs (UTM, sort, pagination) without canonical split ranking signals across 50 duplicates.</p>
+        </div>
+        <div class="card">
+          <h4>Blocking crawl + noindex conflict</h4>
+          <p>If <code>robots.txt</code> blocks crawling, Google can't read your <code>noindex</code> tag. Pick one.</p>
+        </div>
+        <div class="card">
+          <h4>Forgetting hreflang x-default</h4>
+          <p>Users in unsupported locales get a 404 or wrong-language page. Always include <code>x-default</code>.</p>
+        </div>
+        <div class="card">
+          <h4>Title under 30 chars</h4>
+          <p>You're wasting the most valuable SEO real estate. Aim for 50–60 characters of meaningful, keyword-rich text.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">10</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Audit a Fictional Site</strong>
+        <p>You're hired to audit three pages of an online store. For each, identify the SEO meta problems and rewrite the tags.</p>
+
+        <h4>Page A: Product page</h4>
+        <pre><code>&lt;title&gt;Shoes&lt;/title&gt;
+&lt;meta name="description" content=""&gt;
+&lt;meta name="robots" content="noindex, follow"&gt;
+&lt;link rel="canonical" href="/products/123"&gt;</code></pre>
+        <p>Issues: title too short, empty description, noindex on a product page you want ranked, relative canonical URL.</p>
+
+        <h4>Page B: Blog post (English)</h4>
+        <pre><code>&lt;title&gt;Our Blog - How to Brew Coffee at Home - The Definitive Guide - Part 1 of 3 - Acme Coffee Roasters&lt;/title&gt;
+&lt;meta name="description" content="coffee brewing guide, how to brew coffee, coffee at home, brewing methods, french press, pour over, espresso, aeropress"&gt;</code></pre>
+        <p>Issues: title 113 chars (truncated), keyword-stuffed description.</p>
+
+        <h4>Page C: French version of B</h4>
+        <pre><code>&lt;html lang="en"&gt;
+&lt;title&gt;Comment préparer du café à la maison - Acme&lt;/title&gt;</code></pre>
+        <p>Issues: wrong lang attribute, no hreflang pointing back to English version.</p>
+
+        <p><strong>Deliverable:</strong> rewrite the title, description, lang, and hreflang for all three pages. Use 50–60 char titles, 150–160 char descriptions, and absolute canonical URLs.</p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">11</span> Browser &amp; Crawler Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">Googlebot: full support for all tags</span>
+        <span class="pill yes">Bingbot: full support (some differences in robots directives)</span>
+        <span class="pill yes">Yandex: full support including hreflang</span>
+        <span class="pill yes">DuckDuckBot: supports core tags</span>
+        <span class="pill yes">All modern browsers: render &amp; respect all tags</span>
+      </div>
+      <p>Mobile and desktop browsers fully respect the viewport meta. The <code>lang</code> attribute is honored by all modern browsers for screen reader pronunciation, hyphenation, and language-aware CSS.</p>
+
+      <h3>Testing tools</h3>
+      <ul>
+        <li><strong>Google Search Console</strong> — see actual titles &amp; descriptions indexed, plus coverage reports</li>
+        <li><strong>Google Rich Results Test</strong> — preview how the page appears in search</li>
+        <li><strong>Aleyda Solis's hreflang generator</strong> — builds correct hreflang tag sets</li>
+        <li><strong>Screaming Frog SEO Spider</strong> — bulk-audit titles, descriptions, canonicals, hreflang</li>
+        <li><strong>Chrome DevTools → Elements panel</strong> — inspect the head section live</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        An e-commerce site with 12,000 product URLs was losing ranking because parameter URLs (sort, filter) had no canonical. After adding <code>&lt;link rel="canonical"&gt;</code> to the master URL on every variant, Google consolidated ranking signals and primary product pages rose 3–5 positions in the SERPs within six weeks.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="semantic-html-seo.html">← Previous: Semantic HTML &amp; SEO</a>
+  <a href="structured-data-seo.html">Next: Structured Data for SEO →</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Common ARIA Patterns in HTML — Labels, Live Regions, Collapsibles — HTML Mastery</title>
+  <meta name="description" content="Common ARIA patterns in HTML: aria-label, aria-labelledby, aria-describedby, aria-live (polite/assertive/off), aria-expanded/aria-controls for collapsibles, aria-current for nav, aria-hidden to remove from a11y tree. Plus the First Rule of ARIA: don't use it if a native element works.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .demo-box { border: 2px dashed var(--line); border-radius: 12px; padding: 18px;
+                background: #f8fafc; margin: 14px 0; }
+    .demo-box h4 { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.8rem;
+                   text-transform: uppercase; letter-spacing: 0.06em; }
+    .demo-box .toggle-btn { background: var(--brand); color: white; border: 0;
+                            padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .demo-box .toggle-panel { margin-top: 10px; padding: 12px; background: white;
+                              border: 1px solid var(--line); border-radius: 6px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Accessibility · Lesson 2</span>
+    <h1>Common ARIA Patterns in HTML</h1>
+    <p>ARIA attributes are tools for fixing accessibility gaps that HTML alone can't fill. Most pages only need a handful of patterns — naming things with <code>aria-label</code>/<code>aria-labelledby</code>/<code>aria-describedby</code>, announcing dynamic changes with <code>aria-live</code>, tracking collapsible state with <code>aria-expanded</code>/<code>aria-controls</code>, and pointing at the current page with <code>aria-current</code>. Master these and you've covered 90% of real-world ARIA.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#first-rule">The First Rule of ARIA</a></li>
+        <li><a href="#naming">Naming: label / labelledby</a></li>
+        <li><a href="#describedby">Descriptions: describedby</a></li>
+        <li><a href="#live">Live regions: aria-live</a></li>
+        <li><a href="#expanded">Collapsibles: expanded + controls</a></li>
+        <li><a href="#current">aria-current for nav</a></li>
+        <li><a href="#hidden">aria-hidden</a></li>
+        <li><a href="#summary">Pattern summary</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="first-rule">
+        <h2><span class="num">1</span> The First Rule of ARIA</h2>
+        <p>Before learning any ARIA pattern, internalize the First Rule of ARIA from the WAI-ARIA spec:</p>
+
+        <div class="callout warn">
+          <strong>First Rule of ARIA</strong>
+          <em>If you can use a native HTML element or attribute with the semantics and behavior you require already built in, instead of re-purposing an element and adding an ARIA role, state or property to make it accessible, then do so.</em>
+        </div>
+
+        <p>In practice, this means:</p>
+        <ul>
+          <li>Use <code>&lt;button&gt;</code>, not <code>&lt;div role="button"&gt;</code>.</li>
+          <li>Use <code>&lt;a href&gt;</code>, not <code>&lt;span role="link"&gt;</code>.</li>
+          <li>Use <code>&lt;input type="checkbox"&gt;</code>, not <code>&lt;div role="checkbox" aria-checked&gt;</code>.</li>
+          <li>Use <code>&lt;nav&gt;</code>, not <code>&lt;div role="navigation"&gt;</code>.</li>
+          <li>Use <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> for native disclosure widgets instead of custom ARIA ones — though with the caveat that <code>&lt;details&gt;</code> has limited animation support.</li>
+        </ul>
+
+        <p>ARIA's actual job is to fill the gaps where no native element exists: live regions, complex widgets (tabs, menus, comboboxes, tree views), and naming things that HTML can't name on its own.</p>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Run your page through the W3C validator before adding ARIA. The validator catches many "you added ARIA where a native element would do" mistakes automatically.
+        </div>
+      </section>
+
+      <section id="naming">
+        <h2><span class="num">2</span> Naming Things: aria-label &amp; aria-labelledby</h2>
+        <p>The most common ARIA task: giving an element an accessible name. Two attributes do this job, in two different ways.</p>
+
+        <h3>aria-label — string literal</h3>
+        <p>Use when the name is short, fixed, and not visible elsewhere on the page.</p>
+        <pre><code>&lt;button aria-label="Close dialog"&gt;
+  &lt;svg aria-hidden="true"&gt;...× icon...&lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;nav aria-label="Primary navigation"&gt;...&lt;/nav&gt;
+
+&lt;input type="search" aria-label="Search this site"&gt;</code></pre>
+
+        <h3>aria-labelledby — reference to visible text</h3>
+        <p>Use when there's already visible text on the page that names the element. The attribute takes a space-separated list of element IDs.</p>
+        <pre><code>&lt;section aria-labelledby="weather-heading"&gt;
+  &lt;h2 id="weather-heading"&gt;Today's weather&lt;/h2&gt;
+  ...
+&lt;/section&gt;
+
+&lt;button aria-labelledby="btn-label"&gt;
+  &lt;span id="btn-label"&gt;Read more&lt;/span&gt;
+  &lt;svg aria-hidden="true"&gt;...arrow icon...&lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+
+        <h3>When to use which</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Use</th><th>When</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>aria-label</code></td><td>Name not visible on page (icon-only button)</td><td>Close button with just an × icon</td></tr>
+            <tr><td><code>aria-labelledby</code></td><td>Name IS visible and you want to reuse it</td><td>Section heading also serves as the region label</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Don't <em>duplicate</em> the visible text via <code>aria-label</code>. If your <code>&lt;button&gt;</code> already says "Submit", do NOT add <code>aria-label="Submit"</code> — the visible text already provides the accessible name. Adding the attribute can cause some screen readers to announce the word twice.
+        </div>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>aria-labelledby</code> can reference multiple IDs (space-separated). The names are concatenated in order. This is great for "Save" buttons that should announce as "Save [filename]".
+          <pre><code>&lt;button aria-labelledby="action-verb target-name"&gt;
+  &lt;span id="action-verb"&gt;Save&lt;/span&gt;
+  &lt;span id="target-name"&gt;report.pdf&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="describedby">
+        <h2><span class="num">3</span> Describing Things: aria-describedby</h2>
+        <p>While <code>aria-labelledby</code> provides the <em>name</em> (short label), <code>aria-describedby</code> provides a longer <em>description</em> — typically rendered by screen readers after the element is announced, often on user request.</p>
+
+        <pre><code>&lt;label for="cc"&gt;Credit card number&lt;/label&gt;
+&lt;input type="text" id="cc"
+       aria-describedby="cc-hint cc-error"&gt;
+&lt;p id="cc-hint"&gt;16 digits, no spaces.&lt;/p&gt;
+&lt;p id="cc-error" class="error"&gt;Card number is invalid.&lt;/p&gt;</code></pre>
+
+        <p>Screen reader users hear: "Credit card number, edit text. 16 digits, no spaces. Card number is invalid."</p>
+
+        <h3>Typical uses</h3>
+        <ul>
+          <li>Form fields with hint text or error messages.</li>
+          <li>Buttons that need explanation beyond their visible label.</li>
+          <li>Tooltip content (paired with <code>role="tooltip"</code> on the description element).</li>
+          <li>Dialog descriptions that appear after the dialog title is announced.</li>
+        </ul>
+      </section>
+
+      <section id="live">
+        <h2><span class="num">4</span> Live Regions: aria-live</h2>
+        <p>When content on a page changes dynamically (e.g. a chat message arrives, a form validation error appears, a search results count updates), sighted users see the change instantly. Screen-reader users would otherwise have no idea. Live regions tell AT to announce these changes.</p>
+
+        <h3>The three values</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Value</th><th>When announced</th><th>Use for</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>off</code> (default)</td><td>Never announced</td><td>Static content</td></tr>
+            <tr><td><code>polite</code></td><td>When the user pauses — the screen reader finishes the current utterance, then announces</td><td>Most cases: status messages, chat messages, search result counts</td></tr>
+            <tr><td><code>assertive</code></td><td>Immediately — interrupts the current utterance</td><td>Critical errors only: "Form submission failed", "Session expiring"</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code>&lt;!-- Status update that doesn't interrupt --&gt;
+&lt;div aria-live="polite" id="status"&gt;&lt;/div&gt;
+&lt;script&gt;
+  document.getElementById('status').textContent = 'Saved.';
+&lt;/script&gt;
+
+&lt;!-- Critical error that interrupts --&gt;
+&lt;div aria-live="assertive" role="alert" id="error"&gt;&lt;/div&gt;
+&lt;script&gt;
+  document.getElementById('error').textContent =
+    'Connection lost. Reconnecting...';
+&lt;/script&gt;</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Overusing <code>assertive</code>. Most status messages should be <code>polite</code>. Interrupting a screen-reader user mid-utterance is jarring and disorienting — reserve <code>assertive</code> for situations where missing the message would cause real harm (data loss, security issue).
+        </div>
+
+        <h3>Companion attributes</h3>
+        <ul>
+          <li><code>aria-atomic="true"</code> — announce the entire region, not just the changed node. Useful when a small update only makes sense in context.</li>
+          <li><code>aria-relevant="additions removals text"</code> — what kinds of changes should be announced. Defaults to "additions text" which is usually right.</li>
+        </ul>
+
+        <h3>role="alert" and role="status" — the shortcuts</h3>
+        <p>Two ARIA roles imply a live region with sensible defaults, so you don't need <code>aria-live</code> alongside them:</p>
+        <ul>
+          <li><code>role="alert"</code> implies <code>aria-live="assertive"</code> and <code>aria-atomic="true"</code>.</li>
+          <li><code>role="status"</code> implies <code>aria-live="polite"</code> and <code>aria-atomic="true"</code>.</li>
+        </ul>
+        <pre><code>&lt;!-- Equivalent — but role="status" is shorter --&gt;
+&lt;div role="status" id="save-status"&gt;&lt;/div&gt;
+&lt;div aria-live="polite" aria-atomic="true" id="save-status"&gt;&lt;/div&gt;</code></pre>
+      </section>
+
+      <section id="expanded">
+        <h2><span class="num">5</span> Collapsibles: aria-expanded &amp; aria-controls</h2>
+        <p>Any time you build a custom toggle (accordion, dropdown, disclosure panel), you need two ARIA attributes to make it accessible: <code>aria-expanded</code> on the trigger, and <code>aria-controls</code> linking the trigger to the panel it controls.</p>
+
+        <h3>aria-expanded</h3>
+        <p>Boolean state. <code>true</code> when the controlled panel is open; <code>false</code> when closed. The screen reader announces "expanded" or "collapsed" accordingly.</p>
+
+        <h3>aria-controls</h3>
+        <p>The <code>id</code> of the element being controlled. Lets AT users jump from the trigger directly to the panel.</p>
+
+        <pre><code>&lt;button aria-expanded="false"
+        aria-controls="panel-1"
+        id="trigger-1"&gt;
+  Show more
+&lt;/button&gt;
+&lt;div id="panel-1"
+     role="region"
+     aria-labelledby="trigger-1"
+     hidden&gt;
+  &lt;p&gt;Here's the hidden content.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const btn = document.getElementById('trigger-1');
+  const panel = document.getElementById('panel-1');
+  btn.addEventListener('click', () =&gt; {
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    panel.hidden = isOpen;
+    btn.textContent = isOpen ? 'Show more' : 'Show less';
+  });
+&lt;/script&gt;</code></pre>
+
+        <div class="demo-box">
+          <h4>Live demo (click to expand)</h4>
+          <button class="toggle-btn" id="demo-trigger" aria-expanded="false" aria-controls="demo-panel">Show more</button>
+          <div id="demo-panel" class="toggle-panel" role="region" aria-labelledby="demo-trigger" hidden>
+            Here is the hidden content! The trigger's <code>aria-expanded</code> attribute toggles between "true" and "false", so screen-reader users hear whether the panel is open before deciding to expand it.
+          </div>
+          <script>
+            (function(){
+              const btn = document.getElementById('demo-trigger');
+              const panel = document.getElementById('demo-panel');
+              if(!btn || !panel) return;
+              btn.addEventListener('click', () => {
+                const isOpen = btn.getAttribute('aria-expanded') === 'true';
+                btn.setAttribute('aria-expanded', String(!isOpen));
+                panel.hidden = isOpen;
+                btn.textContent = isOpen ? 'Show more' : 'Show less';
+              });
+            })();
+          </script>
+        </div>
+
+        <div class="callout tip">
+          <strong>Pro Tip — when to prefer &lt;details&gt;</strong>
+          For simple show/hide with no animation, the native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> elements handle all of this for free — no ARIA, no JavaScript. Only reach for the custom <code>aria-expanded</code> pattern when you need finer control (animation, custom keyboard behavior, async-loaded content).
+        </div>
+      </section>
+
+      <section id="current">
+        <h2><span class="num">6</span> aria-current for Navigation</h2>
+        <p>The <code>aria-current</code> attribute indicates the element that represents the current item within a set — most commonly the current page in a nav menu, the current step in a multi-step process, or the current date in a calendar.</p>
+
+        <h3>Values</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Value</th><th>Use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>page</code></td><td>Current page in a nav menu</td></tr>
+            <tr><td><code>step</code></td><td>Current step in a multi-step process</td></tr>
+            <tr><td><code>location</code></td><td>Current location in a breadcrumb trail</td></tr>
+            <tr><td><code>date</code></td><td>Current date in a calendar</td></tr>
+            <tr><td><code>time</code></td><td>Current time in a timetable</td></tr>
+            <tr><td><code>true</code></td><td>Generic "current item" when no specific token fits</td></tr>
+            <tr><td><code>false</code> (default)</td><td>Not the current item</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code>&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/blog"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+
+        <p>Screen readers announce: "Home, link, current page".</p>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Removing the <code>href</code> attribute from the current-page link (turning it into a non-link). Keep it a real link so users can bookmark, refresh, or copy the URL via right-click. Use <code>aria-current="page"</code> to mark it as the current location, not <code>disabled</code> or removing the <code>href</code>.
+        </div>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Browsers apply a default style of <code>outline: thin solid</code> to elements with <code>aria-current="page"</code> in some user stylesheets — but don't rely on that. Add your own visual cue (color, background, underline, a marker dot) so sighted users can see which page they're on too.
+        </div>
+      </section>
+
+      <section id="hidden">
+        <h2><span class="num">7</span> aria-hidden — Removing from the a11y Tree</h2>
+        <p>The <code>aria-hidden="true"</code> attribute removes an element from the accessibility tree entirely. Screen readers will not announce it, even though it's still visible on screen.</p>
+
+        <h3>Valid uses</h3>
+        <ul>
+          <li><strong>Decorative icons</strong> next to text labels: <code>&lt;svg aria-hidden="true"&gt;</code>. The text conveys the meaning; the icon is just decoration.</li>
+          <li><strong>Repetitive content</strong>: a duplicate of a visible label that's already announced via <code>aria-labelledby</code>.</li>
+          <li><strong>Off-canvas or visually-collapsed UI</strong> that shouldn't be announced while collapsed.</li>
+        </ul>
+
+        <pre><code>&lt;button aria-label="Search"&gt;
+  &lt;svg aria-hidden="true" focusable="false"&gt;
+    &lt;path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm9 16l-4.5-4.5"/&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+
+        <h3>The big DON'T</h3>
+        <div class="callout warn">
+          <strong>Critical Mistake</strong>
+          Never put <code>aria-hidden="true"</code> on an element that contains focusable children (links, buttons, inputs). The element disappears from the a11y tree, but its focusable descendants remain keyboard-focusable — producing "ghost focus" where the user can tab to an element they can't perceive. This is one of the most common and harmful ARIA bugs.
+        </div>
+
+        <div class="comparison">
+          <div class="comparison bad">
+            <h4>❌ Wrong: focusable inside aria-hidden</h4>
+            <pre><code>&lt;div aria-hidden="true"&gt;
+  &lt;button&gt;Ghost button&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="comparison good">
+            <h4>✅ Right: use the hidden attribute</h4>
+            <pre><code>&lt;div hidden&gt;
+  &lt;button&gt;Truly hidden button&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+
+        <p>The HTML <code>hidden</code> attribute removes the element from both the visual layout AND the accessibility tree, AND removes its focusable descendants from the tab order. It's the correct tool for hiding content from everyone. Use <code>aria-hidden</code> only when the content should remain visible but unannounced.</p>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">8</span> Pattern Summary</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Pattern</th><th>Attributes</th><th>When to reach for it</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Name a control</td><td><code>aria-label</code> or <code>aria-labelledby</code></td><td>Icon-only button, ambiguous nav region</td></tr>
+            <tr><td>Describe a field</td><td><code>aria-describedby</code></td><td>Hint text, error message below an input</td></tr>
+            <tr><td>Announce dynamic change</td><td><code>aria-live="polite"</code> or <code>role="status"</code></td><td>Search results count, save status</td></tr>
+            <tr><td>Announce critical error</td><td><code>aria-live="assertive"</code> or <code>role="alert"</code></td><td>Form submission failed</td></tr>
+            <tr><td>Custom collapsible</td><td><code>aria-expanded</code> + <code>aria-controls</code></td><td>Accordion, dropdown, disclosure panel</td></tr>
+            <tr><td>Current nav item</td><td><code>aria-current="page"</code></td><td>Highlighting the active page in a nav menu</td></tr>
+            <tr><td>Decorative icon</td><td><code>aria-hidden="true"</code></td><td>SVG icon next to a visible text label</td></tr>
+            <tr><td>Hide for everyone</td><td><code>hidden</code> attribute</td><td>Modals, off-canvas menus, content not currently relevant</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">9</span> Browser &amp; AT Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">aria-label — all browsers, all AT</span>
+          <span class="pill yes">aria-labelledby — all browsers, all AT</span>
+          <span class="pill yes">aria-describedby — all browsers, all AT</span>
+          <span class="pill yes">aria-live — all modern AT (some old NVDA builds miss assertive)</span>
+          <span class="pill yes">aria-expanded — all browsers, all AT</span>
+          <span class="pill yes">aria-controls — NVDA, JAWS, VoiceOver</span>
+          <span class="pill partial">aria-controls — TalkBack support varies</span>
+          <span class="pill yes">aria-current — all modern browsers and AT</span>
+          <span class="pill yes">aria-hidden — all browsers, all AT</span>
+        </div>
+        <p>None of these attributes require polyfills. The only "soft spot" is <code>aria-controls</code> support in TalkBack (Android's screen reader), which is incomplete in some versions — but the attribute does no harm even when unsupported.</p>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Fix an icon-only button</strong>
+          Take this snippet and make it accessible. The button currently has no accessible name:
+          <pre><code>&lt;button&gt;
+  &lt;svg viewBox="0 0 24 24"&gt;
+    &lt;path d="M18 6L6 18M6 6l12 12" /&gt;
+  &lt;/svg&gt;
+&lt;/button&gt;</code></pre>
+          <em>Hint: add an aria-label on the button AND aria-hidden on the SVG.</em>
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build an accessible accordion</strong>
+          Build a 3-section accordion (closed by default) using buttons with <code>aria-expanded</code> and <code>aria-controls</code>, plus collapsible panels with <code>role="region"</code>. Add JavaScript to toggle the state. Test with the tab key — only the closed buttons should be focusable.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Live status updates</strong>
+          Build a "Save" button that simulates an async save: clicking it shows a "Saving..." message, then 1.5 seconds later updates to "Saved!". Use <code>role="status"</code> on the status container. Test with a screen reader to confirm the announcements happen without focus moving.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Current nav item</strong>
+          Build a 4-link navigation menu. Pick one link to be "current" using <code>aria-current="page"</code>. Style the current link with a CSS attribute selector (<code>a[aria-current="page"]</code>) so it's visually distinct.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Icon-only buttons</h4>
+            <p>Close, hamburger menu, search magnifier — every UI toolbar needs <code>aria-label</code> on these.</p>
+          </div>
+          <div class="card">
+            <h4>Form validation</h4>
+            <p><code>aria-describedby</code> links inputs to error messages; <code>role="alert"</code> announces them when they appear.</p>
+          </div>
+          <div class="card">
+            <h4>SPAs &amp; dynamic UIs</h4>
+            <p>React/Vue/Svelte apps updating state need <code>aria-live</code> regions to announce results.</p>
+          </div>
+          <div class="card">
+            <h4>Accordions &amp; tabs</h4>
+            <p>Custom disclosure widgets need <code>aria-expanded</code>/<code>aria-controls</code> (or just use <code>&lt;details&gt;</code>).</p>
+          </div>
+          <div class="card">
+            <h4>Active nav states</h4>
+            <p>Every multi-page site uses <code>aria-current="page"</code> in its nav menus.</p>
+          </div>
+          <div class="card">
+            <h4>Decorative SVGs</h4>
+            <p>Every site with icons needs <code>aria-hidden="true"</code> on decorative SVGs paired with text labels.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="landmark-roles.html">← Previous: Landmark Roles</a>
+    <a class="next" href="../../08-Advanced-Features/01-Metadata-OpenGraph/og-tags.html">Next: Open Graph Tags →</a>
+  </footer>
+</body>
+</html>

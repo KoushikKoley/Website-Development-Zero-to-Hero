@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskFlow features — boards, automation, AI sprint planning, integrations, and the security model that keeps your data safe.">
+  <title>Features — TaskFlow</title>
+  <!--
+    TaskFlow Features Page
+    Design decisions:
+    - Alternating image/text layout for feature sections creates rhythm and avoids monotony.
+    - Inline SVG illustrations match the brand gradient and load instantly.
+    - Comparison table uses <thead>/<tbody> and scope attributes for screen-reader clarity.
+    - Integrations grid is symmetric and uses CSS grid auto-fit so it adapts to any width.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #faf5ff;
+      --color-border: #ede9fe;
+      --color-text: #1e1b4b;
+      --color-muted: #6b7280;
+      --color-accent: #7c3aed;
+      --color-accent-2: #ec4899;
+      --color-accent-soft: #f5f3ff;
+      --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      --gradient-soft: linear-gradient(135deg, #f5f3ff 0%, #fce7f3 100%);
+      --radius: 16px;
+      --shadow-sm: 0 1px 2px rgba(30, 27, 75, 0.05);
+      --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.12);
+      --shadow-lg: 0 24px 48px rgba(124, 58, 237, 0.18);
+      --max-width: 1180px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+    section { padding: 96px 0; }
+
+    /* ===== Header (shared) ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 68px;
+    }
+    .logo {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em;
+      color: var(--color-text);
+    }
+    .logo-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--gradient);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 800; font-size: 0.9rem;
+    }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 32px; list-style: none; }
+    .nav-menu a { color: var(--color-text); font-weight: 500; font-size: 0.95rem; opacity: 0.85; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { opacity: 1; color: var(--color-accent); text-decoration: none; }
+    .btn {
+      display: inline-block; padding: 12px 22px; border-radius: 999px;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: var(--shadow-md); }
+    .btn-primary:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    .btn-white { background: #fff; color: var(--color-accent); }
+    @media (max-width: 860px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 68px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta-desktop { display: none; }
+    }
+
+    /* ===== Page hero ===== */
+    .page-hero {
+      padding: 88px 0 64px;
+      background: var(--gradient-soft);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ""; position: absolute; width: 320px; height: 320px;
+      background: #c4b5fd; filter: blur(100px); opacity: 0.5;
+      top: -120px; right: -60px; border-radius: 50%;
+    }
+    .page-hero .container { position: relative; z-index: 1; }
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; color: var(--color-accent); font-weight: 600;
+      box-shadow: var(--shadow-sm); margin-bottom: 24px;
+      border: 1px solid var(--color-border);
+    }
+    .page-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 18px;
+    }
+    .page-hero h1 .grad {
+      background: var(--gradient); -webkit-background-clip: text;
+      background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .page-hero p {
+      color: var(--color-muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto 32px;
+    }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ===== Feature sections (alternating) ===== */
+    .feature-section { padding: 72px 0; }
+    .feature-section.alt { background: var(--color-surface); }
+    .feature-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+      align-items: center;
+    }
+    .feature-row.reverse .feature-visual { order: 2; }
+    @media (max-width: 860px) {
+      .feature-row { grid-template-columns: 1fr; gap: 32px; }
+      .feature-row.reverse .feature-visual { order: 0; }
+    }
+    .feature-eyebrow {
+      color: var(--color-accent); font-weight: 600; font-size: 0.8rem;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .feature-row h2 {
+      font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+      line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 16px;
+    }
+    .feature-row p { color: var(--color-muted); font-size: 1.05rem; margin-bottom: 20px; }
+    .feature-points { list-style: none; margin-bottom: 24px; }
+    .feature-points li {
+      padding: 8px 0 8px 28px; position: relative; color: var(--color-text);
+    }
+    .feature-points li::before {
+      content: "✓"; position: absolute; left: 0; top: 8px;
+      color: var(--color-accent); font-weight: 700;
+    }
+    .feature-visual {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-md);
+    }
+    .feature-visual svg { width: 100%; height: auto; display: block; }
+
+    /* ===== Comparison table ===== */
+    .compare-section { background: var(--color-bg); }
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto 48px; }
+    .section-eyebrow {
+      display: inline-block; color: var(--color-accent); font-weight: 600;
+      font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em;
+      line-height: 1.15; margin-bottom: 16px;
+    }
+    .section-intro { color: var(--color-muted); font-size: 1.05rem; }
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--color-border); }
+    table.compare {
+      width: 100%; border-collapse: collapse; background: #fff; min-width: 640px;
+    }
+    table.compare caption {
+      caption-side: top; text-align: left; padding: 16px 20px;
+      font-weight: 600; color: var(--color-muted); font-size: 0.9rem;
+    }
+    table.compare th, table.compare td {
+      padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--color-border);
+    }
+    table.compare thead th {
+      background: var(--color-surface); font-weight: 700; font-size: 0.95rem;
+    }
+    table.compare thead th.taskflow {
+      background: var(--gradient); color: #fff;
+    }
+    table.compare tbody tr:hover { background: var(--color-surface); }
+    table.compare td.feat { font-weight: 600; }
+    table.compare td.yes, table.compare td.no {
+      text-align: center; font-weight: 700;
+    }
+    table.compare td.yes { color: var(--color-accent); }
+    table.compare td.no { color: #cbd5e1; }
+    @media (max-width: 700px) {
+      table.compare th, table.compare td { padding: 12px 14px; font-size: 0.9rem; }
+    }
+
+    /* ===== Integrations grid ===== */
+    .integrations-section { background: var(--color-surface); }
+    .integrations-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
+      max-width: 980px; margin: 0 auto;
+    }
+    .integration-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 24px 20px; text-align: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .integration-card:hover {
+      transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-accent);
+    }
+    .integration-card .ico {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--gradient-soft); margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: var(--color-accent); font-weight: 800;
+    }
+    .integration-card h4 { font-size: 0.95rem; margin-bottom: 4px; }
+    .integration-card p { font-size: 0.82rem; color: var(--color-muted); }
+    .integrations-cta { text-align: center; margin-top: 40px; }
+
+    /* ===== CTA band ===== */
+    .final-cta { background: var(--color-bg); padding: 64px 0; }
+    .cta-band {
+      background: var(--gradient); color: #fff;
+      border-radius: var(--radius); padding: 56px 48px; text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+    .cta-band h2 { font-size: clamp(1.7rem, 3.5vw, 2.3rem); margin-bottom: 12px; letter-spacing: -0.02em; }
+    .cta-band p { color: rgba(255, 255, 255, 0.92); max-width: 540px; margin: 0 auto 28px; }
+    @media (max-width: 600px) { .cta-band { padding: 36px 24px; } }
+
+    /* ===== Footer (shared) ===== */
+    .site-footer { background: #1e1b4b; color: #c7d2fe; padding: 64px 0 32px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; }
+    @media (max-width: 860px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-brand-col .logo { color: #fff; }
+    .footer-brand-col p { color: #a5b4fc; margin-top: 12px; max-width: 280px; font-size: 0.92rem; }
+    .footer-col h4 { color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a { color: #c7d2fe; font-size: 0.92rem; }
+    .footer-col a:hover { color: #fff; text-decoration: none; }
+    .footer-bottom {
+      margin-top: 48px; padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      color: #a5b4fc; font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo"><span class="logo-mark">T</span>TaskFlow</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="features.html" aria-current="page">Features</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#">Docs</a></li>
+        </ul>
+      </nav>
+      <div class="header-cta-desktop" style="display:flex; gap:10px;">
+        <a href="#" class="btn btn-ghost">Sign in</a>
+        <a href="#" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="page-hero">
+      <div class="container">
+        <span class="hero-pill">✦ The features tour</span>
+        <h1>One workspace. <span class="grad">Every workflow.</span></h1>
+        <p>
+          TaskFlow brings boards, docs, automation, and reporting under one roof —
+          designed for teams that ship every week, not every quarter.
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn btn-primary">Start free trial</a>
+          <a href="pricing.html" class="btn btn-ghost">View pricing</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Feature 1: Boards ===== -->
+    <section class="feature-section">
+      <div class="container">
+        <div class="feature-row">
+          <div>
+            <p class="feature-eyebrow">Boards &amp; views</p>
+            <h2>See your work however your brain works.</h2>
+            <p>
+              Switch between Kanban, list, timeline, calendar, and workload views without
+              ever leaving the page. Same tasks, different lens — pick the one that helps
+              you decide what to do next.
+            </p>
+            <ul class="feature-points">
+              <li>Drag-and-drop with 60fps animations on every device.</li>
+              <li>Save any view as a team template in two clicks.</li>
+              <li>Group, filter, and sort across more than 40 fields.</li>
+              <li>Public read-only share links for stakeholders.</li>
+            </ul>
+            <a href="#" class="btn btn-ghost">See boards in action →</a>
+          </div>
+          <div class="feature-visual">
+            <svg viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kanban board with three columns and draggable cards">
+              <rect width="460" height="280" fill="#faf5ff" rx="10"/>
+              <rect x="20" y="20" width="130" height="240" fill="#fff" rx="8"/>
+              <text x="32" y="44" font-family="sans-serif" font-size="11" font-weight="700" fill="#7c3aed">TO DO</text>
+              <rect x="32" y="56" width="106" height="48" rx="6" fill="#f5f3ff"/>
+              <rect x="40" y="68" width="60" height="6" rx="3" fill="#7c3aed"/>
+              <rect x="40" y="80" width="40" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="32" y="112" width="106" height="48" rx="6" fill="#f5f3ff"/>
+              <rect x="40" y="124" width="48" height="6" rx="3" fill="#ec4899"/>
+              <rect x="40" y="136" width="56" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="165" y="20" width="130" height="240" fill="#fff" rx="8"/>
+              <text x="177" y="44" font-family="sans-serif" font-size="11" font-weight="700" fill="#7c3aed">IN PROGRESS</text>
+              <rect x="177" y="56" width="106" height="68" rx="6" fill="#fdf4ff"/>
+              <rect x="185" y="68" width="70" height="6" rx="3" fill="#7c3aed"/>
+              <rect x="185" y="80" width="80" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="185" y="88" width="60" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="185" y="96" width="50" height="4" rx="2" fill="#c4b5fd"/>
+              <rect x="177" y="132" width="106" height="48" rx="6" fill="#fdf4ff"/>
+              <rect x="185" y="144" width="56" height="6" rx="3" fill="#ec4899"/>
+              <rect x="310" y="20" width="130" height="240" fill="#fff" rx="8"/>
+              <text x="322" y="44" font-family="sans-serif" font-size="11" font-weight="700" fill="#16a34a">DONE</text>
+              <rect x="322" y="56" width="106" height="48" rx="6" fill="#f0fdf4"/>
+              <rect x="330" y="68" width="48" height="6" rx="3" fill="#16a34a"/>
+              <rect x="330" y="80" width="36" height="4" rx="2" fill="#bbf7d0"/>
+              <rect x="322" y="112" width="106" height="48" rx="6" fill="#f0fdf4"/>
+              <rect x="330" y="124" width="56" height="6" rx="3" fill="#16a34a"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Feature 2: Automation (reversed) ===== -->
+    <section class="feature-section alt">
+      <div class="container">
+        <div class="feature-row reverse">
+          <div class="feature-visual">
+            <svg viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Automation rule editor showing a trigger and action flow">
+              <rect width="460" height="280" fill="#fff" rx="10"/>
+              <text x="20" y="32" font-family="sans-serif" font-size="11" font-weight="700" fill="#1e1b4b">WHEN</text>
+              <rect x="20" y="44" width="200" height="56" rx="8" fill="#f5f3ff" stroke="#ede9fe"/>
+              <text x="32" y="68" font-family="sans-serif" font-size="11" fill="#7c3aed" font-weight="600">Card moved to "In progress"</text>
+              <text x="32" y="86" font-family="sans-serif" font-size="10" fill="#6b7280">trigger · status change</text>
+              <text x="20" y="124" font-family="sans-serif" font-size="11" font-weight="700" fill="#1e1b4b">THEN</text>
+              <rect x="20" y="136" width="200" height="56" rx="8" fill="#fce7f3" stroke="#fbcfe8"/>
+              <text x="32" y="160" font-family="sans-serif" font-size="11" fill="#ec4899" font-weight="600">Auto-assign by label</text>
+              <text x="32" y="178" font-family="sans-serif" font-size="10" fill="#6b7280">action · 1 of 2</text>
+              <rect x="20" y="208" width="200" height="56" rx="8" fill="#fce7f3" stroke="#fbcfe8"/>
+              <text x="32" y="232" font-family="sans-serif" font-size="11" fill="#ec4899" font-weight="600">Post in #engineering</text>
+              <text x="32" y="250" font-family="sans-serif" font-size="10" fill="#6b7280">action · 2 of 2</text>
+              <!-- arrow -->
+              <path d="M 250 80 L 280 80 L 280 168 L 250 168" stroke="#7c3aed" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
+              <text x="290" y="84" font-family="sans-serif" font-size="10" fill="#7c3aed" font-weight="600">runs in</text>
+              <text x="290" y="100" font-family="sans-serif" font-size="14" fill="#7c3aed" font-weight="800">~ 200ms</text>
+              <rect x="280" y="120" width="160" height="120" rx="8" fill="#f5f3ff"/>
+              <text x="296" y="142" font-family="sans-serif" font-size="10" font-weight="700" fill="#7c3aed">LAST 7 DAYS</text>
+              <text x="296" y="170" font-family="sans-serif" font-size="22" font-weight="800" fill="#1e1b4b">1,284</text>
+              <text x="296" y="186" font-family="sans-serif" font-size="10" fill="#6b7280">automations run</text>
+              <rect x="296" y="200" width="128" height="6" rx="3" fill="#ede9fe"/>
+              <rect x="296" y="200" width="96" height="6" rx="3" fill="#7c3aed"/>
+              <text x="296" y="224" font-family="sans-serif" font-size="9" fill="#6b7280">saved ~21 hours of busywork</text>
+            </svg>
+          </div>
+          <div>
+            <p class="feature-eyebrow">Automation</p>
+            <h2>Let the busywork run itself.</h2>
+            <p>
+              Build no-code rules with triggers, conditions, and chained actions. Auto-assign
+              work, post updates, set due dates, and move cards — without writing a single line
+              of glue code.
+            </p>
+            <ul class="feature-points">
+              <li>40+ triggers and 60+ actions out of the box.</li>
+              <li>Branch with conditions and pause for human approval.</li>
+              <li>Run history with full audit trail of every action taken.</li>
+              <li>Reusable rule templates your whole team can clone.</li>
+            </ul>
+            <a href="#" class="btn btn-ghost">Browse automation recipes →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Feature 3: AI sprint planner ===== -->
+    <section class="feature-section">
+      <div class="container">
+        <div class="feature-row">
+          <div>
+            <p class="feature-eyebrow">AI sprint planner</p>
+            <h2>Plans that respect your team's actual capacity.</h2>
+            <p>
+              TaskFlow reads your backlog, your team's velocity, and PTO calendar, then
+              drafts a realistic sprint plan in seconds. Tune it by dragging tasks; the
+              model learns what your team tends to bump.
+            </p>
+            <ul class="feature-points">
+              <li>Draft, edit, and finalize a sprint in under 5 minutes.</li>
+              <li>Considers capacity, holidays, and on-call rotations.</li>
+              <li>Flags risky scope before the sprint starts.</li>
+              <li>Your data never trains a shared model. Ever.</li>
+            </ul>
+            <a href="#" class="btn btn-ghost">Read the AI whitepaper →</a>
+          </div>
+          <div class="feature-visual">
+            <svg viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sprint planner showing suggested tasks and capacity bars">
+              <rect width="460" height="280" fill="#faf5ff" rx="10"/>
+              <text x="20" y="34" font-family="sans-serif" font-size="11" font-weight="700" fill="#1e1b4b">Sprint 24 · suggested plan</text>
+              <text x="20" y="52" font-family="sans-serif" font-size="10" fill="#6b7280">2 weeks · 8 engineers · 64 story points available</text>
+              <rect x="20" y="64" width="420" height="42" rx="8" fill="#fff" stroke="#ede9fe"/>
+              <rect x="32" y="76" width="6" height="18" rx="3" fill="#7c3aed"/>
+              <text x="48" y="84" font-family="sans-serif" font-size="11" font-weight="600" fill="#1e1b4b">Add dark mode + reduce-motion toggle</text>
+              <text x="48" y="98" font-family="sans-serif" font-size="10" fill="#6b7280">8 pts · frontend · @maya</text>
+              <rect x="20" y="114" width="420" height="42" rx="8" fill="#fff" stroke="#ede9fe"/>
+              <rect x="32" y="126" width="6" height="18" rx="3" fill="#ec4899"/>
+              <text x="48" y="134" font-family="sans-serif" font-size="11" font-weight="600" fill="#1e1b4b">Audit color contrast on dashboards</text>
+              <text x="48" y="148" font-family="sans-serif" font-size="10" fill="#6b7280">5 pts · a11y · @rohan</text>
+              <rect x="20" y="164" width="420" height="42" rx="8" fill="#fff" stroke="#ede9fe"/>
+              <rect x="32" y="176" width="6" height="18" rx="3" fill="#7c3aed"/>
+              <text x="48" y="184" font-family="sans-serif" font-size="11" font-weight="600" fill="#1e1b4b">Migrate webhooks to v2 API</text>
+              <text x="48" y="198" font-family="sans-serif" font-size="10" fill="#6b7280">13 pts · backend · @priya</text>
+              <text x="20" y="232" font-family="sans-serif" font-size="10" font-weight="700" fill="#7c3aed">CAPACITY · 52 / 64 pts</text>
+              <rect x="20" y="244" width="420" height="10" rx="5" fill="#ede9fe"/>
+              <rect x="20" y="244" width="340" height="10" rx="5" fill="#7c3aed"/>
+              <text x="20" y="270" font-family="sans-serif" font-size="9" fill="#16a34a">✓ Plan is realistic — 12 pts of buffer remaining</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Comparison table ===== -->
+    <section class="compare-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Side by side</span>
+          <h2 class="section-title">How TaskFlow compares</h2>
+          <p class="section-intro">
+            We're not for everyone — but if you're tired of bloated tools, here's how we stack up.
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table class="compare">
+            <caption>Feature comparison across popular project management tools.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col" class="taskflow">TaskFlow</th>
+                <th scope="col">Jira</th>
+                <th scope="col">Asana</th>
+                <th scope="col">Linear</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="feat">Sub-200ms interactions</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">AI sprint planner</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+              </tr>
+              <tr>
+                <td class="feat">No-code automations</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+              </tr>
+              <tr>
+                <td class="feat">Free for teams up to 10</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+              </tr>
+              <tr>
+                <td class="feat">SAML SSO on all plans</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+              </tr>
+              <tr>
+                <td class="feat">SOC 2 Type II</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Open API + webhooks</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Public roadmap</td>
+                <td class="yes">✓</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Integrations ===== -->
+    <section class="integrations-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Integrations</span>
+          <h2 class="section-title">Plays well with your stack</h2>
+          <p class="section-intro">
+            Two-way sync with the tools your team already lives in. No Zapier required.
+          </p>
+        </div>
+        <div class="integrations-grid">
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">GH</div>
+            <h4>GitHub</h4>
+            <p>Auto-link PRs &amp; commits</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">SL</div>
+            <h4>Slack</h4>
+            <p>Notifications &amp; actions</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">FG</div>
+            <h4>Figma</h4>
+            <p>Embed live frames</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">LN</div>
+            <h4>Linear</h4>
+            <p>Two-way issue sync</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">GV</div>
+            <h4>Google Calendar</h4>
+            <p>PTO &amp; capacity sync</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">LR</div>
+            <h4>Loom</h4>
+            <p>Attach walkthroughs</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">ST</div>
+            <h4>Sentry</h4>
+            <p>Auto-create bug tasks</p>
+          </div>
+          <div class="integration-card">
+            <div class="ico" aria-hidden="true">NB</div>
+            <h4>Notion</h4>
+            <p>Link docs to tasks</p>
+          </div>
+        </div>
+        <div class="integrations-cta">
+          <a href="#" class="btn btn-ghost btn-large">Browse 60+ integrations →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Final CTA ===== -->
+    <section class="final-cta">
+      <div class="container">
+        <div class="cta-band">
+          <h2>See it on your own work.</h2>
+          <p>
+            Spin up a workspace, import a project, and watch your team's first AI-planned
+            sprint come together. Free for 14 days, no card required.
+          </p>
+          <a href="#" class="btn btn-white">Start free trial →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <a href="index.html" class="logo"><span class="logo-mark">T</span>TaskFlow</a>
+          <p>The project management tool built for teams who'd rather ship than configure.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="#">Integrations</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Docs</a></li>
+            <li><a href="#">API reference</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Templates</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">DPA</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 TaskFlow, Inc. All rights reserved.</span>
+        <span>Made with care in San Francisco &amp; Berlin</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

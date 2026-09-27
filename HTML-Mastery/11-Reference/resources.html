@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Curated HTML resources — official specs, learning platforms, tools, communities, books, and newsletters. Hand-picked for the road from beginner to expert.">
+  <title>Resources — HTML Mastery</title>
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 760px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hero .stats { display: flex; justify-content: center; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+    .hero .stats div { font-size: 0.85rem; color: #94a3b8; }
+    .hero .stats strong { display: block; font-size: 1.4rem; color: #fbbf24; font-weight: 700; }
+
+    .layout { max-width: 1280px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.92rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 6px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 12px; font-size: 1.15rem; }
+    section .lead { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 18px; font-style: italic; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+
+    .resource-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
+    @media (max-width: 760px) { .resource-grid { grid-template-columns: 1fr; } }
+    .resource {
+      border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+      background: linear-gradient(180deg, #fff, #f8fafc);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .resource:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(2,6,23,0.08); }
+    .resource .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; gap: 10px; }
+    .resource h4 { font-size: 1.05rem; margin: 0; color: var(--ink); }
+    .resource .url { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.78rem; color: var(--ink-soft); word-break: break-all; }
+    .resource p { font-size: 0.9rem; color: var(--ink-soft); margin: 6px 0 0; line-height: 1.5; }
+    .resource .tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .resource .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; background: var(--line); color: var(--ink-soft); font-weight: 600; }
+    .resource .tag.free { background: #f0fdf4; color: #15803d; }
+    .resource .tag.paid { background: #fef3c7; color: #92400e; }
+    .resource .tag.official { background: #dbeafe; color: #1d4ed8; }
+
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .info-table tr:hover td { background: #f8fafc; }
+
+    footer.page-nav { max-width: 1280px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 22px 20px; }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 11 · Reference</span>
+  <h1>Curated <code>Resources</code></h1>
+  <p>The best HTML learning resources on the web — official specs, learning platforms, tools, communities, books, and newsletters. Hand-picked, no SEO spam, no listicles. Updated for the 2025 Living Standard.</p>
+  <div class="stats">
+    <div><strong>40+</strong> Resources</div>
+    <div><strong>6</strong> Categories</div>
+    <div><strong>0</strong> Listicles</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#specs">Official Specs</a></li>
+      <li><a href="#learn">Learning Platforms</a></li>
+      <li><a href="#tools">Tools &amp; Extensions</a></li>
+      <li><a href="#community">Communities</a></li>
+      <li><a href="#books">Books</a></li>
+      <li><a href="#newsletters">Newsletters</a></li>
+      <li><a href="#podcasts">Podcasts</a></li>
+      <li><a href="#philosophy">How to use this list</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="specs">
+      <h2><span class="num">1</span> Official Specifications</h2>
+      <p class="lead">The source of truth. When in doubt, the spec is right.</p>
+
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>WHATWG HTML Living Standard</h4></div>
+          <div class="url">html.spec.whatwg.org</div>
+          <p>The canonical HTML specification. Continuously updated — no version numbers, just "the latest". If you want to know exactly how an element behaves, this is the answer.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>W3C HTML</h4></div>
+          <div class="url">w3.org/html</div>
+          <p>The W3C's HTML snapshot spec. Note: WHATWG is now the authoritative source — W3C mirrors the Living Standard.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>W3C ARIA Specification</h4></div>
+          <div class="url">w3.org/TR/wai-aria</div>
+          <p>The Accessible Rich Internet Applications spec. Defines all the roles, states, and properties. Required reading for accessibility work.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>WCAG 2.2</h4></div>
+          <div class="url">w3.org/TR/WCAG22</div>
+          <p>Web Content Accessibility Guidelines 2.2, the current W3C recommendation. The legal baseline in most jurisdictions. Read it once; refer back forever.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>RFC 3986: URL Syntax</h4></div>
+          <div class="url">rfc-editor.org/rfc/rfc3986</div>
+          <p>The IETF spec defining URLs. Essential for understanding href, query strings, fragments, and encoding.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Schema.org</h4></div>
+          <div class="url">schema.org</div>
+          <p>The structured data vocabulary maintained by Google, Microsoft, Yahoo, and Yandex. Reference for Article, Product, Event, FAQPage, and dozens more types.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+      </div>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The spec is dense and written for implementers (browser makers). Use it as a reference, not a tutorial. MDN is friendlier for daily learning; the spec is the tiebreaker when MDN is unclear.
+      </div>
+    </section>
+
+    <section id="learn">
+      <h2><span class="num">2</span> Learning Platforms</h2>
+      <p class="lead">Where to actually learn HTML. Pick one and finish it.</p>
+
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>MDN Web Docs</h4></div>
+          <div class="url">developer.mozilla.org</div>
+          <p>The single best HTML reference on the internet. Maintained by Mozilla with community contributions. Bookmark this. Every element page has examples, browser support, and spec links.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>MDN Learn Web Development</h4></div>
+          <div class="url">developer.mozilla.org/en-US/docs/Learn</div>
+          <p>Structured learning path from absolute beginner to working developer. Free, comprehensive, beginner-friendly. Start here if you're new.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>web.dev</h4></div>
+          <div class="url">web.dev</div>
+          <p>Google's web platform education site. Excellent deep dives on performance, Core Web Vitals, Lighthouse, and modern HTML features. The "Learn" courses are superb.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>freeCodeCamp</h4></div>
+          <div class="url">freecodecamp.org</div>
+          <p>Free, project-based curriculum. The "Responsive Web Design" certification takes you from HTML basics to a portfolio of 5 projects. Great for hands-on learners.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>The Odin Project</h4></div>
+          <div class="url">theodinproject.com</div>
+          <p>Open-source full-stack curriculum. The "Foundations" path covers HTML, CSS, and JS with real projects. Strong community on Discord.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>W3Schools</h4></div>
+          <div class="url">w3schools.com</div>
+          <p>Tutorials with live "Try it" editors. Faster for quick lookups than MDN, though sometimes less precise. Useful for beginners; verify anything advanced against MDN.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>HTML Dog</h4></div>
+          <div class="url">htmldog.com</div>
+          <p>Old but still excellent tutorials. Beginner, intermediate, and advanced tracks. Concise and well-written.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Frontend Masters</h4></div>
+          <div class="url">frontendmasters.com</div>
+          <p>Paid video courses from industry experts. Look for courses by Estelle Weyl (HTML), Jen Kramer, and Brian Holt. High production quality, deep content.</p>
+          <div class="tags"><span class="tag paid">Paid</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Codrops</h4></div>
+          <div class="url">tympanus.net/codrops</div>
+          <p>Cutting-edge UI experiments and tutorials. Excellent reference for modern CSS and creative HTML patterns. The "Playground" section is full of inspiration.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>W3C Web Education</h4></div>
+          <div class="url">w3.org/community/webed</div>
+          <p>The W3C's community group for web education. Includes curriculum guidance and accessibility-focused resources.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="tools">
+      <h2><span class="num">3</span> Tools &amp; Extensions</h2>
+      <p class="lead">The tools that make writing HTML faster and validating it possible.</p>
+
+      <h3>Validators</h3>
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>W3C Markup Validator</h4></div>
+          <div class="url">validator.w3.org</div>
+          <p>The original HTML validator. Paste HTML, upload a file, or give a URL. Errors, warnings, and info-level issues. Always validate before shipping.</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Nu HTML Checker</h4></div>
+          <div class="url">validator.w3.org/nu</div>
+          <p>The newer W3C validator using the HTML Living Standard. More accurate than the legacy validator. Also available as a command-line tool (<code>v.Nu</code>).</p>
+          <div class="tags"><span class="tag official">Official</span><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>WAVE Accessibility Evaluator</h4></div>
+          <div class="url">wave.webaim.org</div>
+          <p>WebAIM's accessibility checker. Visual overlay showing errors, alerts, and structural elements on any page. Browser extension also available.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>axe DevTools</h4></div>
+          <div class="url">deque.com/axe/devtools</div>
+          <p>The most accurate accessibility testing tool. Browser extension and CLI. Free for development; paid for enterprise CI integration.</p>
+          <div class="tags"><span class="tag free">Free tier</span></div>
+        </article>
+      </div>
+
+      <h3>Browser Dev Tools</h3>
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>Chrome DevTools</h4></div>
+          <div class="url">developer.chrome.com/docs/devtools</div>
+          <p>The most comprehensive browser dev tools. Elements panel, Network, Performance, Lighthouse, Application, and Accessibility tabs. Press F12.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Firefox Developer Tools</h4></div>
+          <div class="url">firefox-source-docs.mozilla.org/devtools-user</div>
+          <p>Firefox's dev tools, especially strong in CSS inspection (font inspector, color picker, flexbox/grid overlays). Accessibility panel is excellent.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Safari Web Inspector</h4></div>
+          <div class="url">developer.apple.com/safari/tools</div>
+          <p>Enable in Safari → Settings → Advanced → Show Develop menu. Essential for testing on iOS and macOS-specific behaviors.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+      </div>
+
+      <h3>VS Code Extensions</h3>
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>HTML CSS Support</h4></div>
+          <div class="url">marketplace.visualstudio.com</div>
+          <p>Adds class name completion based on your CSS files. Huge productivity boost.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>html-validate</h4></div>
+          <div class="url">html-validate.org</div>
+          <p>Offline HTML validator that integrates with VS Code and CI pipelines. Catches issues the W3C validator does, but as you type.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Live Server</h4></div>
+          <div class="url">marketplace.visualstudio.com</div>
+          <p>Spins up a local dev server that auto-reloads on save. The simplest possible workflow for HTML prototyping.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Prettier</h4></div>
+          <div class="url">prettier.io</div>
+          <p>Opinionated code formatter. Configure once, never think about formatting again. Set as the VS Code format-on-save handler.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Auto Rename Tag</h4></div>
+          <div class="url">marketplace.visualstudio.com</div>
+          <p>When you rename an opening tag, the closing tag updates automatically. Small but addictive quality-of-life improvement.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Emmet</h4></div>
+          <div class="url">emmet.io</div>
+          <p>Built into VS Code. Type <code>nav&gt;ul&gt;li*5</code> and press Tab — expands to full HTML. The fastest way to write HTML.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+      </div>
+
+      <h3>Performance &amp; Testing</h3>
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>Lighthouse</h4></div>
+          <div class="url">developer.chrome.com/docs/lighthouse</div>
+          <p>Google's open-source auditing tool. Built into Chrome DevTools. Scores Performance, Accessibility, Best Practices, and SEO. Run on every project.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>PageSpeed Insights</h4></div>
+          <div class="url">pagespeed.web.dev</div>
+          <p>Google's hosted Lighthouse + CrUX (real-user data) tool. Enter a URL, get scores and recommendations.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>WebPageTest</h4></div>
+          <div class="url">webpagetest.org</div>
+          <p>The most detailed performance testing tool. Run from real devices across the world. Waterfall view, filmstrip, content breakdown.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>BrowserStack</h4></div>
+          <div class="url">browserstack.com</div>
+          <p>Cross-browser testing on real devices. Essential for testing IE/Edge/Safari combinations you can't run locally.</p>
+          <div class="tags"><span class="tag paid">Paid</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="community">
+      <h2><span class="num">4</span> Communities</h2>
+      <p class="lead">Where to ask questions, share work, and meet other developers.</p>
+
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>Stack Overflow</h4></div>
+          <div class="url">stackoverflow.com</div>
+          <p>The largest Q&amp;A site for programming. Tag your questions with <code>html</code>, <code>css</code>, <code>accessibility</code>. Read existing answers before asking — most questions have been asked.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>MDN Discourse</h4></div>
+          <div class="url">discourse.mozilla.org</div>
+          <p>The official MDN community forum. Discuss documentation, suggest improvements, and ask questions about MDN content.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Frontend Horse</h4></div>
+          <div class="url">frontend.horse</div>
+          <p>Friendly Discord community focused on creative frontend work. Weekly showcases, helpful members, no toxicity.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>web.dev Discord</h4></div>
+          <div class="url">web.dev</div>
+          <p>Google's web.dev community Discord. Channels for performance, HTML, CSS, accessibility. Good for technical questions.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>r/Frontend on Reddit</h4></div>
+          <div class="url">reddit.com/r/Frontend</div>
+          <p>Active subreddit for frontend developers. News, discussions, career questions. Filter by quality — some threads are gold, others noise.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>HTML5 Doctor Community</h4></div>
+          <div class="url">html5doctor.com</div>
+          <p>Older but archived articles on semantic HTML. The Q&amp;A section is still useful for historical context on HTML5 decisions.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>IndieWeb</h4></div>
+          <div class="url">indieweb.org</div>
+          <p>A community of people building personal websites with semantic HTML and microformats. Thoughtful, principled, friendly.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Mastodon #html hashtag</h4></div>
+          <div class="url">mastodon.social/tags/html</div>
+          <p>The Fediverse's HTML community. Less noise than Twitter/X, more conversation. Follow developers whose work you admire.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="books">
+      <h2><span class="num">5</span> Books</h2>
+      <p class="lead">Books for the long road. Buy them in print; reference them forever.</p>
+
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>HTML &amp; CSS: Design and Build Websites</h4></div>
+          <div class="url">Jon Duckett · Wiley · 2011</div>
+          <p>The most beautiful programming book ever printed. Full-color, generous layout, beginner-friendly. Still the best introduction to HTML and CSS for visual learners.</p>
+          <div class="tags"><span class="tag paid">Paid</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>JavaScript &amp; jQuery</h4></div>
+          <div class="url">Jon Duckett · Wiley · 2014</div>
+          <p>The companion volume to Duckett's HTML &amp; CSS. Same beautiful design. The DOM manipulation chapters are particularly clear.</p>
+          <div class="tags"><span class="tag paid">Paid</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>HTML5: Up and Running</h4></div>
+          <div class="url">Mark Pilgrim · O'Reilly · 2010</div>
+          <p>Old but a classic. Read free online at <code>diveintohtml5.info</code>. The history chapters are still the best explanation of why HTML5 is what it is.</p>
+          <div class="tags"><span class="tag free">Free online</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Designing for the Web</h4></div>
+          <div class="url">Mark Boulton · 2009</div>
+          <p>Free online. Pre-HTML5 but the typography and grid principles are timeless. Especially good for designers moving into web.</p>
+          <div class="tags"><span class="tag free">Free online</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Accessibility for Everyone</h4></div>
+          <div class="url">Laura Kalbag · A Book Apart · 2017</div>
+          <p>Short, practical, humane introduction to web accessibility. The book to read after you've finished your first website.</p>
+          <div class="tags"><span class="tag paid">Paid</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Inclusive Components</h4></div>
+          <div class="url">Heydon Pickering · A Book Apart · 2019</div>
+          <p>Patterns for accessible UI: tooltips, dialogs, menus, data tables. Each pattern explains the accessibility reasoning. Read free online at <code>inclusive-components.design</code>.</p>
+          <div class="tags"><span class="tag free">Free online</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Web Performance in Action</h4></div>
+          <div class="url">Jeremy Wagner · Manning · 2017</div>
+          <p>Deep dive on web performance: critical rendering path, image optimization, font loading, JavaScript deferral. Slightly dated but the principles hold.</p>
+          <div class="tags"><span class="tag paid">Paid</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Resilient Web Design</h4></div>
+          <div class="url">Jeremy Keith · A Book Apart · 2017</div>
+          <p>Free online at <code>resilientwebdesign.com</code>. A short, philosophical book about progressive enhancement and why HTML is the most resilient layer of the web. Read this once a year.</p>
+          <div class="tags"><span class="tag free">Free online</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="newsletters">
+      <h2><span class="num">6</span> Newsletters</h2>
+      <p class="lead">Curated weekly digests. Pick two or three — don't drown.</p>
+
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>CSS-Tricks</h4></div>
+          <div class="url">css-tricks.com</div>
+          <p>Long-running site (now part of DigitalOcean) covering CSS and frontend. The "Almanac" is a comprehensive CSS reference. Newsletter curates the week's best frontend links.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Smashing Magazine</h4></div>
+          <div class="url">smashingmagazine.com</div>
+          <p>In-depth articles on frontend, design, and accessibility. Newsletter is a curated weekly digest. The Smashing Conf events are also excellent.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Frontend Focus</h4></div>
+          <div class="url">frontendfoc.us</div>
+          <p>Cooperpress weekly newsletter. Hand-picked HTML, CSS, and frontend news. The "no fluff" sister publications (JavaScript Weekly, CSS Weekly) are also worth subscribing.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>web.dev Weekly</h4></div>
+          <div class="url">web.dev/subscribe</div>
+          <p>Google's web.dev newsletter. New articles, case studies, and feature releases. Strong on performance and new browser APIs.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>A List Apart</h4></div>
+          <div class="url">alistapart.com</div>
+          <p>The original web design publication (since 1997). Less frequent now, but still publishes thoughtful long-form articles. Their email list is calm and high-quality.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>HTML5 Weekly</h4></div>
+          <div class="url">cooperpress.com/publications/html5-weekly</div>
+          <p>Cooperpress newsletter specifically for HTML and platform APIs. Merged into Frontend Focus but the archive is gold.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>CSS Wizardry</h4></div>
+          <div class="url">csswizardry.com</div>
+          <p>Harry Roberts's blog on CSS architecture and performance. Less frequent but every article is worth reading.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>A11y Weekly</h4></div>
+          <div class="url">a11yweekly.com</div>
+          <p>Curated accessibility newsletter: articles, tools, and techniques. One email a week, no spam. Essential for accessibility practitioners.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="podcasts">
+      <h2><span class="num">7</span> Podcasts</h2>
+      <p class="lead">For the commute, the dog walk, the dishes.</p>
+
+      <div class="resource-grid">
+        <article class="resource">
+          <div class="head"><h4>ShopTalk Show</h4></div>
+          <div class="url">shoptalkshow.com</div>
+          <p>Chris Coyier and Dave Rupert, weekly. Frontend news, guest interviews, listener questions. The longest-running frontend podcast.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>The Web Platform Podcast</h4></div>
+          <div class="url">thewebplatformpodcast.com</div>
+          <p>Deep technical discussions on web platform features. Episodes on specific HTML elements, CSS features, and new browser APIs.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>Frontend Happy Hour</h4></div>
+          <div class="url">frontendhappyhour.com</div>
+          <p>Panel podcast with engineers from across the industry. Casual, drinks-themed segments. Good for keeping up with industry trends.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+
+        <article class="resource">
+          <div class="head"><h4>HTTP 203</h4></div>
+          <div class="url">http203.libsyn.com</div>
+          <p>Jake Archibald and Surma (formerly) / Ada Rose Cannon (currently) from Google. Short, technical, opinionated. Each episode covers one web platform topic.</p>
+          <div class="tags"><span class="tag free">Free</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="philosophy">
+      <h2><span class="num">8</span> How to use this list</h2>
+      <p>This list is long. Don't try to consume it all at once. Here's a path:</p>
+
+      <table class="info-table">
+        <thead><tr><th>Stage</th><th>Pick</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Beginner (0–3 months)</td><td>MDN Learn + freeCodeCamp</td><td>Structured, free, project-based. Builds muscle memory.</td></tr>
+          <tr><td>Beginner+</td><td>Jon Duckett's HTML &amp; CSS</td><td>Beautiful book that makes the abstract concrete.</td></tr>
+          <tr><td>Intermediate (3–12 months)</td><td>Resilient Web Design + Inclusive Components</td><td>Mental models for the why behind the what.</td></tr>
+          <tr><td>Intermediate+</td><td>Smashing Magazine + CSS-Tricks newsletters</td><td>Steady stream of new techniques.</td></tr>
+          <tr><td>Advanced (1+ years)</td><td>WHATWG HTML Living Standard + W3C ARIA spec</td><td>Read the source. Become the source.</td></tr>
+          <tr><td>Always</td><td>W3C Validator + Lighthouse on every project</td><td>The habit that separates pros from amateurs.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The single most valuable habit is this: <strong>validate every page before you ship it.</strong> Run it through the W3C validator, fix every error, and run Lighthouse. Most "bugs" are HTML mistakes the validator would have caught. Five minutes of validation saves five hours of debugging.
+      </div>
+
+      <div class="callout warn">
+        <strong>A Note on Listicles</strong>
+        We deliberately excluded "Top 10 HTML Tricks You Didn't Know" articles and similar clickbait. They're written for engagement, not learning. The resources here are written by people who use this stuff daily. Bookmark the spec, MDN, and one newsletter. That's all you need.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="glossary.html">← Glossary</a>
+  <a href="../README.md">Project Home →</a>
+</footer>
+
+</body>
+</html>

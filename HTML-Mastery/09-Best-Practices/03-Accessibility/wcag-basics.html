@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WCAG 2.1 &amp; 2.2 Basics — POUR Principles, Conformance Levels, Key Success Criteria — HTML Mastery</title>
+  <meta name="description" content="WCAG 2.1 and 2.2 basics: the POUR principles (Perceivable, Operable, Understandable, Robust), A/AA/AAA conformance levels, and the key success criteria every HTML author must know: 1.1.1 Non-text Content, 1.3.1 Info and Relationships, 1.4.3 Contrast, 2.1.1 Keyboard, 2.4.6 Headings and Labels, 4.1.2 Name, Role, Value.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .piller { display: inline-block; padding: 3px 10px; border-radius: 999px;
+              font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; }
+    .piller.a { background: #dbeafe; color: #1e40af; }
+    .piller.aa { background: #fef3c7; color: #92400e; }
+    .piller.aaa { background: #fee2e2; color: #991b1b; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-4 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Accessibility</span>
+  <h1>WCAG <code>Basics</code></h1>
+  <p>The Web Content Accessibility Guidelines (WCAG) 2.1 and 2.2 are the global standard for accessible web content. Built on four POUR principles, three conformance levels, and dozens of testable success criteria — here are the ones every HTML author must know.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#intro">What is WCAG?</a></li>
+      <li><a href="#pour">The POUR Principles</a></li>
+      <li><a href="#levels">Conformance Levels A/AA/AAA</a></li>
+      <li><a href="#1-1-1">1.1.1 Non-text Content</a></li>
+      <li><a href="#1-3-1">1.3.1 Info and Relationships</a></li>
+      <li><a href="#1-4-3">1.4.3 Contrast (Minimum)</a></li>
+      <li><a href="#2-1-1">2.1.1 Keyboard</a></li>
+      <li><a href="#2-4-6">2.4.6 Headings and Labels</a></li>
+      <li><a href="#4-1-2">4.1.2 Name, Role, Value</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Support &amp; Testing</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="intro">
+      <h2><span class="num">1</span> What is WCAG?</h2>
+      <p>The <strong>Web Content Accessibility Guidelines</strong> are published by the W3C's Web Accessibility Initiative (WAI). They are referenced by accessibility laws worldwide, including the Americans with Disabilities Act (US), the European Accessibility Act (EU), and equivalents in Canada, Australia, Japan, and Israel.</p>
+
+      <ul>
+        <li><strong>WCAG 2.0</strong> (2008) — the original, still the legal baseline in many jurisdictions</li>
+        <li><strong>WCAG 2.1</strong> (2018) — added 17 new success criteria, mostly mobile and cognitive</li>
+        <li><strong>WCAG 2.2</strong> (2023) — added 9 more, including focus appearance and target size</li>
+        <li><strong>WCAG 3.0</strong> — in draft; introduces a new scoring model. Not yet ready for production.</li>
+      </ul>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Most laws and policies today require <strong>WCAG 2.1 Level AA</strong>. That's the practical target. Level A is the bare minimum (and not enough). Level AAA is ideal but not required, and some AAA criteria conflict with each other so a page can't be fully AAA.
+      </div>
+    </section>
+
+    <section id="pour">
+      <h2><span class="num">2</span> The POUR Principles</h2>
+      <p>Every WCAG success criterion falls under one of four principles. An accessible site must be:</p>
+
+      <div class="grid-4">
+        <div class="card">
+          <h4>Perceivable</h4>
+          <p>Users must be able to perceive the content — through sight, hearing, or touch. Alt text, captions, sufficient contrast.</p>
+        </div>
+        <div class="card">
+          <h4>Operable</h4>
+          <p>Users must be able to operate the interface — by keyboard, voice, switch, or any device. No mouse-only interactions.</p>
+        </div>
+        <div class="card">
+          <h4>Understandable</h4>
+          <p>Content and operation must be understandable. Plain language, predictable navigation, error prevention.</p>
+        </div>
+        <div class="card">
+          <h4>Robust</h4>
+          <p>Content must work across browsers and assistive tech. Valid HTML, proper ARIA, compatibility with screen readers.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="levels">
+      <h2><span class="num">3</span> Conformance Levels A / AA / AAA</h2>
+      <p>Each success criterion is assigned a level indicating its priority and impact.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Level</th><th>Meaning</th><th>Legal requirement</th></tr></thead>
+        <tbody>
+          <tr><td><span class="piller a">A</span></td><td>Minimum — without this, assistive tech often can't use the page at all</td><td>Required by all laws referencing WCAG</td></tr>
+          <tr><td><span class="piller aa">AA</span></td><td>Standard — removes major barriers for users with disabilities</td><td>Most laws require Level AA conformance</td></tr>
+          <tr><td><span class="piller aaa">AAA</span></td><td>Exceptional — not required, and not all criteria can be met simultaneously</td><td>Only for sites serving specialized audiences</td></tr>
+        </tbody>
+      </table>
+
+      <p>Conformance is per-page. A site can claim "WCAG 2.1 AA" only if <em>every</em> page meets every Level A and AA criterion.</p>
+    </section>
+
+    <section id="1-1-1">
+      <h2><span class="num">4</span> <span class="piller a">A</span> 1.1.1 Non-text Content</h2>
+      <p>All non-text content (images, icons, charts, CAPTCHAs) must have a text alternative that serves the equivalent purpose.</p>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Fails 1.1.1</h4>
+          <pre><code>&lt;img src="logo.png"&gt;
+&lt;img src="chart.png" alt="image"&gt;
+&lt;img src="spacer.gif" alt="a transparent pixel
+     that is one by one in size and used for
+     spacing"&gt;
+&lt;button&gt;&lt;img src="x.png" alt=""&gt;&lt;/button&gt;</code></pre>
+        </div>
+        <div class="good">
+          <h4>✓ Passes 1.1.1</h4>
+          <pre><code>&lt;img src="logo.png" alt="Acme — home"&gt;
+&lt;img src="chart.png"
+     alt="Bar chart: revenue grew 40%
+     from $2M in 2022 to $2.8M in 2024"&gt;
+&lt;img src="spacer.gif" alt=""&gt;
+&lt;button aria-label="Close"&gt;
+  &lt;img src="x.png" alt=""&gt;
+&lt;/button&gt;</code></pre>
+        </div>
+      </div>
+
+      <h3>Rules for <code>alt</code> text</h3>
+      <ul>
+        <li><strong>Informative images</strong>: concise description of what the image conveys</li>
+        <li><strong>Decorative images</strong>: <code>alt=""</code> (empty alt — screen readers skip them)</li>
+        <li><strong>Functional images</strong> (buttons, links): describe the action — "Search", "Close"</li>
+        <li><strong>Charts/diagrams</strong>: brief summary, link to a full data table for detail</li>
+        <li><strong>CAPTCHAs</strong>: provide an audio alternative</li>
+      </ul>
+    </section>
+
+    <section id="1-3-1">
+      <h2><span class="num">5</span> <span class="piller a">A</span> 1.3.1 Info and Relationships</h2>
+      <p>Information and relationships conveyed visually (headings, lists, tables, form labels) must be programmatically determinable — that means using the right HTML elements, not <code>&lt;div&gt;</code> with styling.</p>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Visual only</h4>
+          <pre><code>&lt;div class="form-row"&gt;
+  &lt;span class="label"&gt;Email&lt;/span&gt;
+  &lt;input type="text"&gt;
+&lt;/div&gt;
+&lt;div class="heading-1"&gt;Welcome&lt;/div&gt;
+&lt;div class="list-item"&gt;Apples&lt;/div&gt;
+&lt;div class="list-item"&gt;Oranges&lt;/div&gt;</code></pre>
+          <p>Screen reader sees nothing meaningful.</p>
+        </div>
+        <div class="good">
+          <h4>✓ Programmatic</h4>
+          <pre><code>&lt;div&gt;
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input type="email" id="email"&gt;
+&lt;/div&gt;
+&lt;h1&gt;Welcome&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;Apples&lt;/li&gt;
+  &lt;li&gt;Oranges&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+          <p>Screen reader announces all relationships.</p>
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The single biggest win for 1.3.1: use real HTML form controls, real <code>&lt;label&gt;</code> elements, real <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> groups, real <code>&lt;th scope&gt;</code> in tables, real <code>&lt;ul&gt;</code>/<code>&lt;ol&gt;</code> for lists. Rebuilding these with divs + ARIA almost always misses something.
+      </div>
+    </section>
+
+    <section id="1-4-3">
+      <h2><span class="num">6</span> <span class="piller aa">AA</span> 1.4.3 Contrast (Minimum)</h2>
+      <p>Text must have a contrast ratio of at least <strong>4.5:1</strong> against its background (3:1 for large text ≥ 18pt or 14pt bold, and for UI components like icons and form borders under 1.4.11).</p>
+
+      <table class="info-table">
+        <thead><tr><th>Text size</th><th>Level AA</th><th>Level AAA</th></tr></thead>
+        <tbody>
+          <tr><td>Normal text (&lt; 18pt)</td><td>4.5:1</td><td>7:1</td></tr>
+          <tr><td>Large text (≥ 18pt or 14pt bold)</td><td>3:1</td><td>4.5:1</td></tr>
+          <tr><td>UI components &amp; graphics</td><td>3:1 (1.4.11)</td><td>Not specified</td></tr>
+        </tbody>
+      </table>
+
+      <p>Test with the WebAIM Contrast Checker or the built-in contrast checker in browser DevTools. Common failures:</p>
+      <ul>
+        <li>Light gray text on white (often "#888 on #fff" = 4.48:1 — barely fails)</li>
+        <li>Placeholder text with insufficient contrast</li>
+        <li>Disabled inputs — exempt from 1.4.3, but must meet 1.4.11 if they're still important</li>
+        <li>Link text that doesn't differ enough from surrounding body text</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Styling placeholder text in <code>#999</code> on white. That's 2.85:1 — fails Level AA. Either darken it to at least <code>#767676</code> (4.54:1) or move the label above the input and remove the placeholder.
+      </div>
+    </section>
+
+    <section id="2-1-1">
+      <h2><span class="num">7</span> <span class="piller a">A</span> 2.1.1 Keyboard</h2>
+      <p>All functionality must be operable from the keyboard. No mouse-only interactions. If you can do it with a mouse, you must be able to do it with Tab, Shift+Tab, Enter, Space, and arrow keys.</p>
+
+      <p>This is the most commonly violated Level A criterion. Examples of failures:</p>
+      <ul>
+        <li>A dropdown menu that only opens on <code>mouseover</code></li>
+        <li>A slider built with <code>&lt;div onmousedown&gt;</code> instead of <code>&lt;input type="range"&gt;</code></li>
+        <li>A modal dialog that doesn't trap focus — Tab escapes to the background</li>
+        <li>A custom calendar widget with no keyboard navigation</li>
+        <li>An <code>onclick</code> handler on a <code>&lt;div&gt;</code> (not keyboard-accessible)</li>
+      </ul>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Mouse-only</h4>
+          <pre><code>&lt;div class="menu-item"
+     onmouseover="showSubmenu()"
+     onclick="navigate()"&gt;
+  Products
+&lt;/div&gt;</code></pre>
+        </div>
+        <div class="good">
+          <h4>✓ Keyboard-accessible</h4>
+          <pre><code>&lt;button aria-haspopup="true"
+        aria-expanded="false"
+        aria-controls="submenu"
+        onfocus="showSubmenu()"&gt;
+  Products
+&lt;/button&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A university's course registration portal rebuilt their custom date picker (a complex <code>&lt;div&gt;</code> grid) with a native <code>&lt;input type="date"&gt;</code>. Keyboard-only users went from "impossible to register" to fully independent. The cost: 2 hours of engineering. The benefit: 14% of students could now use the system without help.
+      </div>
+    </section>
+
+    <section id="2-4-6">
+      <h2><span class="num">8</span> <span class="piller aa">AA</span> 2.4.6 Headings and Labels</h2>
+      <p>Headings and labels must be descriptive — not "Click Here" or "Read More". The text should make sense out of context (which is how screen reader users navigate via headings list).</p>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Vague</h4>
+          <pre><code>&lt;a href="/blog/post-123"&gt;Read more&lt;/a&gt;
+&lt;a href="/cart"&gt;Click here&lt;/a&gt;
+&lt;h2&gt;Section 1&lt;/h2&gt;
+&lt;h2&gt;More Information&lt;/h2&gt;</code></pre>
+        </div>
+        <div class="good">
+          <h4>✓ Descriptive</h4>
+          <pre><code>&lt;a href="/blog/post-123"&gt;
+  Read: Sourdough Hydration Guide
+&lt;/a&gt;
+&lt;a href="/cart"&gt;View cart (3 items)&lt;/a&gt;
+&lt;h2&gt;What Hydration Means&lt;/h2&gt;
+&lt;h2&gt;Bread Flour vs All-Purpose&lt;/h2&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        When you have multiple "Read more" links on a page (common in blog indexes), use <code>aria-label</code> to make each unique: <code>&lt;a href="/blog/1" aria-label="Read more: Sourdough Hydration Guide"&gt;Read more&lt;/a&gt;</code>. Screen readers announce the <code>aria-label</code>, sighted users see the short text.
+      </div>
+    </section>
+
+    <section id="4-1-2">
+      <h2><span class="num">9</span> <span class="piller a">A</span> 4.1.2 Name, Role, Value</h2>
+      <p>For every user interface component (links, buttons, form fields, custom widgets), the name, role, and state must be programmatically determinable. Native HTML provides this automatically; custom widgets need ARIA.</p>
+
+      <h3>What this means in practice</h3>
+      <table class="info-table">
+        <thead><tr><th>Property</th><th>Native HTML</th><th>Custom widget</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Name</strong></td><td>Text content or <code>&lt;label&gt;</code></td><td>Use <code>aria-label</code> or <code>aria-labelledby</code></td></tr>
+          <tr><td><strong>Role</strong></td><td>Implicit (button, link, checkbox)</td><td>Use <code>role="button"</code>, <code>role="checkbox"</code>, etc.</td></tr>
+          <tr><td><strong>State</strong></td><td>Attributes like <code>checked</code>, <code>disabled</code>, <code>expanded</code> on <code>&lt;details&gt;</code></td><td>Use <code>aria-checked</code>, <code>aria-disabled</code>, <code>aria-expanded</code></td></tr>
+          <tr><td><strong>Value</strong></td><td><code>value</code> on inputs</td><td>Update via JS, expose with <code>aria-valuenow</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Div with click handler</h4>
+          <pre><code>&lt;div class="btn" onclick="toggle()"&gt;
+  ☰ Menu
+&lt;/div&gt;</code></pre>
+          <p>No role, no name, no state. Screen reader: nothing.</p>
+        </div>
+        <div class="good">
+          <h4>✓ Native button (best)</h4>
+          <pre><code>&lt;button type="button"
+        aria-expanded="false"
+        aria-controls="menu"
+        onclick="toggle()"&gt;
+  Menu
+&lt;/button&gt;</code></pre>
+          <p>Or, if div is required, add role and tabindex.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">10</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Using <code>&lt;div&gt;</code> for interactive elements</h4>
+          <p>Loses all the built-in keyboard, role, and state semantics. Use <code>&lt;button&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;input&gt;</code> instead.</p>
+        </div>
+        <div class="card">
+          <h4>Empty or missing <code>alt</code> attributes</h4>
+          <p>An <code>&lt;img&gt;</code> without <code>alt</code> at all is worse than <code>alt=""</code> — screen readers read the filename.</p>
+        </div>
+        <div class="card">
+          <h4>Placeholder-only form labels</h4>
+          <p>Placeholders disappear on focus and have low contrast. Use real <code>&lt;label&gt;</code> elements.</p>
+        </div>
+        <div class="card">
+          <h4>Color contrast "looks fine"</h4>
+          <p>Human perception is unreliable. Always test with a contrast checker — there's one in every browser's DevTools.</p>
+        </div>
+        <div class="card">
+          <h4>Heading levels for styling</h4>
+          <p>Using <code>&lt;h4&gt;</code> because it's the right size breaks the page outline. Use CSS, not heading choice, for sizing.</p>
+        </div>
+        <div class="card">
+          <h4>"Click here" link text</h4>
+          <p>Out of context, it means nothing. Make every link text describe the destination.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">11</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Audit a Login Form</strong>
+        <p>Below is a login form. Identify each WCAG failure by criterion number, and rewrite the markup to pass.</p>
+        <pre><code>&lt;div class="login"&gt;
+  &lt;h3&gt;Login&lt;/h3&gt;
+  &lt;div class="field"&gt;
+    &lt;span class="placeholder-text"&gt;Email&lt;/span&gt;
+    &lt;input type="text" id="email"&gt;
+  &lt;/div&gt;
+  &lt;div class="field"&gt;
+    &lt;span class="placeholder-text"&gt;Password&lt;/span&gt;
+    &lt;input type="password" id="pwd"&gt;
+  &lt;/div&gt;
+  &lt;div class="btn" onclick="submit()"&gt;
+    Submit
+  &lt;/div&gt;
+  &lt;div class="error" style="color:#999"&gt;
+    Invalid email or password.
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>Identify failures:</strong></p>
+        <ul>
+          <li><code>&lt;h3&gt;</code> with no <code>&lt;h1&gt;</code>/<code>&lt;h2&gt;</code> above it (1.3.1)</li>
+          <li>No <code>&lt;label&gt;</code> elements (1.3.1, 3.3.2)</li>
+          <li>Placeholder-as-label — disappears on focus (3.3.2)</li>
+          <li><code>&lt;div onclick&gt;</code> instead of <code>&lt;button&gt;</code> (4.1.2, 2.1.1)</li>
+          <li>Gray <code>#999</code> error text on white (1.4.3 — 2.85:1 ratio)</li>
+          <li>Error not associated with the input (3.3.1, 4.1.3)</li>
+        </ul>
+        <p><strong>Rewrite the form to pass Level AA.</strong></p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">12</span> Support &amp; Testing</h2>
+      <div class="browser-support">
+        <span class="pill yes">WCAG 2.0: adopted as ISO/IEC 40500:2012</span>
+        <span class="pill yes">WCAG 2.1: referenced by ADA, Section 508, EN 301 549</span>
+        <span class="pill yes">WCAG 2.2: current W3C recommendation (since Oct 2023)</span>
+        <span class="pill yes">All modern browsers: render and expose semantics per WCAG</span>
+      </div>
+
+      <h3>Testing tools</h3>
+      <ul>
+        <li><strong>axe DevTools</strong> — browser extension, automated WCAG audits (Chrome, Firefox)</li>
+        <li><strong>WAVE</strong> — WebAIM's visual audit at wave.webaim.org</li>
+        <li><strong>Lighthouse Accessibility audit</strong> — built into Chrome DevTools</li>
+        <li><strong>WebAIM Contrast Checker</strong> — hex codes to ratios with pass/fail</li>
+        <li><strong>NVDA / VoiceOver / JAWS</strong> — actual screen reader testing (see Screen Readers file)</li>
+        <li><strong>Keyboard-only testing</strong> — unplug your mouse, try to use the site</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A US-based e-commerce company faced an ADA lawsuit in 2022 over an inaccessible checkout. After a 6-month remediation to WCAG 2.1 AA, they not only settled the suit but saw a 17% increase in completed checkouts across all users — accessibility improvements benefit everyone, especially mobile and situational users.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="../02-Performance/lazy-loading.html">← Previous: Lazy Loading</a>
+  <a href="keyboard-nav.html">Next: Keyboard Navigation →</a>
+</footer>
+</body>
+</html>

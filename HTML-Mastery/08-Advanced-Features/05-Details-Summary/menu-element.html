@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The &lt;menu&gt; Element — Context Menus, Toolbars &amp; the Popup API — HTML Mastery</title>
+  <meta name="description" content="The HTML menu element: redefined in HTML5 (was UI menus, now context menu), menuitem deprecated, li inside menu for items, the type attribute (context, toolbar, list), browser support reality (mostly treated as ul), and the menu element's revival in the new popup API proposals.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.no { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .browser-support .pill.partial { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    /* Toolbar demo styles */
+    .demo-toolbar {
+      display: flex; gap: 4px; align-items: center;
+      background: white; border: 1px solid var(--line); border-radius: 8px;
+      padding: 6px; box-shadow: 0 2px 6px rgba(2,6,23,0.05);
+    }
+    .demo-toolbar menu {
+      display: flex; gap: 4px; list-style: none; margin: 0; padding: 0;
+    }
+    .demo-toolbar menu li button {
+      background: transparent; border: 0; padding: 6px 10px; border-radius: 6px;
+      cursor: pointer; font-size: 0.9rem; color: var(--ink);
+    }
+    .demo-toolbar menu li button:hover { background: #eef2ff; color: var(--brand); }
+    .demo-toolbar menu li button.active { background: var(--brand); color: white; }
+    /* Context menu demo */
+    .ctx-target {
+      background: linear-gradient(135deg, #2563eb, #7c3aed); color: white;
+      padding: 24px; border-radius: 10px; text-align: center; cursor: context-menu;
+      user-select: none; font-weight: 600;
+    }
+    .ctx-menu {
+      position: absolute; min-width: 200px; background: white; border: 1px solid var(--line);
+      border-radius: 8px; box-shadow: 0 8px 24px rgba(2,6,23,0.15); padding: 4px;
+      display: none; z-index: 100;
+    }
+    .ctx-menu menu { list-style: none; margin: 0; padding: 0; }
+    .ctx-menu menu li button {
+      width: 100%; text-align: left; background: transparent; border: 0; padding: 8px 12px;
+      border-radius: 4px; cursor: pointer; font-size: 0.9rem; color: var(--ink);
+    }
+    .ctx-menu menu li button:hover { background: #eef2ff; color: var(--brand); }
+    .ctx-menu menu li hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+    .ctx-menu.open { display: block; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Details &amp; Summary</span>
+    <h1>The <code>&lt;menu&gt;</code> Element</h1>
+    <p>Twice invented, twice repurposed. The <code>&lt;menu&gt;</code> element has been a UI menu, a context menu, and is now being revived as the semantic home for command lists — paired with the emerging Popup API.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#history">A Brief, Confusing History</a></li>
+        <li><a href="#modern">What it is Today</a></li>
+        <li><a href="#type-attr">The type Attribute</a></li>
+        <li><a href="#items">Menu Items with &lt;li&gt;</a></li>
+        <li><a href="#menuitem">The Deprecated &lt;menuitem&gt;</a></li>
+        <li><a href="#toolbar">Toolbar Pattern</a></li>
+        <li><a href="#context-menu">Context Menu Pattern</a></li>
+        <li><a href="#popup-api">The Popup API Revival</a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="history">
+        <h2><span class="num">1</span> A Brief, Confusing History</h2>
+        <p>The <code>&lt;menu&gt;</code> element has lived several lives:</p>
+        <table class="info-table">
+          <thead><tr><th>Era</th><th>What <code>&lt;menu&gt;</code> meant</th></tr></thead>
+          <tbody>
+            <tr><td>HTML 2 / 3.2 / 4</td><td>An unordered list rendered with menu styling — basically a synonym for <code>&lt;ul&gt;</code>. Few used it.</td></tr>
+            <tr><td>HTML5 (early 2010s)</td><td>Re-purposed for UI menus — context menus, toolbars, menu buttons. <code>&lt;menuitem&gt;</code> was added for individual commands. Firefox implemented <code>contextmenu</code> attribute linking.</td></tr>
+            <tr><td>~2014</td><td>Only Firefox ever implemented <code>type="context"</code>. The spec was un-deprecated, simplified, and <code>&lt;menuitem&gt;</code> was removed.</td></tr>
+            <tr><td>Today (HTML Living Standard)</td><td><code>&lt;menu&gt;</code> is "a list of commands" with <code>type="context"</code>, <code>type="toolbar"</code>, or the implicit <code>type="list"</code>. <code>&lt;li&gt;</code> children hold the commands. Browsers mostly render it as <code>&lt;ul&gt;</code>.</td></tr>
+            <tr><td>Emerging</td><td>Being revived as the semantic host for the <a href="https://open-ui.org/components/popup.research.explainer/">Popup API</a> and the related <code>behavior</code> attribute proposals.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Reality Check</strong>
+          In all browsers today, <code>&lt;menu&gt;</code> renders exactly like <code>&lt;ul&gt;</code>. The <code>type="context"</code> and <code>type="toolbar"</code> attributes do <em>not</em> produce native UI. They are semantic hints only. To get an actual context menu or toolbar you must build it with JS + CSS.
+        </div>
+      </section>
+
+      <section id="modern">
+        <h2><span class="num">2</span> What &lt;menu&gt; Is Today</h2>
+        <p>In the current HTML Living Standard, <code>&lt;menu&gt;</code> is a semantic container for a list of commands. Its role in the accessibility tree is <code>list</code>, identical to <code>&lt;ul&gt;</code>. The distinction is purely semantic: <code>&lt;menu&gt;</code> says "this list represents user actions," <code>&lt;ul&gt;</code> says "this list represents generic items."</p>
+        <pre><code>&lt;menu&gt;
+  &lt;li&gt;&lt;button onclick="save()"&gt;Save&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button onclick="exportDoc()"&gt;Export…&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button onclick="print()"&gt;Print&lt;/button&gt;&lt;/li&gt;
+&lt;/menu&gt;</code></pre>
+        <p>If you used <code>&lt;ul&gt;</code> here instead, browsers would render it identically. Using <code>&lt;menu&gt;</code> conveys intent to assistive technology and to future maintainers.</p>
+      </section>
+
+      <section id="type-attr">
+        <h2><span class="num">3</span> The type Attribute</h2>
+        <table class="info-table">
+          <thead><tr><th>Value</th><th>Meaning</th><th>Browser rendering</th></tr></thead>
+          <tbody>
+            <tr><td><code>list</code> (default)</td><td>A plain list of commands.</td><td>Like <code>&lt;ul&gt;</code></td></tr>
+            <tr><td><code>toolbar</code></td><td>A horizontal strip of action buttons.</td><td>Like <code>&lt;ul&gt;</code> — no native toolbar styling</td></tr>
+            <tr><td><code>context</code></td><td>A context menu (intended for use with the <code>contextmenu</code> attribute on another element).</td><td>Like <code>&lt;ul&gt;</code> — no native context menu rendering (Firefox removed its implementation)</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Believing <code>type="context"</code> creates a working native context menu. It does not. The <code>contextmenu</code> attribute on a target element used to wire to a <code>&lt;menu type="context"&gt;</code> in Firefox, but that feature was removed in 2017. Today you build context menus with JS — see section 7.
+        </div>
+      </section>
+
+      <section id="items">
+        <h2><span class="num">4</span> Menu Items with &lt;li&gt;</h2>
+        <p>Inside a <code>&lt;menu&gt;</code>, individual commands are written as <code>&lt;li&gt;</code> elements containing the actual control — usually a <code>&lt;button&gt;</code>, <code>&lt;a&gt;</code>, or <code>&lt;label&gt;</code>. The list-item structure gives you semantic grouping and lets you nest submenus by placing another <code>&lt;menu&gt;</code> inside an <code>&lt;li&gt;</code>.</p>
+        <pre><code>&lt;menu type="toolbar" aria-label="Text formatting"&gt;
+  &lt;li&gt;&lt;button data-cmd="bold"&gt;&lt;b&gt;B&lt;/b&gt;&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button data-cmd="italic"&gt;&lt;i&gt;I&lt;/i&gt;&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;button data-cmd="align"&gt;Align ▾&lt;/button&gt;
+    &lt;menu&gt;
+      &lt;li&gt;&lt;button data-cmd="align-left"&gt;Left&lt;/button&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;button data-cmd="align-center"&gt;Center&lt;/button&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;button data-cmd="align-right"&gt;Right&lt;/button&gt;&lt;/li&gt;
+    &lt;/menu&gt;
+  &lt;/li&gt;
+&lt;/menu&gt;</code></pre>
+        <p>Nested <code>&lt;menu&gt;</code> elements inside <code>&lt;li&gt;</code> elements represent submenus semantically — but again, no browser renders them as a fly-out menu. You build that visual with CSS and JS.</p>
+      </section>
+
+      <section id="menuitem">
+        <h2><span class="num">5</span> The Deprecated &lt;menuitem&gt;</h2>
+        <p>HTML5 originally introduced <code>&lt;menuitem&gt;</code> as a dedicated element for individual commands inside <code>&lt;menu type="context"&gt;</code>:</p>
+        <pre><code>&lt;!-- DEPRECATED — do not use --&gt;
+&lt;menu type="context" id="imageMenu"&gt;
+  &lt;menuitem label="Reload"  icon="reload.png" onclick="reload()"&gt;
+  &lt;menuitem label="Save As…" icon="save.png"   onclick="saveAs()"&gt;
+&lt;/menu&gt;
+
+&lt;img src="pic.jpg" contextmenu="imageMenu"&gt;</code></pre>
+        <p>Only Firefox ever implemented this. The spec was simplified in 2014 to use plain <code>&lt;li&gt;</code> + <code>&lt;button&gt;</code>/<code>&lt;a&gt;</code>, and <code>&lt;menuitem&gt;</code> was removed. Today it has no effect and is not parsed as anything special.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Copying old tutorials that show <code>&lt;menuitem&gt;</code> markup. It will not work in any modern browser. Use <code>&lt;li&gt;&lt;button&gt;…&lt;/button&gt;&lt;/li&gt;</code> instead.
+        </div>
+      </section>
+
+      <section id="toolbar">
+        <h2><span class="num">6</span> Toolbar Pattern</h2>
+        <pre><code>&lt;menu type="toolbar" class="rich-toolbar" aria-label="Editor toolbar"&gt;
+  &lt;li&gt;&lt;button data-cmd="bold" aria-label="Bold"&gt;B&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button data-cmd="italic" aria-label="Italic"&gt;I&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button data-cmd="underline" aria-label="Underline"&gt;U&lt;/button&gt;&lt;/li&gt;
+&lt;/menu&gt;</code></pre>
+        <pre><code>.rich-toolbar {
+  display: flex; gap: 4px;
+  list-style: none; margin: 0; padding: 6px;
+  background: white; border: 1px solid var(--line); border-radius: 8px;
+}
+.rich-toolbar button {
+  background: transparent; border: 0; padding: 6px 10px;
+  border-radius: 6px; cursor: pointer; font-weight: 700;
+}
+.rich-toolbar button:hover  { background: #eef2ff; color: var(--brand); }
+.rich-toolbar button.active { background: var(--brand); color: white; }</code></pre>
+
+        <div class="demo-output">
+          <h4>Live toolbar — click buttons to toggle active state</h4>
+          <div class="demo-toolbar">
+            <menu type="toolbar" aria-label="Editor toolbar">
+              <li><button data-cmd="bold">B</button></li>
+              <li><button data-cmd="italic">I</button></li>
+              <li><button data-cmd="underline">U</button></li>
+            </menu>
+          </div>
+        </div>
+
+        <script>
+          document.querySelectorAll('.demo-toolbar button[data-cmd]').forEach(b => {
+            b.addEventListener('click', () => b.classList.toggle('active'));
+          });
+        </script>
+      </section>
+
+      <section id="context-menu">
+        <h2><span class="num">7</span> Context Menu Pattern (Built with JS)</h2>
+        <p>Since browsers no longer implement native <code>type="context"</code> menus, you build them by listening for <code>contextmenu</code> (right-click) on a target element and showing your own <code>&lt;menu&gt;</code> as a positioned panel.</p>
+        <pre><code>&lt;div id="canvas" class="ctx-target"&gt;Right-click me&lt;/div&gt;
+
+&lt;div class="ctx-menu" id="ctx-menu"&gt;
+  &lt;menu type="context"&gt;
+    &lt;li&gt;&lt;button data-cmd="copy"&gt;Copy&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button data-cmd="paste"&gt;Paste&lt;/button&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;hr&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;button data-cmd="delete"&gt;Delete&lt;/button&gt;&lt;/li&gt;
+  &lt;/menu&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const canvas = document.getElementById('canvas');
+  const menu   = document.getElementById('ctx-menu');
+
+  canvas.addEventListener('contextmenu', (e) =&gt; {
+    e.preventDefault();                 // suppress native menu
+    menu.style.top  = `${e.pageY}px`;
+    menu.style.left = `${e.pageX}px`;
+    menu.classList.add('open');
+  });
+
+  document.addEventListener('click', () =&gt; menu.classList.remove('open'));
+  document.addEventListener('contextmenu', (e) =&gt; {
+    if (!canvas.contains(e.target)) menu.classList.remove('open');
+  });
+
+  menu.addEventListener('click', (e) =&gt; {
+    const btn = e.target.closest('button[data-cmd]');
+    if (!btn) return;
+    console.log('Selected:', btn.dataset.cmd);
+    menu.classList.remove('open');
+  });
+&lt;/script&gt;</code></pre>
+
+        <div class="demo-output">
+          <h4>Live demo — right-click inside the box</h4>
+          <div class="ctx-target" id="canvas">Right-click (or long-press) here</div>
+          <div class="ctx-menu" id="ctx-menu">
+            <menu type="context">
+              <li><button data-cmd="copy">Copy</button></li>
+              <li><button data-cmd="paste">Paste</button></li>
+              <li><hr></li>
+              <li><button data-cmd="delete">Delete</button></li>
+            </menu>
+          </div>
+          <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:8px;">
+            Your custom menu replaces the native one. Click elsewhere to dismiss.
+          </p>
+        </div>
+
+        <script>
+          (function () {
+            const canvas = document.getElementById('canvas');
+            const menu   = document.getElementById('ctx-menu');
+            canvas.addEventListener('contextmenu', (e) => {
+              e.preventDefault();
+              menu.style.top  = `${e.pageY}px`;
+              menu.style.left = `${e.pageX}px`;
+              menu.classList.add('open');
+            });
+            document.addEventListener('click', () => menu.classList.remove('open'));
+            document.addEventListener('contextmenu', (e) => {
+              if (!canvas.contains(e.target)) menu.classList.remove('open');
+            });
+            menu.addEventListener('click', (e) => {
+              const btn = e.target.closest('button[data-cmd]');
+              if (!btn) return;
+              menu.classList.remove('open');
+            });
+          })();
+        </script>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always include keyboard support: allow the menu to be triggered with Shift+F10 or the Menu key, support arrow-key navigation between items, and close on Escape. The WAI-ARIA Authoring Practices Guide has a <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/">full pattern</a>.
+        </div>
+      </section>
+
+      <section id="popup-api">
+        <h2><span class="num">8</span> The Popup API Revival</h2>
+        <p>The OpenUI community group is reviving <code>&lt;menu&gt;</code> as the semantic home for declaratively-declared popups. The proposal pairs <code>popup</code> attribute (or a <code>&lt;popup&gt;</code> element) with <code>&lt;menu&gt;</code> to give the browser native handling of: top-layer rendering, light-dismiss on outside click, ESC to close, and focus management.</p>
+        <pre><code>&lt;!-- Proposed (still evolving in browsers) --&gt;
+&lt;button popovertarget="file-menu"&gt;File&lt;/button&gt;
+&lt;menu id="file-menu" popup&gt;
+  &lt;li&gt;&lt;button&gt;New&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button&gt;Open…&lt;/button&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;button&gt;Save&lt;/button&gt;&lt;/li&gt;
+&lt;/menu&gt;</code></pre>
+        <p>Today the <code>popover</code> attribute (renamed from <code>popup</code>) is shipping in Chrome 114+, Edge, and Safari 17+, with Firefox in development. It handles top-layer, light-dismiss, and ESC for you. The semantic pairing with <code>&lt;menu&gt;</code> for command lists is the emerging convention.</p>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          Even if you use the new <code>popover</code> API today, the actual command items inside are still plain <code>&lt;li&gt;&lt;button&gt;</code> — the platform isn't bringing back <code>&lt;menuitem&gt;</code>.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">9</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome — parses <code>&lt;menu&gt;</code> as list</span>
+          <span class="pill yes">Edge — same</span>
+          <span class="pill yes">Firefox — same (contextmenu feature removed in 2017)</span>
+          <span class="pill yes">Safari — same</span>
+          <span class="pill no">No browser implements native context menu UI</span>
+          <span class="pill partial">Popover API: Chrome 114+, Safari 17+, Edge</span>
+        </div>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Using <code>&lt;menuitem&gt;</code>.</strong> Removed from the spec; does nothing.</li>
+          <li><strong>Expecting <code>type="context"</code> to render a native menu.</strong> It does not — you must build it with JS.</li>
+          <li><strong>Forgetting to <code>preventDefault</code> on the <code>contextmenu</code> event.</strong> The native menu appears alongside your custom one.</li>
+          <li><strong>Forgetting to dismiss the menu on outside click and Escape.</strong> A menu that won't close is a usability disaster.</li>
+          <li><strong>Naming the menu without <code>aria-label</code>.</strong> Screen readers say "list, three items" with no context. Add <code>aria-label="Editor toolbar"</code> or similar.</li>
+          <li><strong>Using <code>&lt;div&gt;</code> + <code>&lt;button&gt;</code> instead of <code>&lt;menu&gt;</code> + <code>&lt;li&gt;</code>.</strong> The semantic structure matters for accessibility tooling and future maintenance.</li>
+          <li><strong>Skipping keyboard navigation.</strong> Arrow keys, Home, End, and Escape should all work.</li>
+          <li><strong>Putting non-interactive content inside <code>&lt;menu&gt;</code>.</strong> It's a list of <em>commands</em>, not a generic container.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Semantic toolbar</strong>
+          Build a four-button formatting toolbar using <code>&lt;menu type="toolbar"&gt;</code> with <code>&lt;li&gt;&lt;button&gt;</code>. Style it with flexbox.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Active states</strong>
+          Extend your toolbar so clicking a button toggles its <code>active</code> class. Wire up the bold/italic/underline buttons to actually format a <code>contenteditable</code> region.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Custom context menu</strong>
+          Right-click on an image to show a custom menu with "Copy image URL" and "Open in new tab" commands. Use the <code>contextmenu</code> event with <code>preventDefault</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Keyboard navigation</strong>
+          Add arrow-key navigation to your custom menu: Up/Down moves between items, Enter activates, Escape closes. Test with the keyboard only.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Nested submenu</strong>
+          Build a menu with a nested submenu (an <code>&lt;li&gt;</code> containing a button and another <code>&lt;menu&gt;</code>). Use CSS hover to reveal the submenu.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Try the Popover API</strong>
+          In Chrome 114+ or Safari 17+, build a <code>&lt;menu popover&gt;</code> triggered by <code>&lt;button popovertarget="…"&gt;</code>. Confirm the browser handles top-layer, ESC, and outside-click dismiss for you.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">12</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Editor toolbars</h4><p>Rich-text editors — bold, italic, lists, alignment.</p></div>
+          <div class="card"><h4>App command bars</h4><p>File / Edit / View menus in browser-based IDEs and design tools.</p></div>
+          <div class="card"><h4>Custom context menus</h4><p>Right-click menus in canvas apps (Figma, Miro) and data grids.</p></div>
+          <div class="card"><h4>More-actions menus</h4><p>The "⋯" dropdown on cards and rows in SaaS UIs.</p></div>
+          <div class="card"><h4>Filter panels</h4><p>Sort / filter menu on data tables.</p></div>
+          <div class="card"><h4>Popover-driven menus</h4><p>Using the new <code>popover</code> API for native light-dismiss behavior.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="dialog-element.html">← Previous: &lt;dialog&gt; Element</a>
+    <a class="next" href="../../09-Performance-Optimization/index.html">Next: Section 9 — Performance →</a>
+  </footer>
+</body>
+</html>

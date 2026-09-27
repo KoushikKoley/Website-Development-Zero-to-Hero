@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The &lt;template&gt; Element — Inert Markup &amp; Cloning — HTML Mastery</title>
+  <meta name="description" content="The HTML template element: inert content that is not rendered, does not execute scripts, and does not load images. Cloning with content.cloneNode(true). Use cases: client-side templating, repeated UI, web component templates, vs script type='text/template' pattern.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    .user-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px;
+                 border-bottom: 1px solid #f1f5f9; }
+    .user-row:last-child { border-bottom: 0; }
+    .user-row img { width: 40px; height: 40px; border-radius: 50%; background: #cbd5e1; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Templates &amp; Slots</span>
+    <h1>The <code>&lt;template&gt;</code> Element</h1>
+    <p>Define reusable chunks of HTML that the browser parses but does not render. Scripts inside don't run, images don't load, styles don't apply — until you clone the template's contents into the live document.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What is &lt;template&gt;</a></li>
+        <li><a href="#inert">Why It's Inert</a></li>
+        <li><a href="#content">The .content Property</a></li>
+        <li><a href="#cloning">Cloning with cloneNode</a></li>
+        <li><a href="#script-pattern">vs &lt;script type="text/template"&gt;</a></li>
+        <li><a href="#repeated-ui">Repeated UI</a></li>
+        <li><a href="#web-components">Web Component Templates</a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What is &lt;template&gt;?</h2>
+        <p>The <code>&lt;template&gt;</code> element holds HTML markup that the browser parses into a <code>DocumentFragment</code> but keeps <em>inert</em>: nothing inside is rendered, no script runs, no image is fetched, no stylesheet is applied. The contents live in a separate "template contents" fragment until you explicitly clone them into the document.</p>
+        <pre><code>&lt;template id="user-card"&gt;
+  &lt;div class="user-card"&gt;
+    &lt;img src="" alt="" class="avatar"&gt;
+    &lt;div&gt;
+      &lt;h3 class="name"&gt;&lt;/h3&gt;
+      &lt;p class="email"&gt;&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+        <p>When the page loads, nothing visible appears — the browser parses the markup but never paints it.</p>
+      </section>
+
+      <section id="inert">
+        <h2><span class="num">2</span> Why It's Inert</h2>
+        <p>Three guarantees the platform makes about content inside <code>&lt;template&gt;</code>:</p>
+        <table class="info-table">
+          <thead><tr><th>Resource</th><th>Behavior inside template</th></tr></thead>
+          <tbody>
+            <tr><td>HTML rendering</td><td>Not painted. <code>&lt;template&gt;</code> has <code>display: none</code> by default.</td></tr>
+            <tr><td><code>&lt;script&gt;</code></td><td>Does not execute. The parser stores it as inert text.</td></tr>
+            <tr><td><code>&lt;img&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;iframe&gt;</code></td><td>Network requests are not made until the node is cloned into the live DOM.</td></tr>
+            <tr><td><code>&lt;style&gt;</code> and CSS</td><td>Rules do not apply to the document.</td></tr>
+            <tr><td><code>&lt;form&gt;</code> controls</td><td>Not validated, not submitted, not reset.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          The "no image loading" guarantee is huge for performance. A 50-item list rendered with templates cloned on demand will not download 50 avatars upfront — only the ones you actually clone.
+        </div>
+      </section>
+
+      <section id="content">
+        <h2><span class="num">3</span> The .content Property</h2>
+        <p>Every <code>&lt;template&gt;</code> element exposes a <code>content</code> property — a <code>DocumentFragment</code> containing all its children. You can read it like a normal DOM node:</p>
+        <pre><code>const tpl = document.getElementById('user-card');
+const frag = tpl.content;
+console.log(frag.querySelector('.name'));  // &lt;h3 class="name"&gt;&lt;/h3&gt;
+console.log(frag.children.length);         // 1 — the outer &lt;div&gt;</code></pre>
+        <p>Directly appending the fragment to the live document empties it — fragments are move-once nodes. To use a template multiple times, you must <strong>clone</strong> the fragment.</p>
+      </section>
+
+      <section id="cloning">
+        <h2><span class="num">4</span> Cloning with cloneNode(true)</h2>
+        <pre><code>function renderUser(user) {
+  const tpl  = document.getElementById('user-card');
+  const clone = tpl.content.cloneNode(true);   // deep clone
+  clone.querySelector('.avatar').src   = user.avatar;
+  clone.querySelector('.avatar').alt   = user.name;
+  clone.querySelector('.name').textContent  = user.name;
+  clone.querySelector('.email').textContent = user.email;
+  document.getElementById('user-list').appendChild(clone);
+}
+
+const users = [
+  { name: 'Ada Lovelace',   email: 'ada@analyticalengine.org',  avatar: 'ada.jpg'  },
+  { name: 'Alan Turing',    email: 'alan@enigma.io',            avatar: 'alan.jpg' },
+  { name: 'Grace Hopper',   email: 'grace@cobol.dev',           avatar: 'grace.jpg' }
+];
+
+users.forEach(renderUser);</code></pre>
+
+        <div class="demo-output">
+          <h4>Live demo (rendered by a script in this page)</h4>
+          <div id="user-list">
+            <div class="user-row"><img alt="avatar"><div><strong>Ada Lovelace</strong> — ada@analyticalengine.org</div></div>
+            <div class="user-row"><img alt="avatar"><div><strong>Alan Turing</strong> — alan@enigma.io</div></div>
+            <div class="user-row"><img alt="avatar"><div><strong>Grace Hopper</strong> — grace@cobol.dev</div></div>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Forgetting <code>true</code> in <code>cloneNode(true)</code> produces a shallow clone — only the top-level fragment node, with none of its children. Always pass <code>true</code> when cloning a template.
+        </div>
+      </section>
+
+      <section id="script-pattern">
+        <h2><span class="num">5</span> vs the &lt;script type="text/template"&gt; Pattern</h2>
+        <p>Before <code>&lt;template&gt;</code> shipped (2013+), the community used a hack: stash markup inside a <code>&lt;script&gt;</code> tag with a non-executable type.</p>
+        <pre><code>&lt;script type="text/template" id="user-card"&gt;
+  &lt;div class="user-card"&gt;...&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script&gt;
+  const html = document.getElementById('user-card').textContent;
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  document.body.appendChild(div);
+&lt;/script&gt;</code></pre>
+        <table class="info-table">
+          <thead><tr><th>Concern</th><th>&lt;script type="text/template"&gt;</th><th>&lt;template&gt;</th></tr></thead>
+          <tbody>
+            <tr><td>Parsed as HTML?</td><td>No — text only</td><td>Yes — proper DocumentFragment</td></tr>
+            <tr><td>Requires manual <code>innerHTML</code>?</td><td>Yes</td><td>No — clone directly</td></tr>
+            <tr><td>Sanitization</td><td>Risky — string concat enables XSS</td><td>Safe — nodes already parsed</td></tr>
+            <tr><td>Re-parsing cost</td><td>Per render</td><td>Once at page load</td></tr>
+            <tr><td>Recommended today?</td><td>No</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using <code>&lt;script type="text/template"&gt;</code> in 2025 codebases. Reach for <code>&lt;template&gt;</code> first; if you find yourself building strings, consider <a href="https://developer.mozilla.org/en-US/docs/Web/API/TrustedHTML_API">TrustedTypes</a> or a sanitization library like DOMPurify.
+        </div>
+      </section>
+
+      <section id="repeated-ui">
+        <h2><span class="num">6</span> Pattern: Repeated UI from Data</h2>
+        <pre><code>&lt;template id="todo-row"&gt;
+  &lt;li class="todo"&gt;
+    &lt;input type="checkbox" class="todo-check"&gt;
+    &lt;label class="todo-text"&gt;&lt;/label&gt;
+    &lt;button class="todo-delete" aria-label="Delete"&gt;×&lt;/button&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;ul id="todo-list"&gt;&lt;/ul&gt;
+
+&lt;script&gt;
+  const todos = [
+    { id: 1, text: 'Write blog post', done: false },
+    { id: 2, text: 'Review pull request', done: true },
+    { id: 3, text: 'Refactor utils module', done: false }
+  ];
+
+  const list = document.getElementById('todo-list');
+  const tpl  = document.getElementById('todo-row');
+
+  todos.forEach(todo =&gt; {
+    const node = tpl.content.cloneNode(true);
+    const li = node.querySelector('li');
+    li.dataset.id = todo.id;
+    li.querySelector('.todo-check').checked = todo.done;
+    li.querySelector('.todo-text').textContent = todo.text;
+    li.classList.toggle('done', todo.done);
+    list.appendChild(node);
+  });
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          This "template + map" pattern is the foundation of vanilla-JS data binding. Many framework features — React's <code>.map</code>, Vue's <code>v-for</code>, Svelte's <code>{#each}</code> — are abstractions on top of this same idea.
+        </div>
+      </section>
+
+      <section id="web-components">
+        <h2><span class="num">7</span> Web Component Templates</h2>
+        <p>The most common production use of <code>&lt;template&gt;</code> today is inside Custom Elements, providing the shadow DOM structure without re-parsing strings on every instance.</p>
+        <pre><code>&lt;template id="my-modal-tpl"&gt;
+  &lt;style&gt;
+    :host { display: none; }
+    :host([open]) { display: block; }
+    .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); }
+    .panel { background: white; padding: 24px; max-width: 480px;
+              margin: 80px auto; border-radius: 12px; }
+  &lt;/style&gt;
+  &lt;div class="backdrop"&gt;&lt;/div&gt;
+  &lt;div class="panel"&gt;
+    &lt;h2&gt;&lt;slot name="title"&gt;Modal&lt;/slot&gt;&lt;/h2&gt;
+    &lt;slot&gt;&lt;/slot&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  class MyModal extends HTMLElement {
+    constructor() {
+      super();
+      const root = this.attachShadow({ mode: 'open' });
+      const tpl = document.getElementById('my-modal-tpl');
+      root.appendChild(tpl.content.cloneNode(true));
+    }
+  }
+  customElements.define('my-modal', MyModal);
+&lt;/script&gt;</code></pre>
+        <p>Notice that the same template serves every instance — the browser parsed it once at page load, and cloning the fragment is a cheap operation.</p>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 26+</span>
+          <span class="pill yes">Firefox 22+</span>
+          <span class="pill yes">Safari 8+</span>
+          <span class="pill yes">Edge 12+</span>
+          <span class="pill yes">Universal since 2014</span>
+        </div>
+        <p>The element is so well supported that you can rely on it without polyfilling in any modern project. The HTML <code>&lt;template&gt;</code> feature works back to IE 11 with a small polyfill, though it is rarely worth the effort today.</p>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Appending <code>tpl.content</code> directly without cloning.</strong> The fragment is moved, not copied — your template becomes empty after the first use.</li>
+          <li><strong>Using <code>cloneNode(false)</code>.</strong> Produces an empty fragment. Always pass <code>true</code>.</li>
+          <li><strong>Putting <code>&lt;script&gt;</code> tags inside a template expecting them to run when cloned.</strong> They do not. The browser marks them as already-parsed and inert. If you need a script to run after cloning, you must re-create it via <code>document.createElement('script')</code> or use <code>new Function</code> (with care).</li>
+          <li><strong>Expecting <code>&lt;style&gt;</code> inside a template to apply once cloned into a shadow root.</strong> It will — but only after cloning. Style the shadow root directly.</li>
+          <li><strong>Storing large data inside templates.</strong> Templates are for markup, not data. Use JSON in a <code>&lt;script type="application/json"&gt;</code> tag if you need to ship data inline.</li>
+          <li><strong>Nesting templates incorrectly.</strong> A nested template's content lives in its own fragment; you must clone each level separately.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — First template</strong>
+          Create a <code>&lt;template&gt;</code> with a single <code>&lt;p&gt;Hello&lt;/p&gt;</code>. Verify in the Network panel that no request fires. Then clone it into the body via a button click.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — User list</strong>
+          Build the user-card example from section 4 with three real users. Use a single template cloned three times. Inspect the cloned nodes in DevTools to confirm they are independent instances.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Image laziness</strong>
+          Put an <code>&lt;img src="large.jpg"&gt;</code> inside a template. Open DevTools Network panel and reload the page. Confirm the image is NOT requested. Then clone the template — the image should now fetch.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Todo list</strong>
+          Build the todo-row template from section 6. Add a button that adds a new todo from a text input. Confirm the same template is reused for each row.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Template in a custom element</strong>
+          Build a <code>&lt;toast-notification&gt;</code> custom element that clones its markup from a <code>&lt;template&gt;</code> into a shadow root. Spawn three toasts with different messages on a button click.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>List rendering</h4><p>Render repeating list items from a JSON API without a templating library.</p></div>
+          <div class="card"><h4>Web components</h4><p>Define the shadow DOM structure once, clone into each instance.</p></div>
+          <div class="card"><h4>Modal &amp; dialog content</h4><p>Hold dialog markup until first open, deferring heavy DOM creation.</p></div>
+          <div class="card"><h4>Email clients</h4><p>Per-message templates rendered on demand as the user scrolls.</p></div>
+          <div class="card"><h4>Admin tables</h4><p>Row templates reused for hundreds of paginated records.</p></div>
+          <div class="card"><h4>SSR hydration</h4><p>Server ships a template containing interactive markup; client clones it into the right place once JS loads.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../02-Web-Components/shadow-dom.html">← Previous: Shadow DOM</a>
+    <a class="next" href="slot-element.html">Next: &lt;slot&gt; Element →</a>
+  </footer>
+</body>
+</html>

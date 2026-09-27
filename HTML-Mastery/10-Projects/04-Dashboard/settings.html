@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Helios Admin — workspace and account settings. Profile, security, notifications, and billing.">
+  <title>Settings · Helios Admin</title>
+  <style>
+    :root {
+      --slate-900: #0f172a; --slate-850: #1e293b; --slate-800: #1e293b;
+      --slate-700: #334155; --slate-600: #475569; --slate-400: #94a3b8;
+      --slate-300: #cbd5e1; --slate-200: #e2e8f0; --slate-100: #f1f5f9;
+      --slate-50: #f8fafc; --white: #ffffff;
+      --blue: #2563eb; --blue-dark: #1d4ed8; --blue-soft: #dbeafe;
+      --green: #16a34a; --green-soft: #dcfce7;
+      --amber: #d97706; --amber-soft: #fef3c7;
+      --red: #dc2626; --red-soft: #fee2e2;
+      --purple: #7c3aed; --purple-soft: #ede9fe;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --radius: 12px; --radius-sm: 8px; --sidebar-w: 248px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--slate-50); color: var(--slate-900); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ===== Sidebar ===== */
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--slate-900); color: var(--slate-300); padding: 20px 0; overflow-y: auto; z-index: 60; }
+    .sidebar-brand { padding: 0 20px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--slate-800); }
+    .sidebar-brand .mark { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #7c3aed); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.95rem; }
+    .sidebar-brand strong { color: #fff; font-size: 1.05rem; }
+    .sidebar-brand .sub { font-size: 0.72rem; color: var(--slate-400); display: block; }
+    .nav-section { padding: 18px 0 8px; }
+    .nav-section .label { padding: 0 20px 8px; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-600); font-weight: 600; }
+    .nav-section ul { list-style: none; }
+    .nav-section li a { display: flex; align-items: center; gap: 12px; padding: 10px 20px; font-size: 0.92rem; color: var(--slate-300); border-left: 3px solid transparent; transition: all 0.15s; }
+    .nav-section li a:hover { background: var(--slate-850); color: #fff; }
+    .nav-section li a.active { background: var(--slate-850); color: #fff; border-left-color: var(--blue); }
+    .nav-section li a .icon { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--slate-400); }
+    .nav-section li a.active .icon { color: var(--blue); }
+    .nav-section li a .badge { margin-left: auto; background: var(--slate-700); color: #fff; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; }
+    .sidebar-user { padding: 16px 20px; margin: 8px 16px; border-radius: var(--radius-sm); background: var(--slate-850); display: flex; align-items: center; gap: 10px; }
+    .sidebar-user .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar-user .info { flex: 1; min-width: 0; }
+    .sidebar-user .name { color: #fff; font-size: 0.9rem; font-weight: 600; }
+    .sidebar-user .role { font-size: 0.78rem; color: var(--slate-400); }
+    .main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+    .topbar { position: sticky; top: 0; z-index: 40; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--slate-200); padding: 14px 28px; display: flex; align-items: center; gap: 16px; }
+    .topbar .page-title { font-size: 1.15rem; font-weight: 700; }
+    .topbar .page-title small { color: var(--slate-400); font-size: 0.85rem; font-weight: 400; margin-left: 8px; }
+    .search { flex: 1; max-width: 420px; position: relative; margin-left: auto; }
+    .search input { width: 100%; padding: 9px 14px 9px 36px; border: 1px solid var(--slate-200); border-radius: 8px; background: var(--slate-50); font-family: inherit; font-size: 0.9rem; }
+    .search input:focus { outline: 2px solid var(--blue); border-color: var(--blue); background: #fff; }
+    .search .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--slate-400); font-size: 0.95rem; }
+    .icon-btn { position: relative; width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--slate-200); background: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-600); font-size: 1.05rem; }
+    .icon-btn:hover { background: var(--slate-50); color: var(--slate-900); }
+    .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid #fff; }
+    .user-menu { display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px; border-radius: 999px; border: 1px solid var(--slate-200); background: #fff; cursor: pointer; }
+    .user-menu .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; font-weight: 700; font-size: 0.78rem; display: inline-flex; align-items: center; justify-content: center; }
+    .user-menu .name { font-size: 0.88rem; font-weight: 500; }
+    .content { padding: 28px; max-width: 920px; }
+
+    /* ===== Tabs (CSS-only via radio) ===== */
+    .tab-radio { position: absolute; opacity: 0; pointer-events: none; }
+    .tab-bar {
+      display: flex; gap: 4px; background: #fff; border: 1px solid var(--slate-200);
+      border-radius: var(--radius); padding: 6px; margin-bottom: 24px; box-shadow: var(--shadow);
+    }
+    .tab-bar label {
+      flex: 1; padding: 10px 16px; border-radius: var(--radius-sm);
+      text-align: center; font-size: 0.92rem; font-weight: 500; color: var(--slate-600);
+      cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .tab-bar label:hover { background: var(--slate-50); color: var(--slate-900); }
+
+    .tab-panel { display: none; }
+    #tab-profile:checked ~ .tab-bar label[for="tab-profile"],
+    #tab-security:checked ~ .tab-bar label[for="tab-security"],
+    #tab-notifications:checked ~ .tab-bar label[for="tab-notifications"],
+    #tab-billing:checked ~ .tab-bar label[for="tab-billing"] {
+      background: var(--slate-900); color: #fff;
+    }
+    #tab-profile:checked ~ .panel-profile,
+    #tab-security:checked ~ .panel-security,
+    #tab-notifications:checked ~ .panel-notifications,
+    #tab-billing:checked ~ .panel-billing {
+      display: block;
+    }
+    @media (max-width: 640px) {
+      .tab-bar { flex-wrap: wrap; }
+      .tab-bar label { flex: 1 1 40%; font-size: 0.85rem; padding: 8px 12px; }
+    }
+
+    /* ===== Form card ===== */
+    .card { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card-head { margin-bottom: 24px; }
+    .card-head h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+    .card-head p { font-size: 0.88rem; color: var(--slate-600); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { font-size: 0.85rem; font-weight: 500; color: var(--slate-700); }
+    .form-field .hint { font-size: 0.78rem; color: var(--slate-400); }
+    .form-field input[type="text"],
+    .form-field input[type="email"],
+    .form-field input[type="tel"],
+    .form-field input[type="url"],
+    .form-field input[type="password"],
+    .form-field textarea,
+    .form-field select {
+      padding: 10px 12px; border: 1px solid var(--slate-200); border-radius: 8px;
+      font-family: inherit; font-size: 0.92rem; background: #fff; color: var(--slate-900);
+    }
+    .form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+      outline: 2px solid var(--blue); border-color: var(--blue);
+    }
+    .form-field textarea { resize: vertical; min-height: 88px; }
+    .input-with-button { display: flex; gap: 8px; }
+    .input-with-button input { flex: 1; }
+    .input-with-button button {
+      padding: 0 16px; border: 1px solid var(--slate-200); border-radius: 8px;
+      background: #fff; color: var(--slate-700); font-family: inherit; font-size: 0.85rem; cursor: pointer; font-weight: 500;
+    }
+    .input-with-button button:hover { background: var(--slate-50); }
+
+    /* ===== Toggle switch ===== */
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-bottom: 1px solid var(--slate-100); gap: 16px;
+    }
+    .toggle-row:last-child { border-bottom: 0; }
+    .toggle-row .info { flex: 1; }
+    .toggle-row .info strong { display: block; font-size: 0.94rem; font-weight: 600; }
+    .toggle-row .info span { font-size: 0.82rem; color: var(--slate-600); }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--slate-300); border-radius: 999px;
+      transition: background 0.2s;
+    }
+    .switch .slider::before {
+      content: ""; position: absolute;
+      width: 18px; height: 18px; left: 3px; top: 3px;
+      background: #fff; border-radius: 50%; transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .switch input:checked + .slider { background: var(--blue); }
+    .switch input:checked + .slider::before { transform: translateX(20px); }
+    .switch input:focus-visible + .slider { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    /* ===== Radio cards ===== */
+    .radio-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (max-width: 640px) { .radio-cards { grid-template-columns: 1fr; } }
+    .radio-card {
+      border: 1px solid var(--slate-200); border-radius: var(--radius-sm);
+      padding: 16px; cursor: pointer; position: relative; transition: all 0.15s;
+    }
+    .radio-card:hover { border-color: var(--blue); background: var(--slate-50); }
+    .radio-card input { position: absolute; opacity: 0; }
+    .radio-card .check {
+      position: absolute; top: 14px; right: 14px;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid var(--slate-300);
+    }
+    .radio-card input:checked ~ .check {
+      border-color: var(--blue); background: var(--blue);
+      box-shadow: inset 0 0 0 3px #fff;
+    }
+    .radio-card:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); }
+    .radio-card h4 { font-size: 0.96rem; font-weight: 600; margin-bottom: 4px; }
+    .radio-card p { font-size: 0.82rem; color: var(--slate-600); }
+
+    /* ===== Avatar editor ===== */
+    .avatar-edit { display: flex; align-items: center; gap: 18px; margin-bottom: 24px; }
+    .avatar-edit .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #fff; font-weight: 700; font-size: 1.6rem;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .avatar-edit .actions { display: flex; flex-direction: column; gap: 6px; }
+    .avatar-edit .actions button {
+      padding: 6px 12px; border-radius: 6px; border: 1px solid var(--slate-200);
+      background: #fff; color: var(--slate-700); font-family: inherit; font-size: 0.82rem; cursor: pointer;
+    }
+    .avatar-edit .actions button:hover { background: var(--slate-50); }
+    .avatar-edit .actions button.danger { color: var(--red); border-color: var(--slate-200); }
+    .avatar-edit .actions button.danger:hover { background: var(--red-soft); border-color: var(--red); }
+
+    /* ===== Security rows ===== */
+    .security-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--slate-100); gap: 16px; }
+    .security-row:last-child { border-bottom: 0; }
+    .security-row .icon-circle { width: 40px; height: 40px; border-radius: 8px; background: var(--blue-soft); color: var(--blue); display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .security-row .info { flex: 1; }
+    .security-row .info strong { display: block; font-size: 0.94rem; font-weight: 600; }
+    .security-row .info span { font-size: 0.82rem; color: var(--slate-600); }
+    .security-row .info .meta { font-size: 0.78rem; color: var(--slate-400); margin-top: 2px; }
+    .security-row .action { flex-shrink: 0; }
+    .btn-link { background: transparent; border: 0; color: var(--blue); font-family: inherit; font-size: 0.88rem; font-weight: 500; cursor: pointer; padding: 6px 8px; }
+    .btn-link:hover { text-decoration: underline; }
+
+    /* ===== Billing ===== */
+    .current-plan { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #fff; border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .current-plan .eyebrow { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; margin-bottom: 4px; }
+    .current-plan h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+    .current-plan .price { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
+    .current-plan .price small { font-size: 0.95rem; font-weight: 500; opacity: 0.85; }
+    .current-plan .renews { font-size: 0.85rem; opacity: 0.85; margin-top: 8px; }
+    .current-plan .actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .current-plan .actions button {
+      padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 0.85rem; font-weight: 500; cursor: pointer;
+    }
+    .current-plan .actions button.solid { background: #fff; color: var(--blue-dark); border-color: #fff; }
+
+    .usage-row { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 6px; }
+    .usage-bar { background: var(--slate-100); border-radius: 999px; height: 8px; overflow: hidden; margin-bottom: 16px; }
+    .usage-bar .fill { height: 100%; background: var(--blue); border-radius: 999px; }
+    .usage-bar .fill.warn { background: var(--amber); }
+
+    /* ===== Footer actions ===== */
+    .form-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding-top: 20px; border-top: 1px solid var(--slate-100); margin-top: 24px;
+    }
+    .btn-primary { padding: 10px 20px; border-radius: 8px; border: 0; background: var(--blue); color: #fff; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 0.92rem; }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-ghost { padding: 10px 20px; border-radius: 8px; border: 1px solid var(--slate-200); background: #fff; color: var(--slate-700); font-weight: 500; cursor: pointer; font-family: inherit; font-size: 0.92rem; }
+    .btn-ghost:hover { background: var(--slate-50); }
+    .btn-danger { padding: 10px 20px; border-radius: 8px; border: 1px solid var(--red); background: #fff; color: var(--red); font-weight: 600; cursor: pointer; font-family: inherit; font-size: 0.92rem; }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+
+    /* ===== Mobile sidebar ===== */
+    .sidebar-toggle { display: none; }
+    @media (max-width: 880px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
+      .sidebar-toggle:checked ~ .sidebar { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-btn { display: inline-flex; width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--slate-200); background: #fff; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-600); font-size: 1.05rem; }
+    }
+    @media (min-width: 881px) { .menu-btn { display: none; } }
+  </style>
+</head>
+<body>
+
+<input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
+
+<aside class="sidebar" aria-label="Primary navigation">
+  <div class="sidebar-brand">
+    <span class="mark">H</span>
+    <div><strong>Helios</strong><span class="sub">Admin Console</span></div>
+  </div>
+  <nav class="nav-section">
+    <div class="label">Workspace</div>
+    <ul>
+      <li><a href="index.html"><span class="icon">▤</span> Overview</a></li>
+      <li><a href="analytics.html"><span class="icon">📈</span> Analytics</a></li>
+      <li><a href="users.html"><span class="icon">👥</span> Users <span class="badge">12</span></a></li>
+      <li><a href="settings.html" class="active"><span class="icon">⚙</span> Settings</a></li>
+    </ul>
+  </nav>
+  <nav class="nav-section">
+    <div class="label">Account</div>
+    <ul>
+      <li><a href="#"><span class="icon">🔔</span> Notifications</a></li>
+      <li><a href="#"><span class="icon">🧾</span> Billing</a></li>
+      <li><a href="#"><span class="icon">↩</span> Logout</a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-user">
+    <span class="avatar">AK</span>
+    <div class="info"><div class="name">Amara Kahn</div><div class="role">Owner</div></div>
+    <span style="color: var(--slate-400)">⋯</span>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <label for="sidebar-toggle" class="menu-btn" aria-label="Toggle menu">≡</label>
+    <div class="page-title">Settings <small>Workspace &amp; account</small></div>
+    <div class="search">
+      <span class="search-icon">🔍</span>
+      <input type="search" placeholder="Search settings..." aria-label="Search settings">
+    </div>
+    <button class="icon-btn" aria-label="Notifications">🔔<span class="dot"></span></button>
+    <div class="user-menu">
+      <span class="avatar">AK</span>
+      <span class="name">Amara</span>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- Tab radios (CSS-only tabs) -->
+    <input type="radio" name="settings-tab" id="tab-profile" class="tab-radio" checked>
+    <input type="radio" name="settings-tab" id="tab-security" class="tab-radio">
+    <input type="radio" name="settings-tab" id="tab-notifications" class="tab-radio">
+    <input type="radio" name="settings-tab" id="tab-billing" class="tab-radio">
+
+    <div class="tab-bar" role="tablist" aria-label="Settings sections">
+      <label for="tab-profile" role="tab">Profile</label>
+      <label for="tab-security" role="tab">Security</label>
+      <label for="tab-notifications" role="tab">Notifications</label>
+      <label for="tab-billing" role="tab">Billing</label>
+    </div>
+
+    <!-- ===== PROFILE ===== -->
+    <div class="tab-panel panel-profile" role="tabpanel">
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Profile</h2>
+          <p>This information will be visible to your team and on any comments or commits you make.</p>
+        </div>
+
+        <div class="avatar-edit">
+          <span class="avatar">AK</span>
+          <div class="actions">
+            <button type="button">Upload new photo</button>
+            <button type="button" class="danger">Remove</button>
+            <span style="font-size: 0.78rem; color: var(--slate-400);">JPG, PNG, or GIF. Max 2MB.</span>
+          </div>
+        </div>
+
+        <form action="#" method="post">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="first-name">First name</label>
+              <input type="text" id="first-name" name="first_name" value="Amara" required>
+            </div>
+            <div class="form-field">
+              <label for="last-name">Last name</label>
+              <input type="text" id="last-name" name="last_name" value="Kahn" required>
+            </div>
+            <div class="form-field full">
+              <label for="email">Email address</label>
+              <input type="email" id="email" name="email" value="amara@helios.app" required>
+              <span class="hint">Used for sign-in, notifications, and billing receipts.</span>
+            </div>
+            <div class="form-field">
+              <label for="role-title">Role title</label>
+              <input type="text" id="role-title" name="role_title" value="Founder &amp; CEO">
+            </div>
+            <div class="form-field">
+              <label for="department">Department</label>
+              <select id="department" name="department">
+                <option>Executive</option>
+                <option>Engineering</option>
+                <option>Design</option>
+                <option>Operations</option>
+                <option>Marketing</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label for="bio">Short bio</label>
+              <textarea id="bio" name="bio" placeholder="A line or two about what you do.">Building Helios — the admin console I always wished I had. Previously led infrastructure at Northwind. Coffee, climbing, and small dogs.</textarea>
+              <span class="hint">Max 280 characters. Shown on your profile card.</span>
+            </div>
+            <div class="form-field">
+              <label for="timezone">Timezone</label>
+              <select id="timezone" name="timezone">
+                <option>America/New_York (GMT-5)</option>
+                <option>America/Chicago (GMT-6)</option>
+                <option>America/Los_Angeles (GMT-8)</option>
+                <option>Europe/London (GMT+0)</option>
+                <option>Asia/Tokyo (GMT+9)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="locale">Language</label>
+              <select id="locale" name="locale">
+                <option>English (US)</option>
+                <option>English (UK)</option>
+                <option>Español</option>
+                <option>Français</option>
+                <option>Deutsch</option>
+                <option>日本語</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button type="reset" class="btn-ghost">Cancel</button>
+            <button type="submit" class="btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== SECURITY ===== -->
+    <div class="tab-panel panel-security" role="tabpanel">
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Security</h2>
+          <p>Manage your password, two-factor authentication, and active sessions.</p>
+        </div>
+
+        <div class="security-row">
+          <span class="icon-circle">🔑</span>
+          <div class="info">
+            <strong>Password</strong>
+            <span>Last changed 42 days ago</span>
+            <div class="meta">Consider changing it every 90 days.</div>
+          </div>
+          <div class="action"><button class="btn-link">Change →</button></div>
+        </div>
+
+        <div class="security-row">
+          <span class="icon-circle">📱</span>
+          <div class="info">
+            <strong>Two-factor authentication</strong>
+            <span>Enabled via authenticator app</span>
+            <div class="meta">Backup codes generated Mar 2, 2025.</div>
+          </div>
+          <div class="action"><button class="btn-link">Manage →</button></div>
+        </div>
+
+        <div class="security-row">
+          <span class="icon-circle">🔐</span>
+          <div class="info">
+            <strong>Passkeys</strong>
+            <span>2 active passkeys</span>
+            <div class="meta">MacBook Pro · Last used 8 min ago</div>
+          </div>
+          <div class="action"><button class="btn-link">Add passkey →</button></div>
+        </div>
+
+        <div class="security-row">
+          <span class="icon-circle">💻</span>
+          <div class="info">
+            <strong>Active sessions</strong>
+            <span>3 devices currently signed in</span>
+            <div class="meta">MacBook Pro · iPhone 15 · iPad Air</div>
+          </div>
+          <div class="action"><button class="btn-link">View all →</button></div>
+        </div>
+
+        <div class="security-row">
+          <span class="icon-circle">📜</span>
+          <div class="info">
+            <strong>Login history</strong>
+            <span>Last 30 days of sign-ins</span>
+            <div class="meta">No suspicious activity detected.</div>
+          </div>
+          <div class="action"><button class="btn-link">View log →</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Session timeout</h2>
+          <p>Automatically sign out inactive sessions.</p>
+        </div>
+        <div class="radio-cards">
+          <label class="radio-card">
+            <input type="radio" name="timeout" value="15">
+            <span class="check"></span>
+            <h4>15 minutes</h4>
+            <p>Recommended for shared or public devices.</p>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="timeout" value="60" checked>
+            <span class="check"></span>
+            <h4>1 hour</h4>
+            <p>Default. Balances safety with convenience.</p>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="timeout" value="240">
+            <span class="check"></span>
+            <h4>4 hours</h4>
+            <p>For long, focused work sessions.</p>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="timeout" value="never">
+            <span class="check"></span>
+            <h4>Never</h4>
+            <p>Not recommended. Sessions stay open indefinitely.</p>
+          </label>
+        </div>
+        <div class="form-footer">
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== NOTIFICATIONS ===== -->
+    <div class="tab-panel panel-notifications" role="tabpanel">
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Email notifications</h2>
+          <p>Choose what we send to your inbox. We never sell or share your address.</p>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Product updates</strong>
+            <span>New features, changelog highlights, and major announcements.</span>
+          </div>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Weekly digest</strong>
+            <span>A Sunday summary of your team's activity, top metrics, and pending tasks.</span>
+          </div>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Billing receipts</strong>
+            <span>Receipts sent after every successful charge. Always recommended.</span>
+          </div>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Security alerts</strong>
+            <span>New device sign-ins, password changes, suspicious activity. Always on.</span>
+          </div>
+          <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Marketing &amp; offers</strong>
+            <span>Occasional emails about partner products and Helios promotions.</span>
+          </div>
+          <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>In-app notifications</h2>
+          <p>Browser and desktop push notifications while you're using Helios.</p>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>New orders</strong>
+            <span>When a new order is placed or refunded.</span>
+          </div>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Team activity</strong>
+            <span>When teammates join, leave, or change roles.</span>
+          </div>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Mentions &amp; replies</strong>
+            <span>When someone @mentions you in a comment or order note.</span>
+          </div>
+          <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="info">
+            <strong>Daily summary</strong>
+            <span>A quiet morning summary of yesterday's numbers. Delivered at 9am.</span>
+          </div>
+          <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="btn-primary">Save preferences</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BILLING ===== -->
+    <div class="tab-panel panel-billing" role="tabpanel">
+
+      <div class="current-plan">
+        <div class="eyebrow">Current plan</div>
+        <h2>Helios Scale</h2>
+        <div class="price">$99<small>/month</small></div>
+        <div class="renews">Renews March 24, 2025 · billed to Visa ending 4242</div>
+        <div class="actions">
+          <button class="solid">Upgrade to Enterprise</button>
+          <button>Change plan</button>
+          <button>Cancel subscription</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Usage this period</h2>
+          <p>Resets on March 24, 2025.</p>
+        </div>
+
+        <div class="usage-row"><span>Active users</span><span><strong>2,847</strong> / 5,000</span></div>
+        <div class="usage-bar"><div class="fill" style="width: 57%"></div></div>
+
+        <div class="usage-row"><span>API requests</span><span><strong>412k</strong> / 1M</span></div>
+        <div class="usage-bar"><div class="fill" style="width: 41%"></div></div>
+
+        <div class="usage-row"><span>Storage</span><span><strong>78 GB</strong> / 100 GB</span></div>
+        <div class="usage-bar"><div class="fill warn" style="width: 78%"></div></div>
+
+        <div class="usage-row"><span>Webhooks delivered</span><span><strong>94k</strong> / unlimited</span></div>
+        <div class="usage-bar"><div class="fill" style="width: 100%"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Payment method</h2>
+          <p>Update your card or add a backup payment method.</p>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle">💳</span>
+          <div class="info">
+            <strong>Visa ending 4242</strong>
+            <span>Expires 08/2027 · Primary</span>
+            <div class="meta">Added Jan 4, 2024</div>
+          </div>
+          <div class="action"><button class="btn-link">Edit →</button></div>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle">🏦</span>
+          <div class="info">
+            <strong>Bank transfer (ACH)</strong>
+            <span>Backup method · Northwind Federal</span>
+            <div class="meta">Added Sep 12, 2024</div>
+          </div>
+          <div class="action"><button class="btn-link">Edit →</button></div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-ghost">+ Add payment method</button>
+          <button class="btn-primary">Save</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Billing history</h2>
+          <p>Last 6 months of invoices.</p>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle">📄</span>
+          <div class="info">
+            <strong>Invoice #INV-2025-03</strong>
+            <span>March 2025 · $99.00</span>
+            <div class="meta">Paid Mar 1, 2025</div>
+          </div>
+          <div class="action"><button class="btn-link">Download PDF →</button></div>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle">📄</span>
+          <div class="info">
+            <strong>Invoice #INV-2025-02</strong>
+            <span>February 2025 · $99.00</span>
+            <div class="meta">Paid Feb 1, 2025</div>
+          </div>
+          <div class="action"><button class="btn-link">Download PDF →</button></div>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle">📄</span>
+          <div class="info">
+            <strong>Invoice #INV-2025-01</strong>
+            <span>January 2025 · $99.00</span>
+            <div class="meta">Paid Jan 1, 2025</div>
+          </div>
+          <div class="action"><button class="btn-link">Download PDF →</button></div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-link" style="margin-right: auto;">View all invoices →</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 style="color: var(--red);">Danger zone</h2>
+          <p>Irreversible account actions. Proceed with caution.</p>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle" style="background: var(--red-soft); color: var(--red);">⚠</span>
+          <div class="info">
+            <strong>Transfer ownership</strong>
+            <span>Hand this workspace over to another admin.</span>
+          </div>
+          <div class="action"><button class="btn-link" style="color: var(--red);">Transfer →</button></div>
+        </div>
+        <div class="security-row">
+          <span class="icon-circle" style="background: var(--red-soft); color: var(--red);">🗑</span>
+          <div class="info">
+            <strong>Delete workspace</strong>
+            <span>Permanently delete all data, including users, orders, and settings.</span>
+          </div>
+          <div class="action"><button class="btn-danger">Delete</button></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;output&gt;, &lt;progress&gt; &amp; &lt;meter&gt; — Live Result &amp; State Indicators — HTML Mastery</title>
+  <meta name="description" content="Master the three state-display form elements: output (live calculation results with the for attribute), progress (determinate and indeterminate bars), and meter (min/max/low/high/optimum/value gauge). Real-world patterns: mortgage calculators, file uploads, password strength meters, score indicators.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .info-table code { font-size: 0.85em; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input[type="number"], .demo-box input[type="range"] {
+      width: 100%; max-width: 280px; padding: 8px 10px; border: 1px solid #cbd5e1;
+      border-radius: 8px; font-size: 0.95rem; font-family: inherit;
+    }
+    .demo-box input[type="range"] { padding: 0; }
+    .demo-box output {
+      display: inline-block; min-width: 80px; padding: 8px 14px; border-radius: 8px;
+      background: #eef2ff; color: var(--brand); font-weight: 600; font-family: "JetBrains Mono", monospace;
+    }
+    .demo-box progress, .demo-box meter { width: 100%; max-width: 320px; height: 22px; vertical-align: middle; }
+    .demo-box .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 8px 0; }
+    .demo-box button {
+      background: var(--brand); color: white; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem;
+      cursor: pointer; font-family: inherit; margin-top: 8px;
+    }
+    .demo-box button:hover { background: #1d4ed8; }
+    .strength-label { font-weight: 600; font-family: "JetBrains Mono", monospace; }
+    .strength-label.weak    { color: var(--warn); }
+    .strength-label.fair    { color: var(--accent); }
+    .strength-label.strong  { color: var(--success); }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.no  { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Advanced Forms · Lesson 15</span>
+    <h1><code>&lt;output&gt;</code>, <code>&lt;progress&gt;</code> &amp; <code>&lt;meter&gt;</code></h1>
+    <p>Three form elements that exist solely to <em>show</em> state, not collect input. <code>output</code> displays a live calculation result; <code>progress</code> shows how far along a task is; <code>meter</code> renders a known value inside a range with healthy and danger zones. Master these and your forms stop being static questionnaires and start feeling alive.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">The three state elements</a></li>
+        <li><a href="#output">The <code>&lt;output&gt;</code> element</a></li>
+        <li><a href="#for-attribute">The <code>for</code> attribute</a></li>
+        <li><a href="#progress">The <code>&lt;progress&gt;</code> element</a></li>
+        <li><a href="#meter">The <code>&lt;meter&gt;</code> element</a></li>
+        <li><a href="#compare">Progress vs Meter: which to pick?</a></li>
+        <li><a href="#patterns">Real-world patterns</a></li>
+        <li><a href="#accessibility">Accessibility</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> The three state elements</h2>
+        <p>Most form elements (<code>input</code>, <code>select</code>, <code>textarea</code>) exist to collect input <em>from</em> the user. The three elements in this lesson exist to display state <em>to</em> the user. They are form-associated (live inside <code>&lt;form&gt;</code>, participate in form submission, are disabled when the form is reset) but are not editable.</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Purpose</th><th>Knows the total?</th><th>Knows safe ranges?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;output&gt;</code></td><td>Display a calculation result</td><td>—</td><td>—</td></tr>
+            <tr><td><code>&lt;progress&gt;</code></td><td>How far along a task is</td><td>Yes (<code>max</code>)</td><td>No</td></tr>
+            <tr><td><code>&lt;meter&gt;</code></td><td>A known value within a range</td><td>Yes (<code>min</code>/<code>max</code>)</td><td>Yes (<code>low</code>/<code>high</code>/<code>optimum</code>)</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          A progress bar answers "how much longer?" — the user does not know the answer ahead of time. A meter answers "is this value okay?" — the user already knows the value and wants a verdict. Use this distinction to pick the right one.
+        </div>
+      </section>
+
+      <section id="output">
+        <h2><span class="num">2</span> The <code>&lt;output&gt;</code> element</h2>
+        <p>The <code>output</code> element represents the result of a calculation or a user action. Browsers render it like text, but screen readers announce it as an output region, and the browser's form machinery treats it as a real form control — it has a <code>value</code> property, it can be <code>form</code>-associated, and it resets when the form is reset.</p>
+        <h3>Basic anatomy</h3>
+        <pre><code>&lt;form&gt;
+  &lt;label for="a"&gt;Price per unit&lt;/label&gt;
+  &lt;input type="number" id="a" value="9.50"&gt;
+
+  &lt;label for="b"&gt;Quantity&lt;/label&gt;
+  &lt;input type="number" id="b" value="3"&gt;
+
+  &lt;p&gt;Total: &lt;output id="total" for="a b"&gt;28.50&lt;/output&gt;&lt;/p&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  const a = document.getElementById('a');
+  const b = document.getElementById('b');
+  const total = document.getElementById('total');
+
+  function recalc() {
+    total.value = (a.valueAsNumber * b.valueAsNumber).toFixed(2);
+  }
+
+  a.addEventListener('input', recalc);
+  b.addEventListener('input', recalc);
+  recalc();
+&lt;/script&gt;</code></pre>
+        <div class="callout info">
+          <strong>Note</strong>
+          The <code>value</code> property of an <code>output</code> sets its text content. Setting <code>output.value = "x"</code> is equivalent to <code>output.textContent = "x"</code> — but it's the API the form expects, and it's what the <code>for</code> relationship uses.
+        </div>
+        <h3>Live demo: tip calculator</h3>
+        <div class="demo-box">
+          <div class="demo-label">Live &lt;output&gt; demo</div>
+          <label for="bill">Bill amount ($)</label>
+          <input type="number" id="bill" value="50" min="0" step="0.01">
+          <label for="tip-pct">Tip percentage (%)</label>
+          <input type="range" id="tip-pct" value="18" min="0" max="40" step="1">
+          <div class="row">
+            <span>Tip: <output id="tip-out" for="bill tip-pct">$9.00</output></span>
+            <span>Total: <output id="total-out" for="bill tip-pct">$59.00</output></span>
+          </div>
+          <script>
+            (function() {
+              const bill = document.getElementById('bill');
+              const pct = document.getElementById('tip-pct');
+              const tipOut = document.getElementById('tip-out');
+              const totalOut = document.getElementById('total-out');
+              function fmt(n) { return '$' + n.toFixed(2); }
+              function recalc() {
+                const b = bill.valueAsNumber || 0;
+                const p = Number(pct.value);
+                tipOut.value = fmt(b * p / 100);
+                totalOut.value = fmt(b + b * p / 100);
+              }
+              bill.addEventListener('input', recalc);
+              pct.addEventListener('input', recalc);
+              recalc();
+            })();
+          </script>
+        </div>
+      </section>
+
+      <section id="for-attribute">
+        <h2><span class="num">3</span> The <code>for</code> attribute</h2>
+        <p>The <code>for</code> attribute on <code>output</code> is a space-separated list of the IDs of the input elements whose values contributed to the calculation. It's purely informational — it doesn't wire up events for you — but it's hugely valuable for accessibility and tooling.</p>
+        <pre><code>&lt;!-- "for" lists every input that feeds this output --&gt;
+&lt;output for="bill tip-pct tax" name="grand-total"&gt;
+  63.42
+&lt;/output&gt;</code></pre>
+        <table class="info-table">
+          <thead><tr><th>What <code>for</code> does</th><th>What it does NOT do</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Tells assistive tech which inputs feed this result</td>
+              <td>Auto-attach <code>input</code> listeners (you still write JS)</td>
+            </tr>
+            <tr>
+              <td>Provides a programmatic relationship for testing tools</td>
+              <td>Trigger recalculation automatically</td>
+            </tr>
+            <tr>
+              <td>Helps screen reader users trace "this number came from those fields"</td>
+              <td>Get announced on every change (use <code>aria-live</code> for that)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Forgetting <code>aria-live="polite"</code> on a live-updating <code>output</code>. Without it, the value updates visually but screen reader users never hear the new value. Wrap or annotate the output so changes are announced.
+        </div>
+        <pre><code>&lt;!-- Accessible live result --&gt;
+&lt;p aria-live="polite" aria-atomic="true"&gt;
+  Estimated monthly payment:
+  &lt;output id="payment" for="principal rate years"&gt;$1,520.43&lt;/output&gt;
+&lt;/p&gt;</code></pre>
+      </section>
+
+      <section id="progress">
+        <h2><span class="num">4</span> The <code>&lt;progress&gt;</code> element</h2>
+        <p><code>progress</code> represents the completion progress of a task. It has exactly two attributes:</p>
+        <ul>
+          <li><code>max</code> — total amount of work (default 1.0)</li>
+          <li><code>value</code> — current amount of work done (between 0 and <code>max</code>)</li>
+        </ul>
+        <h3>Determinate vs indeterminate</h3>
+        <pre><code>&lt;!-- Determinate: we know the total and the current value --&gt;
+&lt;progress id="upload" max="100" value="42"&gt;&lt;/progress&gt;
+&lt;span&gt;42% uploaded&lt;/span&gt;
+
+&lt;!-- Indeterminate: drop the value attribute entirely --&gt;
+&lt;progress&gt;Working…&lt;/progress&gt;</code></pre>
+        <p>When you omit <code>value</code>, the browser renders an animated "we don't know how long this will take" bar. Use this for operations whose duration you can't predict — connecting to a server, waiting for a queue position.</p>
+        <div class="demo-box">
+          <div class="demo-label">Live &lt;progress&gt; demo</div>
+          <div class="row">
+            <progress id="demo-progress" max="100" value="0"></progress>
+            <span id="demo-progress-pct">0%</span>
+          </div>
+          <button id="demo-progress-btn" type="button">Start upload</button>
+          <script>
+            (function() {
+              const bar = document.getElementById('demo-progress');
+              const pct = document.getElementById('demo-progress-pct');
+              const btn = document.getElementById('demo-progress-btn');
+              let timer = null;
+              btn.addEventListener('click', () => {
+                if (timer) return;
+                let v = 0;
+                bar.value = 0;
+                timer = setInterval(() => {
+                  v += Math.random() * 12;
+                  if (v >= 100) {
+                    v = 100;
+                    clearInterval(timer);
+                    timer = null;
+                    btn.textContent = 'Upload complete — restart';
+                    btn.disabled = false;
+                  }
+                  bar.value = v;
+                  pct.textContent = Math.floor(v) + '%';
+                }, 220);
+              });
+            })();
+          </script>
+        </div>
+        <h3>Always provide text content for accessibility</h3>
+        <p>The native <code>progress</code> exposes a <code>progressbar</code> role automatically, but screen reader announcements vary. Always pair it with a visible, programmatically-linked label.</p>
+        <pre><code>&lt;label for="upload"&gt;Uploading photo.jpg&lt;/label&gt;
+&lt;progress id="upload" max="3145728" value="1048576"
+           aria-describedby="upload-status"&gt;&lt;/progress&gt;
+&lt;span id="upload-status"&gt;1.0 of 3.0 MB uploaded&lt;/span&gt;</code></pre>
+      </section>
+
+      <section id="meter">
+        <h2><span class="num">5</span> The <code>&lt;meter&gt;</code> element</h2>
+        <p><code>meter</code> represents a scalar value within a known range — a gauge, not a progress indicator. It's the right element for "this is the current value; is it okay?" rather than "how much is left?"</p>
+        <h3>Its six attributes</h3>
+        <table class="info-table">
+          <thead><tr><th>Attribute</th><th>Purpose</th><th>Default</th></tr></thead>
+          <tbody>
+            <tr><td><code>min</code></td><td>Lower bound of the range</td><td>0</td></tr>
+            <tr><td><code>max</code></td><td>Upper bound of the range</td><td>1</td></tr>
+            <tr><td><code>value</code></td><td>The actual value to display</td><td>— (required)</td></tr>
+            <tr><td><code>low</code></td><td>Upper bound of the "low" zone</td><td>same as <code>min</code></td></tr>
+            <tr><td><code>high</code></td><td>Lower bound of the "high" zone</td><td>same as <code>max</code></td></tr>
+            <tr><td><code>optimum</code></td><td>The "ideal" value — colors the zones</td><td>midpoint</td></tr>
+          </tbody>
+        </table>
+        <p>The browser colors the bar green/yellow/red based on which zone <code>value</code> falls in <em>and</em> where <code>optimum</code> is. If <code>optimum</code> is in the middle, the middle zone is "good". If <code>optimum</code> is in the low zone, then low values are "good" and high values are "bad".</p>
+        <pre><code>&lt;!-- Disk usage: 0-100 GB, low=33, high=66, optimum=20 (low is good) --&gt;
+&lt;meter min="0" max="100" low="33" high="66" optimum="20" value="78"&gt;
+  78 GB used
+&lt;/meter&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Live &lt;meter&gt; demo — battery + CPU + score</div>
+          <label for="meter-battery">Battery (low is bad, high is good)</label>
+          <meter id="meter-battery" min="0" max="100" low="20" high="80" optimum="100" value="62">62%</meter>
+          <label for="meter-cpu" style="margin-top:14px;">CPU load (low is good, high is bad)</label>
+          <meter id="meter-cpu" min="0" max="100" low="40" high="80" optimum="0" value="55">55%</meter>
+          <label for="meter-score" style="margin-top:14px;">Exam score (low/high bound the "average" zone)</label>
+          <meter id="meter-score" min="0" max="100" low="50" high="80" optimum="100" value="92">92/100</meter>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The exact green/yellow/red thresholds vary by browser. Don't rely on the color alone for meaning — always include a text alternative (either as the element's text content or a sibling <code>&lt;span&gt;</code>) so color-blind users still get the verdict.
+        </div>
+      </section>
+
+      <section id="compare">
+        <h2><span class="num">6</span> Progress vs Meter: which to pick?</h2>
+        <table class="info-table">
+          <thead><tr><th>Question</th><th>If yes, use…</th></tr></thead>
+          <tbody>
+            <tr><td>Does the value change as part of an ongoing task that will complete?</td><td><code>&lt;progress&gt;</code></td></tr>
+            <tr><td>Is the value a snapshot of a known quantity, with a notion of "good" and "bad" zones?</td><td><code>&lt;meter&gt;</code></td></tr>
+            <tr><td>Will the bar reach 100% and disappear (or transform into a success state)?</td><td><code>&lt;progress&gt;</code></td></tr>
+            <tr><td>Will the value fluctuate indefinitely (battery, signal, temperature)?</td><td><code>&lt;meter&gt;</code></td></tr>
+            <tr><td>Do you need a "danger zone" indicator?</td><td><code>&lt;meter&gt;</code> (has <code>low</code>/<code>high</code>)</td></tr>
+            <tr><td>Do you need an "indeterminate" animation?</td><td><code>&lt;progress&gt;</code> (omit <code>value</code>)</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using <code>&lt;progress&gt;</code> for a password strength meter. Password strength is a gauge with "weak/medium/strong" zones, not a task that completes. Use <code>&lt;meter&gt;</code> with <code>low</code>, <code>high</code>, and <code>optimum=100</code>.
+        </div>
+      </section>
+
+      <section id="patterns">
+        <h2><span class="num">7</span> Real-world patterns</h2>
+
+        <h3>Pattern A: Live mortgage calculator</h3>
+        <pre><code>&lt;form&gt;
+  &lt;label&gt;Loan amount $&lt;input type="number" id="p" value="200000"&gt;&lt;/label&gt;
+  &lt;label&gt;Interest rate %&lt;input type="number" id="r" value="6.5" step="0.01"&gt;&lt;/label&gt;
+  &lt;label&gt;Term (years)&lt;input type="number" id="y" value="30"&gt;&lt;/label&gt;
+
+  &lt;p aria-live="polite" aria-atomic="true"&gt;
+    Monthly payment:
+    &lt;output id="mp" for="p r y" name="monthly_payment"&gt;$1,264.14&lt;/output&gt;
+  &lt;/p&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  const [p, r, y, mp] = ['p','r','y','mp'].map(id =&gt; document.getElementById(id));
+  function calc() {
+    const P = +p.value, annual = +r.value / 100, n = +y.value * 12;
+    const i = annual / 12;
+    const m = i === 0 ? P / n : P * i * Math.pow(1 + i, n) / (Math.pow(1 + i, n) - 1);
+    mp.value = '$' + m.toFixed(2);
+  }
+  [p, r, y].forEach(el =&gt; el.addEventListener('input', calc));
+  calc();
+&lt;/script&gt;</code></pre>
+
+        <h3>Pattern B: File upload progress</h3>
+        <pre><code>&lt;label for="file-progress"&gt;Uploading &lt;span id="filename"&gt;vacation.zip&lt;/span&gt;&lt;/label&gt;
+&lt;progress id="file-progress" max="100" value="0" aria-describedby="file-status"&gt;&lt;/progress&gt;
+&lt;span id="file-status"&gt;0%&lt;/span&gt;
+
+&lt;script&gt;
+  const xhr = new XMLHttpRequest();
+  const bar = document.getElementById('file-progress');
+  const status = document.getElementById('file-status');
+
+  xhr.upload.addEventListener('progress', e =&gt; {
+    if (e.lengthComputable) {
+      const pct = Math.round(e.loaded / e.total * 100);
+      bar.value = pct;
+      status.textContent = pct + '% (' +
+        (e.loaded / 1048576).toFixed(1) + ' / ' +
+        (e.total / 1048576).toFixed(1) + ' MB)';
+    }
+  });
+
+  xhr.upload.addEventListener('load', () =&gt; {
+    bar.value = bar.max;
+    status.textContent = 'Upload complete';
+  });
+
+  xhr.upload.addEventListener('error', () =&gt; {
+    bar.removeAttribute('value'); // indeterminate
+    status.textContent = 'Upload failed — retry?';
+  });
+&lt;/script&gt;</code></pre>
+
+        <h3>Pattern C: Password strength meter</h3>
+        <div class="demo-box">
+          <div class="demo-label">Live password-strength &lt;meter&gt;</div>
+          <label for="pw">Choose a password</label>
+          <input type="text" id="pw" value="" placeholder="type a password" autocomplete="off" style="padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:0.95rem;width:100%;max-width:280px;font-family:inherit;">
+          <div class="row" style="margin-top:12px;">
+            <meter id="pw-meter" min="0" max="100" low="40" high="75" optimum="100" value="0">0%</meter>
+            <span class="strength-label" id="pw-label">empty</span>
+          </div>
+          <script>
+            (function() {
+              const pw = document.getElementById('pw');
+              const meter = document.getElementById('pw-meter');
+              const label = document.getElementById('pw-label');
+              function score(s) {
+                let n = 0;
+                if (!s) return 0;
+                if (s.length >= 8) n += 25;
+                if (s.length >= 12) n += 15;
+                if (/[a-z]/.test(s) &amp;&amp; /[A-Z]/.test(s)) n += 20;
+                if (/\d/.test(s)) n += 20;
+                if (/[^A-Za-z0-9]/.test(s)) n += 20;
+                return Math.min(100, n);
+              }
+              function verdict(n) {
+                if (n === 0) return ['empty', ''];
+                if (n < 40)   return ['weak',    'weak'];
+                if (n < 75)   return ['fair',    'fair'];
+                return ['strong', 'strong'];
+              }
+              pw.addEventListener('input', () => {
+                const n = score(pw.value);
+                meter.value = n;
+                const [cls, text] = verdict(n);
+                label.className = 'strength-label ' + cls;
+                label.textContent = text;
+              });
+            })();
+          </script>
+        </div>
+        <pre><code>&lt;!-- A password meter has well-defined zones: --&gt;
+&lt;!-- 0-40: weak (red), 40-75: fair (yellow), 75-100: strong (green) --&gt;
+&lt;meter id="strength" min="0" max="100"
+        low="40" high="75" optimum="100"
+        value="0" aria-label="Password strength"&gt;
+&lt;/meter&gt;</code></pre>
+      </section>
+
+      <section id="accessibility">
+        <h2><span class="num">8</span> Accessibility considerations</h2>
+        <p>These elements come with built-in ARIA semantics, but you still need to add labels and live regions.</p>
+        <table class="info-table">
+          <thead><tr><th>Element</th><th>Implicit role</th><th>What you must add</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;output&gt;</code></td>
+              <td><code>status</code> (live region)</td>
+              <td>A visible label, <code>aria-live="polite"</code> if updates should be announced</td>
+            </tr>
+            <tr>
+              <td><code>&lt;progress&gt;</code></td>
+              <td><code>progressbar</code></td>
+              <td><code>aria-label</code> or <code>&lt;label&gt;</code>; text describing the task</td>
+            </tr>
+            <tr>
+              <td><code>&lt;meter&gt;</code></td>
+              <td><code>meter</code></td>
+              <td><code>aria-label</code> naming what's measured; visible text alternative</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Good: name the meter explicitly --&gt;
+&lt;meter min="0" max="100" value="62"
+        aria-label="Battery level"
+        aria-describedby="battery-text"&gt;
+  62%
+&lt;/meter&gt;
+&lt;span id="battery-text"&gt;62% — about 3 hours remaining&lt;/span&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using a bare <code>&lt;progress&gt;</code> with no label and no surrounding text. Screen readers announce "progress bar, 42 percent" — but 42 percent of <em>what</em>? Always give it a name.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Using <code>&lt;div class="progress"&gt;</code> with CSS width</td>
+              <td>Loses role, value, max semantics; screen reader sees nothing</td>
+              <td>Use <code>&lt;progress&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>aria-live</code> on a live-updating <code>output</code></td>
+              <td>Visual updates work but SR users never hear them</td>
+              <td>Wrap in <code>aria-live="polite"</code> region</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;progress&gt;</code> for battery level</td>
+              <td>Wrong semantics — battery is a gauge, not a task</td>
+              <td>Use <code>&lt;meter&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Setting <code>value</code> beyond <code>max</code> on <code>progress</code></td>
+              <td>Browser clamps silently; you'll be confused</td>
+              <td>Normalize your data first</td>
+            </tr>
+            <tr>
+              <td>Forgetting the <code>for</code> attribute on <code>output</code></td>
+              <td>Loses the traceability between inputs and result</td>
+              <td>List every feeding input's id</td>
+            </tr>
+            <tr>
+              <td>Putting <code>&lt;progress&gt;</code> outside a <code>&lt;form&gt;</code> when used as a form control</td>
+              <td>Reset / disable machinery won't find it</td>
+              <td>Add <code>form="formId"</code> or move it inside</td>
+            </tr>
+            <tr>
+              <td>Relying on meter color alone</td>
+              <td>Color-blind users can't see red vs green</td>
+              <td>Always include text content</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Tip splitter</strong>
+          Build a form with three number inputs (bill, tip %, number of people) and an <code>output</code> showing "each person pays $X". Use the <code>for</code> attribute correctly. Verify with a screen reader that updates are announced.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Indeterminate spinner</strong>
+          Create a <code>&lt;progress&gt;</code> with no <code>value</code> attribute. Add a button that, after 3 seconds, switches it to a determinate bar that animates from 0 to 100%. Hint: set <code>progress.value = 0</code> to make it determinate, then increment with <code>setInterval</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Grade meter</strong>
+          Build a <code>&lt;meter&gt;</code> that shows an exam score from 0 to 100. Mark 60 as the boundary between fail and pass, 85 as "distinction". Add <code>optimum=100</code> so the green zone is at the top. Style a text label that updates in sync.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Upload simulator</strong>
+          Combine all three elements: a button to start, a <code>&lt;progress&gt;</code> for the simulated upload, an <code>&lt;output&gt;</code> for the resulting URL, and a <code>&lt;meter&gt;</code> showing "server load" while it runs. Add appropriate ARIA labels and a live region.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 6+</span>
+          <span class="pill yes">Firefox 16+</span>
+          <span class="pill yes">Safari 6+</span>
+          <span class="pill yes">Edge 12+</span>
+          <span class="pill yes">Opera 11+</span>
+          <span class="pill yes">iOS Safari 7+</span>
+          <span class="pill yes">Android Chrome</span>
+        </div>
+        <p>All three elements have had universal browser support for over a decade. The styling of <code>progress</code> and <code>meter</code> varies — Safari historically rendered them as glossy Aqua widgets — but the semantics and the JavaScript API are stable everywhere.</p>
+        <p>If you need pixel-identical styling across browsers, you'll need to override <code>appearance: none</code> and rebuild the bar with pseudo-elements. That's a tradeoff: you get full visual control but lose the OS-native look.</p>
+        <pre><code>progress {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 8px;
+  border: none;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+progress::-webkit-progress-bar { background: #e2e8f0; border-radius: 999px; }
+progress::-webkit-progress-value { background: var(--brand); border-radius: 999px; transition: width 0.2s; }
+progress::-moz-progress-bar { background: var(--brand); border-radius: 999px; }</code></pre>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Mortgage / loan calculators</h4>
+            <p>Live monthly payment output reacting to principal, rate, term inputs.</p>
+          </div>
+          <div class="card">
+            <h4>Shopping cart totals</h4>
+            <p>Subtotal, tax, shipping, and grand total as <code>output</code> elements.</p>
+          </div>
+          <div class="card">
+            <h4>File upload progress</h4>
+            <p><code>XMLHttpRequest</code> upload progress → <code>&lt;progress&gt;</code> bar + status text.</p>
+          </div>
+          <div class="card">
+            <h4>Password strength</h4>
+            <p><code>&lt;meter&gt;</code> with low/high/optimum zones, value updated on every keystroke.</p>
+          </div>
+          <div class="card">
+            <h4>Battery / signal / temperature</h4>
+            <p>Gauges for system stats where the value fluctuates indefinitely.</p>
+          </div>
+          <div class="card">
+            <h4>Quiz scoreboards</h4>
+            <p><code>&lt;meter&gt;</code> showing the user's score against a pass-mark threshold.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-step form progress</h4>
+            <p><code>&lt;progress value="2" max="5"&gt;</code> on a wizard UI.</p>
+          </div>
+          <div class="card">
+            <h4>Install / build progress</h4>
+            <p>Indeterminate <code>&lt;progress&gt;</code> when duration is unknown; switch to determinate when the build system reports percentages.</p>
+          </div>
+          <div class="card">
+            <h4>Storage quota</h4>
+            <p><code>&lt;meter&gt;</code> showing "12 GB of 15 GB used" with a red zone near the limit.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../04-Form-Validation/custom-validation.html">← Previous: Custom Validation Patterns</a>
+    <a class="next" href="../../07-Semantic-HTML/01-Why-Semantic/semantic-vs-div.html">Next: Semantic HTML vs Div Soup →</a>
+  </footer>
+</body>
+</html>

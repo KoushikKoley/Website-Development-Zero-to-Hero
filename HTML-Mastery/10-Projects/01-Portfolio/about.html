@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="About Maya Chen — career, education, skills, and the work that shaped how she builds for the web.">
+  <title>About — Maya Chen</title>
+  <!--
+    About Page
+    Design decisions:
+    - Long-form readable bio column with generous line-height and measure (max 68ch).
+    - Vertical timeline using a CSS pseudo-element rail for clean year alignment.
+    - Skill proficiency shown with the native <meter> element for accessibility.
+    - Sticky header reused from index.html for visual consistency across pages.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-text: #0f172a;
+      --color-muted: #64748b;
+      --color-accent: #4f46e5;
+      --color-accent-hover: #4338ca;
+      --color-accent-soft: #eef2ff;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --max-width: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+
+    /* ===== Header (shared) ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 64px;
+    }
+    .brand { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--color-text); }
+    .brand span { color: var(--color-accent); }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 28px; list-style: none; }
+    .nav-menu a { color: var(--color-muted); font-weight: 500; font-size: 0.95rem; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { color: var(--color-accent); text-decoration: none; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; transition: transform 0.15s ease, background 0.15s ease; }
+    .btn-primary { background: var(--color-accent); color: #fff; }
+    .btn-primary:hover { background: var(--color-accent-hover); text-decoration: none; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    @media (max-width: 768px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 64px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta { display: none; }
+    }
+
+    /* ===== Page header ===== */
+    .page-hero { padding: 64px 0 40px; }
+    .breadcrumb { color: var(--color-muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .breadcrumb a { color: var(--color-muted); }
+    .page-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -0.02em; line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .page-hero p { color: var(--color-muted); max-width: 640px; font-size: 1.1rem; }
+
+    /* ===== Bio ===== */
+    .bio { padding: 24px 0 64px; }
+    .bio-grid {
+      display: grid; grid-template-columns: 240px 1fr; gap: 48px;
+      align-items: start;
+    }
+    .bio-photo {
+      position: sticky; top: 88px;
+      aspect-ratio: 3 / 4; border-radius: var(--radius);
+      background: linear-gradient(160deg, #c7d2fe, #fbcfe8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem; font-weight: 800; color: #fff;
+      box-shadow: var(--shadow-md);
+    }
+    .bio-text { max-width: 68ch; }
+    .bio-text h2 {
+      font-size: 1.4rem; margin-top: 32px; margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .bio-text h2:first-child { margin-top: 0; }
+    .bio-text p { margin-bottom: 18px; color: #334155; }
+    .bio-text p strong { color: var(--color-text); }
+    .bio-actions { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
+    @media (max-width: 768px) {
+      .bio-grid { grid-template-columns: 1fr; gap: 28px; }
+      .bio-photo { position: static; max-width: 240px; }
+    }
+
+    /* ===== Timeline ===== */
+    .timeline-section { background: var(--color-surface); padding: 72px 0; }
+    .section-head { margin-bottom: 40px; }
+    .section-eyebrow { color: var(--color-accent); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .section-title { font-size: clamp(1.7rem, 3.5vw, 2.3rem); letter-spacing: -0.02em; }
+    .timeline { position: relative; padding-left: 32px; max-width: 760px; }
+    .timeline::before {
+      content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px;
+      width: 2px; background: var(--color-border);
+    }
+    .timeline-item { position: relative; padding-bottom: 32px; }
+    .timeline-item::before {
+      content: ""; position: absolute; left: -28px; top: 6px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--color-accent); box-shadow: 0 0 0 4px var(--color-accent-soft);
+    }
+    .timeline-year {
+      font-size: 0.8rem; font-weight: 600; color: var(--color-accent);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .timeline-item h3 { font-size: 1.15rem; margin: 4px 0 4px; }
+    .timeline-item .org { color: var(--color-muted); font-size: 0.9rem; margin-bottom: 8px; }
+    .timeline-item p { color: #334155; font-size: 0.97rem; }
+
+    /* ===== Two-column: education + interests ===== */
+    .twocol { padding: 72px 0; }
+    .twocol-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    }
+    @media (max-width: 800px) { .twocol-grid { grid-template-columns: 1fr; } }
+    .card-list { list-style: none; }
+    .card-list li {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+    }
+    .card-list h4 { font-size: 1.05rem; margin-bottom: 4px; }
+    .card-list .meta { color: var(--color-muted); font-size: 0.85rem; margin-bottom: 6px; }
+    .card-list p { color: #334155; font-size: 0.95rem; }
+    .interest-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .interest-tag {
+      background: var(--color-accent-soft); color: var(--color-accent);
+      padding: 6px 14px; border-radius: 999px; font-size: 0.9rem; font-weight: 500;
+    }
+
+    /* ===== Skills proficiency ===== */
+    .skills-section { background: var(--color-surface); padding: 72px 0; }
+    .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 36px 48px; }
+    @media (max-width: 800px) { .skills-grid { grid-template-columns: 1fr; } }
+    .skill-row { }
+    .skill-row-top {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .skill-row h4 { font-size: 1rem; }
+    .skill-row .level { color: var(--color-muted); font-size: 0.85rem; }
+    .skill-row meter {
+      width: 100%; height: 8px; border-radius: 999px;
+    }
+    /* Style the meter bar (WebKit) */
+    .skill-row meter::-webkit-meter-bar {
+      background: var(--color-border); border-radius: 999px; border: none;
+    }
+    .skill-row meter::-webkit-meter-optimum-value {
+      background: var(--color-accent); border-radius: 999px;
+    }
+    .skill-row meter::-moz-meter-bar {
+      background: var(--color-accent); border-radius: 999px;
+    }
+
+    /* ===== CTA ===== */
+    .cta-band {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff; border-radius: var(--radius);
+      padding: 56px 48px; text-align: center; margin: 72px 0;
+    }
+    .cta-band h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 12px; }
+    .cta-band p { color: rgba(255, 255, 255, 0.9); margin-bottom: 28px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .cta-band .btn-primary { background: #fff; color: var(--color-accent); }
+    .cta-band .btn-primary:hover { background: #f1f5f9; }
+    @media (max-width: 600px) { .cta-band { padding: 36px 24px; } }
+
+    /* ===== Footer (shared) ===== */
+    .site-footer { border-top: 1px solid var(--color-border); padding: 48px 0 32px; }
+    .footer-grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-start; }
+    .footer-brand p { color: var(--color-muted); max-width: 320px; margin-top: 8px; font-size: 0.95rem; }
+    .footer-social { display: flex; gap: 18px; list-style: none; }
+    .footer-social a { color: var(--color-muted); font-weight: 500; }
+    .footer-social a:hover { color: var(--color-accent); text-decoration: none; }
+    .footer-bottom {
+      margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-border);
+      color: var(--color-muted); font-size: 0.85rem;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html" aria-current="page">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="contact.html" class="btn btn-primary header-cta">Let's talk</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb"><a href="index.html">Home</a> / About</p>
+        <h1>Hi, I'm Maya.</h1>
+        <p>
+          I've spent the last nine years making the web a little more usable,
+          one component, audit, and pull request at a time.
+        </p>
+      </div>
+    </section>
+
+    <section class="bio">
+      <div class="container">
+        <div class="bio-grid">
+          <div class="bio-photo" role="img" aria-label="Portrait of Maya Chen">MC</div>
+          <div class="bio-text">
+            <h2>Where I started</h2>
+            <p>
+              I grew up in a small town outside Eugene, Oregon, the kind of place where the
+              public library was the internet. I taught myself HTML on a hand-me-down laptop
+              to build a fan site for a local band, and that scrappy, learn-by-doing instinct
+              never really left. I studied <strong>Human-Computer Interaction</strong> at the
+              University of Washington because I wanted to understand not just how to build
+              interfaces, but why some of them quietly fail the people who use them.
+            </p>
+
+            <h2>What I do now</h2>
+            <p>
+              Today I'm a senior frontend engineer at <strong>Northwind Labs</strong>, where I
+              lead the design-systems guild and care a little too much about motion easing
+              curves. Before Northwind, I shipped dashboards at a climate-tech startup, built
+              accessibility tooling at a large e-commerce platform, and freelanced for
+              nonprofits who needed a polished site on a tiny budget.
+            </p>
+            <p>
+              The thread connecting all of it is the same: <strong>care</strong>. Care for the
+              person on the other side of the screen, for the engineer who'll inherit my code,
+              and for the keyboard-only user who can't see the interface I'm so proud of.
+              I think accessibility is the most under-celebrated form of craft in our industry,
+              and I'd like to help change that.
+            </p>
+
+            <h2>How I work</h2>
+            <p>
+              I write small, well-named functions and favor composition over configuration.
+              I default to semantic HTML before reaching for a div. I think the best pull
+              requests are the boring ones, and that a Lighthouse score is a starting point,
+              not a finish line. I mentor two junior engineers and run a monthly
+              <strong>"frontend book club"</strong> where we read a chapter and argue about it
+              over coffee.
+            </p>
+            <p>
+              Outside of work you'll find me trail-running in Forest Park, baking sourdough
+              that's still only okay, and over-organizing my Notion workspace. I'm always
+              happy to chat about accessibility, design systems, or whether the Cascade is
+              really as straightforward as the spec implies.
+            </p>
+
+            <div class="bio-actions">
+              <a href="resume.pdf" class="btn btn-primary" download>
+                ↓ Download résumé (PDF)
+              </a>
+              <a href="contact.html" class="btn btn-ghost">Get in touch</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Timeline ===== -->
+    <section class="timeline-section">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-eyebrow">Career</p>
+          <h2 class="section-title">A short timeline</h2>
+        </div>
+        <ol class="timeline">
+          <li class="timeline-item">
+            <p class="timeline-year">2023 — Present</p>
+            <h3>Senior Frontend Engineer · Northwind Labs</h3>
+            <p class="org">Remote · Portland, OR</p>
+            <p>
+              Lead the design-systems guild of four engineers. Shipped a token-driven component
+              library adopted by 60+ engineers across four product teams, reducing UI bug
+              volume by 38% in two quarters.
+            </p>
+          </li>
+          <li class="timeline-item">
+            <p class="timeline-year">2020 — 2023</p>
+            <h3>Frontend Engineer · Tideline Climate</h3>
+            <p class="org">Seattle, WA</p>
+            <p>
+              Built interactive coastal-flood dashboards with D3 and Mapbox, presented in
+              briefings to three municipal climate offices. Established the team's
+              accessibility checklist and CI lint pipeline.
+            </p>
+          </li>
+          <li class="timeline-item">
+            <p class="timeline-year">2017 — 2020</p>
+            <h3>UI Engineer · BrightCart (acquired by Marqo)</h3>
+            <p class="org">Austin, TX</p>
+            <p>
+              Maintained the storefront component library used by 2.4M monthly visitors,
+              introduced visual regression testing, and led a migration from CSS-in-JS
+              to design tokens.
+            </p>
+          </li>
+          <li class="timeline-item">
+            <p class="timeline-year">2015 — 2017</p>
+            <h3>Junior Web Developer · Cedar &amp; Co.</h3>
+            <p class="org">Portland, OR</p>
+            <p>
+              Built marketing sites and small web apps for local businesses and nonprofits.
+              Where I fell in love with the craft of writing clean, hand-rolled HTML and CSS.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== Education + Interests ===== -->
+    <section class="twocol">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-eyebrow">Background</p>
+          <h2 class="section-title">Education, certs &amp; interests</h2>
+        </div>
+        <div class="twocol-grid">
+          <div>
+            <h3 style="margin-bottom:16px;">Education &amp; certifications</h3>
+            <ul class="card-list">
+              <li>
+                <h4>B.S. Human-Computer Interaction</h4>
+                <p class="meta">University of Washington · 2011–2015</p>
+                <p>Graduated cum laude. Senior capstone: an accessible bus-tracking app for low-vision commuters, deployed by King County Metro.</p>
+              </li>
+              <li>
+                <h4>IAAP CPACC Certification</h4>
+                <p class="meta">International Association of Accessibility Professionals · 2022</p>
+                <p>Certified Professional in Accessibility Core Competencies.</p>
+              </li>
+              <li>
+                <h4>Advanced React Performance</h4>
+                <p class="meta">Frontend Masters · 2023</p>
+                <p>Workshop with Lydia Hallie on concurrent rendering, suspense, and profiling.</p>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="margin-bottom:16px;">When I'm offline</h3>
+            <ul class="card-list">
+              <li>
+                <h4>Trail running</h4>
+                <p class="meta">Pacific Northwest</p>
+                <p>Working toward my first 50K in the Columbia River Gorge.</p>
+              </li>
+              <li>
+                <h4>Sourdough baking</h4>
+                <p class="meta">Home kitchen</p>
+                <p>On year three of getting a reliably open crumb. Slowly improving.</p>
+              </li>
+              <li>
+                <h4>Mentoring</h4>
+                <p class="meta">Built by Girls &amp; ADPList</p>
+                <p>Meet with 2–3 early-career frontend folks each month.</p>
+              </li>
+            </ul>
+            <div class="interest-tags">
+              <span class="interest-tag">Type design</span>
+              <span class="interest-tag">Letterpress</span>
+              <span class="interest-tag">Climate reading</span>
+              <span class="interest-tag">Vinyl</span>
+              <span class="interest-tag">Bouldering</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Skills proficiency ===== -->
+    <section class="skills-section">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-eyebrow">Proficiency</p>
+          <h2 class="section-title">Where I sit on the curve</h2>
+          <p style="color:var(--color-muted); max-width:560px; margin-top:8px;">
+            Honest self-assessment. <em>Optimum</em> range set to where I feel confident
+            shipping to production unassisted.
+          </p>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>Semantic HTML &amp; accessibility</h4>
+              <span class="level">Advanced · 95%</span>
+            </div>
+            <meter min="0" max="100" value="95" low="40" high="85" optimum="90" aria-label="Semantic HTML and accessibility, 95 out of 100">95%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>CSS &amp; layout systems</h4>
+              <span class="level">Advanced · 92%</span>
+            </div>
+            <meter min="0" max="100" value="92" low="40" high="85" optimum="90" aria-label="CSS and layout systems, 92 out of 100">92%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>TypeScript &amp; JavaScript</h4>
+              <span class="level">Advanced · 88%</span>
+            </div>
+            <meter min="0" max="100" value="88" low="40" high="85" optimum="90" aria-label="TypeScript and JavaScript, 88 out of 100">88%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>React &amp; Next.js</h4>
+              <span class="level">Advanced · 90%</span>
+            </div>
+            <meter min="0" max="100" value="90" low="40" high="85" optimum="90" aria-label="React and Next.js, 90 out of 100">90%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>Design systems</h4>
+              <span class="level">Advanced · 93%</span>
+            </div>
+            <meter min="0" max="100" value="93" low="40" high="85" optimum="90" aria-label="Design systems, 93 out of 100">93%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>Data viz (D3 / SVG)</h4>
+              <span class="level">Intermediate · 72%</span>
+            </div>
+            <meter min="0" max="100" value="72" low="40" high="85" optimum="90" aria-label="Data visualization with D3 and SVG, 72 out of 100">72%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>Performance &amp; profiling</h4>
+              <span class="level">Advanced · 86%</span>
+            </div>
+            <meter min="0" max="100" value="86" low="40" high="85" optimum="90" aria-label="Performance and profiling, 86 out of 100">86%</meter>
+          </div>
+          <div class="skill-row">
+            <div class="skill-row-top">
+              <h4>Backend &amp; Node.js</h4>
+              <span class="level">Intermediate · 65%</span>
+            </div>
+            <meter min="0" max="100" value="65" low="40" high="85" optimum="90" aria-label="Backend and Node.js, 65 out of 100">65%</meter>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="cta-band">
+        <h2>Want the full résumé?</h2>
+        <p>
+          Grab a PDF copy below, or drop me a note if you'd like to talk through a role,
+          a project, or a speaking opportunity.
+        </p>
+        <a href="resume.pdf" class="btn btn-primary" download>↓ Download résumé</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+          <p>Senior Frontend Engineer crafting accessible, performant interfaces from Portland, Oregon.</p>
+        </div>
+        <nav aria-label="Footer">
+          <ul class="footer-social">
+            <li><a href="https://github.com/" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+            <li><a href="https://dribbble.com/" rel="noopener">Dribbble</a></li>
+            <li><a href="https://bsky.app/" rel="noopener">Bluesky</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Maya Chen. Crafted with semantic HTML &amp; CSS.</span>
+        <span>Built mobile-first · Lighthouse 100/100</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

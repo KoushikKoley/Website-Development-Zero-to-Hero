@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The &lt;slot&gt; Element — Default, Named &amp; Fallback Slots — HTML Mastery</title>
+  <meta name="description" content="The HTML slot element: default slots, named slots, fallback content, the slot attribute on children, the slotchange event, the composition pattern with shadow DOM. Building a card component with named slots.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    my-card {
+      display: block; border: 1px solid var(--line); border-radius: 12px;
+      overflow: hidden; background: white; margin: 12px 0;
+      box-shadow: 0 4px 12px rgba(2,6,23,0.06);
+    }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Templates &amp; Slots</span>
+    <h1>The <code>&lt;slot&gt;</code> Element</h1>
+    <p>Slots let consumers inject their own children into a component's shadow tree at designated points. Default slots, named slots, fallback content, the <code>slot</code> attribute, and the <code>slotchange</code> event — the full composition story.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#composition">The Composition Model</a></li>
+        <li><a href="#default">Default Slot</a></li>
+        <li><a href="#named">Named Slots</a></li>
+        <li><a href="#fallback">Fallback Content</a></li>
+        <li><a href="#slot-attr">The <code>slot</code> Attribute</a></li>
+        <li><a href="#slotchange">slotchange Event</a></li>
+        <li><a href="#card">Building a Card Component</a></li>
+        <li><a href="#styling-slotted">Styling Slotted Content</a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="composition">
+        <h2><span class="num">1</span> The Composition Model</h2>
+        <p>Shadow DOM hides internal structure, but you usually want consumers to <em>provide</em> some content (button labels, modal titles, list items). Slots are the bridge: they declare named insertion points inside the shadow tree. The browser takes the consumer's "light DOM" children and projects them into the matching slots at render time.</p>
+        <p>The model is called <strong>composition</strong> because the final rendered tree is a composition of the shadow tree (the component's own structure) and the light tree (the consumer's children). The two trees never actually merge in memory — only the rendering is composed.</p>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          Slotted children are <em>not</em> moved into the shadow root. They remain in the light DOM and you can still reach them with <code>element.children</code>. The browser just visually places them inside their slot's location.
+        </div>
+      </section>
+
+      <section id="default">
+        <h2><span class="num">2</span> Default Slot</h2>
+        <p>A slot without a <code>name</code> attribute is the default — every light DOM child without an explicit <code>slot</code> attribute lands here.</p>
+        <pre><code>&lt;!-- Shadow DOM --&gt;
+&lt;style&gt;
+  .box { border: 2px solid #2563eb; padding: 16px; border-radius: 12px; }
+&lt;/style&gt;
+&lt;div class="box"&gt;
+  &lt;slot&gt;&lt;/slot&gt;
+&lt;/div&gt;</code></pre>
+        <pre><code>&lt;!-- Consumer markup --&gt;
+&lt;my-box&gt;
+  &lt;p&gt;Anything I put here shows up in the box.&lt;/p&gt;
+  &lt;p&gt;Including multiple paragraphs.&lt;/p&gt;
+&lt;/my-box&gt;</code></pre>
+      </section>
+
+      <section id="named">
+        <h2><span class="num">3</span> Named Slots</h2>
+        <p>A slot with <code>name="header"</code> only accepts children carrying <code>slot="header"</code>.</p>
+        <pre><code>&lt;!-- Shadow DOM --&gt;
+&lt;article&gt;
+  &lt;header&gt;&lt;slot name="title"&gt;&lt;/slot&gt;&lt;/header&gt;
+  &lt;main&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/main&gt;
+  &lt;footer&gt;&lt;slot name="actions"&gt;&lt;/slot&gt;&lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+        <pre><code>&lt;!-- Consumer markup --&gt;
+&lt;my-article&gt;
+  &lt;h2 slot="title"&gt;Big News Today&lt;/h2&gt;
+  &lt;p&gt;This is the body content — lands in the default slot.&lt;/p&gt;
+  &lt;button slot="actions"&gt;Share&lt;/button&gt;
+  &lt;button slot="actions"&gt;Save&lt;/button&gt;
+&lt;/my-article&gt;</code></pre>
+        <p>Multiple children with the same slot name are all projected — order in the light DOM is preserved.</p>
+      </section>
+
+      <section id="fallback">
+        <h2><span class="num">4</span> Fallback Content</h2>
+        <p>Anything you place <em>inside</em> a <code>&lt;slot&gt;</code> tag is shown when no consumer provides matching content. This is your component's default markup.</p>
+        <pre><code>&lt;slot name="avatar"&gt;
+  &lt;img src="default-avatar.png" alt="Default user"&gt;
+&lt;/slot&gt;
+
+&lt;slot name="title"&gt;Untitled&lt;/slot&gt;</code></pre>
+        <p>If the consumer passes <code>&lt;img slot="avatar" src="jane.png"&gt;</code>, the default avatar is replaced entirely. If they pass nothing, the fallback renders.</p>
+      </section>
+
+      <section id="slot-attr">
+        <h2><span class="num">5</span> The slot Attribute on Children</h2>
+        <p>The <code>slot</code> attribute is a global attribute that tells the browser which named slot this child belongs to. It only has effect on direct children of the host element.</p>
+        <pre><code>&lt;my-card&gt;
+  &lt;img slot="media" src="photo.jpg" alt=""&gt;        &lt;!-- routed to slot="media" --&gt;
+  &lt;h3 slot="title"&gt;Sunset Over the Bay&lt;/h3&gt;       &lt;!-- routed to slot="title" --&gt;
+  &lt;p&gt;A description goes here.&lt;/p&gt;                  &lt;!-- default slot --&gt;
+&lt;/my-card&gt;</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          The <code>slot</code> attribute only works on <strong>direct children</strong> of the host. If you nest the slotted element inside another wrapper, it will land in the default slot — not the named one. Wrap children with <code>display: contents</code> if you need a structural wrapper that is invisible to the slot routing.
+        </div>
+      </section>
+
+      <section id="slotchange">
+        <h2><span class="num">6</span> The slotchange Event</h2>
+        <p>Whenever the set of nodes assigned to a slot changes (children added, removed, or their <code>slot</code> attribute changed), the slot fires a <code>slotchange</code> event. Listen on the slot itself inside the shadow root.</p>
+        <pre><code>class LiveList extends HTMLElement {
+  constructor() {
+    super();
+    const root = this.attachShadow({ mode: 'open' });
+    root.innerHTML = `
+      &lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;
+    `;
+    const slot = root.querySelector('slot');
+    slot.addEventListener('slotchange', () =&gt; {
+      const items = slot.assignedElements();
+      console.log(`List now has ${items.length} items`);
+    });
+  }
+}
+customElements.define('live-list', LiveList);</code></pre>
+
+        <p>Two helper methods retrieve the assigned nodes:</p>
+        <ul>
+          <li><code>slot.assignedNodes()</code> — all nodes (including text nodes).</li>
+          <li><code>slot.assignedElements()</code> — only Element children (usually what you want).</li>
+        </ul>
+        <p>Pass <code>{ flatten: true }</code> to recursively resolve nested slots inside other shadow trees.</p>
+      </section>
+
+      <section id="card">
+        <h2><span class="num">7</span> Building a Card Component with Named Slots</h2>
+        <p>Let's bring it all together — a card component with media, title, subtitle, body, and action slots.</p>
+        <pre><code>&lt;template id="card-template"&gt;
+  &lt;style&gt;
+    :host { display: block; font-family: inherit; }
+    .card { border: 1px solid #e2e8f0; border-radius: 12px;
+            overflow: hidden; background: white;
+            box-shadow: 0 4px 12px rgba(2,6,23,0.06); }
+    .media { height: 160px; background: linear-gradient(135deg, #2563eb, #7c3aed);
+              display: flex; align-items: center; justify-content: center; color: white; }
+    .body  { padding: 16px; }
+    .title { margin: 0 0 4px; font-size: 1.25rem; color: #0f172a; }
+    .subtitle { margin: 0 0 8px; font-size: 0.85rem; color: #64748b; }
+    .actions { padding: 12px 16px; border-top: 1px solid #e2e8f0;
+                display: flex; gap: 8px; justify-content: flex-end; }
+    .actions ::slotted(button) {
+      background: #2563eb; color: white; border: 0;
+      padding: 6px 12px; border-radius: 6px; cursor: pointer;
+    }
+  &lt;/style&gt;
+  &lt;div class="card"&gt;
+    &lt;div class="media"&gt;
+      &lt;slot name="media"&gt;&lt;span&gt;No image&lt;/span&gt;&lt;/slot&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+      &lt;h3 class="title"&gt;&lt;slot name="title"&gt;Untitled card&lt;/slot&gt;&lt;/h3&gt;
+      &lt;p class="subtitle"&gt;&lt;slot name="subtitle"&gt;&lt;/slot&gt;&lt;/p&gt;
+      &lt;div&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="actions"&gt;&lt;slot name="actions"&gt;&lt;/slot&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  class MyCard extends HTMLElement {
+    constructor() {
+      super();
+      const root = this.attachShadow({ mode: 'open' });
+      const tpl = document.getElementById('card-template');
+      root.appendChild(tpl.content.cloneNode(true));
+    }
+  }
+  customElements.define('my-card', MyCard);
+&lt;/script&gt;</code></pre>
+
+        <p>Consumer usage:</p>
+        <pre><code>&lt;my-card&gt;
+  &lt;img slot="media" src="sunset.jpg" alt="Sunset"&gt;
+  &lt;span slot="title"&gt;Sunset Over the Bay&lt;/span&gt;
+  &lt;span slot="subtitle"&gt;Photographed by Mara O.&lt;/span&gt;
+  &lt;p&gt;A serene evening light over Bristol harbour.&lt;/p&gt;
+  &lt;button slot="actions"&gt;Share&lt;/button&gt;
+  &lt;button slot="actions"&gt;Save&lt;/button&gt;
+&lt;/my-card&gt;
+
+&lt;my-card&gt;
+  &lt;!-- Empty: all defaults render --&gt;
+&lt;/my-card&gt;</code></pre>
+
+        <div class="demo-output">
+          <h4>Live demo (rendered by this page)</h4>
+          <my-card>
+            <span slot="media" style="font-weight:600;">🌅</span>
+            <span slot="title">Sunset Over the Bay</span>
+            <span slot="subtitle">Photographed by Mara O.</span>
+            <p>A serene evening light over Bristol harbour.</p>
+            <button slot="actions">Share</button>
+            <button slot="actions">Save</button>
+          </my-card>
+          <my-card><!-- defaults --></my-card>
+        </div>
+
+        <template id="card-template">
+          <style>
+            :host { display: block; font-family: inherit; }
+            .card { border: 1px solid #e2e8f0; border-radius: 12px;
+                    overflow: hidden; background: white;
+                    box-shadow: 0 4px 12px rgba(2,6,23,0.06); margin: 8px 0; }
+            .media { height: 120px; background: linear-gradient(135deg, #2563eb, #7c3aed);
+                      display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; }
+            .body  { padding: 16px; }
+            .title { margin: 0 0 4px; font-size: 1.15rem; color: #0f172a; }
+            .subtitle { margin: 0 0 8px; font-size: 0.85rem; color: #64748b; }
+            .actions { padding: 10px 16px; border-top: 1px solid #e2e8f0;
+                        display: flex; gap: 8px; justify-content: flex-end; }
+            .actions ::slotted(button) {
+              background: #2563eb; color: white; border: 0;
+              padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+            }
+          </style>
+          <div class="card">
+            <div class="media">
+              <slot name="media"><span>No image</span></slot>
+            </div>
+            <div class="body">
+              <h3 class="title"><slot name="title">Untitled card</slot></h3>
+              <p class="subtitle"><slot name="subtitle"></slot></p>
+              <div><slot></slot></div>
+            </div>
+            <div class="actions"><slot name="actions"></slot></div>
+          </div>
+        </template>
+
+        <script>
+          class MyCard extends HTMLElement {
+            constructor() {
+              super();
+              const root = this.attachShadow({ mode: 'open' });
+              const tpl = document.getElementById('card-template');
+              root.appendChild(tpl.content.cloneNode(true));
+            }
+          }
+          customElements.define('my-card', MyCard);
+        </script>
+      </section>
+
+      <section id="styling-slotted">
+        <h2><span class="num">8</span> Styling Slotted Content</h2>
+        <p>Slotted children live in the light DOM, but you can style them from inside the shadow root using the <code>::slotted()</code> pseudo-element.</p>
+        <pre><code>/* Inside shadow root */
+::slotted(p) {
+  margin: 0 0 8px;
+  color: #334155;
+}
+
+::slotted(.featured) {
+  font-weight: 600;
+  background: #fef3c7;
+}</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>::slotted()</code> only matches top-level slotted elements, never descendants. <code>::slotted(.card .title)</code> does not work. Style descendants by setting a class on the slotted element and letting consumer CSS handle inner styles.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">9</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 53+</span>
+          <span class="pill yes">Firefox 63+</span>
+          <span class="pill yes">Safari 10+</span>
+          <span class="pill yes">Edge 79+</span>
+        </div>
+        <p>Slots are universally supported in modern browsers. The legacy "Shadow DOM v0" spec had different slot semantics (<code>&lt;content select="…"&gt;</code>) — long deprecated, do not use.</p>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">10</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Putting <code>slot</code> on a grandchild.</strong> Slots route only direct children of the host.</li>
+          <li><strong>Forgetting fallback content.</strong> Empty slots look broken. Always provide sensible defaults.</li>
+          <li><strong>Trying to style slotted descendants with <code>::slotted()</code>.</strong> It only matches the top-level slotted element.</li>
+          <li><strong>Using <code>document.querySelector</code> to find slotted children inside the shadow root.</strong> They are not there — they live in the light DOM. Use <code>this.children</code> on the host, or <code>slot.assignedElements()</code> inside the shadow.</li>
+          <li><strong>Expecting <code>slotchange</code> to fire on initial render.</strong> It does fire on first assignment, so be ready.</li>
+          <li><strong>Mixing <code>name</code> on the slot with <code>slot="…"</code> on a default child.</strong> A child without a <code>slot</code> attribute goes to the default (unnamed) slot, regardless of what named slots exist.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Hello slot</strong>
+          Create a custom element with a default slot. Pass text and an image as children; confirm both appear.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Named slots</strong>
+          Build the <code>&lt;my-card&gt;</code> from section 7. Provide markup for two cards: one fully populated and one with only a title (all other slots should show fallback content).
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — slotchange logger</strong>
+          Build a <code>&lt;live-list&gt;</code> with a slot. Add a button that programmatically appends a new <code>&lt;li&gt;</code> child via <code>appendChild</code>. Confirm the <code>slotchange</code> event fires and the count updates.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Slotted styling</strong>
+          Add a <code>::slotted(.highlight)</code> rule inside your shadow root. Add <code>class="highlight"</code> to one of the slotted children and confirm it styles only that one.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — display: contents wrapper</strong>
+          Wrap a slotted child in a <code>&lt;div style="display: contents"&gt;</code> and verify that the <code>slot</code> attribute on the inner element still routes correctly to the named slot.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">12</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Card layouts</h4><p>Media object, title, body, and action slots — the canonical card pattern.</p></div>
+          <div class="card"><h4>Modals &amp; dialogs</h4><p>Title, body, and footer action slots let consumers provide their own buttons.</p></div>
+          <div class="card"><h4>App shells</h4><p>Header, sidebar, main slots in a layout web component reused across pages.</p></div>
+          <div class="card"><h4>Toolbars</h4><p>Left/right slot groups let consumers add buttons without learning new APIs.</p></div>
+          <div class="card"><h4>Data tables</h4><p>Cell slots per column let teams inject custom renderers.</p></div>
+          <div class="card"><h4>Page builders</h4><p>Slot-based zones (header, hero, main, footer) let marketing teams compose pages from blocks.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="template-element.html">← Previous: &lt;template&gt; Element</a>
+    <a class="next" href="../04-Drag-and-Drop/draggable.html">Next: draggable attribute →</a>
+  </footer>
+</body>
+</html>

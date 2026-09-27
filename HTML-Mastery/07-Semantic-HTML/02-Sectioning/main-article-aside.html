@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;main&gt;, &lt;article&gt; &amp; &lt;aside&gt; — Content Sectioning — HTML Mastery</title>
+  <meta name="description" content="Master the three content-region elements: main (exactly one per page, holds primary content, excludes nav/header/footer/sidebar), article (self-contained, syndicatable content like blog posts, news, product cards), and aside (tangentially related content like sidebars, pull quotes, ads).">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Sectioning · Lesson 5</span>
+    <h1><code>&lt;main&gt;</code>, <code>&lt;article&gt;</code> &amp; <code>&lt;aside&gt;</code></h1>
+    <p>Three elements that define the content regions of a page. <code>&lt;main&gt;</code> holds the page's unique primary content (exactly one per page). <code>&lt;article&gt;</code> holds self-contained, syndicatable content. <code>&lt;aside&gt;</code> holds tangentially related content. Get these right and your page communicates its structure to browsers, screen readers, and search engines alike.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#main">The <code>&lt;main&gt;</code> element</a></li>
+        <li><a href="#main-rules">Rules for <code>&lt;main&gt;</code></a></li>
+        <li><a href="#article">The <code>&lt;article&gt;</code> element</a></li>
+        <li><a href="#article-test">The syndication test</a></li>
+        <li><a href="#aside">The <code>&lt;aside&gt;</code> element</a></li>
+        <li><a href="#aside-uses">When to use <code>&lt;aside&gt;</code></a></li>
+        <li><a href="#composition">Composition patterns</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="main">
+        <h2><span class="num">1</span> The <code>&lt;main&gt;</code> element</h2>
+        <p><code>&lt;main&gt;</code> represents the dominant content of the page — the stuff that is unique to <em>this</em> URL and wouldn't be repeated on another page. Screen readers expose it as a "main" landmark; users press one key to jump straight to it, bypassing header, nav, and footer.</p>
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;…site chrome…&lt;/header&gt;
+  &lt;nav&gt;…primary nav…&lt;/nav&gt;
+
+  &lt;main&gt;
+    &lt;h1&gt;About Acme&lt;/h1&gt;
+    &lt;p&gt;We make widgets…&lt;/p&gt;
+    &lt;!-- the actual content of the /about page --&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;…copyright…&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+        <p>Before <code>&lt;main&gt;</code> was added to HTML in 2013, developers bolted a "skip to main content" link at the top of every page. The <code>&lt;main&gt;</code> element makes that link redundant — the landmark itself is the skip target.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The implicit ARIA role of <code>&lt;main&gt;</code> is <code>main</code>. Don't add <code>role="main"</code> to it — it's already there, and adding it explicitly is an ARIA anti-pattern (the First Rule of ARIA: don't use ARIA to do what HTML already does).
+        </div>
+      </section>
+
+      <section id="main-rules">
+        <h2><span class="num">2</span> Rules for <code>&lt;main&gt;</code></h2>
+        <table class="info-table">
+          <thead><tr><th>Rule</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Exactly one <code>&lt;main&gt;</code> per page</td>
+              <td>The spec says so; multiple <code>&lt;main&gt;</code>s confuse screen readers about which is the dominant content</td>
+            </tr>
+            <tr>
+              <td>Must not be a descendant of <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;aside&gt;</code>, or <code>&lt;article&gt;</code></td>
+              <td>Those are all "chrome" or sub-content; <code>&lt;main&gt;</code> must be top-level content</td>
+            </tr>
+            <tr>
+              <td>Excludes site-wide navigation, copyright info, sidebars, and logos</td>
+              <td>Those belong in <code>&lt;header&gt;</code>/<code>&lt;nav&gt;</code>/<code>&lt;footer&gt;</code>/<code>&lt;aside&gt;</code>, not <code>&lt;main&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Can contain <code>&lt;article&gt;</code>s (e.g. blog index)</td>
+              <td>The articles themselves are the main content</td>
+            </tr>
+            <tr>
+              <td>In SPAs (React, Vue), keep <code>&lt;main&gt;</code> mounted across route changes</td>
+              <td>So SR users keep their place; only swap content inside <code>&lt;main&gt;</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Wrapping the entire page (including header and footer) in <code>&lt;main&gt;</code>. The whole point of <code>&lt;main&gt;</code> is to mark what's <em>unique</em> to this URL. Header and footer repeat across every page; they don't belong inside <code>&lt;main&gt;</code>.
+        </div>
+      </section>
+
+      <section id="article">
+        <h2><span class="num">3</span> The <code>&lt;article&gt;</code> element</h2>
+        <p><code>&lt;article&gt;</code> represents a self-contained composition — content that could be distributed or syndicated independently of the rest of the page. The classic test: if you extracted this content and put it in an RSS feed, would it make sense on its own?</p>
+        <h3>Appropriate uses</h3>
+        <ul>
+          <li>Blog posts, news articles, magazine pieces</li>
+          <li>Product detail cards (in a listing context)</li>
+          <li>Forum posts</li>
+          <li>User comments (each comment is its own article, often nested)</li>
+          <li>Interactive widgets that are self-contained (a stock ticker, a weather card)</li>
+          <li>Recipe pages, tutorial steps, documentation pages</li>
+        </ul>
+        <pre><code>&lt;article&gt;
+  &lt;header&gt;
+    &lt;h1&gt;How to Make Cold Brew Coffee&lt;/h1&gt;
+    &lt;p&gt;By &lt;a rel="author" href="/authors/ada"&gt;Ada&lt;/a&gt; ·
+       &lt;time datetime="2024-03-12"&gt;March 12, 2024&lt;/time&gt;&lt;/p&gt;
+  &lt;/header&gt;
+
+  &lt;p&gt;Cold brew is coffee steeped in cold water for 12-24 hours…&lt;/p&gt;
+
+  &lt;h2&gt;Ingredients&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;1 cup coarse-ground coffee&lt;/li&gt;
+    &lt;li&gt;4 cups cold water&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;h2&gt;Steps&lt;/h2&gt;
+  &lt;ol&gt;
+    &lt;li&gt;Combine coffee and water in a jar.&lt;/li&gt;
+    &lt;li&gt;Refrigerate for 18 hours.&lt;/li&gt;
+    &lt;li&gt;Strain through a fine mesh.&lt;/li&gt;
+  &lt;/ol&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;Tags: &lt;a href="/tag/coffee"&gt;coffee&lt;/a&gt;,
+              &lt;a href="/tag/recipe"&gt;recipe&lt;/a&gt;&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="article-test">
+        <h2><span class="num">4</span> The syndication test</h2>
+        <p>Ask yourself: "If I put this content in an RSS feed, or republished it on another site, would it make complete sense on its own?"</p>
+        <table class="info-table">
+          <thead><tr><th>Content</th><th>Self-contained?</th><th>Use <code>&lt;article&gt;</code>?</th></tr></thead>
+          <tbody>
+            <tr><td>A blog post</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>A news story</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>A product card in a grid</td><td>Yes (it has its own title, image, price, link)</td><td>Yes</td></tr>
+            <tr><td>A user comment</td><td>Yes (it's a self-contained post by another user)</td><td>Yes (often nested inside the parent article)</td></tr>
+            <tr><td>The "About" section on a homepage</td><td>No (depends on surrounding context)</td><td>Use <code>&lt;section&gt;</code> instead</td></tr>
+            <tr><td>A homepage hero with tagline + CTA</td><td>No (it's an intro to the rest of the page)</td><td>Use <code>&lt;section&gt;</code> or just a header</td></tr>
+            <tr><td>A sidebar widget showing recent posts</td><td>No (it's a navigation aid, not standalone content)</td><td>Use <code>&lt;aside&gt;</code></td></tr>
+            <tr><td>A recipe</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>An entire blog index page</td><td>The page itself is not an article; each post preview is</td><td>Wrap each preview in <code>&lt;article&gt;</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          An <code>&lt;article&gt;</code> can contain other <code>&lt;article&gt;</code>s — for example, a blog post article containing comment articles. The spec explicitly allows this nesting. It signals "these comments are themselves self-contained pieces, but they belong to this parent article".
+        </div>
+      </section>
+
+      <section id="aside">
+        <h2><span class="num">5</span> The <code>&lt;aside&gt;</code> element</h2>
+        <p><code>&lt;aside&gt;</code> represents content that is tangentially related to the content around it. It's the "by the way" element — content that could be removed without breaking the main flow, but adds context, navigation, or related material.</p>
+        <h3>Two main flavors</h3>
+        <table class="info-table">
+          <thead><tr><th>Position</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Outside <code>&lt;main&gt;</code> or <code>&lt;article&gt;</code> (sibling)</td>
+              <td>Site-wide sidebar — related to the entire page</td>
+              <td>Right rail on a news site with "Most Read" + ads</td>
+            </tr>
+            <tr>
+              <td>Inside an <code>&lt;article&gt;</code></td>
+              <td>Tangential to that article's specific content</td>
+              <td>A pull-quote, a "did you know?" callout, a sidebar tip</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Site-wide aside --&gt;
+&lt;main&gt;
+  &lt;article&gt;…main blog post…&lt;/article&gt;
+&lt;/main&gt;
+&lt;aside aria-label="Sidebar"&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Most Read&lt;/h2&gt;
+    &lt;ul&gt;…&lt;/ul&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Newsletter Signup&lt;/h2&gt;
+    &lt;form&gt;…&lt;/form&gt;
+  &lt;/section&gt;
+&lt;/aside&gt;
+
+&lt;!-- Article-internal aside (pull quote) --&gt;
+&lt;article&gt;
+  &lt;p&gt;Cold brew coffee is made by steeping coarse-ground
+     coffee in cold water for 12-24 hours. The result is
+     a smoother, less acidic cup than hot-brewed coffee.&lt;/p&gt;
+
+  &lt;aside&gt;
+    &lt;p&gt;"Cold brew has about 65% less acidity than hot brew."
+       — &lt;cite&gt;Harvard Coffee Study, 2023&lt;/cite&gt;&lt;/p&gt;
+  &lt;/aside&gt;
+
+  &lt;p&gt;The long steeping time extracts different compounds…&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="aside-uses">
+        <h2><span class="num">6</span> When to use <code>&lt;aside&gt;</code></h2>
+        <table class="info-table">
+          <thead><tr><th>Use <code>&lt;aside&gt;</code> for…</th><th>Don't use <code>&lt;aside&gt;</code> for…</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Sidebars (related posts, tag clouds, recent comments)</td>
+              <td>Footer link lists (use <code>&lt;nav&gt;</code> + <code>&lt;footer&gt;</code>)</td>
+            </tr>
+            <tr>
+              <td>Pull quotes inside an article</td>
+              <td>The main body of an article (use <code>&lt;article&gt;</code>)</td>
+            </tr>
+            <tr>
+              <td>"Did you know?" callout boxes</td>
+              <td>Section headings (use <code>&lt;h2&gt;</code>/<code>&lt;h3&gt;</code>)</td>
+            </tr>
+            <tr>
+              <td>Advertisements (when contextually related)</td>
+              <td>Modal dialogs (use <code>&lt;dialog&gt;</code>)</td>
+            </tr>
+            <tr>
+              <td>Glossary or definition box next to a tutorial</td>
+              <td>The tutorial itself</td>
+            </tr>
+            <tr>
+              <td>Author bio next to an article</td>
+              <td>Article body</td>
+            </tr>
+            <tr>
+              <td>Table of contents for a long article</td>
+              <td>The article's main content</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Add an <code>aria-label</code> to a site-wide <code>&lt;aside&gt;</code> when there's more than one — e.g. <code>aria-label="Related posts"</code>, <code>aria-label="Newsletter signup"</code>. Without it, screen readers announce them all as "complementary landmark" and users can't tell them apart.
+        </div>
+      </section>
+
+      <section id="composition">
+        <h2><span class="num">7</span> Composition patterns</h2>
+
+        <h3>Pattern A: Blog post with sidebar</h3>
+        <pre><code>&lt;main&gt;
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Post Title&lt;/h1&gt;
+      &lt;p&gt;By &lt;a rel="author"&gt;Ada&lt;/a&gt; on
+         &lt;time datetime="2024-03-12"&gt;March 12&lt;/time&gt;&lt;/p&gt;
+    &lt;/header&gt;
+    &lt;p&gt;Body…&lt;/p&gt;
+    &lt;footer&gt;Tags: …&lt;/footer&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+
+&lt;aside aria-label="Sidebar"&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Recent Posts&lt;/h2&gt;
+    &lt;ul&gt;…&lt;/ul&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Categories&lt;/h2&gt;
+    &lt;ul&gt;…&lt;/ul&gt;
+  &lt;/section&gt;
+&lt;/aside&gt;</code></pre>
+
+        <h3>Pattern B: Product listing page</h3>
+        <pre><code>&lt;main&gt;
+  &lt;h1&gt;Coffee Makers&lt;/h1&gt;
+
+  &lt;section aria-label="Product grid"&gt;
+    &lt;article&gt;
+      &lt;h2&gt;&lt;a href="/p/french-press"&gt;French Press&lt;/a&gt;&lt;/h2&gt;
+      &lt;p&gt;$24.99&lt;/p&gt;
+      &lt;p&gt;Classic 34oz glass press.&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article&gt;
+      &lt;h2&gt;&lt;a href="/p/pour-over"&gt;Pour Over Kit&lt;/a&gt;&lt;/h2&gt;
+      &lt;p&gt;$39.99&lt;/p&gt;
+      &lt;p&gt;Glass carafe with stainless filter.&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article&gt;
+      &lt;h2&gt;&lt;a href="/p/cold-brew"&gt;Cold Brew Maker&lt;/a&gt;&lt;/h2&gt;
+      &lt;p&gt;$32.00&lt;/p&gt;
+      &lt;p&gt;1.5L cold brew carafe.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</code></pre>
+
+        <h3>Pattern C: Article with nested comment articles</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Cold Brew Recipe&lt;/h1&gt;
+  &lt;p&gt;Body…&lt;/p&gt;
+
+  &lt;section&gt;
+    &lt;h2&gt;Comments&lt;/h2&gt;
+
+    &lt;article&gt;
+      &lt;h3&gt;Tried this — works great!&lt;/h3&gt;
+      &lt;p&gt;By Bob on March 13&lt;/p&gt;
+      &lt;p&gt;I added a splash of milk…&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article&gt;
+      &lt;h3&gt;Question about ratios&lt;/h3&gt;
+      &lt;p&gt;By Carol on March 14&lt;/p&gt;
+      &lt;p&gt;Can I double the recipe?&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">8</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Two <code>&lt;main&gt;</code> elements on one page</td>
+              <td>Spec violation; SR users can't tell which is dominant</td>
+              <td>One <code>&lt;main&gt;</code> per page; merge the second into the first</td>
+            </tr>
+            <tr>
+              <td>Putting site nav inside <code>&lt;main&gt;</code></td>
+              <td>Nav is chrome, not unique content</td>
+              <td>Move <code>&lt;nav&gt;</code> outside <code>&lt;main&gt;</code>, usually into <code>&lt;header&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;article&gt;</code> for every section just because it has a heading</td>
+              <td><code>&lt;article&gt;</code> is for self-contained, syndicatable content</td>
+              <td>Use <code>&lt;section&gt;</code> for thematic groupings without syndication value</td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>aria-label</code> on multiple <code>&lt;aside&gt;</code>s</td>
+              <td>SR announces "complementary" with no distinguishing name</td>
+              <td>Add <code>aria-label="…"</code> to each</td>
+            </tr>
+            <tr>
+              <td>Wrapping a single ad in <code>&lt;aside&gt;</code> deep inside an article</td>
+              <td>If it's purely promotional and unrelated, it's not "tangential"</td>
+              <td>Use a plain <code>&lt;div&gt;</code> with appropriate labeling</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;aside&gt;</code> as a generic styling wrapper</td>
+              <td>It carries the "complementary landmark" role — that may not be what you want</td>
+              <td>Use <code>&lt;div&gt;</code> for purely visual wrappers</td>
+            </tr>
+            <tr>
+              <td>Nesting <code>&lt;main&gt;</code> inside <code>&lt;article&gt;</code></td>
+              <td>Spec violation: <code>&lt;main&gt;</code> must not be a descendant of <code>&lt;article&gt;</code></td>
+              <td>Swap them — <code>&lt;article&gt;</code> goes inside <code>&lt;main&gt;</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Landmark audit</strong>
+          Open a news article on a major site (e.g. BBC, NYT). Open DevTools' Accessibility tab. Identify the <code>main</code>, <code>article</code>, and <code>aside</code> landmarks. If any are missing or misused, write down what should change.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Syndication test</strong>
+          Take a page you've built. For each major block of content, ask: "If I put this in an RSS feed alone, would it make sense?" Mark each block as Article, Section, Aside, or "remove". Refactor accordingly.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Build a product card</strong>
+          Build a product card with image, name, price, "Add to cart" button. Wrap it in <code>&lt;article&gt;</code>. Why? Because a product card is self-contained and syndicatable — you could embed the same card on a partner site.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Pull quote aside</strong>
+          Take a long article. Find a striking sentence. Wrap it in an <code>&lt;aside&gt;</code> with <code>aria-label="Pull quote"</code>. Place it inline in the article body. Style it with CSS to look like a magazine pull quote. Verify screen readers announce it as a complementary region.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">10</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 26+</span>
+          <span class="pill yes">Firefox 21+</span>
+          <span class="pill yes">Safari 7+</span>
+          <span class="pill yes">Edge 12+</span>
+          <span class="pill yes">All modern mobile browsers</span>
+        </div>
+        <p>All three elements have universal support in modern browsers. <code>&lt;main&gt;</code> was the last to be added (2013), but it's now supported everywhere — including the implicit <code>main</code> ARIA role exposed to screen readers.</p>
+        <p>Reader Mode, Pocket, and similar tools all key off <code>&lt;article&gt;</code> and <code>&lt;main&gt;</code> to extract content. A page built without them often can't be saved or read in reader mode at all.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">11</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>News sites</h4>
+            <p>Article in <code>&lt;article&gt;</code>, related stories in <code>&lt;aside&gt;</code>, ad blocks in <code>&lt;aside&gt;</code> with <code>aria-label="Advertisement"</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Blog themes</h4>
+            <p><code>&lt;main&gt;</code> wraps post + comments; sidebar is <code>&lt;aside&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce product pages</h4>
+            <p>Product details as <code>&lt;article&gt;</code>, "related products" as <code>&lt;aside&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce listings</h4>
+            <p>Each product card is an <code>&lt;article&gt;</code>; the listing wrapper is a <code>&lt;section&gt;</code> inside <code>&lt;main&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation</h4>
+            <p>Doc page as <code>&lt;article&gt;</code>, sidebar ToC as <code>&lt;aside&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Forums</h4>
+            <p>Thread as <code>&lt;article&gt;</code>, each reply as nested <code>&lt;article&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>SaaS dashboards</h4>
+            <p><code>&lt;main&gt;</code> holds the primary view; sidebar nav as <code>&lt;aside&gt;</code>; user settings panel as <code>&lt;aside&gt;</code> when sliding out.</p>
+          </div>
+          <div class="card">
+            <h4>Reader apps</h4>
+            <p>Safari Reader, Firefox Reader, Pocket — all rely on <code>&lt;article&gt;</code> + <code>&lt;main&gt;</code> for content extraction.</p>
+          </div>
+          <div class="card">
+            <h4>SPAs</h4>
+            <p>Keep <code>&lt;main&gt;</code> mounted; swap content inside it. SR users keep their place across route changes.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="header-nav-footer.html">← Previous: Header, Nav &amp; Footer</a>
+    <a class="next" href="section-vs-article.html">Next: Section vs Article →</a>
+  </footer>
+</body>
+</html>

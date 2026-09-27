@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic HTML &amp; SEO — How Search Engines Read the DOM — HTML Mastery</title>
+  <meta name="description" content="How semantic HTML affects SEO: search engines crawl the DOM tree, semantic elements signal content priority, heading hierarchy matters, main/article/aside differentiation, and Google's algorithms reward meaningful structure.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem;
+            font-family: "JetBrains Mono", ui-monospace, monospace; }
+    .tag.sem { background: #dbeafe; color: #1e40af; }
+    .tag.div { background: #fee2e2; color: #991b1b; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · SEO</span>
+  <h1>Semantic HTML &amp; <code>SEO</code></h1>
+  <p>Search engines crawl the DOM, not pixels. Semantic HTML signals content priority, hierarchy, and intent — directly influencing how Google ranks, indexes, and presents your pages.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why Semantic HTML Matters for SEO</a></li>
+      <li><a href="#crawl">How Googlebot Reads the DOM</a></li>
+      <li><a href="#headings">Heading Hierarchy</a></li>
+      <li><a href="#landmarks">main, article, aside</a></li>
+      <li><a href="#signals">Content Priority Signals</a></li>
+      <li><a href="#example">Real Example: Blog Post</a></li>
+      <li><a href="#algorithms">Google's Algorithms</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#browser">Browser &amp; Crawler Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="why">
+      <h2><span class="num">1</span> Why Semantic HTML Matters for SEO</h2>
+      <p>Modern search engines like Google and Bing read the <strong>DOM tree</strong>, not the rendered pixels of your page. When you wrap content in meaningful elements — <code>&lt;article&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code> — you give crawlers unambiguous signals about what each piece of content <em>is</em> and how important it is.</p>
+      <p>A <code>&lt;div class="article"&gt;</code> tells a crawler nothing the class name doesn't already imply. A <code>&lt;article&gt;</code> element tells the crawler "this is a self-contained piece of content suitable for syndication". That semantic clarity flows into indexing, ranking, and rich result eligibility.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Use semantic HTML first, ARIA second, and <code>&lt;div&gt;</code> as a last resort. Semantic elements ship accessibility, SEO, and cleaner code for free — no JavaScript or extra attributes required.
+      </div>
+    </section>
+
+    <section id="crawl">
+      <h2><span class="num">2</span> How Googlebot Reads the DOM</h2>
+      <p>Googlebot executes a <strong>two-wave indexing pipeline</strong>. In the first wave, it crawls the raw HTML. In the second wave (which can be hours or days later), it renders the page with a Chromium instance to execute JavaScript and capture the final DOM. Content visible only after JavaScript runs is indexed less reliably and less promptly.</p>
+
+      <h3>The crawl pipeline</h3>
+      <pre><code>1. Fetch raw HTML  ─►  2. Parse into DOM tree  ─►  3. Extract text &amp; links
+                                                       │
+                                                       ▼
+4. Index content &lt;──  3b. (later) Render with Chromium ─► run JS ─► re-extract</code></pre>
+
+      <p>This means the semantic structure of your <em>server-rendered</em> HTML is what gets indexed in the first wave. If your <code>&lt;h1&gt;</code> only appears after a React hydration, you've lost crawl priority.</p>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Rendering critical content (page title, headings, primary text) only via JavaScript. Google's second-wave renderer may never pick it up, or may index a placeholder instead. Server-render your <code>&lt;h1&gt;</code>, <code>&lt;title&gt;</code>, and primary content.
+      </div>
+    </section>
+
+    <section id="headings">
+      <h2><span class="num">3</span> Heading Hierarchy</h2>
+      <p>Headings are the single most important on-page SEO signal after the <code>&lt;title&gt;</code> tag. Search engines use them to build a <strong>topic outline</strong> of the page and to understand what each section is about.</p>
+
+      <h3>The rules</h3>
+      <ul>
+        <li>One <code>&lt;h1&gt;</code> per page (the main topic). Multiple <code>&lt;h1&gt;</code>s were legal in HTML5 but are discouraged because SEO tools flag them.</li>
+        <li>Nest logically: <code>&lt;h2&gt;</code> for major sections, <code>&lt;h3&gt;</code> for subsections, etc.</li>
+        <li>Never skip levels (no <code>&lt;h2&gt;</code> directly to <code>&lt;h4&gt;</code>).</li>
+        <li>Don't use headings for styling — that's what CSS is for.</li>
+      </ul>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Bad: styled with headings</h4>
+          <pre><code>&lt;h4&gt;Buy Now&lt;/h4&gt;
+&lt;h1&gt;Welcome&lt;/h1&gt;
+&lt;h3&gt;Features&lt;/h3&gt;
+&lt;h1&gt;About us&lt;/h1&gt;</code></pre>
+        </div>
+        <div class="good">
+          <h4>✓ Good: logical outline</h4>
+          <pre><code>&lt;h1&gt;Wireless Headphones&lt;/h1&gt;
+&lt;h2&gt;Features&lt;/h2&gt;
+&lt;h2&gt;Specifications&lt;/h2&gt;
+&lt;h3&gt;Battery Life&lt;/h3&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The <code>&lt;h1&gt;</code> should usually mirror or complement the <code>&lt;title&gt;</code> tag. If your title is "Best Running Shoes 2024 — Buyer's Guide", your <code>&lt;h1&gt;</code> might be "The Best Running Shoes of 2024". Aligned signals reinforce topical relevance.
+      </div>
+    </section>
+
+    <section id="landmarks">
+      <h2><span class="num">4</span> <code>main</code>, <code>article</code>, <code>aside</code> Differentiation</h2>
+      <p>HTML5 introduced sectioning elements that carry semantic weight for both accessibility and SEO. They tell crawlers which parts of the page are primary content, which are tangential, and which are navigational.</p>
+
+      <table class="info-table">
+        <thead>
+          <tr><th>Element</th><th>SEO Meaning</th><th>When to use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>&lt;main&gt;</code></td><td>The dominant content of the page, unique to this URL</td><td>Once per page, wrapping the primary content area</td></tr>
+          <tr><td><code>&lt;article&gt;</code></td><td>Self-contained, syndicatable content</td><td>Blog posts, product cards, news stories, forum posts</td></tr>
+          <tr><td><code>&lt;aside&gt;</code></td><td>Tangential content — related but not essential</td><td>Sidebar widgets, related links, pull quotes, ads</td></tr>
+          <tr><td><code>&lt;section&gt;</code></td><td>A thematic grouping with a heading</td><td>Chapters, feature groups within an article</td></tr>
+          <tr><td><code>&lt;nav&gt;</code></td><td>A group of major navigational links</td><td>Site menus, breadcrumbs, table of contents</td></tr>
+          <tr><td><code>&lt;header&gt;</code></td><td>Introductory content for the page or a section</td><td>Page masthead, article byline area</td></tr>
+          <tr><td><code>&lt;footer&gt;</code></td><td>Closing content — copyright, related links</td><td>Bottom of page or article</td></tr>
+        </tbody>
+      </table>
+
+      <h3>The differentiation that matters</h3>
+      <p>Google treats content inside <code>&lt;main&gt;</code> and <code>&lt;article&gt;</code> as the page's primary topic. Content in <code>&lt;aside&gt;</code> or <code>&lt;footer&gt;</code> may be weighted lower, since it's often boilerplate (related posts, legal links, ads). By separating them you help the crawler focus on what you actually want ranked.</p>
+
+      <pre><code>&lt;body&gt;
+  &lt;header&gt;&lt;nav&gt;Site navigation&lt;/nav&gt;&lt;/header&gt;
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;h1&gt;The Real Cost of Cheap Coffee&lt;/h1&gt;
+      &lt;p&gt;Primary content...&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;aside&gt;
+      &lt;h2&gt;Related Reading&lt;/h2&gt;
+      &lt;!-- related links --&gt;
+    &lt;/aside&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;&lt;!-- copyright --&gt;&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+    </section>
+
+    <section id="signals">
+      <h2><span class="num">5</span> Content Priority Signals</h2>
+      <p>Beyond sectioning, several elements convey priority and content type to crawlers:</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4><code>&lt;figure&gt;</code> &amp; <code>&lt;figcaption&gt;</code></h4>
+          <p>Signals images, charts, and code listings that are referenced from the text. Captions provide keyword context for image search.</p>
+        </div>
+        <div class="card">
+          <h4><code>&lt;time datetime&gt;</code></h4>
+          <p>Machine-readable timestamps. Helps Google display article publish/update dates in search results.</p>
+        </div>
+        <div class="card">
+          <h4><code>&lt;address&gt;</code></h4>
+          <p>Contact info for the article or page author. Used for local business signals.</p>
+        </div>
+        <div class="card">
+          <h4><code>&lt;blockquote cite&gt;</code></h4>
+          <p>Quoted content with a source URL. Distinguishes original content from quotations.</p>
+        </div>
+        <div class="card">
+          <h4><code>&lt;em&gt;</code> vs <code>&lt;i&gt;</code></h4>
+          <p><code>&lt;em&gt;</code> conveys stress emphasis (semantic). <code>&lt;i&gt;</code> is idiomatic/biographic. Emphasis may influence how Google interprets the surrounding sentence.</p>
+        </div>
+        <div class="card">
+          <h4><code>&lt;strong&gt;</code> vs <code>&lt;b&gt;</code></h4>
+          <p><code>&lt;strong&gt;</code> conveys importance. <code>&lt;b&gt;</code> is stylistic bold. Use <code>&lt;strong&gt;</code> when the text matters to the meaning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="example">
+      <h2><span class="num">6</span> Real Example: SEO-Optimized Blog Post</h2>
+      <p>Below is a production-ready blog post template that maximizes semantic clarity. Every element serves both human readers and crawlers.</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Sourdough Hydration Guide: 60% to 85% Explained | BakeLab&lt;/title&gt;
+  &lt;meta name="description" content="Understand sourdough hydration ratios
+    from 60% to 85%. Learn how water affects crumb, crust, and fermentation."&gt;
+  &lt;link rel="canonical" href="https://bakelab.com/guides/hydration"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;a href="/"&gt;&lt;img src="/logo.svg" alt="BakeLab home"&gt;&lt;/a&gt;
+    &lt;nav aria-label="Primary"&gt;
+      &lt;a href="/guides"&gt;Guides&lt;/a&gt;
+      &lt;a href="/recipes"&gt;Recipes&lt;/a&gt;
+      &lt;a href="/blog"&gt;Blog&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Sourdough Hydration: A Complete Guide from 60% to 85%&lt;/h1&gt;
+        &lt;p&gt;
+          By &lt;a rel="author" href="/authors/jane"&gt;Jane Dough&lt;/a&gt; ·
+          &lt;time datetime="2024-03-14"&gt;March 14, 2024&lt;/time&gt; ·
+          Updated &lt;time datetime="2024-09-02"&gt;September 2, 2024&lt;/time&gt;
+        &lt;/p&gt;
+      &lt;/header&gt;
+
+      &lt;p&gt;Hydration — the ratio of water to flour by weight — is the
+         single biggest factor in sourdough texture.&lt;/p&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;What Hydration Actually Means&lt;/h2&gt;
+        &lt;p&gt;A 70% hydration dough uses 700g of water for every 1000g of flour.&lt;/p&gt;
+        &lt;figure&gt;
+          &lt;img src="/img/hydration-chart.svg" alt="Bar chart comparing crumb
+            structure at 60%, 70%, and 85% hydration" loading="lazy"&gt;
+          &lt;figcaption&gt;Figure 1: Crumb structure comparison across hydrations.&lt;/figcaption&gt;
+        &lt;/figure&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Low Hydration: 60–65%&lt;/h2&gt;
+        &lt;p&gt;Stiffer doughs, tighter crumb. Ideal for sandwich loaves.&lt;/p&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;High Hydration: 80–85%&lt;/h2&gt;
+        &lt;p&gt; Wetter doughs, open crumb. Requires slap-and-fold technique.&lt;/p&gt;
+        &lt;blockquote cite="https://example.com/robertson"&gt;
+          "High hydration is the gateway to custardy crumb."
+          — &lt;a href="https://example.com/robertson"&gt;Chad Robertson&lt;/a&gt;
+        &lt;/blockquote&gt;
+      &lt;/section&gt;
+    &lt;/article&gt;
+
+    &lt;aside aria-label="Related guides"&gt;
+      &lt;h2&gt;Related Guides&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/guides/starter"&gt;Building a Sourdough Starter&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/guides/bulk-ferment"&gt;Reading Bulk Fermentation&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/aside&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;address&gt;BakeLab · 123 Flour St · Portland, OR&lt;/address&gt;
+    &lt;p&gt;&lt;small&gt;© 2024 BakeLab. All rights reserved.&lt;/small&gt;&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
+
+    <section id="algorithms">
+      <h2><span class="num">7</span> Google's Algorithms That Reward Semantics</h2>
+      <p>Several Google ranking systems directly reward well-structured semantic HTML:</p>
+
+      <table class="info-table">
+        <thead>
+          <tr><th>System</th><th>What it does</th><th>Semantic HTML impact</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Helpful Content System</td><td>Demotes content written for search engines instead of humans</td><td>Semantic structure ensures crawlers understand what's genuinely informative</td></tr>
+          <tr><td>Passage Ranking</td><td>Indexes individual passages, not just whole pages</td><td>Headings and <code>&lt;section&gt;</code>s delimit the passages Google can extract</td></tr>
+          <tr><td>Featured Snippets</td><td>Shows a passage at the top of results</td><td>Clear <code>&lt;h2&gt;</code>/<code>&lt;p&gt;</code> pairing is more likely to be selected</td></tr>
+          <tr><td>Mobile-First Indexing</td><td>Uses the mobile version for indexing</td><td>Semantic HTML survives responsive redesigns better than div soup</td></tr>
+          <tr><td>Page Experience</td><td>Rewards Core Web Vitals, HTTPS, mobile friendliness</td><td>Lighter, semantic DOM renders faster — better LCP and CLS</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A recipe site moved from <code>&lt;div class="recipe"&gt;</code> to a structured <code>&lt;article&gt;</code> with HowTo schema (see the structured data file in this section). Within four weeks, their recipe cards started appearing as Google Rich Results, increasing organic traffic by 38% for the affected pages.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">8</span> Common Mistakes</h2>
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Mistakes</h4>
+          <ul>
+            <li>Multiple <code>&lt;h1&gt;</code> tags per page</li>
+            <li>Using <code>&lt;div class="button"&gt;</code> instead of <code>&lt;button&gt;</code></li>
+            <li>Nesting <code>&lt;article&gt;</code> inside <code>&lt;aside&gt;</code> for primary content</li>
+            <li>Skipping heading levels for visual reasons</li>
+            <li>Empty <code>&lt;section&gt;</code> tags used as CSS hooks</li>
+            <li>Putting the page <code>&lt;h1&gt;</code> inside the <code>&lt;header&gt;</code> site nav</li>
+          </ul>
+        </div>
+        <div class="good">
+          <h4>✓ Correct</h4>
+          <ul>
+            <li>Exactly one <code>&lt;h1&gt;</code>, matching the <code>&lt;title&gt;</code></li>
+            <li>Use <code>&lt;button&gt;</code> for actions, <code>&lt;a&gt;</code> for navigation</li>
+            <li>Wrap primary content in <code>&lt;main&gt;</code> &gt; <code>&lt;article&gt;</code></li>
+            <li>Maintain strict 1→2→3 hierarchy</li>
+            <li>Use <code>&lt;div&gt;</code> for hooks, <code>&lt;section&gt;</code> only when it has a heading</li>
+            <li>Put the <code>&lt;h1&gt;</code> as the first heading inside <code>&lt;main&gt;</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Using <code>&lt;section&gt;</code> as a generic styling wrapper. The HTML spec says a <code>&lt;section&gt;</code> should always contain a heading. If your section has no heading, it's a <code>&lt;div&gt;</code>.
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">9</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Refactor a Div Soup Page</strong>
+        <p>Take the following markup and refactor it into a semantically correct document. Fix the heading hierarchy, replace divs with appropriate elements, and ensure one <code>&lt;h1&gt;</code> exists.</p>
+        <pre><code>&lt;div class="page"&gt;
+  &lt;div class="topbar"&gt;
+    &lt;div class="logo"&gt;Acme&lt;/div&gt;
+    &lt;div class="links"&gt;&lt;a&gt;Home&lt;/a&gt; &lt;a&gt;About&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="content"&gt;
+    &lt;div class="headline"&gt;Our Products&lt;/div&gt;
+    &lt;div class="box"&gt;
+      &lt;div class="title"&gt;Widget&lt;/div&gt;
+      &lt;p&gt;A useful widget.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="sidebar"&gt;
+      &lt;div class="title"&gt;Newsletter Signup&lt;/div&gt;
+      &lt;form&gt;...&lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="footer"&gt;© 2024&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>Goals:</strong></p>
+        <ol>
+          <li>Identify which divs should become <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>.</li>
+          <li>Determine the correct heading levels for "Our Products", "Widget", and "Newsletter Signup".</li>
+          <li>Add a single <code>&lt;h1&gt;</code> stating the page's main topic.</li>
+          <li>Validate your result with the W3C Validator.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="browser">
+      <h2><span class="num">10</span> Browser &amp; Crawler Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">Googlebot: Chromium-based, full support</span>
+        <span class="pill yes">Bingbot: full support</span>
+        <span class="pill yes">DuckDuckBot: full support</span>
+        <span class="pill yes">Chrome: full support</span>
+        <span class="pill yes">Firefox: full support</span>
+        <span class="pill yes">Safari: full support</span>
+        <span class="pill yes">Edge: full support</span>
+      </div>
+      <p>All modern browsers and search engine crawlers fully support HTML5 semantic elements. The only legacy concern is Internet Explorer 8 and earlier, which required a small shiv to style unknown elements — irrelevant in 2024 and beyond.</p>
+
+      <h3>Testing tools</h3>
+      <ul>
+        <li><strong>Google Search Console</strong> — see how Google actually indexes your pages</li>
+        <li><strong>Google Rich Results Test</strong> — validates structured data + semantic markup</li>
+        <li><strong>Google Mobile-Friendly Test</strong> — checks responsive rendering</li>
+        <li><strong>W3C Validator</strong> — confirms structural correctness</li>
+        <li><strong>Lighthouse (Chrome DevTools)</strong> — audits SEO and accessibility together</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="#">← Previous: Advanced Features</a>
+  <a href="meta-tags-seo.html">Next: SEO Meta Tags →</a>
+</footer>
+</body>
+</html>

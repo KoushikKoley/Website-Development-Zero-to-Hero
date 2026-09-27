@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Hints — preload, prefetch, preconnect, dns-prefetch, modulepreload — HTML Mastery</title>
+  <meta name="description" content="Resource hints deep dive: link rel=preload (high priority current page), prefetch (low priority next nav), preconnect (DNS+TCP+TLS), dns-prefetch (DNS only), modulepreload, and the deprecated prerender. When each is appropriate with real examples.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.partial { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Performance</span>
+  <h1>Resource <code>Hints</code></h1>
+  <p>preload, prefetch, preconnect, dns-prefetch, modulepreload, prerender — six ways to tell the browser "start fetching this now so it's ready when I need it". Picking the right one is a major lever on perceived performance.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#overview">The Six Hints at a Glance</a></li>
+      <li><a href="#preload">preload</a></li>
+      <li><a href="#prefetch">prefetch</a></li>
+      <li><a href="#preconnect">preconnect</a></li>
+      <li><a href="#dns-prefetch">dns-prefetch</a></li>
+      <li><a href="#modulepreload">modulepreload</a></li>
+      <li><a href="#prerender">prerender (deprecated)</a></li>
+      <li><a href="#when">When to Use Which</a></li>
+      <li><a href="#priority">Priority &amp; Fetch Priority</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Browser Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="overview">
+      <h2><span class="num">1</span> The Six Hints at a Glance</h2>
+      <p>Resource hints are <code>&lt;link rel="..."&gt;</code> tags in the head (or HTTP <code>Link</code> headers) that tell the browser to start work on a resource <em>before</em> it's needed. Each has a different scope and priority.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Hint</th><th>What it does</th><th>Priority</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td><code>preload</code></td><td>Fetches resource for <em>current</em> page, with high priority</td><td>High</td><td>LCP image, critical font, late-discovered CSS</td></tr>
+          <tr><td><code>prefetch</code></td><td>Fetches resource for <em>next</em> navigation, low priority</td><td>Lowest</td><td>Next-page assets when user is likely to click</td></tr>
+          <tr><td><code>preconnect</code></td><td>Opens DNS + TCP + TLS handshake to origin</td><td>High (cheap)</td><td>Third-party hosts (CDN, analytics, fonts)</td></tr>
+          <tr><td><code>dns-prefetch</code></td><td>Resolves DNS only</td><td>Low</td><td>Cheaper fallback for preconnect</td></tr>
+          <tr><td><code>modulepreload</code></td><td>Preloads ES module + its dependencies</td><td>High</td><td>App bundles before they're imported</td></tr>
+          <tr><td><code>prerender</code></td><td>Renders entire next page in background</td><td>n/a</td><td><strong>Deprecated</strong> — use Speculation Rules API instead</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="preload">
+      <h2><span class="num">2</span> <code>preload</code></h2>
+      <p><code>&lt;link rel="preload"&gt;</code> tells the browser: "fetch this resource now, at high priority, because I'll need it during current-page rendering". The browser treats it as a hint, not a guarantee — but for critical resources it almost always complies.</p>
+
+      <pre><code>&lt;head&gt;
+  &lt;!-- Preload the LCP image --&gt;
+  &lt;link rel="preload" as="image" href="/img/hero.webp"
+        fetchpriority="high"&gt;
+
+  &lt;!-- Preload a critical font --&gt;
+  &lt;link rel="preload" as="font" type="font/woff2"
+        href="/fonts/inter-var.woff2" crossorigin&gt;
+
+  &lt;!-- Preload CSS that the parser discovers late (e.g. injected by JS) --&gt;
+  &lt;link rel="preload" as="style" href="/css/late.css"&gt;
+
+  &lt;!-- Preload a JS module --&gt;
+  &lt;link rel="preload" as="script" href="/js/critical.js"&gt;
+&lt;/head&gt;</code></pre>
+
+      <h3>The <code>as</code> attribute is mandatory</h3>
+      <p>Without <code>as</code>, the browser can't set the right priority, content-type, or accept headers. Valid values: <code>audio</code>, <code>document</code>, <code>embed</code>, <code>fetch</code>, <code>font</code>, <code>image</code>, <code>object</code>, <code>script</code>, <code>style</code>, <code>track</code>, <code>video</code>, <code>worker</code>.</p>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Preloading a resource you never actually use. The download still happens — wasting the user's bandwidth. Only preload things you're certain will be requested within seconds.
+      </div>
+    </section>
+
+    <section id="prefetch">
+      <h2><span class="num">3</span> <code>prefetch</code></h2>
+      <p><code>&lt;link rel="prefetch"&gt;</code> is for the <em>next</em> navigation. The browser fetches the resource at low priority during idle time and stores it in the HTTP cache. If the user does navigate to the page that needs it, the resource is already local.</p>
+
+      <pre><code>&lt;!-- Prefetch the next article the user will probably read --&gt;
+&lt;link rel="prefetch" as="document" href="/blog/next-article"&gt;
+&lt;link rel="prefetch" as="script" href="/js/next-page-bundle.js"&gt;
+&lt;link rel="prefetch" as="image" href="/img/next-hero.webp"&gt;</code></pre>
+
+      <h3>Smart prefetch patterns</h3>
+      <ul>
+        <li><strong>Next-page prediction</strong> — prefetch the URL the user is hovering over for 100ms+ ("quicklink" library)</li>
+        <li><strong>Sequential content</strong> — on page 2 of a paginated list, prefetch page 3</li>
+        <li><strong>Checkout flow</strong> — prefetch the next step's assets</li>
+      </ul>
+
+      <pre><code>&lt;!-- "Quicklink" pattern: prefetch on hover --&gt;
+&lt;script type="module"&gt;
+  document.querySelectorAll('a').forEach(a =&gt; {
+    a.addEventListener('mouseenter', () =&gt; {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = a.href;
+      document.head.appendChild(link);
+    }, { once: true });
+  });
+&lt;/script&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Don't prefetch 50 links "just in case" — you'll burn mobile data plans. Limit to the next 1–2 likely destinations, and respect <code>Save-Data</code> header and slow-connection users.
+      </div>
+    </section>
+
+    <section id="preconnect">
+      <h2><span class="num">4</span> <code>preconnect</code></h2>
+      <p>Before the browser fetches a resource from a new origin, it must: resolve DNS, open a TCP connection, and complete a TLS handshake. That's 100–500ms on mobile 4G. <code>preconnect</code> tells the browser to start this work now, so when a resource is needed the connection is already warm.</p>
+
+      <pre><code>&lt;head&gt;
+  &lt;!-- Warm up connections to third-party hosts --&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+  &lt;link rel="preconnect" href="https://cdn.example.com" crossorigin&gt;
+  &lt;link rel="preconnect" href="https://api.example.com"&gt;
+
+  &lt;!-- Then load the resources --&gt;
+  &lt;link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700"&gt;
+&lt;/head&gt;</code></pre>
+
+      <h3>When to use crossorigin</h3>
+      <p>If the resource will be fetched with CORS (fonts, fetch() with mode: cors, modules), add <code>crossorigin</code> to the preconnect. Otherwise the browser opens a non-CORS connection that the CORS request can't reuse.</p>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Preconnecting to more than 3–4 origins. Each open connection consumes memory and network state. Limit preconnects to hosts you'll actually fetch from within 5 seconds.
+      </div>
+    </section>
+
+    <section id="dns-prefetch">
+      <h2><span class="num">5</span> <code>dns-prefetch</code></h2>
+      <p>A cheaper alternative to <code>preconnect</code> — only resolves DNS, doesn't open TCP/TLS. Useful for hosts you'll use later or that might not be needed at all.</p>
+
+      <pre><code>&lt;!-- DNS-only prefetch for analytics that may or may not load --&gt;
+&lt;link rel="dns-prefetch" href="//www.google-analytics.com"&gt;
+&lt;link rel="dns-prefetch" href="//cdn.jsdelivr.net"&gt;</code></pre>
+
+      <p>Many sites stack <code>preconnect</code> and <code>dns-prefetch</code> together — the latter is a fallback for browsers that don't support <code>preconnect</code> (essentially IE/old Safari).</p>
+
+      <pre><code>&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link rel="dns-prefetch" href="https://fonts.gstatic.com"&gt;</code></pre>
+    </section>
+
+    <section id="modulepreload">
+      <h2><span class="num">6</span> <code>modulepreload</code></h2>
+      <p>Specifically for ES modules. <code>modulepreload</code> fetches the module <em>and recursively fetches its dependencies</em>, parses them, and prepares them for synchronous execution when imported.</p>
+
+      <pre><code>&lt;head&gt;
+  &lt;link rel="modulepreload" href="/js/app.js"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  ...
+  &lt;script type="module"&gt;
+    // app.js is already parsed and ready — this import resolves instantly
+    import { init } from '/js/app.js';
+    init();
+  &lt;/script&gt;
+&lt;/body&gt;</code></pre>
+
+      <p>Without <code>modulepreload</code>, the browser discovers dependencies as it parses each module file — serially. For deep dependency trees this is a multi-hundred-millisecond cost.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Modern bundlers like Vite automatically inject <code>modulepreload</code> hints for the entry chunk and its imports. If you're hand-authoring modules, add these hints yourself for any module on the critical path.
+      </div>
+    </section>
+
+    <section id="prerender">
+      <h2><span class="num">7</span> <code>prerender</code> (deprecated)</h2>
+      <p>The old <code>&lt;link rel="prerender"&gt;</code> hint asked the browser to load and render an entire next page in the background. It was unreliable — Chrome silently turned it into a prefetch in 2018, and other browsers never fully supported it. It is now <strong>deprecated</strong>.</p>
+
+      <p>The modern replacement is the <strong>Speculation Rules API</strong>:</p>
+
+      <pre><code>&lt;script type="speculationrules"&gt;
+{
+  "prerender": [
+    {
+      "where": { "href_matches": "/blog/*" },
+      "eagerness": "moderate"
+    }
+  ]
+}
+&lt;/script&gt;</code></pre>
+
+      <p>This enables full prerendering (with JS execution) when the user hovers over or clicks matching links. Supported in Chrome 121+. Other browsers ignore the script tag safely.</p>
+    </section>
+
+    <section id="when">
+      <h2><span class="num">8</span> When to Use Which</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Use <code>preload</code> when</h4>
+          <p>You're certain the current page will need this resource within seconds, and the browser would otherwise discover it too late. The LCP image, hero fonts, late-injected CSS.</p>
+        </div>
+        <div class="card">
+          <h4>Use <code>prefetch</code> when</h4>
+          <p>The user is likely to navigate to a specific next page. Idle-time bandwidth is fine; this is a bet on user behavior.</p>
+        </div>
+        <div class="card">
+          <h4>Use <code>preconnect</code> when</h4>
+          <p>You'll fetch from a third-party origin within 5 seconds and want to skip the connection setup cost. Fonts, CDNs, APIs.</p>
+        </div>
+        <div class="card">
+          <h4>Use <code>dns-prefetch</code> when</h4>
+          <p>You <em>might</em> need a third-party host but aren't sure. Cheap insurance against the DNS lookup cost.</p>
+        </div>
+        <div class="card">
+          <h4>Use <code>modulepreload</code> when</h4>
+          <p>Your app uses ES modules and the entry chunk has dependencies. Pre-parses the whole graph before the import statement runs.</p>
+        </div>
+        <div class="card">
+          <h4>Use Speculation Rules when</h4>
+          <p>You want true instant page transitions on likely-next navigations. Falls back gracefully in unsupported browsers.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="priority">
+      <h2><span class="num">9</span> Priority &amp; fetchpriority</h2>
+      <p>Each hint has a default priority the browser assigns. You can override with the <code>fetchpriority</code> attribute — useful for telling the browser "this image really is the LCP element, prioritize it above other images".</p>
+
+      <table class="info-table">
+        <thead><tr><th>Hint</th><th>Default priority</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>preload as=image</code></td><td>High</td><td>Boost with <code>fetchpriority="high"</code> for LCP</td></tr>
+          <tr><td><code>preload as=style</code></td><td>High</td><td>Equivalent to a <code>&lt;link rel=stylesheet&gt;</code></td></tr>
+          <tr><td><code>preload as=script</code></td><td>High</td><td>Doesn't execute, just caches</td></tr>
+          <tr><td><code>preload as=font</code></td><td>High</td><td>Requires <code>crossorigin</code> attribute</td></tr>
+          <tr><td><code>prefetch</code></td><td>Lowest</td><td>Only runs in idle time</td></tr>
+          <tr><td><code>preconnect</code></td><td>High (no payload)</td><td>Cheap; do early</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code>&lt;!-- Hero image is LCP — boost it --&gt;
+&lt;link rel="preload" as="image" href="/img/hero.webp"
+      fetchpriority="high"&gt;
+
+&lt;!-- Below-the-fold images — de-prioritize --&gt;
+&lt;img src="/img/footer-bg.webp" fetchpriority="low" alt=""&gt;</code></pre>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">10</span> Common Mistakes</h2>
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Mistakes</h4>
+          <ul>
+            <li><code>preload</code> without <code>as</code> — useless</li>
+            <li><code>preload as=font</code> without <code>crossorigin</code> — fetches twice</li>
+            <li>Preloading 10 resources "just in case"</li>
+            <li><code>prefetch</code> on every link on the page</li>
+            <li><code>preconnect</code> to 12 origins</li>
+            <li>Using <code>prerender</code> in 2024 — deprecated, no-op</li>
+          </ul>
+        </div>
+        <div class="good">
+          <h4>✓ Correct</h4>
+          <ul>
+            <li>Always specify <code>as</code></li>
+            <li>Fonts need <code>crossorigin</code> (CORS-required by spec)</li>
+            <li>Preload only the 1–2 truly critical resources</li>
+            <li>Prefetch on hover, max 1–2 destinations</li>
+            <li>Preconnect to 3–4 hosts max</li>
+            <li>Use Speculation Rules API for true prerendering</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Forgetting <code>crossorigin</code> on a font preload. The browser fetches the font via CORS for the actual <code>@font-face</code> request. If your preload wasn't a CORS request, the browser caches a non-CORS copy it can't use, then re-fetches. You've doubled the bandwidth.
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">11</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Add Hints to a News Site</strong>
+        <p>You're optimizing a news article page. The page loads:</p>
+        <ul>
+          <li>Hero image from the same origin (the LCP element)</li>
+          <li>Body font from <code>fonts.gstatic.com</code></li>
+          <li>Analytics from <code>www.google-analytics.com</code></li>
+          <li>A hero video from <code>cdn.example.com</code> (loaded on user click)</li>
+          <li>An ES module entry from <code>/js/article.js</code></li>
+        </ul>
+        <p>The page also has links to the next article in a series at the bottom.</p>
+        <p><strong>Tasks:</strong></p>
+        <ol>
+          <li>Write the resource hints to add to the <code>&lt;head&gt;</code>.</li>
+          <li>Decide which need <code>crossorigin</code>.</li>
+          <li>Decide which resource should get <code>fetchpriority="high"</code>.</li>
+          <li>Add a prefetch for the next article.</li>
+          <li>Replace any deprecated <code>prerender</code> usage with Speculation Rules.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">12</span> Browser Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">preload: all modern browsers</span>
+        <span class="pill yes">prefetch: all modern browsers (Firefox respects less aggressively)</span>
+        <span class="pill yes">preconnect: all modern browsers</span>
+        <span class="pill yes">dns-prefetch: all browsers including IE9+</span>
+        <span class="pill yes">modulepreload: Chrome 66+, Firefox 67+, Safari 14+</span>
+        <span class="pill partial">Speculation Rules: Chrome 121+ (others ignore safely)</span>
+        <span class="pill partial">fetchpriority: Chrome 101+, Safari 17+ (Firefox: in development)</span>
+      </div>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        An e-commerce homepage added <code>preconnect</code> to its three primary third-party origins (font CDN, image CDN, payment API) and <code>preload as=image fetchpriority="high"</code> on the hero. LCP dropped from 2.8s to 1.4s — a 50% improvement on the same network. Conversion rate rose 3.2% as a direct result.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="critical-rendering-path.html">← Previous: Critical Rendering Path</a>
+  <a href="lazy-loading.html">Next: Lazy Loading →</a>
+</footer>
+</body>
+</html>

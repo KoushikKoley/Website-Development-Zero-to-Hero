@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse the full archive of The Margin Notes — filter by category, year, and tag. Every essay we've published, in reverse chronological order.">
+  <title>Archive — The Margin Notes</title>
+  <style>
+    :root {
+      --cream: #fbf7f0;
+      --cream-2: #f4ede0;
+      --ink: #1f1b16;
+      --ink-soft: #5b544a;
+      --rule: #e6dccb;
+      --accent: #c2410c;
+      --accent-soft: #fff1e6;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--cream); color: var(--ink); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    /* ===== Header ===== */
+    .site-header { position: sticky; top: 0; z-index: 50; background: rgba(251, 247, 240, 0.92); backdrop-filter: saturate(180%) blur(10px); border-bottom: 1px solid var(--rule); }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; min-height: 72px; }
+    .logo { font-family: var(--serif); font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em; color: var(--ink); }
+    .logo em { font-style: italic; color: var(--accent); }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--ink); }
+    .nav-menu { display: flex; gap: 28px; list-style: none; }
+    .nav-menu a { color: var(--ink-soft); font-weight: 500; font-size: 0.95rem; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { color: var(--accent); text-decoration: none; }
+    @media (max-width: 760px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu { position: absolute; top: 72px; left: 0; right: 0; flex-direction: column; gap: 0; background: var(--cream); border-bottom: 1px solid var(--rule); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--rule); }
+      .nav-menu a { display: block; padding: 14px 24px; }
+    }
+
+    /* ===== Page header ===== */
+    .page-hero { padding: 56px 0 40px; border-bottom: 1px solid var(--rule); }
+    .page-hero h1 { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .page-hero p { color: var(--ink-soft); font-size: 1.05rem; max-width: 640px; }
+    .page-hero .stats { display: flex; gap: 28px; margin-top: 24px; flex-wrap: wrap; }
+    .stat { font-size: 0.9rem; color: var(--ink-soft); }
+    .stat strong { display: block; font-family: var(--serif); font-size: 1.6rem; color: var(--ink); font-weight: 700; }
+
+    /* ===== Layout ===== */
+    .layout { display: grid; grid-template-columns: 1fr 280px; gap: 48px; padding: 40px 0 64px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    /* ===== Filters ===== */
+    .filters { display: flex; flex-direction: column; gap: 18px; padding: 20px 24px; background: var(--cream-2); border: 1px solid var(--rule); border-radius: 10px; margin-bottom: 32px; }
+    .filters h2 { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; }
+    .filter-group { display: flex; flex-direction: column; gap: 8px; }
+    .filter-group legend { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: 600; }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      padding: 5px 12px; border-radius: 999px; border: 1px solid var(--rule);
+      background: #fff; color: var(--ink-soft); font-size: 0.85rem; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ===== Post list ===== */
+    .post-list { list-style: none; }
+    .post-item {
+      display: grid; grid-template-columns: 110px 1fr; gap: 24px;
+      padding: 26px 0; border-bottom: 1px solid var(--rule);
+      align-items: start;
+    }
+    @media (max-width: 600px) { .post-item { grid-template-columns: 1fr; gap: 8px; } }
+    .post-date { font-family: var(--serif); font-size: 0.92rem; color: var(--ink-soft); line-height: 1.4; }
+    .post-date .year { display: block; font-weight: 700; color: var(--ink); font-size: 1.1rem; }
+    .post-item h3 { font-family: var(--serif); font-size: 1.3rem; line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 6px; }
+    .post-item h3 a { color: var(--ink); }
+    .post-item h3 a:hover { color: var(--accent); text-decoration: none; }
+    .post-item .excerpt { color: var(--ink-soft); font-size: 0.96rem; margin-bottom: 8px; }
+    .post-item .meta { display: flex; gap: 14px; font-size: 0.82rem; color: var(--ink-soft); flex-wrap: wrap; }
+    .post-item .meta .category { color: var(--accent); font-weight: 600; }
+    .post-item .meta .dot { color: var(--rule); }
+
+    /* ===== Pagination ===== */
+    .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--rule); }
+    .pagination .pages { display: flex; gap: 6px; list-style: none; }
+    .pagination .pages a, .pagination .pages span {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 38px; height: 38px; padding: 0 12px;
+      border: 1px solid var(--rule); border-radius: 8px;
+      background: #fff; color: var(--ink-soft); font-size: 0.92rem; font-weight: 500;
+    }
+    .pagination .pages a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .pagination .pages .current { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .pagination .prev, .pagination .next { font-size: 0.9rem; font-weight: 500; }
+    .pagination .prev.disabled, .pagination .next.disabled { color: var(--ink-soft); opacity: 0.4; pointer-events: none; }
+
+    /* ===== Sidebar ===== */
+    .sidebar { display: flex; flex-direction: column; gap: 28px; }
+    .widget { background: var(--cream-2); border-radius: 10px; padding: 22px; border: 1px solid var(--rule); }
+    .widget h3 { font-family: var(--serif); font-size: 1.1rem; margin-bottom: 14px; }
+    .year-list { list-style: none; }
+    .year-list li { padding: 8px 0; border-bottom: 1px dashed var(--rule); font-size: 0.92rem; display: flex; justify-content: space-between; }
+    .year-list li:last-child { border-bottom: 0; }
+    .year-list a { color: var(--ink); }
+    .year-list .count { color: var(--ink-soft); font-size: 0.82rem; }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-cloud a {
+      padding: 4px 12px; border-radius: 999px;
+      background: #fff; border: 1px solid var(--rule);
+      color: var(--ink-soft); font-size: 0.85rem;
+    }
+    .tag-cloud a:hover { background: var(--accent); color: #fff; border-color: var(--accent); text-decoration: none; }
+    .tag-cloud a.s1 { font-size: 0.78rem; }
+    .tag-cloud a.s2 { font-size: 0.85rem; }
+    .tag-cloud a.s3 { font-size: 0.95rem; }
+    .tag-cloud a.s4 { font-size: 1.05rem; font-weight: 600; }
+    .tag-cloud a.s5 { font-size: 1.18rem; font-weight: 700; }
+
+    .popular-list { list-style: none; counter-reset: pop; }
+    .popular-list li { counter-increment: pop; padding: 10px 0; border-bottom: 1px dashed var(--rule); display: flex; gap: 12px; align-items: baseline; }
+    .popular-list li:last-child { border-bottom: 0; }
+    .popular-list li::before { content: counter(pop); font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .popular-list a { color: var(--ink); font-size: 0.92rem; line-height: 1.4; }
+    .popular-list a:hover { color: var(--accent); text-decoration: none; }
+
+    /* ===== Footer ===== */
+    .site-footer { border-top: 1px solid var(--rule); background: var(--cream-2); padding: 40px 0 28px; }
+    .site-footer .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .site-footer .logo { font-size: 1.1rem; }
+    .site-footer p { font-size: 0.85rem; color: var(--ink-soft); }
+    .site-footer nav ul { display: flex; gap: 18px; list-style: none; }
+    .site-footer nav a { color: var(--ink-soft); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo">The Margin <em>Notes</em></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation"><span></span><span></span><span></span></label>
+    <nav aria-label="Primary">
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="archive.html" aria-current="page">Archive</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="page-hero">
+    <h1>The Archive</h1>
+    <p>Every essay we've published, in reverse chronological order. Filter by category, year, or tag. We publish roughly twice a month — slowly, on purpose.</p>
+    <div class="stats">
+      <div class="stat"><strong>139</strong> Essays</div>
+      <div class="stat"><strong>6</strong> Categories</div>
+      <div class="stat"><strong>47</strong> Tags</div>
+      <div class="stat"><strong>3.2</strong> Years</div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div>
+      <!-- Filters -->
+      <form class="filters" action="#" method="get" aria-label="Filter posts">
+        <h2>Filter</h2>
+        <fieldset class="filter-group">
+          <legend>Category</legend>
+          <div class="filter-row">
+            <button type="button" class="chip active">All</button>
+            <button type="button" class="chip">Engineering</button>
+            <button type="button" class="chip">Design</button>
+            <button type="button" class="chip">Process</button>
+            <button type="button" class="chip">Team</button>
+            <button type="button" class="chip">Craft</button>
+            <button type="button" class="chip">Field Notes</button>
+          </div>
+        </fieldset>
+        <fieldset class="filter-group">
+          <legend>Year</legend>
+          <div class="filter-row">
+            <button type="button" class="chip active">All</button>
+            <button type="button" class="chip">2025</button>
+            <button type="button" class="chip">2024</button>
+            <button type="button" class="chip">2023</button>
+            <button type="button" class="chip">2022</button>
+          </div>
+        </fieldset>
+        <fieldset class="filter-group">
+          <legend>Sort by</legend>
+          <div class="filter-row">
+            <button type="button" class="chip active">Newest first</button>
+            <button type="button" class="chip">Oldest first</button>
+            <button type="button" class="chip">Most read</button>
+            <button type="button" class="chip">Most discussed</button>
+          </div>
+        </fieldset>
+      </form>
+
+      <!-- Post list -->
+      <ol class="post-list">
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Mar 12</div>
+          <div>
+            <h3><a href="post.html">The Long Road Between Idea and Shipped</a></h3>
+            <p class="excerpt">Most software never ships. Of the software that ships, most is unrecognizable from the original idea. This essay is about the messy middle that nobody puts in their conference talks.</p>
+            <div class="meta">
+              <span class="category">Engineering</span>
+              <span class="dot">·</span>
+              <span>Maya Kowalski</span>
+              <span class="dot">·</span>
+              <span>14 min read</span>
+              <span class="dot">·</span>
+              <span>23 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Mar 05</div>
+          <div>
+            <h3><a href="post.html">Why We Rewrote Our Build System Three Times</a></h3>
+            <p class="excerpt">Three rewrites, two years, one quiet success. A field report on what stayed, what was lost, and what we'd never do again.</p>
+            <div class="meta">
+              <span class="category">Engineering</span>
+              <span class="dot">·</span>
+              <span>Devi Rao</span>
+              <span class="dot">·</span>
+              <span>9 min read</span>
+              <span class="dot">·</span>
+              <span>11 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Feb 27</div>
+          <div>
+            <h3><a href="post.html">The Quiet Power of Boring Interfaces</a></h3>
+            <p class="excerpt">When every product looks the same, the differentiated ones are the ones that resist the trend. A defense of restraint.</p>
+            <div class="meta">
+              <span class="category">Design</span>
+              <span class="dot">·</span>
+              <span>Jules Lin</span>
+              <span class="dot">·</span>
+              <span>7 min read</span>
+              <span class="dot">·</span>
+              <span>8 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Feb 20</div>
+          <div>
+            <h3><a href="post.html">Pair Programming Is a Management Tool</a></h3>
+            <p class="excerpt">Two people at one keyboard isn't a productivity hack. It's a quiet way to make sure the right thing gets built, and that two people understand it.</p>
+            <div class="meta">
+              <span class="category">Process</span>
+              <span class="dot">·</span>
+              <span>Aaron Tate</span>
+              <span class="dot">·</span>
+              <span>11 min read</span>
+              <span class="dot">·</span>
+              <span>17 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Feb 13</div>
+          <div>
+            <h3><a href="post.html">A Calm Defense of the Monolith</a></h3>
+            <p class="excerpt">Microservices promised scale and delivered meetings. A reflection on what we lost when we stopped building one big program.</p>
+            <div class="meta">
+              <span class="category">Engineering</span>
+              <span class="dot">·</span>
+              <span>Maya Kowalski</span>
+              <span class="dot">·</span>
+              <span>13 min read</span>
+              <span class="dot">·</span>
+              <span>34 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Feb 06</div>
+          <div>
+            <h3><a href="post.html">Hiring for Taste, Not Just Skill</a></h3>
+            <p class="excerpt">You can teach a framework in a week. You cannot teach someone to notice when something feels off. Here is how we interview for that.</p>
+            <div class="meta">
+              <span class="category">Team</span>
+              <span class="dot">·</span>
+              <span>Sana Rahman</span>
+              <span class="dot">·</span>
+              <span>8 min read</span>
+              <span class="dot">·</span>
+              <span>19 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Jan 30</div>
+          <div>
+            <h3><a href="post.html">Notes on Naming Things</a></h3>
+            <p class="excerpt">A function name is a promise. Most names lie. A small field guide to writing code that tells the truth about itself.</p>
+            <div class="meta">
+              <span class="category">Craft</span>
+              <span class="dot">·</span>
+              <span>Devi Rao</span>
+              <span class="dot">·</span>
+              <span>6 min read</span>
+              <span class="dot">·</span>
+              <span>9 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Jan 22</div>
+          <div>
+            <h3><a href="post.html">The Patient Programmer</a></h3>
+            <p class="excerpt">On waiting for the second idea, the better name, the right collaborator. A reader favorite from early 2025.</p>
+            <div class="meta">
+              <span class="category">Craft</span>
+              <span class="dot">·</span>
+              <span>Maya Kowalski</span>
+              <span class="dot">·</span>
+              <span>10 min read</span>
+              <span class="dot">·</span>
+              <span>28 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2025</span>Jan 15</div>
+          <div>
+            <h3><a href="post.html">What Code Reviews Are Actually For</a></h3>
+            <p class="excerpt">Not catching bugs. Not enforcing style. Code reviews are the quiet place where a team decides what kind of team it is.</p>
+            <div class="meta">
+              <span class="category">Process</span>
+              <span class="dot">·</span>
+              <span>Aaron Tate</span>
+              <span class="dot">·</span>
+              <span>9 min read</span>
+              <span class="dot">·</span>
+              <span>14 comments</span>
+            </div>
+          </div>
+        </li>
+
+        <li class="post-item">
+          <div class="post-date"><span class="year">2024</span>Dec 18</div>
+          <div>
+            <h3><a href="post.html">End-of-Year Field Notes</a></h3>
+            <p class="excerpt">Twelve things I learned this year, only two of which I'll still believe next December.</p>
+            <div class="meta">
+              <span class="category">Field Notes</span>
+              <span class="dot">·</span>
+              <span>Maya Kowalski</span>
+              <span class="dot">·</span>
+              <span>12 min read</span>
+              <span class="dot">·</span>
+              <span>21 comments</span>
+            </div>
+          </div>
+        </li>
+
+      </ol>
+
+      <!-- Pagination -->
+      <nav class="pagination" aria-label="Pagination">
+        <a href="#" class="prev disabled" aria-disabled="true">← Newer</a>
+        <ol class="pages">
+          <li><span class="current" aria-current="page">1</span></li>
+          <li><a href="#">2</a></li>
+          <li><a href="#">3</a></li>
+          <li><a href="#">4</a></li>
+          <li><a href="#">5</a></li>
+        </ol>
+        <a href="#" class="next">Older →</a>
+      </nav>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="widget">
+        <h3>By year</h3>
+        <ul class="year-list">
+          <li><a href="#">2025</a> <span class="count">18 essays</span></li>
+          <li><a href="#">2024</a> <span class="count">52 essays</span></li>
+          <li><a href="#">2023</a> <span class="count">41 essays</span></li>
+          <li><a href="#">2022</a> <span class="count">28 essays</span></li>
+        </ul>
+      </div>
+
+      <div class="widget">
+        <h3>Popular tags</h3>
+        <div class="tag-cloud">
+          <a href="#" class="s5">engineering</a>
+          <a href="#" class="s4">design</a>
+          <a href="#" class="s4">process</a>
+          <a href="#" class="s3">team</a>
+          <a href="#" class="s3">craft</a>
+          <a href="#" class="s2">tooling</a>
+          <a href="#" class="s2">accessibility</a>
+          <a href="#" class="s3">architecture</a>
+          <a href="#" class="s2">naming</a>
+          <a href="#" class="s2">writing</a>
+          <a href="#" class="s1">monolith</a>
+          <a href="#" class="s1">microservices</a>
+          <a href="#" class="s2">code-review</a>
+          <a href="#" class="s1">hiring</a>
+          <a href="#" class="s2">meetings</a>
+          <a href="#" class="s1">api-design</a>
+          <a href="#" class="s1">testing</a>
+          <a href="#" class="s2">tiredness</a>
+          <a href="#" class="s1">critique</a>
+          <a href="#" class="s1">rest</a>
+        </div>
+      </div>
+
+      <div class="widget">
+        <h3>Most read this month</h3>
+        <ol class="popular-list">
+          <li><a href="post.html">The Long Road Between Idea and Shipped</a></li>
+          <li><a href="post.html">A Calm Defense of the Monolith</a></li>
+          <li><a href="post.html">The Patient Programmer</a></li>
+          <li><a href="post.html">Hiring for Taste, Not Just Skill</a></li>
+          <li><a href="post.html">What Code Reviews Are Actually For</a></li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <a href="index.html" class="logo">The Margin <em>Notes</em></a>
+    <p>© 2025 The Margin Notes · CC BY 4.0</p>
+    <nav aria-label="Footer">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="archive.html">Archive</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="#">RSS</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

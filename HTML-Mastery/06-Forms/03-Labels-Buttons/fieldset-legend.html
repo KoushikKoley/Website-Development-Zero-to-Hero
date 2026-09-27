@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fieldset &amp; Legend — Grouping Form Controls — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML fieldset and legend elements: grouping related controls, legend as group label for screen readers, nested fieldsets, disabled on fieldset (disables all children), styling considerations, form attribute, accessible group labeling patterns.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box label.inline { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; margin-right: 14px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 280px;
+    }
+    .demo-box input:disabled { background: #f1f5f9; cursor: not-allowed; }
+    .demo-box fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin: 14px 0; }
+    .demo-box legend { padding: 0 8px; font-weight: 600; color: var(--ink); }
+    .demo-box fieldset[disabled] { opacity: 0.5; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 11</span>
+    <h1><code>&lt;fieldset&gt;</code> &amp; <code>&lt;legend&gt;</code></h1>
+    <p>Forms get confusing fast: address, payment, shipping, billing, preferences — all in one page. <code>&lt;fieldset&gt;</code> groups related controls together, and <code>&lt;legend&gt;</code> labels the group. Screen readers announce the legend with each field — turning "Email [input]" into "Shipping address, Email [input]" with no extra code.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why-group">Why group controls?</a></li>
+        <li><a href="#basic">Basic fieldset + legend</a></li>
+        <li><a href="#legend-role">Legend as group label</a></li>
+        <li><a href="#nested">Nested fieldsets</a></li>
+        <li><a href="#disabled">disabled on fieldset</a></li>
+        <li><a href="#styling">Styling considerations</a></li>
+        <li><a href="#form-attribute">form attribute</a></li>
+        <li><a href="#aria-alternatives">Accessible group labeling alternatives</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why-group">
+        <h2><span class="num">1</span> Why group controls?</h2>
+        <p>Long forms with many fields are overwhelming. Users need visual structure and semantic structure. A <code>&lt;fieldset&gt;</code> provides both: a visual boundary (default border) and a semantic grouping that assistive technologies announce.</p>
+        <p>Key benefits:</p>
+        <ul>
+          <li><strong>Visual organization:</strong> Boxes around related fields help users scan.</li>
+          <li><strong>Screen-reader context:</strong> The <code>&lt;legend&gt;</code> is announced with each field inside, giving context.</li>
+          <li><strong>Bulk disable:</strong> Setting <code>disabled</code> on a <code>&lt;fieldset&gt;</code> disables all controls inside.</li>
+          <li><strong>Semantic meaning:</strong> Screen readers can navigate by fieldset groups, jumping between sections.</li>
+        </ul>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          Without <code>&lt;fieldset&gt;</code>, screen reader users hear only field labels. With it, they hear "Shipping address, Email [input]" — the group context is announced automatically. This is one of the cheapest, highest-impact accessibility wins available.
+        </div>
+      </section>
+
+      <section id="basic">
+        <h2><span class="num">2</span> Basic fieldset + legend</h2>
+        <p>The structure: <code>&lt;fieldset&gt;</code> wraps the group; <code>&lt;legend&gt;</code> is the first child and provides the group label.</p>
+        <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Shipping address&lt;/legend&gt;
+
+  &lt;label for="ship-name"&gt;Full name&lt;/label&gt;
+  &lt;input type="text" id="ship-name" name="ship-name" required&gt;
+
+  &lt;label for="ship-street"&gt;Street address&lt;/label&gt;
+  &lt;input type="text" id="ship-street" name="ship-street" required&gt;
+
+  &lt;label for="ship-city"&gt;City&lt;/label&gt;
+  &lt;input type="text" id="ship-city" name="ship-city" required&gt;
+
+  &lt;label for="ship-zip"&gt;Postal code&lt;/label&gt;
+  &lt;input type="text" id="ship-zip" name="ship-zip" required&gt;
+&lt;/fieldset&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Basic fieldset + legend demo</div>
+          <fieldset>
+            <legend>Shipping address</legend>
+            <label for="demo-ship-name">Full name</label>
+            <input type="text" id="demo-ship-name" name="ship-name" required>
+            <label for="demo-ship-street">Street address</label>
+            <input type="text" id="demo-ship-street" name="ship-street" required>
+            <label for="demo-ship-city">City</label>
+            <input type="text" id="demo-ship-city" name="ship-city" required>
+            <label for="demo-ship-zip">Postal code</label>
+            <input type="text" id="demo-ship-zip" name="ship-zip" required>
+          </fieldset>
+        </div>
+      </section>
+
+      <section id="legend-role">
+        <h2><span class="num">3</span> Legend as group label</h2>
+        <p>The <code>&lt;legend&gt;</code> element must be the <strong>first child</strong> of the fieldset. It's announced as part of each labeled control inside. For radio and checkbox groups, this is essential — without it, screen reader users would hear only "Yes" / "No" with no idea what the question is.</p>
+        <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Subscribe to newsletter?&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="sub" value="yes"&gt; Yes&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="sub" value="no" checked&gt; No&lt;/label&gt;
+&lt;/fieldset&gt;
+
+&lt;!-- Screen reader announces: --&gt;
+&lt;!-- "Subscribe to newsletter? Yes. Radio button. Not selected." --&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Legend for radio group demo</div>
+          <fieldset>
+            <legend>Subscribe to newsletter?</legend>
+            <label class="inline"><input type="radio" name="demo-sub" value="yes"> Yes</label>
+            <label class="inline"><input type="radio" name="demo-sub" value="no" checked> No</label>
+          </fieldset>
+          <fieldset style="margin-top:16px;">
+            <legend>Preferred contact method</legend>
+            <label class="inline"><input type="radio" name="demo-contact" value="email" checked> Email</label>
+            <label class="inline"><input type="radio" name="demo-contact" value="sms"> SMS</label>
+            <label class="inline"><input type="radio" name="demo-contact" value="phone"> Phone</label>
+          </fieldset>
+        </div>
+      </section>
+
+      <section id="nested">
+        <h2><span class="num">4</span> Nested fieldsets</h2>
+        <p>Fieldsets can nest — useful for hierarchical grouping like "Shipping address" containing "Recipient" and "Address" sub-groups:</p>
+        <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Order details&lt;/legend&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;Recipient&lt;/legend&gt;
+    &lt;label for="r-name"&gt;Name&lt;/label&gt;
+    &lt;input type="text" id="r-name" name="r-name"&gt;
+    &lt;label for="r-phone"&gt;Phone&lt;/label&gt;
+    &lt;input type="tel" id="r-phone" name="r-phone"&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;Delivery address&lt;/legend&gt;
+    &lt;label for="d-street"&gt;Street&lt;/label&gt;
+    &lt;input type="text" id="d-street" name="d-street"&gt;
+    &lt;label for="d-city"&gt;City&lt;/label&gt;
+    &lt;input type="text" id="d-city" name="d-city"&gt;
+  &lt;/fieldset&gt;
+&lt;/fieldset&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Nested fieldsets demo</div>
+          <fieldset>
+            <legend>Order details</legend>
+            <fieldset>
+              <legend>Recipient</legend>
+              <label for="demo-r-name">Name</label>
+              <input type="text" id="demo-r-name" name="r-name">
+              <label for="demo-r-phone">Phone</label>
+              <input type="tel" id="demo-r-phone" name="r-phone">
+            </fieldset>
+            <fieldset style="margin-top:14px;">
+              <legend>Delivery address</legend>
+              <label for="demo-d-street">Street</label>
+              <input type="text" id="demo-d-street" name="d-street">
+              <label for="demo-d-city">City</label>
+              <input type="text" id="demo-d-city" name="d-city">
+            </fieldset>
+          </fieldset>
+        </div>
+      </section>
+
+      <section id="disabled">
+        <h2><span class="num">5</span> disabled on fieldset</h2>
+        <p>Setting <code>disabled</code> on a <code>&lt;fieldset&gt;</code> disables every form control inside it — inputs, buttons, selects, textareas. Inherited by descendants. Perfect for "lock this section until prerequisite is met" patterns.</p>
+        <pre><code>&lt;fieldset disabled&gt;
+  &lt;legend&gt;Billing (locked until shipping confirmed)&lt;/legend&gt;
+  &lt;input type="text" name="bill-name"&gt;
+  &lt;input type="text" name="bill-cc"&gt;
+  &lt;button type="submit"&gt;Process payment&lt;/button&gt;
+&lt;/fieldset&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">disabled fieldset demo — all controls inside are inert</div>
+          <fieldset disabled>
+            <legend>Billing (locked until shipping confirmed)</legend>
+            <label for="demo-bill-name">Name</label>
+            <input type="text" id="demo-bill-name" name="bill-name" value="Alice Smith">
+            <label for="demo-bill-cc">Credit card</label>
+            <input type="text" id="demo-bill-cc" name="bill-cc" value="4111-1111-1111-1111">
+          </fieldset>
+          <label style="margin-top:14px;"><input type="checkbox" id="demo-enable-billing" onclick="document.getElementById('demo-billing-fs').disabled = !this.checked;"> Enable billing section</label>
+          <fieldset id="demo-billing-fs" disabled style="margin-top:8px;">
+            <legend>Dynamic billing</legend>
+            <label for="demo-bill-cc-2">Credit card number</label>
+            <input type="text" id="demo-bill-cc-2" name="bill-cc-2">
+          </fieldset>
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          <code>&lt;legend&gt;</code> inside a disabled fieldset is not disabled — it's not a form control. But the styling of disabled fieldsets varies; you may need to explicitly dim the legend or keep its contrast high.
+        </div>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">6</span> Styling considerations</h2>
+        <p>Default browser styling for fieldsets is a thin border with the legend breaking the top border line. Many teams reset and rebuild:</p>
+        <pre><code>/* Reset to clean look */
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+legend {
+  padding: 0 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Card-style legend (above the fieldset) */
+fieldset {
+  border: none;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 24px;
+  margin: 16px 0;
+  position: relative;
+}
+legend {
+  position: absolute;
+  top: -12px;
+  background: white;
+  padding: 0 8px;
+  font-weight: 600;
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Avoid setting <code>display: flex</code> or <code>display: grid</code> directly on the fieldset — some browsers have legacy rendering quirks. Instead, wrap the inner controls in a <code>&lt;div&gt;</code> and apply flex/grid there.
+        </div>
+      </section>
+
+      <section id="form-attribute">
+        <h2><span class="num">7</span> form attribute</h2>
+        <p>Like other form controls, a <code>&lt;fieldset&gt;</code> accepts a <code>form</code> attribute to associate it with a form even when not a DOM descendant. Useful when you want the visual grouping but the actual form lives elsewhere.</p>
+        <pre><code>&lt;form id="checkout" action="/checkout" method="post"&gt;
+  &lt;!-- main form content --&gt;
+&lt;/form&gt;
+
+&lt;!-- Visual grouping referencing the form --&gt;
+&lt;fieldset form="checkout"&gt;
+  &lt;legend&gt;Coupon&lt;/legend&gt;
+  &lt;input type="text" name="coupon" form="checkout"&gt;
+&lt;/fieldset&gt;</code></pre>
+      </section>
+
+      <section id="aria-alternatives">
+        <h2><span class="num">8</span> Accessible group labeling alternatives</h2>
+        <p>Sometimes <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> isn't possible — for instance, when a layout library expects plain divs. ARIA alternatives exist but should be last resorts:</p>
+        <pre><code>&lt;!-- ARIA alternative: role="group" + aria-labelledby --&gt;
+&lt;div role="group" aria-labelledby="addr-label"&gt;
+  &lt;h3 id="addr-label"&gt;Shipping address&lt;/h3&gt;
+  &lt;input type="text" name="ship-name"&gt;
+  ...
+&lt;/div&gt;
+
+&lt;!-- For radio groups: role="radiogroup" + aria-labelledby --&gt;
+&lt;div role="radiogroup" aria-labelledby="plan-label"&gt;
+  &lt;h3 id="plan-label"&gt;Choose plan&lt;/h3&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="free"&gt; Free&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="pro"&gt; Pro&lt;/label&gt;
+&lt;/div&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Reaching for ARIA <code>role="group"</code> when <code>&lt;fieldset&gt;</code> would do the same job. The First Rule of ARIA is "Don't use ARIA." Native HTML provides the same semantics for free, with better cross-browser and AT support.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>&lt;legend&gt;</code></td><td>Fieldset announces as "group" with no name</td><td>Always include a <code>&lt;legend&gt;</code> as first child</td></tr>
+            <tr><td><code>&lt;legend&gt;</code> not first child</td><td>Some browsers ignore the legend</td><td>Always make legend the first child</td></tr>
+            <tr><td>No fieldset for radio groups</td><td>Screen readers can't announce the question</td><td>Always wrap radio groups in fieldset + legend</td></tr>
+            <tr><td>Using <code>div</code> with <code>role="group"</code> instead of fieldset</td><td>Misses default styling; ARIA not always picked up consistently</td><td>Prefer native <code>&lt;fieldset&gt;</code></td></tr>
+            <tr><td>Display: flex / grid directly on fieldset</td><td>Quirky rendering in older browsers</td><td>Wrap inner content in a div and flex/grid that</td></tr>
+            <tr><td>Multiple legends in one fieldset</td><td>Only the first is announced</td><td>Use one legend per fieldset; nest if needed</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Group a checkout form</strong>
+          Take a checkout form with shipping address, billing address, and payment fields. Wrap each in a <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>. Test with a screen reader to verify the legend is announced per field.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Conditional disable</strong>
+          Build a form where one fieldset (e.g., "Billing address") is disabled by default. Add a checkbox "Billing same as shipping" that toggles the fieldset's <code>disabled</code> attribute via JavaScript.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Nested fieldsets</strong>
+          Build a job application form with a top-level "Personal Information" fieldset containing nested fieldsets for "Contact details" and "Address". Verify each section is announced correctly.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;fieldset&gt; — universal</span>
+          <span class="pill yes">&lt;legend&gt; — universal</span>
+          <span class="pill yes">disabled on fieldset — universal</span>
+          <span class="pill yes">form attribute on fieldset — universal</span>
+          <span class="pill yes">Nested fieldsets — universal</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Checkout forms</h4>
+            <p>Separate fieldsets for shipping, billing, payment.</p>
+          </div>
+          <div class="card">
+            <h4>Radio question groups</h4>
+            <p>Each yes/no or multi-choice question wrapped with its legend.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-step wizards</h4>
+            <p>One fieldset per step; legend describes the step.</p>
+          </div>
+          <div class="card">
+            <h4>Settings panels</h4>
+            <p>Fieldsets group "Account", "Notifications", "Privacy" sections.</p>
+          </div>
+          <div class="card">
+            <h4>Read-only review</h4>
+            <p>Disabled fieldsets show submitted data without allowing edits.</p>
+          </div>
+          <div class="card">
+            <h4>Nested complex forms</h4>
+            <p>Fieldset within fieldset for hierarchical data (order &gt; recipient, address, etc.).</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="button.html">← Previous: The Button Element</a>
+    <a class="next" href="../04-Form-Validation/html5-validation.html">Next: HTML5 Validation →</a>
+  </footer>
+</body>
+</html>

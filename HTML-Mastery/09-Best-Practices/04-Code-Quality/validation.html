@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Validation — W3C Validator, DevTools, VS Code, Common Errors — HTML Mastery</title>
+  <meta name="description" content="HTML validation in depth: the W3C Markup Validation Service, browser DevTools, VS Code extensions, and the common validation errors every author hits — unclosed tags, duplicate IDs, invalid nesting, deprecated attributes, missing required attributes. Why validation matters for quirks mode and parsing consistency.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Code Quality</span>
+  <h1>HTML <code>Validation</code></h1>
+  <p>The W3C Markup Validator catches mistakes browsers silently forgive — unclosed tags, duplicate IDs, invalid nesting, deprecated attributes. Validation isn't pedantry; it prevents quirks mode, parsing inconsistencies, and accessibility failures.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why Validate?</a></li>
+      <li><a href="#tools">Validation Tools</a></li>
+      <li><a href="#w3c">The W3C Validator</a></li>
+      <li><a href="#devtools">Browser DevTools</a></li>
+      <li><a href="#vscode">VS Code Extensions</a></li>
+      <li><a href="#errors">Common Errors</a></li>
+      <li><a href="#quirks">Quirks vs Standards Mode</a></li>
+      <li><a href="#parsing">Parsing Inconsistencies</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Support &amp; CI Integration</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="why">
+      <h2><span class="num">1</span> Why Validate?</h2>
+      <p>Browsers are incredibly forgiving. They'll render HTML with unclosed tags, misspelled attributes, and duplicate IDs without showing an error. This forgiveness is a feature for resilience — but it hides bugs from developers. The same invalid markup may parse differently in different browsers, or break accessibility tools, or trigger quirks mode.</p>
+
+      <p>Validation checks your HTML against the official WHATWG HTML spec (or W3C's HTML5 spec — essentially the same). It catches:</p>
+      <ul>
+        <li>Structural errors (unclosed tags, invalid nesting)</li>
+        <li>Missing required attributes (e.g. <code>alt</code> on <code>&lt;img&gt;</code>, <code>label</code> on form controls)</li>
+        <li>Deprecated elements and attributes (<code>&lt;center&gt;</code>, <code>bgcolor</code>)</li>
+        <li>Invalid attribute values (e.g. <code>tabindex="banana"</code>)</li>
+        <li>Duplicate <code>id</code> attributes (which break <code>getElementById</code>, <code>&lt;label for&gt;</code>, ARIA relationships)</li>
+      </ul>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Validation is a baseline, not a quality bar. A page can pass validation and still be inaccessible, slow, and ugly. But a page that fails validation almost certainly has bugs you don't know about. Validate early, validate often.
+      </div>
+    </section>
+
+    <section id="tools">
+      <h2><span class="num">2</span> Validation Tools</h2>
+      <p>Multiple ways to validate, depending on your workflow:</p>
+
+      <table class="info-table">
+        <thead><tr><th>Tool</th><th>Type</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td>W3C Markup Validator</td><td>Web service</td><td>One-off validation, public URLs</td></tr>
+          <tr><td>Chrome DevTools Issues tab</td><td>Built-in</td><td>Live browser problems</td></tr>
+          <tr><td>VS Code HTML Language Features</td><td>IDE plugin</td><td>Real-time feedback while typing</td></tr>
+          <tr><td>html-validate (npm)</td><td>CLI / Node library</td><td>CI pipelines, pre-commit hooks</td></tr>
+          <tr><td>nu Html Checker (v.Nu)</td><td>Local binary</td><td>Offline batch validation</td></tr>
+          <tr><td>Lighthouse</td><td>Chrome DevTools</td><td>Combined performance + a11y + best practices audit</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="w3c">
+      <h2><span class="num">3</span> The W3C Validator</h2>
+      <p>The official service at <a href="https://validator.w3.org/">validator.w3.org</a>. Three input methods:</p>
+      <ul>
+        <li><strong>Validate by URL</strong> — paste a public URL, validator fetches and checks</li>
+        <li><strong>Validate by File Upload</strong> — upload an HTML file from disk</li>
+        <li><strong>Validate by Direct Input</strong> — paste HTML text</li>
+      </ul>
+
+      <p>The validator reports three severities:</p>
+      <ul>
+        <li><strong>Error</strong> — Spec violation that browsers may interpret unpredictably</li>
+        <li><strong>Warning</strong> — Likely mistake but not strictly spec-violating</li>
+        <li><strong>Info</strong> — Suggestions and best-practice notes</li>
+      </ul>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The W3C validator is built on the <strong>nu Html Checker</strong> — the same engine Google uses internally. You can run it locally via Java: <code>java -jar vnu.jar your-file.html</code>. Ideal for batch validation of thousands of pages in CI.
+      </div>
+    </section>
+
+    <section id="devtools">
+      <h2><span class="num">4</span> Browser DevTools</h2>
+      <p>Modern browsers surface HTML problems directly in DevTools — no external service needed.</p>
+
+      <h3>Chrome DevTools → Issues tab</h3>
+      <p>Open DevTools (F12), find the "Issues" tab. Chrome lists:</p>
+      <ul>
+        <li>Cross-origin resource issues (CORS, mixed content)</li>
+        <li>Deprecated features (<code>document.write</code>, <code>&lt;marquee&gt;</code>)</li>
+        <li>Accessibility issues (missing <code>alt</code>, low-contrast)</li>
+        <li>Quirks mode triggers</li>
+      </ul>
+
+      <h3>Viewing the parsed (not source) DOM</h3>
+      <p>The Elements panel shows what the browser <em>actually parsed</em>, which may differ from your source HTML. If your source has unclosed tags, the Elements panel shows where the browser inserted implicit closing tags — invaluable for diagnosing layout bugs.</p>
+
+      <pre><code>Source HTML:                    Parsed DOM (Elements panel):
+─────────────                    ────────────────────────────
+&lt;div&gt;                           &lt;div&gt;
+  &lt;p&gt;Hello                        &lt;p&gt;Hello&lt;/p&gt;       ← auto-closed
+  &lt;div&gt;World&lt;/div&gt;              &lt;div&gt;World&lt;/div&gt;
+&lt;/div&gt;                            &lt;/div&gt;
+                                &lt;/div&gt;                  ← extra close!</code></pre>
+    </section>
+
+    <section id="vscode">
+      <h2><span class="num">5</span> VS Code Extensions</h2>
+      <p>VS Code ships with built-in HTML Language Features (Microsoft) that flag many issues as you type. For deeper validation:</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>HTMLHint</h4>
+          <p>Configurable linter. Catches tag-pair mismatches, duplicate IDs, missing <code>alt</code>. Configurable via <code>.htmlhintrc</code>.</p>
+        </div>
+        <div class="card">
+          <h4>HTML-validate</h4>
+          <p>Wraps the nu Html Checker engine. Strictest, most accurate. Integrates with VS Code and CI.</p>
+        </div>
+        <div class="card">
+          <h4>Prettier</h4>
+          <p>Formatter, not validator — but catches structural problems by refusing to format broken HTML.</p>
+        </div>
+        <div class="card">
+          <h4>Live Server + W3C snippet</h4>
+          <p>Many developers use a "save → POST to validator" workflow during development.</p>
+        </div>
+      </div>
+
+      <pre><code>.vscode/settings.json — enable strict HTML validation:
+{
+  "html.validate.scripts": true,
+  "html.validate.styles": true,
+  "html.format.wrapLineLength": 100,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}</code></pre>
+    </section>
+
+    <section id="errors">
+      <h2><span class="num">6</span> Common Validation Errors</h2>
+
+      <h3>6.1 Unclosed tags</h3>
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Unclosed &lt;p&gt;</h4>
+          <pre><code>&lt;p&gt;First paragraph
+&lt;p&gt;Second paragraph</code></pre>
+          <p>Browser auto-closes <code>&lt;p&gt;</code> at the next <code>&lt;p&gt;</code>, but other nesting may break.</p>
+        </div>
+        <div class="good">
+          <h4>✓ Explicit close</h4>
+          <pre><code>&lt;p&gt;First paragraph&lt;/p&gt;
+&lt;p&gt;Second paragraph&lt;/p&gt;</code></pre>
+        </div>
+      </div>
+
+      <h3>6.2 Duplicate IDs</h3>
+      <pre><code>&lt;!-- ERROR: ID "email" defined more than once --&gt;
+&lt;input id="email" type="email"&gt;
+&lt;input id="email" type="text"&gt;
+
+&lt;!-- Consequence --&gt;
+document.getElementById('email')  // returns first only
+label[for="email"]                // only labels the first</code></pre>
+
+      <h3>6.3 Invalid nesting</h3>
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Block inside inline</h4>
+          <pre><code>&lt;a href="/"&gt;
+  &lt;h2&gt;Title&lt;/h2&gt;
+  &lt;p&gt;Body&lt;/p&gt;
+&lt;/a&gt;</code></pre>
+          <p>Heading and paragraph inside an anchor was allowed in HTML5, but nesting <code>&lt;a&gt;</code> inside <code>&lt;a&gt;</code> or <code>&lt;button&gt;</code> inside <code>&lt;button&gt;</code> is not.</p>
+        </div>
+        <div class="good">
+          <h4>✓ Use the right element</h4>
+          <pre><code>&lt;a href="/" class="card-link"&gt;
+  &lt;span class="card-title"&gt;Title&lt;/span&gt;
+  &lt;span class="card-body"&gt;Body&lt;/span&gt;
+&lt;/a&gt;</code></pre>
+          <p>Or restructure to put the link inside the heading.</p>
+        </div>
+      </div>
+
+      <h3>6.4 Deprecated attributes</h3>
+      <pre><code>&lt;!-- DEPRECATED --&gt;
+&lt;body bgcolor="#ffffff" text="#000000"&gt;
+&lt;table border="1" cellpadding="5" cellspacing="0"&gt;
+&lt;img src="x.png" align="right"&gt;
+&lt;font face="Arial" size="3"&gt;Text&lt;/font&gt;
+&lt;center&gt;Centered&lt;/center&gt;
+
+&lt;!-- MODERN EQUIVALENT --&gt;
+&lt;body style="background:#fff; color:#000"&gt;
+&lt;table style="border:1px solid; padding:5px; border-collapse:collapse"&gt;
+&lt;img src="x.png" style="float:right"&gt;
+&lt;span style="font-family:Arial; font-size:1rem"&gt;Text&lt;/span&gt;
+&lt;div style="text-align:center"&gt;Centered&lt;/div&gt;</code></pre>
+
+      <h3>6.5 Missing required attributes</h3>
+      <table class="info-table">
+        <thead><tr><th>Element</th><th>Required attribute</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>&lt;img&gt;</code></td><td><code>alt</code> (even if empty)</td><td>Accessibility — screen reader needs text or empty alt to skip</td></tr>
+          <tr><td><code>&lt;input type="image"&gt;</code></td><td><code>alt</code> + <code>src</code></td><td>Image button needs accessible name</td></tr>
+          <tr><td><code>&lt;map&gt;</code></td><td><code>name</code></td><td>Required for image map reference</td></tr>
+          <tr><td><code>&lt;form&gt;</code></td><td>None strictly required, but <code>action</code> strongly recommended</td><td>Where the form submits</td></tr>
+          <tr><td><code>&lt;label&gt;</code></td><td>Either wraps a control or has <code>for</code> matching an input's <code>id</code></td><td>Accessibility — associates label with input</td></tr>
+          <tr><td><code>&lt;iframe&gt;</code></td><td><code>title</code></td><td>Accessibility — announces iframe purpose</td></tr>
+          <tr><td><code>&lt;video&gt;</code> / <code>&lt;audio&gt;</code></td><td><code>src</code> or <code>&lt;source&gt;</code> child</td><td>Media to play</td></tr>
+        </tbody>
+      </table>
+
+      <h3>6.6 Stray end tags</h3>
+      <pre><code>&lt;!-- ERROR: Stray end tag "div" --&gt;
+&lt;p&gt;Hello&lt;/p&gt;
+&lt;/div&gt;        ← no matching &lt;div&gt;
+
+&lt;!-- ERROR: end tag for element "p" which is not open --&gt;
+&lt;div&gt;Content&lt;/p&gt;&lt;/div&gt;</code></pre>
+    </section>
+
+    <section id="quirks">
+      <h2><span class="num">7</span> Quirks vs Standards Mode</h2>
+      <p>The browser chooses between three rendering modes based on the doctype:</p>
+      <ul>
+        <li><strong>No-quirks (standards) mode</strong> — modern, predictable rendering. Triggered by <code>&lt;!DOCTYPE html&gt;</code>.</li>
+        <li><strong>Limited-quirks mode</strong> — close to standards, but uses legacy table layout for backward compat. Triggered by HTML 4.01 Transitional / XHTML 1.0 Transitional doctypes.</li>
+        <li><strong>Quirks mode</strong> — replicates pre-2000 browser behavior. Box model is wrong (border/padding inside declared width). Triggered by missing or malformed doctype.</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Forgetting <code>&lt;!DOCTYPE html&gt;</code>. Without it, the browser enters quirks mode — CSS layouts behave unpredictably, table layouts come back, and modern features may be disabled. Always start your document with the doctype.
+      </div>
+
+      <pre><code>// Check current mode in DevTools console:
+document.compatMode
+// "CSS1Compat" = standards mode
+// "BackCompat" = quirks mode</code></pre>
+    </section>
+
+    <section id="parsing">
+      <h2><span class="num">8</span> Parsing Inconsistencies</h2>
+      <p>When HTML is malformed, each browser follows the HTML5 spec for "error recovery" — but spec-recovery isn't always predictable, and edge cases differ across browsers. Common issues:</p>
+
+      <ul>
+        <li><strong>Table layout</strong> — broken <code>&lt;tr&gt;</code>/<code>&lt;td&gt;</code> nesting may auto-insert extra rows</li>
+        <li><strong>Form control adoption</strong> — misplaced form controls can be silently reassigned to a different form</li>
+        <li><strong>Script execution order</strong> — misnested <code>&lt;script&gt;</code> tags may execute in unexpected order</li>
+        <li><strong>Cascade layer confusion</strong> — broken DOM structure means selectors match unintended elements</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A team spent two days debugging why a "Submit" button didn't submit. They had a typo: <code>&lt;button type="submti"&gt;</code> — invalid value, browser defaulted to <code>type="submit"</code> in Chrome but <code>type="button"</code> in older Safari. Validation would have caught this in seconds.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">9</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Skipping the doctype</h4>
+          <p>Triggers quirks mode. Always include <code>&lt;!DOCTYPE html&gt;</code> as the first line.</p>
+        </div>
+        <div class="card">
+          <h4>Block elements inside inline</h4>
+          <p>Putting <code>&lt;div&gt;</code> inside <code>&lt;span&gt;</code> is invalid and renders unpredictably.</p>
+        </div>
+        <div class="card">
+          <h4>Duplicate IDs</h4>
+          <p>Breaks <code>getElementById</code>, <code>label for</code>, ARIA relationships. IDs must be unique.</p>
+        </div>
+        <div class="card">
+          <h4>Missing <code>alt</code> on images</h4>
+          <p>Always include — empty <code>alt=""</code> for decorative, descriptive text otherwise.</p>
+        </div>
+        <div class="card">
+          <h4>Inline <code>style</code> for layout</h4>
+          <p>Valid HTML, but unmaintainable. Use external stylesheets.</p>
+        </div>
+        <div class="card">
+          <h4>Validating only at the end</h4>
+          <p>By the time you ship, you've accumulated dozens of errors. Validate continuously with IDE plugins.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">10</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Validate and Fix a Buggy Page</strong>
+        <p>Below is HTML with at least 8 validation errors. Copy it to the W3C Validator (or run locally), identify each error, and fix it.</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Buggy Page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#ffffff"&gt;
+  &lt;header&gt;
+    &lt;img src="logo.png"&gt;
+    &lt;h1 id="title"&gt;Welcome&lt;/h1&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;h2 id="title"&gt;About Us&lt;/h2&gt;
+    &lt;p&gt;We are a company.
+    &lt;p&gt;Located in Portland.
+    &lt;div&gt;
+      &lt;span&gt;
+        &lt;div&gt;Block inside inline&lt;/div&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;form&gt;
+      &lt;input id="email" type="email"&gt;
+      &lt;input id="email" type="text"&gt;
+      &lt;button type="submti"&gt;Submit&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;iframe src="map.html"&gt;&lt;/iframe&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p><strong>Errors to find:</strong></p>
+        <ul>
+          <li>Missing <code>lang</code> attribute on <code>&lt;html&gt;</code></li>
+          <li>Missing <code>viewport</code> meta tag</li>
+          <li><code>bgcolor</code> on <code>&lt;body&gt;</code> — deprecated</li>
+          <li>Missing <code>alt</code> on <code>&lt;img&gt;</code></li>
+          <li>Duplicate <code>id="title"</code></li>
+          <li>Unclosed <code>&lt;p&gt;</code> tags (auto-closed but warn)</li>
+          <li><code>&lt;div&gt;</code> inside <code>&lt;span&gt;</code> — invalid nesting</li>
+          <li>Duplicate <code>id="email"</code></li>
+          <li>Typo <code>type="submti"</code> — invalid value</li>
+          <li>Missing <code>title</code> on <code>&lt;iframe&gt;</code></li>
+        </ul>
+        <p><strong>Deliverable:</strong> A clean version that passes the W3C validator with zero errors and zero warnings.</p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">11</span> Support &amp; CI Integration</h2>
+      <div class="browser-support">
+        <span class="pill yes">W3C Validator: web service, free, no limit for personal use</span>
+        <span class="pill yes">nu Html Checker (v.Nu): Java binary, runs anywhere</span>
+        <span class="pill yes">html-validate: npm package, integrates with Jest/CI</span>
+        <span class="pill yes">Lighthouse: Chrome built-in, includes HTML audit</span>
+        <span class="pill yes">All modern browsers: render per HTML5 spec, error recovery is consistent</span>
+      </div>
+
+      <h3>CI integration with html-validate</h3>
+      <pre><code># .github/workflows/validate.yml
+name: HTML Validation
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install -g html-validate
+      - run: html-validate "src/**/*.html"</code></pre>
+
+      <pre><code>// .htmlvalidate.json — config
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "void-style": ["error", { "style": "omit" }],
+    "attr-quotes": ["error", { "style": "double" }],
+    "no-trailing-whitespace": "error"
+  }
+}</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Add <code>html-validate</code> to a pre-commit hook. Every commit gets validated automatically — invalid HTML never reaches your repo. This catches ~80% of validation errors before they hit code review.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="../03-Accessibility/screen-readers.html">← Previous: Screen Readers</a>
+  <a href="commenting.html">Next: HTML Commenting →</a>
+</footer>
+</body>
+</html>

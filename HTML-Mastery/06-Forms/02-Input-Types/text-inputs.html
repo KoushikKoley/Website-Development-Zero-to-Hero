@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Inputs — text, password, email, tel, url, search — HTML Mastery</title>
+  <meta name="description" content="Complete guide to text-based HTML inputs: text, password, email, tel, url, search. Mobile keyboard hints, built-in email validation, inputmode, enterkeyhint, maxlength/minlength, pattern, placeholder (and why it's not a label).">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      width: 100%; max-width: 340px; padding: 8px 10px;
+      border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: inherit;
+    }
+    .demo-box input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 4</span>
+    <h1>Text Inputs</h1>
+    <p>HTML has six text-based input types — <code>text</code>, <code>password</code>, <code>email</code>, <code>tel</code>, <code>url</code>, and <code>search</code> — each tuned for a different purpose. Choose correctly and mobile users get the right keyboard, browsers apply built-in validation, and password managers know how to help.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Text input types overview</a></li>
+        <li><a href="#text">type="text"</a></li>
+        <li><a href="#password">type="password"</a></li>
+        <li><a href="#email">type="email"</a></li>
+        <li><a href="#tel">type="tel"</a></li>
+        <li><a href="#url">type="url"</a></li>
+        <li><a href="#search">type="search"</a></li>
+        <li><a href="#inputmode">inputmode</a></li>
+        <li><a href="#enterkeyhint">enterkeyhint</a></li>
+        <li><a href="#length-limits">maxlength / minlength</a></li>
+        <li><a href="#pattern">pattern</a></li>
+        <li><a href="#placeholder">placeholder (and why it's not a label)</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Text input types overview</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Type</th><th>Purpose</th><th>Mobile keyboard</th><th>Built-in validation</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>text</code></td><td>Generic single-line text</td><td>Standard</td><td>None</td></tr>
+            <tr><td><code>password</code></td><td>Hidden text (obscured)</td><td>Standard (often with @/#)</td><td>None; browser offers to save</td></tr>
+            <tr><td><code>email</code></td><td>Email address</td><td>Email layout (@ key prominent)</td><td>Validates RFC email format</td></tr>
+            <tr><td><code>tel</code></td><td>Phone number</td><td>Numeric dial pad</td><td>None (use pattern)</td></tr>
+            <tr><td><code>url</code></td><td>Absolute URL</td><td>URL layout (/, .com keys)</td><td>Must be absolute URL</td></tr>
+            <tr><td><code>search</code></td><td>Search query</td><td>Standard with search icon on Enter</td><td>None</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          On mobile, picking the right <code>type</code> triggers the right keyboard automatically. Picking the wrong one means users fight with autocorrect, missing keys, and frustration. The <code>type</code> attribute is a UX feature, not just a validation feature.
+        </div>
+      </section>
+
+      <section id="text">
+        <h2><span class="num">2</span> type="text"</h2>
+        <p>The fallback when no specific type applies: name, address line, free text. The default when the <code>type</code> attribute is omitted.</p>
+        <pre><code>&lt;label for="full-name"&gt;Full name&lt;/label&gt;
+&lt;input type="text" id="full-name" name="full-name"
+       autocomplete="name" required&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="text" demo</div>
+          <label for="demo-text">Full name</label>
+          <input type="text" id="demo-text" name="full-name" placeholder="Jane Doe" autocomplete="name">
+        </div>
+      </section>
+
+      <section id="password">
+        <h2><span class="num">3</span> type="password"</h2>
+        <p>Obscures each character with a dot (•) as the user types. Modern browsers add a "reveal password" eye icon natively. Always pair with the right <code>autocomplete</code> token:</p>
+        <pre><code>&lt;!-- Login form: existing password --&gt;
+&lt;label for="pw-login"&gt;Password&lt;/label&gt;
+&lt;input type="password" id="pw-login" name="password"
+       autocomplete="current-password" required&gt;
+
+&lt;!-- Registration form: new password --&gt;
+&lt;label for="pw-new"&gt;Create password&lt;/label&gt;
+&lt;input type="password" id="pw-new" name="new-password"
+       autocomplete="new-password"
+       minlength="8" required&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Setting <code>autocomplete="off"</code> on password fields to "prevent saving." Modern browsers ignore it because users have the right to use their password manager. Use proper tokens (<code>current-password</code> vs <code>new-password</code>) to give password managers context.
+        </div>
+        <div class="demo-box">
+          <div class="demo-label">type="password" demo</div>
+          <label for="demo-pw">Password</label>
+          <input type="password" id="demo-pw" name="password" autocomplete="current-password" placeholder="••••••••">
+        </div>
+      </section>
+
+      <section id="email">
+        <h2><span class="num">4</span> type="email"</h2>
+        <p>Triggers the email keyboard on mobile (the <code>@</code> and <code>.</code> keys are prominent). Browser validates the value matches RFC email format on submit — but <em>only</em> when the field has a value (empty passes unless <code>required</code>).</p>
+        <pre><code>&lt;label for="u-email"&gt;Email address&lt;/label&gt;
+&lt;input type="email" id="u-email" name="email"
+       autocomplete="email" required
+       placeholder="you@example.com"&gt;
+
+&lt;!-- Multiple emails (comma-separated, validated per entry) --&gt;
+&lt;label for="invite-emails"&gt;Invite emails&lt;/label&gt;
+&lt;input type="email" id="invite-emails" name="emails" multiple&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="email" demo — try invalid email then submit</div>
+          <form onsubmit="event.preventDefault(); alert('Valid email: ' + document.getElementById('demo-email').value);">
+            <label for="demo-email">Email address</label>
+            <input type="email" id="demo-email" name="email" autocomplete="email" required placeholder="you@example.com">
+            <button type="submit" style="margin-top:12px; background:var(--brand); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Test validation</button>
+          </form>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          The native email validation is intentionally lenient (allows <code>user@localhost</code> and other edge cases). For stricter rules, use <code>pattern</code>. Always re-validate on the server — client validation is for UX, not security.
+        </div>
+      </section>
+
+      <section id="tel">
+        <h2><span class="num">5</span> type="tel"</h2>
+        <p>Triggers the numeric dial pad on mobile. Browser does <em>not</em> validate format (phone formats vary globally), so add a <code>pattern</code> for stricter checks:</p>
+        <pre><code>&lt;label for="phone"&gt;US phone&lt;/label&gt;
+&lt;input type="tel" id="phone" name="phone"
+       autocomplete="tel"
+       pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+       placeholder="555-123-4567"
+       required&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="tel" demo — open on mobile to see dial pad</div>
+          <label for="demo-tel">Phone number</label>
+          <input type="tel" id="demo-tel" name="phone" autocomplete="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="555-123-4567">
+        </div>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          Phone numbers are wildly variable internationally. For global apps, use <code>type="tel"</code> with no <code>pattern</code> and let the server validate. For region-specific apps, a strict pattern catches typos.
+        </div>
+      </section>
+
+      <section id="url">
+        <h2><span class="num">6</span> type="url"</h2>
+        <p>Validates that the value is an <em>absolute</em> URL (with scheme like <code>http:</code> or <code>https:</code>). Mobile shows a URL-friendly keyboard. Empty values pass unless <code>required</code>.</p>
+        <pre><code>&lt;label for="website"&gt;Website&lt;/label&gt;
+&lt;input type="url" id="website" name="website"
+       autocomplete="url"
+       placeholder="https://example.com"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="url" demo — "example.com" alone fails validation; needs scheme</div>
+          <form onsubmit="event.preventDefault(); alert('Valid URL: ' + document.getElementById('demo-url').value);">
+            <label for="demo-url">Website</label>
+            <input type="url" id="demo-url" name="website" autocomplete="url" required placeholder="https://example.com">
+            <button type="submit" style="margin-top:12px; background:var(--brand); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">Test URL</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="search">
+        <h2><span class="num">7</span> type="search"</h2>
+        <p>Semantically marks the input as a search field. Some browsers add a "clear" (×) button when text is present, and the Enter key on mobile may show a "Search" label. Behavior is otherwise similar to <code>type="text"</code>.</p>
+        <pre><code>&lt;form action="/search" method="get" role="search"&gt;
+  &lt;label for="q" class="visually-hidden"&gt;Search&lt;/label&gt;
+  &lt;input type="search" id="q" name="q"
+         placeholder="Search docs..."
+         enterkeyhint="search"&gt;
+  &lt;button type="submit"&gt;Go&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type="search" demo — note the clear (×) button when typing</div>
+          <label for="demo-search">Search</label>
+          <input type="search" id="demo-search" name="q" placeholder="Search docs..." enterkeyhint="search">
+        </div>
+      </section>
+
+      <section id="inputmode">
+        <h2><span class="num">8</span> inputmode</h2>
+        <p>Forces a specific mobile keyboard <em>without</em> changing the input's type or validation. Useful when you want a text input that accepts only digits (e.g., a 6-digit SMS code) but don't want numeric coercion from <code>type="number"</code>.</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>inputmode</th><th>Keyboard</th><th>Typical use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>text</code> (default)</td><td>Standard</td><td>Default text</td></tr>
+            <tr><td><code>numeric</code></td><td>Numeric (no decimal)</td><td>PINs, postal codes, ages</td></tr>
+            <tr><td><code>decimal</code></td><td>Numeric with <code>.</code></td><td>Prices, quantities</td></tr>
+            <tr><td><code>tel</code></td><td>Dial pad (*#)</td><td>Phone-like text</td></tr>
+            <tr><td><code>email</code></td><td>Email (@ and . prominent)</td><td>Text that should look like email</td></tr>
+            <tr><td><code>url</code></td><td>URL layout (/ and .com)</td><td>Text that should look like URL</td></tr>
+            <tr><td><code>search</code></td><td>Standard with search hint</td><td>Search-like text</td></tr>
+            <tr><td><code>none</code></td><td>Suppress virtual keyboard</td><td>Custom on-screen keyboards</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- 6-digit SMS code: numeric keyboard, but stays a text input --&gt;
+&lt;label for="otp"&gt;Verification code&lt;/label&gt;
+&lt;input type="text" id="otp" name="otp"
+       inputmode="numeric"
+       pattern="[0-9]{6}"
+       maxlength="6"
+       autocomplete="one-time-code"
+       required&gt;</code></pre>
+      </section>
+
+      <section id="enterkeyhint">
+        <h2><span class="num">9</span> enterkeyhint</h2>
+        <p>Customizes the label of the Enter key on mobile virtual keyboards. Helps users understand what pressing Enter will do:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Value</th><th>Enter key label</th><th>Use when</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>enter</code></td><td>Default return arrow</td><td>Generic</td></tr>
+            <tr><td><code>done</code></td><td>"Done"</td><td>Last field in form, completes entry</td></tr>
+            <tr><td><code>go</code></td><td>"Go"</td><td>Navigate to URL</td></tr>
+            <tr><td><code>next</code></td><td>"Next" (with → arrow)</td><td>More fields to fill</td></tr>
+            <tr><td><code>previous</code></td><td>"Previous" (with ← arrow)</td><td>Back-step</td></tr>
+            <tr><td><code>search</code></td><td>"Search"</td><td>Search form</td></tr>
+            <tr><td><code>send</code></td><td>"Send"</td><td>Message / chat composer</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="length-limits">
+        <h2><span class="num">10</span> maxlength / minlength</h2>
+        <p>Enforce length constraints on text inputs. <code>maxlength</code> prevents typing beyond the limit; <code>minlength</code> triggers validation error if the value is too short on submit.</p>
+        <pre><code>&lt;label for="username"&gt;Username (3-20 chars)&lt;/label&gt;
+&lt;input type="text" id="username" name="username"
+       minlength="3" maxlength="20" required&gt;
+
+&lt;label for="bio"&gt;Bio (max 280 chars)&lt;/label&gt;
+&lt;textarea id="bio" name="bio" maxlength="280"&gt;&lt;/textarea&gt;
+&lt;small&gt;&lt;span data-count&gt;0&lt;/span&gt;/280&lt;/small&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Using <code>maxlength</code> to enforce "strong passwords." A long password is good, but <code>maxlength="20"</code> forces users into weaker passwords. Set a high <code>maxlength="128"</code> for sanity, never a strict low one for passwords.
+        </div>
+      </section>
+
+      <section id="pattern">
+        <h2><span class="num">11</span> pattern</h2>
+        <p>JavaScript regex (anchored automatically) the value must match. The browser shows a validation error on submit if it doesn't. Pair with <code>title</code> for a hint message:</p>
+        <pre><code>&lt;label for="zip"&gt;US ZIP code&lt;/label&gt;
+&lt;input type="text" id="zip" name="zip"
+       pattern="\d{5}(-\d{4})?"
+       title="5-digit ZIP, optionally with -4 extension"
+       placeholder="12345 or 12345-6789"&gt;
+
+&lt;label for="hex"&gt;Hex color&lt;/label&gt;
+&lt;input type="text" id="hex" name="hex"
+       pattern="#?[0-9a-fA-F]{6}"
+       title="Hex color like #ff0080"&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Patterns are anchored (wrapped in <code>^(?: ... )$</code>) automatically — you don't need <code>^</code> and <code>$</code> in your regex. Use <code>title</code> to explain the expected format; browsers include it in the validation tooltip.
+        </div>
+      </section>
+
+      <section id="placeholder">
+        <h2><span class="num">12</span> placeholder (and why it's not a label)</h2>
+        <p>Shows a hint inside the field when empty. Disappears on focus / input. Often abused as a label — but it is <strong>not</strong> a substitute for one:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Problem with placeholder-as-label</th><th>Why it matters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Disappears when user starts typing</td><td>User can't recall what field they're in mid-form</td></tr>
+            <tr><td>Often low-contrast gray</td><td>Fails WCAG AA contrast in many designs</td></tr>
+            <tr><td>Screen readers may not announce it</td><td>Field has no accessible name</td></tr>
+            <tr><td>Confused with auto-filled value</td><td>Users think placeholder is real data</td></tr>
+            <tr><td>Browser autofill hides it</td><td>Field becomes unlabeled once filled</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- BAD: placeholder as label --&gt;
+&lt;input type="email" placeholder="Email address" name="email"&gt;
+
+&lt;!-- GOOD: visible label + helpful placeholder --&gt;
+&lt;label for="email"&gt;Email address&lt;/label&gt;
+&lt;input type="email" id="email" name="email"
+       placeholder="you@example.com"&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Floating-label CSS patterns that show the placeholder text moving above the field on focus can work — but only if there's a real <code>&lt;label&gt;</code> for screen readers. Don't rely on the visual trick for accessibility.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">13</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>type="text"</code> for email</td><td>No mobile keyboard hint, no validation</td><td>Use <code>type="email"</code></td></tr>
+            <tr><td><code>type="number"</code> for phone or ZIP</td><td>Spinner arrows, scientific notation, weird UX</td><td>Use <code>type="tel"</code> or <code>type="text" inputmode="numeric"</code></td></tr>
+            <tr><td>No <code>autocomplete</code> token</td><td>Password managers don't help; users retype</td><td>Set <code>autocomplete="email"</code>, <code>"current-password"</code>, etc.</td></tr>
+            <tr><td>Placeholder as label</td><td>Disappears, low contrast, a11y failure</td><td>Always pair with a real <code>&lt;label&gt;</code></td></tr>
+            <tr><td>Strict <code>pattern</code> on email/URL</td><td>Native validation is already good; custom regex may reject valid values</td><td>Trust native validation for these types</td></tr>
+            <tr><td><code>maxlength</code> on passwords</td><td>Forces weaker passwords</td><td>Set a high limit (128+) or omit</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">14</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Pick the right type</strong>
+          For each field below, choose the best <code>type</code> and <code>inputmode</code>: (a) Username, (b) Phone, (c) Email, (d) Search box, (e) 4-digit PIN, (f) Website URL.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build a registration form</strong>
+          Build a form with name, email, password (twice for confirmation), and phone. Add proper <code>autocomplete</code> tokens (<code>name</code>, <code>email</code>, <code>new-password</code>, <code>tel</code>). Test on mobile to verify the keyboard changes per field.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Pattern validation</strong>
+          Add a "Coupon code" field that must match format <code>SUMMER-2024-XX</code> where <code>XX</code> is two digits. Write the <code>pattern</code> attribute and a helpful <code>title</code>.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">15</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">type="text", "password", "email", "url", "search" — universal</span>
+          <span class="pill yes">type="tel" — universal (format validation varies)</span>
+          <span class="pill yes">inputmode — all modern mobile browsers</span>
+          <span class="pill yes">enterkeyhint — Chrome 77+, Safari 13.4+, Firefox 94+</span>
+          <span class="pill yes">maxlength / minlength — universal</span>
+          <span class="pill yes">pattern — universal</span>
+          <span class="pill yes">Native password reveal button — Edge 17+, Chrome 95+, Firefox 124+</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">16</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Login forms</h4>
+            <p>Email + password, autocomplete tokens, password manager integration.</p>
+          </div>
+          <div class="card">
+            <h4>Checkout flows</h4>
+            <p>Email, phone, address — each with proper type + autocomplete.</p>
+          </div>
+          <div class="card">
+            <h4>SMS verification</h4>
+            <p>OTP input with inputmode="numeric" + autocomplete="one-time-code" auto-fills from SMS on iOS/Android.</p>
+          </div>
+          <div class="card">
+            <h4>Site search</h4>
+            <p>type="search" inside a form[role="search"], enterkeyhint="search".</p>
+          </div>
+          <div class="card">
+            <h4>Registration</h4>
+            <p>Password fields with autocomplete="new-password" to disable auto-fill of existing.</p>
+          </div>
+          <div class="card">
+            <h4>Profile edit</h4>
+            <p>Name (autocomplete="name"), website (type="url"), tel — all editable.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../01-Form-Basics/form-submit.html">← Previous: Form Submission</a>
+    <a class="next" href="numeric-inputs.html">Next: Numeric &amp; Temporal Inputs →</a>
+  </footer>
+</body>
+</html>

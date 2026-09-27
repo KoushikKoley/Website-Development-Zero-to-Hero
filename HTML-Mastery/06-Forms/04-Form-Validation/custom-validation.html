@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Validation Patterns — Async, Debounced, Accessible — HTML Mastery</title>
+  <meta name="description" content="Real-world form validation patterns: combining HTML5 + JavaScript, async validation (server-side checks), debounced validation, showing errors accessibly with aria-describedby and role=alert, preventing form submission, and a complete username availability checker example.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 280px;
+    }
+    .demo-box input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .demo-box button {
+      background: var(--brand); color: white; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem;
+      cursor: pointer; font-family: inherit; margin-top: 12px;
+    }
+    .demo-box button:hover { background: #1d4ed8; }
+    .error-msg {
+      display: none; color: var(--warn); font-size: 0.85rem;
+      padding: 6px 0 0; font-family: "JetBrains Mono", monospace;
+    }
+    .status-indicator {
+      display: inline-block; margin-left: 8px; font-size: 0.85rem;
+      vertical-align: middle; font-family: inherit;
+    }
+    .status-indicator.checking { color: var(--ink-soft); }
+    .status-indicator.available { color: var(--success); }
+    .status-indicator.taken { color: var(--warn); }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 14</span>
+    <h1>Custom Validation Patterns</h1>
+    <p>HTML5 covers most validation needs. But real apps need more: async checks (username taken?), debounced input, custom error UI that screen readers announce, and the discipline to <em>never trust the client</em>. Here's the production-grade playbook.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#combining">Combining HTML5 + JS</a></li>
+        <li><a href="#when-to-validate">When to validate</a></li>
+        <li><a href="#debounced">Debounced validation</a></li>
+        <li><a href="#async">Async validation (server-side checks)</a></li>
+        <li><a href="#accessible-errors">Accessible error display</a></li>
+        <li><a href="#preventing-submit">Preventing submission</a></li>
+        <li><a href="#username-example">Real-world: username availability checker</a></li>
+        <li><a href="#server-rule">The golden rule: always re-validate on server</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="combining">
+        <h2><span class="num">1</span> Combining HTML5 + JS</h2>
+        <p>Start with HTML5 attributes for everything they can do — <code>required</code>, <code>type="email"</code>, <code>pattern</code>, <code>min</code>/<code>max</code>. Then add JavaScript for what HTML5 can't do: async checks, conditional requirements, cross-field comparisons.</p>
+        <pre><code>&lt;!-- HTML5 handles the basics --&gt;
+&lt;label for="username"&gt;Username&lt;/label&gt;
+&lt;input type="text" id="username" name="username"
+       pattern="[a-zA-Z0-9_]{3,20}"
+       title="3-20 alphanumeric characters or underscores"
+       autocomplete="username"
+       required&gt;
+&lt;div id="username-error" class="error-msg" role="alert"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // JS adds: async availability check + custom error UI
+  const username = document.getElementById('username');
+  const errorEl = document.getElementById('username-error');
+
+  username.addEventListener('input', debounce(checkUsername, 300));
+
+  async function checkUsername() {
+    const value = username.value.trim();
+    if (!value || !username.checkValidity()) {
+      errorEl.textContent = '';
+      username.setCustomValidity('');
+      return;
+    }
+    const available = await fetch(`/api/check-username?u=${encodeURIComponent(value)}`)
+      .then(r =&gt; r.json())
+      .then(data =&gt; data.available);
+    if (available) {
+      username.setCustomValidity('');
+      errorEl.textContent = '✓ Available';
+      errorEl.style.color = 'green';
+    } else {
+      username.setCustomValidity('That username is taken');
+      errorEl.textContent = '✗ Already taken';
+      errorEl.style.color = 'red';
+    }
+  }
+&lt;/script&gt;</code></pre>
+      </section>
+
+      <section id="when-to-validate">
+        <h2><span class="num">2</span> When to validate</h2>
+        <p>Validation timing affects UX. Too eager and users see errors while typing; too late and they don't get feedback.</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Event</th><th>When it fires</th><th>Best for</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>input</code></td><td>Every keystroke / change</td><td>Live character counter, instant visual feedback</td></tr>
+            <tr><td><code>change</code></td><td>After blur (for text) or selection (for checkboxes)</td><td>Saving drafts, debounced async checks</td></tr>
+            <tr><td><code>blur</code></td><td>When focus leaves the field</td><td>Final per-field validation before user moves on</td></tr>
+            <tr><td><code>submit</code></td><td>Form submission attempt</td><td>Last-chance full validation</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Best UX pattern: validate on <code>blur</code> first (gentle), then on <code>input</code> only <em>after</em> the field has been touched. This avoids errors while typing but gives immediate feedback once the user knows there's a problem.
+        </div>
+      </section>
+
+      <section id="debounced">
+        <h2><span class="num">3</span> Debounced validation</h2>
+        <p>For async checks (network calls), debouncing prevents firing a request per keystroke. Wait until the user pauses typing:</p>
+        <pre><code>function debounce(fn, delay = 300) {
+  let timer;
+  return (...args) =&gt; {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn(...args), delay);
+  };
+}
+
+username.addEventListener('input', debounce(async (e) =&gt; {
+  await checkUsernameAvailability(e.target.value);
+}, 400));</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Debounced validation demo — type and pause to see "Checking..." then result</div>
+          <label for="demo-debounce">Pick a username</label>
+          <input type="text" id="demo-debounce" placeholder="Try 'alice' (taken) or 'bob' (available)">
+          <span class="status-indicator" id="demo-debounce-status"></span>
+        </div>
+        <script>
+          (function() {
+            const input = document.getElementById('demo-debounce');
+            const status = document.getElementById('demo-debounce-status');
+            let timer;
+            input.addEventListener('input', () => {
+              status.className = 'status-indicator checking';
+              status.textContent = 'typing...';
+              clearTimeout(timer);
+              const value = input.value.trim();
+              if (!value) { status.textContent = ''; return; }
+              timer = setTimeout(() => {
+                status.className = 'status-indicator checking';
+                status.textContent = 'checking availability...';
+                setTimeout(() => {
+                  // Simulated server response
+                  const taken = ['alice', 'admin', 'root', 'test'].includes(value.toLowerCase());
+                  if (taken) {
+                    status.className = 'status-indicator taken';
+                    status.textContent = '✗ Already taken';
+                  } else {
+                    status.className = 'status-indicator available';
+                    status.textContent = '✓ Available';
+                  }
+                }, 500);
+              }, 400);
+            });
+          })();
+        </script>
+      </section>
+
+      <section id="async">
+        <h2><span class="num">4</span> Async validation (server-side checks)</h2>
+        <p>Some checks require server roundtrip: username availability, coupon code validity, address verification. Pattern:</p>
+        <pre><code>async function checkUsernameAvailability(value) {
+  if (!value || value.length &lt; 3) return;  // skip if too short
+
+  // Show checking state
+  showStatus('checking');
+
+  try {
+    const response = await fetch(`/api/check-username?u=${encodeURIComponent(value)}`);
+    const data = await response.json();
+
+    if (data.available) {
+      usernameInput.setCustomValidity('');
+      showStatus('available');
+    } else {
+      usernameInput.setCustomValidity('That username is already taken');
+      showStatus('taken', 'Already taken');
+    }
+  } catch (err) {
+    // Network error — don't block, just hide status
+    console.warn('Username check failed:', err);
+    showStatus('unknown');
+  }
+}</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Blocking form submission while waiting for async checks. If the network is slow, users can't submit. Better: allow submit, re-validate on server, show errors after submit if needed.
+        </div>
+      </section>
+
+      <section id="accessible-errors">
+        <h2><span class="num">5</span> Accessible error display</h2>
+        <p>For screen reader users, errors must be both visible and programmatically associated with their fields:</p>
+        <pre><code>&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input type="email" id="email" name="email"
+       aria-describedby="email-error"
+       aria-invalid="false"&gt;
+&lt;div id="email-error" role="alert"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  function showError(input, message) {
+    const errorEl = document.getElementById(input.id + '-error');
+    errorEl.textContent = message;
+    input.setAttribute('aria-invalid', 'true');
+  }
+
+  function clearError(input) {
+    const errorEl = document.getElementById(input.id + '-error');
+    errorEl.textContent = '';
+    input.removeAttribute('aria-invalid');
+  }
+&lt;/script&gt;</code></pre>
+        <p>Three accessibility techniques in play:</p>
+        <ul>
+          <li><strong><code>aria-describedby="email-error"</code></strong> on the input: tells screen readers to read the error element when the input is focused.</li>
+          <li><strong><code>role="alert"</code></strong> on the error element: tells screen readers to announce the content immediately when it changes (live region).</li>
+          <li><strong><code>aria-invalid="true"</code></strong> on the input: marks the field programmatically as invalid.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Use <code>role="alert"</code> only for errors that appear after user interaction (where you want an immediate announcement). For static instructions that don't change, plain text linked via <code>aria-describedby</code> is enough.
+        </div>
+      </section>
+
+      <section id="preventing-submit">
+        <h2><span class="num">6</span> Preventing submission</h2>
+        <p>When validation fails, block the form submission:</p>
+        <pre><code>form.addEventListener('submit', (e) =&gt; {
+  // Run any pending async checks first
+  if (!form.checkValidity()) {
+    e.preventDefault();
+
+    // Focus the first invalid field
+    const firstInvalid = form.querySelector(':invalid');
+    if (firstInvalid) firstInvalid.focus();
+
+    // Show errors for all invalid fields
+    form.querySelectorAll(':invalid').forEach(field =&gt; {
+      showError(field, field.validationMessage);
+    });
+  }
+});</code></pre>
+      </section>
+
+      <section id="username-example">
+        <h2><span class="num">7</span> Real-world: username availability checker</h2>
+        <p>Putting it all together — a complete username checker with HTML5 validation + debounced async check + accessible error UI:</p>
+        <pre><code>&lt;label for="username"&gt;Username&lt;/label&gt;
+&lt;input type="text" id="username" name="username"
+       pattern="[a-zA-Z0-9_]{3,20}"
+       title="3-20 alphanumeric characters or underscores"
+       autocomplete="username"
+       aria-describedby="username-error username-hint"
+       required&gt;
+&lt;small id="username-hint"&gt;3-20 letters, numbers, or underscores&lt;/small&gt;
+&lt;div id="username-error" role="alert"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  const input = document.getElementById('username');
+  const errorEl = document.getElementById('username-error');
+  let timer;
+
+  input.addEventListener('input', () =&gt; {
+    errorEl.textContent = '';
+    errorEl.style.color = '';
+    input.setCustomValidity('');
+    input.removeAttribute('aria-invalid');
+
+    clearTimeout(timer);
+    const value = input.value.trim();
+
+    // Don't check async if HTML5 validation already fails
+    if (!value || !input.checkValidity()) return;
+
+    timer = setTimeout(() =&gt; checkAvailability(value), 400);
+  });
+
+  async function checkAvailability(value) {
+    errorEl.textContent = 'Checking...';
+    errorEl.style.color = 'var(--ink-soft)';
+
+    try {
+      const res = await fetch(`/api/check-username?u=${encodeURIComponent(value)}`);
+      const { available } = await res.json();
+
+      if (available) {
+        errorEl.textContent = '✓ Available';
+        errorEl.style.color = 'var(--success)';
+      } else {
+        input.setCustomValidity('That username is taken');
+        input.setAttribute('aria-invalid', 'true');
+        errorEl.textContent = '✗ Already taken';
+        errorEl.style.color = 'var(--warn)';
+      }
+    } catch (err) {
+      errorEl.textContent = '';
+    }
+  }
+&lt;/script&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Username availability demo — try 'alice', 'admin', or 'newuser'</div>
+          <label for="demo-username">Username</label>
+          <input type="text" id="demo-username" name="username" pattern="[a-zA-Z0-9_]{3,20}" title="3-20 alphanumeric characters or underscores" autocomplete="username" aria-describedby="demo-username-hint demo-username-error" required>
+          <small id="demo-username-hint" style="display:block; color:var(--ink-soft); font-size:0.85rem;">3-20 letters, numbers, or underscores</small>
+          <div id="demo-username-error" role="alert" style="font-size:0.85rem; padding:6px 0 0;"></div>
+        </div>
+        <script>
+          (function() {
+            const input = document.getElementById('demo-username');
+            const errorEl = document.getElementById('demo-username-error');
+            let timer;
+            input.addEventListener('input', () => {
+              errorEl.textContent = '';
+              errorEl.style.color = '';
+              input.setCustomValidity('');
+              input.removeAttribute('aria-invalid');
+              clearTimeout(timer);
+              const value = input.value.trim();
+              if (!value || !input.checkValidity()) return;
+              timer = setTimeout(() => checkAvailability(value), 400);
+            });
+            async function checkAvailability(value) {
+              errorEl.textContent = 'Checking...';
+              errorEl.style.color = 'var(--ink-soft)';
+              setTimeout(() => {
+                const taken = ['alice', 'admin', 'root', 'test', 'bob', 'user'].includes(value.toLowerCase());
+                if (taken) {
+                  input.setCustomValidity('That username is taken');
+                  input.setAttribute('aria-invalid', 'true');
+                  errorEl.textContent = '✗ Already taken';
+                  errorEl.style.color = 'var(--warn)';
+                } else {
+                  errorEl.textContent = '✓ Available';
+                  errorEl.style.color = 'var(--success)';
+                }
+              }, 500);
+            }
+          })();
+        </script>
+      </section>
+
+      <section id="server-rule">
+        <h2><span class="num">8</span> The golden rule: always re-validate on server</h2>
+        <p>Client-side validation is for <strong>UX only</strong>. Users can disable JavaScript, edit HTML via dev tools, or send crafted requests directly to your API. The server must validate every field, every time.</p>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Trusting client validation for security. If your server skips validation because "the form already validated client-side," attackers can submit invalid data directly via <code>curl</code> or fetch. <strong>Always validate on the server.</strong>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Async check on every keystroke</td><td>Spams the server, slow UX</td><td>Debounce with 300-500ms delay</td></tr>
+            <tr><td>Blocking submit while async check pending</td><td>Users can't submit on slow networks</td><td>Allow submit; re-validate server-side</td></tr>
+            <tr><td>Error div without <code>role="alert"</code></td><td>Screen readers don't announce</td><td>Add <code>role="alert"</code> + <code>aria-describedby</code></td></tr>
+            <tr><td>Not clearing errors on input</td><td>Stale errors persist</td><td>Clear error in input handler</td></tr>
+            <tr><td>Skipping server-side validation</td><td>Security holes</td><td>Always re-validate on server</td></tr>
+            <tr><td>Setting custom error and forgetting to clear</td><td>Field stuck invalid</td><td>Always pair set + clear in input handler</td></tr>
+            <tr><td>Validating too eagerly while typing</td><td>Frustrating UX — errors before user is done</td><td>Validate on blur first, then on input after touched</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Debounced email validator</strong>
+          Build an email field that, after a 400ms pause in typing, makes a simulated fetch call (use <code>setTimeout</code>) to check if the email is already registered. Show "✓ Available" or "✗ Already registered" with proper aria attributes.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Cross-field validation</strong>
+          Build a password + confirm-password pair. Use JS to check they match on input; set <code>setCustomValidity("Passwords don't match")</code> on the confirm field if they differ. Clear when they match.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Full registration form</strong>
+          Combine everything: username (with async availability), email (with async taken-check), password (with strength meter), confirm password. Validate on blur, show errors accessibly, prevent submit if invalid. Test with a screen reader.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Constraint Validation API — universal</span>
+          <span class="pill yes">fetch API — universal in modern browsers</span>
+          <span class="pill yes">aria-describedby — universal in modern AT</span>
+          <span class="pill yes">role="alert" — universal in modern AT</span>
+          <span class="pill yes">aria-invalid — universal in modern AT</span>
+          <span class="pill yes">Debouncing via setTimeout — universal</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Username availability</h4>
+            <p>Live check during signup; debounce + accessible status.</p>
+          </div>
+          <div class="card">
+            <h4>Email already registered</h4>
+            <p>Check on blur; suggest login if so.</p>
+          </div>
+          <div class="card">
+            <h4>Coupon code validation</h4>
+            <p>Verify against server; apply discount live.</p>
+          </div>
+          <div class="card">
+            <h4>Password match</h4>
+            <p>Cross-field validation between password + confirm.</p>
+          </div>
+          <div class="card">
+            <h4>Conditional requirements</h4>
+            <p>Field required only if another has certain value.</p>
+          </div>
+          <div class="card">
+            <h4>Address verification</h4>
+            <p>Server-side check against USPS / Google Maps API.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="constraint-validation-api.html">← Previous: Constraint Validation API</a>
+    <a class="next" href="../05-Advanced-Forms/progress-meter.html">Next: Output, Progress &amp; Meter →</a>
+  </footer>
+</body>
+</html>

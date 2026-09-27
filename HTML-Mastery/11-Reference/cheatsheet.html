@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The comprehensive HTML cheat sheet — every element, attribute, and pattern you need, grouped by category with brief examples. Single-page reference.">
+  <title>HTML Cheat Sheet — HTML Mastery</title>
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 760px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hero .stats {
+      display: flex; justify-content: center; gap: 32px;
+      margin-top: 24px; flex-wrap: wrap;
+    }
+    .hero .stats div { font-size: 0.85rem; color: #94a3b8; }
+    .hero .stats strong { display: block; font-size: 1.4rem; color: #fbbf24; font-weight: 700; }
+
+    .layout { max-width: 1280px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 5px 0; font-size: 0.9rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    nav.toc .group { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+    nav.toc .group-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 6px; }
+    nav.toc .group ul { list-style: none; padding: 0; margin: 0; }
+    nav.toc .group li { font-size: 0.85rem; }
+
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.15rem; }
+    section h4 { margin: 14px 0 6px; font-size: 1rem; color: var(--brand); }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.84rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    pre .c { color: #6c7086; font-style: italic; }
+    pre .t { color: #f38ba8; }
+    pre .a { color: #fab387; }
+    pre .s { color: #a6e3a1; }
+    pre .v { color: #f9e2af; }
+    pre .k { color: #cba6f7; }
+
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 880px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .info-table td code { font-size: 0.85em; }
+    .info-table tr:hover td { background: #f8fafc; }
+
+    .element-card { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: linear-gradient(180deg, #fff, #f8fafc); }
+    .element-card h4 { margin: 0 0 6px; font-family: "JetBrains Mono", ui-monospace, monospace; color: var(--brand); font-size: 0.95rem; }
+    .element-card p { margin: 0; font-size: 0.88rem; color: var(--ink-soft); }
+
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; margin-left: 6px; }
+    .pill.void { background: #fee2e2; color: #b91c1c; }
+    .pill.deprecated { background: #fef3c7; color: #92400e; }
+    .pill.new { background: #dbeafe; color: #1d4ed8; }
+
+    footer.page-nav { max-width: 1280px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 22px 20px; }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 11 · Reference</span>
+  <h1>The HTML <code>Cheat Sheet</code></h1>
+  <p>Every element, attribute, and pattern the Living Standard ships — grouped by category, with brief examples. Bookmark this page. Open it when you can't remember whether to use <code>&lt;cite&gt;</code> or <code>&lt;i&gt;</code>, or whether <code>&lt;source&gt;</code> needs a closing tag.</p>
+  <div class="stats">
+    <div><strong>140+</strong> Elements</div>
+    <div><strong>30+</strong> Global Attributes</div>
+    <div><strong>60+</strong> ARIA Roles</div>
+    <div><strong>1</strong> Page</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#skeleton">Document Skeleton</a></li>
+      <li><a href="#metadata">Metadata</a></li>
+      <li><a href="#sectioning">Sectioning</a></li>
+      <li><a href="#headings">Headings</a></li>
+      <li><a href="#text">Text Semantics</a></li>
+      <li><a href="#edits">Edits</a></li>
+      <li><a href="#lists">Lists</a></li>
+      <li><a href="#links">Links</a></li>
+      <li><a href="#images">Images</a></li>
+      <li><a href="#media">Audio &amp; Video</a></li>
+      <li><a href="#embeds">Embeds</a></li>
+      <li><a href="#tables">Tables</a></li>
+      <li><a href="#forms">Forms</a></li>
+      <li><a href="#interactive">Interactive</a></li>
+      <li><a href="#scripting">Scripting</a></li>
+      <li><a href="#global-attr">Global Attributes</a></li>
+      <li><a href="#events">Event Handlers</a></li>
+      <li><a href="#aria">ARIA Roles</a></li>
+      <li><a href="#meta-tags">Meta Tag Reference</a></li>
+    </ol>
+    <div class="group">
+      <div class="group-label">Legend</div>
+      <ul>
+        <li><span class="pill void">VOID</span> Self-closing</li>
+        <li><span class="pill deprecated">DEPR</span> Avoid using</li>
+        <li><span class="pill new">NEW</span> HTML5+ addition</li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="skeleton">
+      <h2><span class="num">1</span> Document Skeleton</h2>
+      <p>The minimum valid HTML document. Every page on the web is a variation of this.</p>
+      <pre><code><span class="c">&lt;!-- HTML5 always starts with this doctype --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Page Title&lt;/title&gt;
+    &lt;meta name="description" content="A 150–160 char summary."&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- visible content goes here --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3>Why each piece matters</h3>
+      <table class="info-table">
+        <thead><tr><th>Piece</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Forces standards mode. Without it, browsers enter quirks mode (box model breaks).</td></tr>
+          <tr><td><code>lang="en"</code></td><td>Tells screen readers which language voice to use. Required for accessibility.</td></tr>
+          <tr><td><code>&lt;meta charset&gt;</code></td><td>Must be in the first 1024 bytes. Otherwise the browser may misread special characters.</td></tr>
+          <tr><td><code>viewport</code></td><td>Without it, mobile browsers render at desktop width and zoom out — text becomes unreadable.</td></tr>
+          <tr><td><code>&lt;title&gt;</code></td><td>The single most important on-page SEO signal. Shows in the browser tab and search results.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="metadata">
+      <h2><span class="num">2</span> Metadata Elements</h2>
+      <p>Live in <code>&lt;head&gt;</code>. Invisible to the user, but critical for browsers, search engines, and social platforms.</p>
+
+      <div class="grid-2">
+        <div class="element-card"><h4>&lt;title&gt;</h4><p>Page title. Required. 50–60 chars for SERP display.</p></div>
+        <div class="element-card"><h4>&lt;base&gt; <span class="pill void">VOID</span></h4><p>Sets default URL and target for all relative links. Rarely used.</p></div>
+        <div class="element-card"><h4>&lt;link&gt; <span class="pill void">VOID</span></h4><p>External resources: stylesheets, favicons, preconnect, preload.</p></div>
+        <div class="element-card"><h4>&lt;meta&gt; <span class="pill void">VOID</span></h4><p>Page metadata: charset, viewport, description, OG tags, robots.</p></div>
+        <div class="element-card"><h4>&lt;style&gt;</h4><p>Embedded CSS. Prefer external stylesheets in production.</p></div>
+        <div class="element-card"><h4>&lt;script&gt;</h4><p>JavaScript. Use <code>type="module"</code> and <code>defer</code> by default.</p></div>
+      </div>
+
+      <pre><code>&lt;!-- Standard meta tags --&gt;
+&lt;meta name="description" content="..."&gt;
+&lt;meta name="author" content="Maya Kowalski"&gt;
+&lt;meta name="robots" content="index, follow"&gt;
+&lt;meta name="theme-color" content="#0f172a"&gt;
+
+&lt;!-- Open Graph (Facebook, LinkedIn, Slack) --&gt;
+&lt;meta property="og:title" content="..."&gt;
+&lt;meta property="og:description" content="..."&gt;
+&lt;meta property="og:image" content="https://example.com/og.png"&gt;
+&lt;meta property="og:url" content="https://example.com/page"&gt;
+&lt;meta property="og:type" content="article"&gt;
+
+&lt;!-- Twitter Card --&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;
+&lt;meta name="twitter:site" content="@yourhandle"&gt;
+
+&lt;!-- Performance hints --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preload" as="image" href="hero.webp" fetchpriority="high"&gt;
+&lt;link rel="icon" href="/favicon.ico"&gt;
+&lt;link rel="canonical" href="https://example.com/page"&gt;
+
+&lt;!-- CSS --&gt;
+&lt;link rel="stylesheet" href="/styles.css"&gt;
+&lt;style&gt;body { margin: 0; }&lt;/style&gt;
+
+&lt;!-- JS --&gt;
+&lt;script src="/app.js" type="module" defer&gt;&lt;/script&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Always include <code>theme-color</code> — it tints the mobile browser UI bar to match your brand. Costs nothing, looks polished.
+      </div>
+    </section>
+
+    <section id="sectioning">
+      <h2><span class="num">3</span> Sectioning Elements</h2>
+      <p>HTML5 added semantic sectioning elements. Use them instead of <code>&lt;div class="header"&gt;</code> — they expose landmarks to screen readers automatically.</p>
+
+      <div class="grid-2">
+        <div class="element-card"><h4>&lt;header&gt;</h4><p>Introductory content or navigational aids. Page or section level.</p></div>
+        <div class="element-card"><h4>&lt;footer&gt;</h4><p>Footer for its nearest section. Author, copyright, related links.</p></div>
+        <div class="element-card"><h4>&lt;main&gt;</h4><p>The main content. Only one per page. Excludes header, footer, nav, aside.</p></div>
+        <div class="element-card"><h4>&lt;nav&gt;</h4><p>A major navigation block. Skip for footer link lists.</p></div>
+        <div class="element-card"><h4>&lt;section&gt;</h4><p>Themed grouping, always with a heading.</p></div>
+        <div class="element-card"><h4>&lt;article&gt;</h4><p>Self-contained, distributable content. Blog post, product card, news item.</p></div>
+        <div class="element-card"><h4>&lt;aside&gt;</h4><p>Tangentially related. Sidebar, pull quote, related links.</p></div>
+        <div class="element-card"><h4>&lt;address&gt;</h4><p>Contact information for the nearest article or body.</p></div>
+        <div class="element-card"><h4>&lt;hgroup&gt; <span class="pill new">NEW</span></h4><p>Groups a heading with its subheading(s). Re-defined 2020.</p></div>
+        <div class="element-card"><h4>&lt;search&gt; <span class="pill new">NEW</span></h4><p>Wraps a search form or filter UI. Added 2023.</p></div>
+      </div>
+
+      <pre><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;a href="/"&gt;&lt;img src="logo.svg" alt="Acme"&gt;&lt;/a&gt;
+    &lt;nav aria-label="Primary"&gt;...&lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;header&gt;
+        &lt;h1&gt;Article Title&lt;/h1&gt;
+        &lt;p&gt;By Maya · March 12, 2025&lt;/p&gt;
+      &lt;/header&gt;
+      &lt;section&gt;
+        &lt;h2&gt;First section&lt;/h2&gt;
+        &lt;p&gt;...&lt;/p&gt;
+      &lt;/section&gt;
+      &lt;aside&gt;
+        &lt;h2&gt;Related&lt;/h2&gt;
+        ...
+      &lt;/aside&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;address&gt;Contact: hello@acme.com&lt;/address&gt;
+    &lt;small&gt;© 2025 Acme Inc.&lt;/small&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+    </section>
+
+    <section id="headings">
+      <h2><span class="num">4</span> Headings &amp; Paragraphs</h2>
+
+      <div class="grid-2">
+        <div class="element-card"><h4>&lt;h1&gt; – &lt;h6&gt;</h4><p>Six levels of headings. Use <strong>one</strong> &lt;h1&gt; per page.</p></div>
+        <div class="element-card"><h4>&lt;p&gt;</h4><p>Paragraph. Block-level. Most-used text element.</p></div>
+        <div class="element-card"><h4>&lt;hr&gt; <span class="pill void">VOID</span></h4><p>Thematic break. Use between topic shifts, not as decoration.</p></div>
+        <div class="element-card"><h4>&lt;pre&gt;</h4><p>Preformatted text. Preserves whitespace. Pair with &lt;code&gt;.</p></div>
+        <div class="element-card"><h4>&lt;blockquote&gt;</h4><p>Block quotation. Always include a <code>&lt;cite&gt;</code> source.</p></div>
+        <div class="element-card"><h4>&lt;address&gt;</h4><p>Contact info for nearest section. Italic by default.</p></div>
+      </div>
+
+      <pre><code>&lt;h1&gt;Site Title&lt;/h1&gt;
+&lt;h2&gt;Section Heading&lt;/h2&gt;
+&lt;h3&gt;Subsection Heading&lt;/h3&gt;
+
+&lt;p&gt;A paragraph. Wrap inline elements like &lt;strong&gt;bold&lt;/strong&gt;
+and &lt;em&gt;italic&lt;/em&gt; inside.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;pre&gt;&lt;code&gt;function hello() {
+  return "world";
+}&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Simplicity is the soul of efficiency.&lt;/p&gt;
+  &lt;footer&gt;— &lt;cite&gt;Austin Freeman&lt;/cite&gt;&lt;/footer&gt;
+&lt;/blockquote&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Don't skip heading levels (e.g. &lt;h1&gt; → &lt;h4&gt;). Screen reader users navigate by heading hierarchy. Use them in order: h1 → h2 → h3 → h4.
+      </div>
+    </section>
+
+    <section id="text">
+      <h2><span class="num">5</span> Text-Level Semantics</h2>
+      <p>Inline elements. Each carries meaning, not just styling. Choose by semantics, then style with CSS.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Element</th><th>Use For</th><th>Looks Like</th></tr></thead>
+        <tbody>
+          <tr><td><code>&lt;a&gt;</code></td><td>Hyperlinks (anchor)</td><td>Underlined blue</td></tr>
+          <tr><td><code>&lt;em&gt;</code></td><td>Stress emphasis (changes meaning)</td><td>Italic</td></tr>
+          <tr><td><code>&lt;strong&gt;</code></td><td>Importance / urgency</td><td>Bold</td></tr>
+          <tr><td><code>&lt;code&gt;</code></td><td>Inline code</td><td>Monospace</td></tr>
+          <tr><td><code>&lt;kbd&gt;</code></td><td>Keyboard input</td><td>Monospace boxed</td></tr>
+          <tr><td><code>&lt;samp&gt;</code></td><td>Program output</td><td>Monospace</td></tr>
+          <tr><td><code>&lt;var&gt;</code></td><td>Variable in math/code</td><td>Italic</td></tr>
+          <tr><td><code>&lt;mark&gt;</code></td><td>Highlighted / search match</td><td>Yellow bg</td></tr>
+          <tr><td><code>&lt;small&gt;</code></td><td>Side comments / fine print</td><td>Smaller</td></tr>
+          <tr><td><code>&lt;s&gt;</code></td><td>Struck (no longer accurate)</td><td>Strikethrough</td></tr>
+          <tr><td><code>&lt;del&gt;</code></td><td>Deleted text (edits)</td><td>Strikethrough</td></tr>
+          <tr><td><code>&lt;ins&gt;</code></td><td>Inserted text (edits)</td><td>Underlined</td></tr>
+          <tr><td><code>&lt;u&gt;</code></td><td>Unarticulated annotation</td><td>Underlined</td></tr>
+          <tr><td><code>&lt;i&gt;</code></td><td>Idiomatic / alternate voice</td><td>Italic</td></tr>
+          <tr><td><code>&lt;b&gt;</code></td><td>Attention (no extra importance)</td><td>Bold</td></tr>
+          <tr><td><code>&lt;q&gt;</code></td><td>Inline quotation</td><td>Quote marks</td></tr>
+          <tr><td><code>&lt;cite&gt;</code></td><td>Title of work (book, song)</td><td>Italic</td></tr>
+          <tr><td><code>&lt;abbr&gt;</code></td><td>Abbreviation (use <code>title</code>)</td><td>Dotted underline</td></tr>
+          <tr><td><code>&lt;dfn&gt;</code></td><td>Defining instance of a term</td><td>Italic</td></tr>
+          <tr><td><code>&lt;time&gt;</code></td><td>Dates/times (machine-readable)</td><td>Plain</td></tr>
+          <tr><td><code>&lt;data&gt;</code></td><td>Machine-readable equivalent</td><td>Plain</td></tr>
+          <tr><td><code>&lt;span&gt;</code></td><td>Generic inline (no semantics)</td><td>Plain</td></tr>
+          <tr><td><code>&lt;br&gt;</code> <span class="pill void">VOID</span></td><td>Line break (use sparingly)</td><td>—</td></tr>
+          <tr><td><code>&lt;wbr&gt;</code> <span class="pill void">VOID</span></td><td>Optional break opportunity</td><td>—</td></tr>
+          <tr><td><code>&lt;bdi&gt;</code></td><td>Bi-directional isolation</td><td>—</td></tr>
+          <tr><td><code>&lt;bdo&gt;</code></td><td>Bi-directional override</td><td>—</td></tr>
+          <tr><td><code>&lt;ruby&gt;</code> + <code>&lt;rt&gt;</code></td><td>Annotation (e.g. CJK pronunciation)</td><td>Small above</td></tr>
+          <tr><td><code>&lt;sup&gt;</code></td><td>Superscript</td><td>Raised</td></tr>
+          <tr><td><code>&lt;sub&gt;</code></td><td>Subscript</td><td>Lowered</td></tr>
+          <tr><td><code>&lt;u&gt;</code></td><td>Unarticulated annotation</td><td>Underlined</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code>&lt;p&gt;Press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;S&lt;/kbd&gt; to save. The shortcut
+appears in the &lt;code&gt;README.md&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;p&gt;The meeting is on &lt;time datetime="2025-03-15"&gt;March 15&lt;/time&gt;
+at &lt;time datetime="2025-03-15T14:00"&gt;2 PM&lt;/time&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;
+was created in &lt;time datetime="1993"&gt;1993&lt;/time&gt;.&lt;/p&gt;
+
+&lt;p&gt;As &lt;cite&gt;The Pragmatic Programmer&lt;/cite&gt; says:&lt;/p&gt;
+&lt;blockquote&gt;Don't break the glass.&lt;/blockquote&gt;
+
+&lt;p&gt;E = mc&lt;sup&gt;2&lt;/sup&gt; · H&lt;sub&gt;2&lt;/sub&gt;O&lt;/p&gt;
+
+&lt;p&gt;The &lt;mark&gt;selected item&lt;/mark&gt; is highlighted.&lt;/p&gt;
+
+&lt;p&gt;Price: &lt;s&gt;$99&lt;/s&gt; &lt;strong&gt;$79&lt;/strong&gt; this week only.&lt;/p&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Choose Semantic Over Visual</strong>
+        Use <code>&lt;em&gt;</code> when the emphasis changes meaning ("I <em>did</em> say that"). Use <code>&lt;i&gt;</code> when only the visual style matters (ship names, technical terms). CSS handles the rest.
+      </div>
+    </section>
+
+    <section id="edits">
+      <h2><span class="num">6</span> Edits: &lt;ins&gt; and &lt;del&gt;</h2>
+      <p>Track edits inline. Useful for diffs, changelogs, and legal text. Both accept <code>datetime</code> and <code>cite</code> attributes.</p>
+      <pre><code>&lt;p&gt;
+  The new price is &lt;del datetime="2025-03-01" cite="/changelog#price-update"&gt;$89&lt;/del&gt;
+  &lt;ins datetime="2025-03-01"&gt;$79&lt;/ins&gt; per month.
+&lt;/p&gt;</code></pre>
+    </section>
+
+    <section id="lists">
+      <h2><span class="num">7</span> Lists</h2>
+
+      <div class="grid-3">
+        <div class="element-card"><h4>&lt;ul&gt;</h4><p>Unordered list. Bullet points.</p></div>
+        <div class="element-card"><h4>&lt;ol&gt;</h4><p>Ordered list. Use <code>start</code>, <code>reversed</code>, <code>type</code>.</p></div>
+        <div class="element-card"><h4>&lt;li&gt;</h4><p>List item. Required child of ul/ol/menu.</p></div>
+        <div class="element-card"><h4>&lt;dl&gt;</h4><p>Description list (terms + descriptions).</p></div>
+        <div class="element-card"><h4>&lt;dt&gt;</h4><p>Description term.</p></div>
+        <div class="element-card"><h4>&lt;dd&gt;</h4><p>Description details.</p></div>
+        <div class="element-card"><h4>&lt;menu&gt;</h4><p>Semantic list of commands. Like &lt;ul&gt; but for actions.</p></div>
+      </div>
+
+      <pre><code><span class="c">&lt;!-- Unordered --&gt;</span>
+&lt;ul&gt;
+  &lt;li&gt;First item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;/li&gt;
+&lt;/ul&gt;
+
+<span class="c">&lt;!-- Ordered with options --&gt;</span>
+&lt;ol type="A" start="3"&gt;
+  &lt;li&gt;Starts at C&lt;/li&gt;
+  &lt;li&gt;Then D&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ol reversed&gt;
+  &lt;li&gt;Counts down&lt;/li&gt;
+&lt;/ol&gt;
+
+<span class="c">&lt;!-- Description list --&gt;</span>
+&lt;dl&gt;
+  &lt;dt&gt;HTML&lt;/dt&gt;
+  &lt;dd&gt;HyperText Markup Language — the structure of the web.&lt;/dd&gt;
+  &lt;dt&gt;CSS&lt;/dt&gt;
+  &lt;dd&gt;Cascading Style Sheets — presentation.&lt;/dd&gt;
+&lt;/dl&gt;
+
+<span class="c">&lt;!-- Nested --&gt;</span>
+&lt;ul&gt;
+  &lt;li&gt;Top level
+    &lt;ul&gt;
+      &lt;li&gt;Nested item&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+    </section>
+
+    <section id="links">
+      <h2><span class="num">8</span> Links &amp; Anchors</h2>
+
+      <pre><code><span class="c">&lt;!-- Internal page link (fragment) --&gt;</span>
+&lt;a href="#section"&gt;Jump to section&lt;/a&gt;
+
+<span class="c">&lt;!-- Relative --&gt;</span>
+&lt;a href="/about.html"&gt;About&lt;/a&gt;
+
+<span class="c">&lt;!-- Absolute --&gt;</span>
+&lt;a href="https://example.com/" rel="external"&gt;Example&lt;/a&gt;
+
+<span class="c">&lt;!-- Email (opens mail client) --&gt;</span>
+&lt;a href="mailto:hello@example.com?subject=Hello"&gt;Email&lt;/a&gt;
+
+<span class="c">&lt;!-- Phone --&gt;</span>
+&lt;a href="tel:+15551234567"&gt;+1 (555) 123-4567&lt;/a&gt;
+
+<span class="c">&lt;!-- SMS --&gt;</span>
+&lt;a href="sms:+15551234567?body=Hi%20there"&gt;Text us&lt;/a&gt;
+
+<span class="c">&lt;!-- Download --&gt;</span>
+&lt;a href="report.pdf" download="annual-report.pdf"&gt;Download PDF&lt;/a&gt;
+
+<span class="c">&lt;!-- New tab (use sparingly, with rel) --&gt;</span>
+&lt;a href="https://example.com" target="_blank" rel="noopener noreferrer"&gt;
+  Opens in new tab
+&lt;/a&gt;
+
+<span class="c">&lt;!-- Image link --&gt;</span>
+&lt;a href="/" aria-label="Home"&gt;&lt;img src="logo.svg" alt=""&gt;&lt;/a&gt;</code></pre>
+
+      <h3>rel attribute values</h3>
+      <table class="info-table">
+        <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>noopener</code></td><td>Prevents new tab from accessing window.opener. <strong>Always use with target="_blank"</strong>.</td></tr>
+          <tr><td><code>noreferrer</code></td><td>Doesn't send Referer header.</td></tr>
+          <tr><td><code>external</code></td><td>Hint that link leaves the site.</td></tr>
+          <tr><td><code>nofollow</code></td><td>Tell search engines not to follow. Used for paid/sponsored links.</td></tr>
+          <tr><td><code>sponsored</code></td><td>Paid placement link.</td></tr>
+          <tr><td><code>ugc</code></td><td>User-generated content link (forums, comments).</td></tr>
+          <tr><td><code>bookmark</code></td><td>Permanent link to a section.</td></tr>
+          <tr><td><code>help</code></td><td>Context-sensitive help link.</td></tr>
+          <tr><td><code>license</code></td><td>Link to copyright/license info.</td></tr>
+          <tr><td><code>prev</code> / <code>next</code></td><td>Previous/next in a series.</td></tr>
+          <tr><td><code>tag</code></td><td>Link to a tag/keyword.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="images">
+      <h2><span class="num">9</span> Images</h2>
+
+      <div class="grid-2">
+        <div class="element-card"><h4>&lt;img&gt; <span class="pill void">VOID</span></h4><p>Raster or SVG image. Always include <code>alt</code>.</p></div>
+        <div class="element-card"><h4>&lt;picture&gt;</h4><p>Container for art direction. Wraps &lt;source&gt; + &lt;img&gt;.</p></div>
+        <div class="element-card"><h4>&lt;source&gt; <span class="pill void">VOID</span></h4><p>Media query alternative for &lt;picture&gt; or &lt;video&gt;.</p></div>
+        <div class="element-card"><h4>&lt;figure&gt;</h4><p>Self-contained content with optional caption.</p></div>
+        <div class="element-card"><h4>&lt;figcaption&gt;</h4><p>Caption for &lt;figure&gt;. First or last child.</p></div>
+        <div class="element-card"><h4>&lt;map&gt;</h4><p>Image map (clickable regions).</p></div>
+        <div class="element-card"><h4>&lt;area&gt; <span class="pill void">VOID</span></h4><p>Region inside &lt;map&gt;. Use <code>shape</code> + <code>coords</code>.</p></div>
+      </div>
+
+      <pre><code><span class="c">&lt;!-- Basic --&gt;</span>
+&lt;img src="hero.jpg" alt="Mountain landscape at sunrise"
+     width="1600" height="900" loading="lazy" decoding="async"&gt;
+
+<span class="c">&lt;!-- Responsive with srcset --&gt;</span>
+&lt;img src="hero-800.jpg"
+     srcset="hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w"
+     sizes="(max-width: 600px) 100vw, 50vw"
+     alt="..."&gt;
+
+<span class="c">&lt;!-- Art direction with &lt;picture&gt; --&gt;</span>
+&lt;picture&gt;
+  &lt;source srcset="hero-mobile.webp" media="(max-width: 600px)"&gt;
+  &lt;source srcset="hero.webp" type="image/webp"&gt;
+  &lt;img src="hero.jpg" alt="..."&gt;
+&lt;/picture&gt;
+
+<span class="c">&lt;!-- Figure with caption --&gt;</span>
+&lt;figure&gt;
+  &lt;img src="chart.png" alt="Q3 revenue by region"&gt;
+  &lt;figcaption&gt;Q3 revenue grew 18% YoY, led by EMEA.&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Always set width &amp; height</strong>
+        Even when CSS resizes the image, explicit attributes let the browser reserve space, preventing layout shift (CLS). Pair with <code>loading="lazy"</code> for below-the-fold images.
+      </div>
+    </section>
+
+    <section id="media">
+      <h2><span class="num">10</span> Audio &amp; Video</h2>
+
+      <div class="grid-3">
+        <div class="element-card"><h4>&lt;video&gt;</h4><p>Video player. Native controls, captions, poster.</p></div>
+        <div class="element-card"><h4>&lt;audio&gt;</h4><p>Audio player. Same model as &lt;video&gt;.</p></div>
+        <div class="element-card"><h4>&lt;source&gt; <span class="pill void">VOID</span></h4><p>Multiple format fallbacks.</p></div>
+        <div class="element-card"><h4>&lt;track&gt; <span class="pill void">VOID</span></h4><p>WebVTT subtitles, captions, descriptions.</p></div>
+        <div class="element-card"><h4>&lt;embed&gt; <span class="pill void">VOID</span></h4><p>External content (legacy — prefer &lt;iframe&gt;).</p></div>
+        <div class="element-card"><h4>&lt;object&gt;</h4><p>External resource (legacy — prefer &lt;iframe&gt;).</p></div>
+        <div class="element-card"><h4>&lt;param&gt; <span class="pill void">VOID</span> <span class="pill deprecated">DEPR</span></h4><p>Parameters for &lt;object&gt;. Avoid.</p></div>
+      </div>
+
+      <pre><code>&lt;video controls preload="metadata" poster="poster.jpg"
+       width="1280" height="720"&gt;
+  &lt;source src="movie.mp4" type="video/mp4"&gt;
+  &lt;source src="movie.webm" type="video/webm"&gt;
+  &lt;track kind="subtitles" src="subtitles.en.vtt"
+         srclang="en" label="English" default&gt;
+  &lt;track kind="captions" src="captions.en.vtt"
+         srclang="en" label="English captions"&gt;
+  Your browser does not support the video tag.
+&lt;/video&gt;
+
+&lt;audio controls preload="none"&gt;
+  &lt;source src="song.mp3" type="audio/mpeg"&gt;
+  &lt;source src="song.ogg" type="audio/ogg"&gt;
+&lt;/audio&gt;</code></pre>
+
+      <h3>Video attributes</h3>
+      <table class="info-table">
+        <thead><tr><th>Attribute</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>controls</code></td><td>Show native play/pause/volume UI.</td></tr>
+          <tr><td><code>autoplay muted</code></td><td>Autoplay allowed only when muted.</td></tr>
+          <tr><td><code>loop</code></td><td>Restart when finished.</td></tr>
+          <tr><td><code>muted</code></td><td>Audio off by default.</td></tr>
+          <tr><td><code>poster="img.jpg"</code></td><td>Image shown before play.</td></tr>
+          <tr><td><code>preload="none|metadata|auto"</code></td><td>How much to buffer up front.</td></tr>
+          <tr><td><code>playsinline</code></td><td>iOS: don't force fullscreen.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="embeds">
+      <h2><span class="num">11</span> Embeds &amp; External Content</h2>
+
+      <pre><code><span class="c">&lt;!-- Inline frame (YouTube, maps, widgets) --&gt;</span>
+&lt;iframe src="https://www.youtube.com/embed/abc123"
+        title="How to bake sourdough"
+        width="560" height="315"
+        loading="lazy"
+        allow="accelerometer; autoplay; encrypted-media"
+        allowfullscreen&gt;
+&lt;/iframe&gt;
+
+<span class="c">&lt;!-- Sandbox (security: lock down what iframe can do) --&gt;</span>
+&lt;iframe src="untrusted.html" sandbox="allow-scripts allow-same-origin"&gt;
+&lt;/iframe&gt;
+
+<span class="c">&lt;!-- Inline SVG --&gt;</span>
+&lt;svg viewBox="0 0 100 100" role="img" aria-label="Circle"&gt;
+  &lt;circle cx="50" cy="50" r="40" fill="#2563eb"/&gt;
+&lt;/svg&gt;
+
+<span class="c">&lt;!-- Inline SVG with &lt;use&gt; --&gt;</span>
+&lt;svg&gt;&lt;use href="#icon-arrow"/&gt;&lt;/svg&gt;
+
+<span class="c">&lt;!-- MathML --&gt;</span>
+&lt;math display="block"&gt;
+  &lt;mrow&gt;
+    &lt;mi&gt;E&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;m&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;
+  &lt;/mrow&gt;
+&lt;/math&gt;</code></pre>
+    </section>
+
+    <section id="tables">
+      <h2><span class="num">12</span> Tables</h2>
+      <p>For tabular data only — not for layout. Use semantic structure for screen readers.</p>
+
+      <div class="grid-3">
+        <div class="element-card"><h4>&lt;table&gt;</h4><p>Container for tabular data.</p></div>
+        <div class="element-card"><h4>&lt;caption&gt;</h4><p>Title of the table. Always include.</p></div>
+        <div class="element-card"><h4>&lt;thead&gt;</h4><p>Header rows.</p></div>
+        <div class="element-card"><h4>&lt;tbody&gt;</h4><p>Body rows.</p></div>
+        <div class="element-card"><h4>&lt;tfoot&gt;</h4><p>Footer (totals) rows.</p></div>
+        <div class="element-card"><h4>&lt;tr&gt;</h4><p>Table row.</p></div>
+        <div class="element-card"><h4>&lt;th&gt;</h4><p>Header cell. Use <code>scope</code>.</p></div>
+        <div class="element-card"><h4>&lt;td&gt;</h4><p>Data cell.</p></div>
+        <div class="element-card"><h4>&lt;colgroup&gt;</h4><p>Groups columns for styling.</p></div>
+        <div class="element-card"><h4>&lt;col&gt; <span class="pill void">VOID</span></h4><p>Defines a column inside &lt;colgroup&gt;.</p></div>
+      </div>
+
+      <pre><code>&lt;table&gt;
+  &lt;caption&gt;Q3 Revenue by Region (in $M)&lt;/caption&gt;
+  &lt;colgroup&gt;
+    &lt;col span="1" style="background: #f1f5f9;"&gt;
+  &lt;/colgroup&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Region&lt;/th&gt;
+      &lt;th scope="col"&gt;Q3 2024&lt;/th&gt;
+      &lt;th scope="col"&gt;Q3 2025&lt;/th&gt;
+      &lt;th scope="col"&gt;Change&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;North America&lt;/th&gt;
+      &lt;td&gt;42.1&lt;/td&gt;
+      &lt;td&gt;48.6&lt;/td&gt;
+      &lt;td&gt;+15.4%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;EMEA&lt;/th&gt;
+      &lt;td&gt;31.8&lt;/td&gt;
+      &lt;td&gt;38.2&lt;/td&gt;
+      &lt;td&gt;+20.1%&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Total&lt;/th&gt;
+      &lt;td colspan="2"&gt;160.7&lt;/td&gt;
+      &lt;td&gt;+17.9%&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tfoot&gt;
+&lt;/table&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Don't use tables for page layout. They break responsive design, hurt screen reader UX, and complicate maintenance. Use CSS Grid or Flexbox.
+      </div>
+    </section>
+
+    <section id="forms">
+      <h2><span class="num">13</span> Forms</h2>
+      <p>The richest part of HTML. Native validation, input types, and accessibility all live here.</p>
+
+      <div class="grid-2">
+        <div class="element-card"><h4>&lt;form&gt;</h4><p>Form container. <code>action</code>, <code>method</code>, <code>enctype</code>.</p></div>
+        <div class="element-card"><h4>&lt;fieldset&gt;</h4><p>Groups related fields. Always pair with &lt;legend&gt;.</p></div>
+        <div class="element-card"><h4>&lt;legend&gt;</h4><p>Caption for a &lt;fieldset&gt;.</p></div>
+        <div class="element-card"><h4>&lt;label&gt;</h4><p>Caption for a form control. Use <code>for</code> + matching <code>id</code>.</p></div>
+        <div class="element-card"><h4>&lt;input&gt; <span class="pill void">VOID</span></h4><p>22+ type variants. The workhorse.</p></div>
+        <div class="element-card"><h4>&lt;button&gt;</h4><p>Submit, reset, or generic button. Type defaults to "submit".</p></div>
+        <div class="element-card"><h4>&lt;select&gt;</h4><p>Dropdown. Pair with &lt;optgroup&gt; + &lt;option&gt;.</p></div>
+        <div class="element-card"><h4>&lt;optgroup&gt;</h4><p>Group of options in a &lt;select&gt;.</p></div>
+        <div class="element-card"><h4>&lt;option&gt;</h4><p>Single &lt;select&gt; choice. Use <code>value</code>.</p></div>
+        <div class="element-card"><h4>&lt;textarea&gt;</h4><p>Multi-line text. Cols/rows + CSS resize.</p></div>
+        <div class="element-card"><h4>&lt;output&gt;</h4><p>Computed result. Live region for screen readers.</p></div>
+        <div class="element-card"><h4>&lt;progress&gt; <span class="pill void">VOID</span></h4><p>Progress of a task (0 → max). Indeterminate if no value.</p></div>
+        <div class="element-card"><h4>&lt;meter&gt; <span class="pill void">VOID</span></h4><p>Gauge: known range, current value.</p></div>
+        <div class="element-card"><h4>&lt;datalist&gt; <span class="pill new">NEW</span></h4><p>Autocomplete suggestions for &lt;input&gt;.</p></div>
+      </div>
+
+      <h3>Input types</h3>
+      <table class="info-table">
+        <thead><tr><th>Type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>text</code></td><td>Single-line text. Default.</td></tr>
+          <tr><td><code>email</code></td><td>Email with built-in validation + @ keyboard on mobile.</td></tr>
+          <tr><td><code>url</code></td><td>URL with validation.</td></tr>
+          <tr><td><code>password</code></td><td>Masked input.</td></tr>
+          <tr><td><code>tel</code></td><td>Phone number. Triggers numeric keypad.</td></tr>
+          <tr><td><code>search</code></td><td>Search field. Native clear button.</td></tr>
+          <tr><td><code>number</code></td><td>Numeric input. Spinner + min/max/step.</td></tr>
+          <tr><td><code>date</code></td><td>Native date picker (YYYY-MM-DD).</td></tr>
+          <tr><td><code>time</code></td><td>Native time picker (HH:MM).</td></tr>
+          <tr><td><code>datetime-local</code></td><td>Date + time picker, no timezone.</td></tr>
+          <tr><td><code>month</code></td><td>Year + month picker.</td></tr>
+          <tr><td><code>week</code></td><td>Year + week picker.</td></tr>
+          <tr><td><code>color</code></td><td>Color picker.</td></tr>
+          <tr><td><code>range</code></td><td>Slider. Use <code>min</code>, <code>max</code>, <code>step</code>.</td></tr>
+          <tr><td><code>checkbox</code></td><td>Toggle (multiple allowed).</td></tr>
+          <tr><td><code>radio</code></td><td>Single choice from group (shared <code>name</code>).</td></tr>
+          <tr><td><code>file</code></td><td>File upload. Use <code>accept</code>, <code>multiple</code>.</td></tr>
+          <tr><td><code>hidden</code></td><td>Invisible data (CSRF token, IDs).</td></tr>
+          <tr><td><code>submit</code></td><td>Submit button.</td></tr>
+          <tr><td><code>image</code></td><td>Image as submit button.</td></tr>
+          <tr><td><code>reset</code></td><td>Reset form button.</td></tr>
+          <tr><td><code>button</code></td><td>Generic button (use &lt;button&gt; instead).</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Input attributes</h3>
+      <table class="info-table">
+        <thead><tr><th>Attribute</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>required</code></td><td>Must be filled to submit.</td></tr>
+          <tr><td><code>disabled</code></td><td>Cannot be edited or submitted.</td></tr>
+          <tr><td><code>readonly</code></td><td>Cannot be edited, but is submitted.</td></tr>
+          <tr><td><code>placeholder</code></td><td>Hint text. Not a label.</td></tr>
+          <tr><td><code>value</code></td><td>Default value.</td></tr>
+          <tr><td><code>name</code></td><td>Form field name (submitted as key).</td></tr>
+          <tr><td><code>min</code> / <code>max</code></td><td>Range bounds for number/date.</td></tr>
+          <tr><td><code>step</code></td><td>Increment for number/range.</td></tr>
+          <tr><td><code>minlength</code> / <code>maxlength</code></td><td>Character count limits.</td></tr>
+          <tr><td><code>pattern</code></td><td>Regex pattern the value must match.</td></tr>
+          <tr><td><code>multiple</code></td><td>Allow multiple values (email/file).</td></tr>
+          <tr><td><code>accept</code></td><td>File type filter (MIME or extension).</td></tr>
+          <tr><td><code>capture</code></td><td>Mobile: camera or mic for file input.</td></tr>
+          <tr><td><code>autocomplete</code></td><td>Browser autofill hint (on/off/name/email/...).</td></tr>
+          <tr><td><code>autofocus</code></td><td>Focus on page load. One per page.</td></tr>
+          <tr><td><code>inputmode</code></td><td>Mobile keyboard hint (numeric/decimal/tel/...).</td></tr>
+          <tr><td><code>list</code></td><td>Points to a &lt;datalist&gt; ID.</td></tr>
+          <tr><td><code>form</code></td><td>Associates input with a form by ID (input outside form).</td></tr>
+          <tr><td><code>formaction</code> / <code>formmethod</code></td><td>Per-button form action/method override.</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code>&lt;form action="/submit" method="post" novalidate&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Contact information&lt;/legend&gt;
+
+    &lt;div&gt;
+      &lt;label for="name"&gt;Name &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;input type="text" id="name" name="name"
+             required minlength="2" maxlength="80"
+             autocomplete="name"
+             aria-describedby="name-hint"&gt;
+      &lt;p id="name-hint" class="hint"&gt;2–80 characters.&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+      &lt;label for="email"&gt;Email&lt;/label&gt;
+      &lt;input type="email" id="email" name="email"
+             required autocomplete="email"&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+      &lt;label for="age"&gt;Age&lt;/label&gt;
+      &lt;input type="number" id="age" name="age"
+             min="18" max="120" step="1"&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+      &lt;label for="country"&gt;Country&lt;/label&gt;
+      &lt;select id="country" name="country"&gt;
+        &lt;optgroup label="North America"&gt;
+          &lt;option value="us"&gt;United States&lt;/option&gt;
+          &lt;option value="ca"&gt;Canada&lt;/option&gt;
+        &lt;/optgroup&gt;
+        &lt;optgroup label="Europe"&gt;
+          &lt;option value="uk"&gt;United Kingdom&lt;/option&gt;
+          &lt;option value="de"&gt;Germany&lt;/option&gt;
+        &lt;/optgroup&gt;
+      &lt;/select&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+      &lt;label for="bio"&gt;Bio&lt;/label&gt;
+      &lt;textarea id="bio" name="bio" rows="4" maxlength="280"&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+      &lt;label for="color"&gt;Favorite color&lt;/label&gt;
+      &lt;input type="color" id="color" name="color" value="#2563eb"&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+      &lt;label for="birthday"&gt;Birthday&lt;/label&gt;
+      &lt;input type="date" id="birthday" name="birthday"&gt;
+    &lt;/div&gt;
+
+    &lt;fieldset&gt;
+      &lt;legend&gt;Subscribe to&lt;/legend&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="sub" value="news" checked&gt; Newsletter&lt;/label&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="sub" value="offers"&gt; Offers&lt;/label&gt;
+    &lt;/fieldset&gt;
+
+    &lt;fieldset&gt;
+      &lt;legend&gt;Plan&lt;/legend&gt;
+      &lt;label&gt;&lt;input type="radio" name="plan" value="free" checked&gt; Free&lt;/label&gt;
+      &lt;label&gt;&lt;input type="radio" name="plan" value="pro"&gt; Pro $12/mo&lt;/label&gt;
+    &lt;/fieldset&gt;
+
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
+    </section>
+
+    <section id="interactive">
+      <h2><span class="num">14</span> Interactive Elements</h2>
+
+      <div class="grid-2">
+        <div class="element-card"><h4>&lt;details&gt;</h4><p>Disclosure widget. Open/close without JS.</p></div>
+        <div class="element-card"><h4>&lt;summary&gt;</h4><p>Summary for &lt;details&gt;. Always first child.</p></div>
+        <div class="element-card"><h4>&lt;dialog&gt;</h4><p>Modal or non-modal dialog. <code>show()</code> / <code>showModal()</code>.</p></div>
+        <div class="element-card"><h4>&lt;menu&gt;</h4><p>List of commands. Context menus, toolbars.</p></div>
+        <div class="element-card"><h4>&lt;template&gt;</h4><p>Inert HTML for later cloning. Not rendered.</p></div>
+        <div class="element-card"><h4>&lt;slot&gt;</h4><p>Placeholder in shadow DOM. Named or default.</p></div>
+      </div>
+
+      <pre><code><span class="c">&lt;!-- Disclosure (FAQ accordion) --&gt;</span>
+&lt;details&gt;
+  &lt;summary&gt;What is your return policy?&lt;/summary&gt;
+  &lt;p&gt;Items can be returned within 30 days...&lt;/p&gt;
+&lt;/details&gt;
+
+&lt;details open&gt;
+  &lt;summary&gt;Shipping options&lt;/summary&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Standard: 5–7 days&lt;/li&gt;
+    &lt;li&gt;Express: 2–3 days&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/details&gt;
+
+<span class="c">&lt;!-- Modal dialog --&gt;</span>
+&lt;dialog id="confirm"&gt;
+  &lt;form method="dialog"&gt;
+    &lt;p&gt;Delete this file?&lt;/p&gt;
+    &lt;menu&gt;
+      &lt;button value="cancel"&gt;Cancel&lt;/button&gt;
+      &lt;button value="delete"&gt;Delete&lt;/button&gt;
+    &lt;/menu&gt;
+  &lt;/form&gt;
+&lt;/dialog&gt;
+&lt;button onclick="document.querySelector('#confirm').showModal()"&gt;
+  Open dialog
+&lt;/button&gt;
+
+<span class="c">&lt;!-- Template for client-side rendering --&gt;</span>
+&lt;template id="card-tmpl"&gt;
+  &lt;article class="card"&gt;
+    &lt;h3&gt;&lt;/h3&gt;
+    &lt;p&gt;&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/template&gt;
+&lt;script&gt;
+  const tmpl = document.querySelector('#card-tmpl');
+  const clone = tmpl.content.cloneNode(true);
+  clone.querySelector('h3').textContent = 'Hello';
+  document.body.appendChild(clone);
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="scripting">
+      <h2><span class="num">15</span> Scripting</h2>
+
+      <pre><code>&lt;!-- Inline script --&gt;</span>
+&lt;script&gt;
+  console.log('hello');
+&lt;/script&gt;
+
+<span class="c">&lt;!-- External, blocking (default) --&gt;</span>
+&lt;script src="app.js"&gt;&lt;/script&gt;
+
+<span class="c">&lt;!-- External, deferred — runs after HTML parsed --&gt;</span>
+&lt;script src="app.js" defer&gt;&lt;/script&gt;
+
+<span class="c">&lt;!-- External, async — runs when downloaded --&gt;</span>
+&lt;script src="analytics.js" async&gt;&lt;/script&gt;
+
+<span class="c">&lt;!-- ES module (always deferred) --&gt;</span>
+&lt;script type="module" src="app.mjs"&gt;&lt;/script&gt;
+
+<span class="c">&lt;!-- No-JS fallback --&gt;</span>
+&lt;noscript&gt;
+  &lt;p&gt;This app requires JavaScript.&lt;/p&gt;
+&lt;/noscript&gt;
+
+<span class="c">&lt;!-- JSON-LD structured data --&gt;</span>
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Bake Sourdough",
+  "author": { "@type": "Person", "name": "Maya Kowalski" }
+}
+&lt;/script&gt;</code></pre>
+
+      <h3>Script loading modes</h3>
+      <table class="info-table">
+        <thead><tr><th>Mode</th><th>Blocks HTML parse?</th><th>When runs</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>Yes (download + exec)</td><td>Immediately when reached</td></tr>
+          <tr><td><code>async</code></td><td>No (download) / Yes (exec)</td><td>As soon as downloaded, in any order</td></tr>
+          <tr><td><code>defer</code></td><td>No</td><td>After HTML parsed, in DOM order</td></tr>
+          <tr><td><code>type="module"</code></td><td>No</td><td>Implicit defer, strict mode</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Use <code>type="module"</code> + <code>defer</code> on all your scripts. Modules are always deferred, execute in DOM order, support imports natively, and run in strict mode. Default to this everywhere.
+      </div>
+    </section>
+
+    <section id="global-attr">
+      <h2><span class="num">16</span> Global Attributes</h2>
+      <p>Apply to <em>every</em> element. The universal vocabulary of HTML.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Attribute</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>Unique identifier. Must be unique on the page.</td></tr>
+          <tr><td><code>class</code></td><td>Space-separated class names for CSS/JS hooks.</td></tr>
+          <tr><td><code>style</code></td><td>Inline styles. Avoid in production.</td></tr>
+          <tr><td><code>title</code></td><td>Tooltip text on hover.</td></tr>
+          <tr><td><code>lang</code></td><td>Language code (en, fr, ja, zh-Hans).</td></tr>
+          <tr><td><code>dir</code></td><td>Text direction: <code>ltr</code>, <code>rtl</code>, <code>auto</code>.</td></tr>
+          <tr><td><code>tabindex</code></td><td>Focus order. <code>0</code>=natural, <code>-1</code>=programmatic only. Avoid positives.</td></tr>
+          <tr><td><code>accesskey</code></td><td>Keyboard shortcut. Use sparingly — conflicts with browsers.</td></tr>
+          <tr><td><code>contenteditable</code></td><td>Makes element editable. <code>true</code> / <code>false</code>.</td></tr>
+          <tr><td><code>spellcheck</code></td><td>Enable browser spell check.</td></tr>
+          <tr><td><code>hidden</code></td><td>Hides element entirely. Boolean attribute.</td></tr>
+          <tr><td><code>translate</code></td><td>Hint to translation tools: <code>yes</code> / <code>no</code>.</td></tr>
+          <tr><td><code>draggable</code></td><td>Make element draggable. <code>true</code> / <code>false</code> / <code>auto</code>.</td></tr>
+          <tr><td><code>autocapitalize</code></td><td>Mobile: <code>none</code> / <code>sentences</code> / <code>words</code> / <code>characters</code>.</td></tr>
+          <tr><td><code>autofocus</code></td><td>Auto-focus on page load.</td></tr>
+          <tr><td><code>enterkeyhint</code></td><td>Mobile: change Enter key label. <code>go</code>, <code>search</code>, <code>send</code>, <code>next</code>, <code>done</code>.</td></tr>
+          <tr><td><code>inputmode</code></td><td>Mobile keyboard hint.</td></tr>
+          <tr><td><code>is</code></td><td>Customized built-in element: <code>is="my-button"</code>.</td></tr>
+          <tr><td><code>nonce</code></td><td>Cryptographic nonce for CSP-allowed inline scripts.</td></tr>
+          <tr><td><code>part</code></td><td>Expose shadow DOM parts for styling.</td></tr>
+          <tr><td><code>slot</code></td><td>Assign element to a named slot in shadow DOM.</td></tr>
+          <tr><td><code>popover</code> <span class="pill new">NEW</span></td><td>Native popover API. <code>auto</code> / <code>manual</code>.</td></tr>
+          <tr><td><code>popovertarget</code> <span class="pill new">NEW</span></td><td>Button: which popover to toggle.</td></tr>
+          <tr><td><code>popovertargetaction</code> <span class="pill new">NEW</span></td><td><code>toggle</code> / <code>show</code> / <code>hide</code>.</td></tr>
+          <tr><td><code>inert</code> <span class="pill new">NEW</span></td><td>Makes element + descendants non-interactive.</td></tr>
+          <tr><td><code>writingsuggestions</code> <span class="pill new">NEW</span></td><td>Toggle AI writing suggestions.</td></tr>
+          <tr><td><code>data-*</code></td><td>Custom data (e.g. <code>data-user-id="42"</code>). Read via JS dataset.</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code>&lt;article
+  id="post-42"
+  class="essay featured"
+  lang="en"
+  dir="ltr"
+  data-author="maya"
+  data-tags="engineering,process"
+  popover="auto"&gt;
+  ...
+&lt;/article&gt;
+
+&lt;button popovertarget="post-42" popovertargetaction="toggle"&gt;
+  Open
+&lt;/button&gt;</code></pre>
+    </section>
+
+    <section id="events">
+      <h2><span class="num">17</span> Event Handler Attributes</h2>
+      <p>HTML exposes <code>on*</code> attributes for inline event handlers. Generally prefer <code>addEventListener</code> in JS, but they remain valid and useful for tiny prototypes.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Attribute</th><th>Fires when</th></tr></thead>
+        <tbody>
+          <tr><td><code>onload</code></td><td>Page or resource finishes loading.</td></tr>
+          <tr><td><code>onunload</code> <span class="pill deprecated">DEPR</span></td><td>Page unloads. Unreliable — use <code>pagehide</code>.</td></tr>
+          <tr><td><code>onclick</code></td><td>Mouse or touch click.</td></tr>
+          <tr><td><code>ondblclick</code></td><td>Double click.</td></tr>
+          <tr><td><code>onmousedown</code> / <code>onmouseup</code></td><td>Mouse button pressed/released.</td></tr>
+          <tr><td><code>onmouseenter</code> / <code>onmouseleave</code></td><td>Pointer enters/leaves element.</td></tr>
+          <tr><td><code>onmousemove</code></td><td>Pointer moves over element.</td></tr>
+          <tr><td><code>onmouseover</code> / <code>onmouseout</code></td><td>Like enter/leave but bubbles.</td></tr>
+          <tr><td><code>onwheel</code></td><td>Mouse wheel rotates.</td></tr>
+          <tr><td><code>onkeydown</code> / <code>onkeyup</code></td><td>Keyboard key pressed/released.</td></tr>
+          <tr><td><code>onkeypress</code> <span class="pill deprecated">DEPR</span></td><td>Use <code>onkeydown</code> instead.</td></tr>
+          <tr><td><code>oninput</code></td><td>Value of input/textarea changes (live).</td></tr>
+          <tr><td><code>onchange</code></td><td>Value committed (blur or enter).</td></tr>
+          <tr><td><code>onfocus</code> / <code>onblur</code></td><td>Element gains/loses focus.</td></tr>
+          <tr><td><code>onsubmit</code></td><td>Form submitted.</td></tr>
+          <tr><td><code>onreset</code></td><td>Form reset.</td></tr>
+          <tr><td><code>oninvalid</code></td><td>Form field fails validation.</td></tr>
+          <tr><td><code>onselect</code></td><td>Text selected in input.</td></tr>
+          <tr><td><code>onscroll</code></td><td>Element scrolled.</td></tr>
+          <tr><td><code>onresize</code></td><td>Window/element resized.</td></tr>
+          <tr><td><code>oncontextmenu</code></td><td>Right-click (context menu requested).</td></tr>
+          <tr><td><code>oncopy</code> / <code>oncut</code> / <code>onpaste</code></td><td>Clipboard operations.</td></tr>
+          <tr><td><code>ondrag</code> / <code>ondragstart</code> / <code>ondragend</code></td><td>Source-side drag events.</td></tr>
+          <tr><td><code>ondragenter</code> / <code>ondragover</code> / <code>ondragleave</code> / <code>ondrop</code></td><td>Target-side drag events.</td></tr>
+          <tr><td><code>onplay</code> / <code>onpause</code> / <code>onended</code></td><td>Media playback events.</td></tr>
+          <tr><td><code>onerror</code></td><td>Resource fails to load.</td></tr>
+          <tr><td><code>onabort</code></td><td>Resource loading aborted.</td></tr>
+          <tr><td><code>oncanplay</code> / <code>oncanplaythrough</code></td><td>Media has enough buffered.</td></tr>
+          <tr><td><code>onloadeddata</code> / <code>onloadedmetadata</code></td><td>Media data/metadata loaded.</td></tr>
+          <tr><td><code>ontoggle</code></td><td>&lt;details&gt; opened/closed; &lt;popover&gt; toggled.</td></tr>
+          <tr><td><code>onclose</code></td><td>&lt;dialog&gt; closed.</td></tr>
+          <tr><td><code>oncancel</code></td><td>&lt;dialog&gt; ESC pressed.</td></tr>
+          <tr><td><code>onauxclick</code></td><td>Middle/right click.</td></tr>
+          <tr><td><code>onpointerdown</code> / <code>onpointermove</code> / <code>onpointerup</code></td><td>Unified pointer events (mouse + touch + pen).</td></tr>
+          <tr><td><code>ontouchstart</code> / <code>ontouchmove</code> / <code>ontouchend</code></td><td>Touch-specific events (mobile).</td></tr>
+          <tr><td><code>onanimationstart</code> / <code>onanimationend</code></td><td>CSS animation events.</td></tr>
+          <tr><td><code>ontransitionend</code></td><td>CSS transition ends.</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code><span class="c">&lt;!-- Inline handler --&gt;</span>
+&lt;button onclick="alert('hi')"&gt;Click&lt;/button&gt;
+
+<span class="c">&lt;!-- Preferred: addEventListener --&gt;</span>
+&lt;button id="btn"&gt;Click&lt;/button&gt;
+&lt;script&gt;
+  document.getElementById('btn')
+    .addEventListener('click', () =&gt; alert('hi'));
+&lt;/script&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Don't put complex logic in inline <code>on*</code> handlers — they're hard to test and create global namespace pollution. Use them only for one-line demos and always pair with proper <code>addEventListener</code> in real apps.
+      </div>
+    </section>
+
+    <section id="aria">
+      <h2><span class="num">18</span> ARIA Roles Reference</h2>
+      <p>ARIA = Accessible Rich Internet Applications. Use sparingly — the first rule of ARIA is "don't use ARIA" if a native HTML element works.</p>
+
+      <h3>Landmark roles</h3>
+      <table class="info-table">
+        <thead><tr><th>Role</th><th>Native equivalent</th></tr></thead>
+        <tbody>
+          <tr><td><code>banner</code></td><td><code>&lt;header&gt;</code> at page level</td></tr>
+          <tr><td><code>main</code></td><td><code>&lt;main&gt;</code></td></tr>
+          <tr><td><code>contentinfo</code></td><td><code>&lt;footer&gt;</code> at page level</td></tr>
+          <tr><td><code>navigation</code></td><td><code>&lt;nav&gt;</code></td></tr>
+          <tr><td><code>complementary</code></td><td><code>&lt;aside&gt;</code></td></tr>
+          <tr><td><code>search</code></td><td><code>&lt;search&gt;</code></td></tr>
+          <tr><td><code>form</code></td><td><code>&lt;form&gt;</code> with accessible name</td></tr>
+          <tr><td><code>region</code></td><td><code>&lt;section&gt;</code> with accessible name</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Document structure roles</h3>
+      <table class="info-table">
+        <thead><tr><th>Role</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>article</code></td><td>Syndicable content unit</td></tr>
+          <tr><td><code>definition</code></td><td>Definition of a term</td></tr>
+          <tr><td><code>figure</code></td><td>Illustration with caption</td></tr>
+          <tr><td><code>heading</code> + <code>aria-level</code></td><td>Heading (use &lt;h1&gt;–&lt;h6&gt;)</td></tr>
+          <tr><td><code>img</code></td><td>Image (use &lt;img&gt; with alt)</td></tr>
+          <tr><td><code>list</code></td><td>List (use &lt;ul&gt; / &lt;ol&gt;)</td></tr>
+          <tr><td><code>listitem</code></td><td>List item (use &lt;li&gt;)</td></tr>
+          <tr><td><code>note</code></td><td>Inline note</td></tr>
+          <tr><td><code>paragraph</code></td><td>Paragraph (use &lt;p&gt;)</td></tr>
+          <tr><td><code>separator</code></td><td>Divider (use &lt;hr&gt;)</td></tr>
+          <tr><td><code>toolbar</code></td><td>Collection of action buttons</td></tr>
+          <tr><td><code>tooltip</code></td><td>Contextual help bubble</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Widget roles (use native where possible)</h3>
+      <table class="info-table">
+        <thead><tr><th>Role</th><th>Native element</th></tr></thead>
+        <tbody>
+          <tr><td><code>button</code></td><td>&lt;button&gt;</td></tr>
+          <tr><td><code>link</code></td><td>&lt;a href&gt;</td></tr>
+          <tr><td><code>checkbox</code></td><td>&lt;input type="checkbox"&gt;</td></tr>
+          <tr><td><code>radio</code></td><td>&lt;input type="radio"&gt;</td></tr>
+          <tr><td><code>textbox</code></td><td>&lt;input type="text"&gt; / &lt;textarea&gt;</td></tr>
+          <tr><td><code>searchbox</code></td><td>&lt;input type="search"&gt;</td></tr>
+          <tr><td><code>slider</code></td><td>&lt;input type="range"&gt;</td></tr>
+          <tr><td><code>spinbutton</code></td><td>&lt;input type="number"&gt;</td></tr>
+          <tr><td><code>combobox</code></td><td>&lt;select&gt; or &lt;input list&gt;</td></tr>
+          <tr><td><code>listbox</code></td><td>Custom dropdown (no native equiv.)</td></tr>
+          <tr><td><code>option</code></td><td>&lt;option&gt;</td></tr>
+          <tr><td><code>menu</code></td><td>&lt;menu&gt;</td></tr>
+          <tr><td><code>menuitem</code></td><td>&lt;li&gt; inside &lt;menu&gt;</td></tr>
+          <tr><td><code>menuitemcheckbox</code></td><td>Toggle menu item</td></tr>
+          <tr><td><code>menuitemradio</code></td><td>Single-choice menu item</td></tr>
+          <tr><td><code>tab</code></td><td>Tab in a tablist</td></tr>
+          <tr><td><code>tablist</code></td><td>Container of tabs</td></tr>
+          <tr><td><code>tabpanel</code></td><td>Content panel for a tab</td></tr>
+          <tr><td><code>tree</code></td><td>Hierarchical tree widget</td></tr>
+          <tr><td><code>treeitem</code></td><td>Item in a tree</td></tr>
+          <tr><td><code>treegrid</code></td><td>Tree + grid hybrid</td></tr>
+          <tr><td><code>grid</code></td><td>Interactive grid (spreadsheet-like)</td></tr>
+          <tr><td><code>gridcell</code></td><td>Cell in a grid</td></tr>
+          <tr><td><code>row</code></td><td>Row in grid/treegrid</td></tr>
+          <tr><td><code>rowgroup</code></td><td>Group of rows</td></tr>
+          <tr><td><code>columnheader</code></td><td>Header cell for a column</td></tr>
+          <tr><td><code>rowheader</code></td><td>Header cell for a row</td></tr>
+          <tr><td><code>alert</code></td><td>Live, assertive notification</td></tr>
+          <tr><td><code>alertdialog</code></td><td>Modal alert (use &lt;dialog&gt;)</td></tr>
+          <tr><td><code>dialog</code></td><td>Modal/non-modal dialog (use &lt;dialog&gt;)</td></tr>
+          <tr><td><code>log</code></td><td>Live log (chat, console)</td></tr>
+          <tr><td><code>marquee</code></td><td>Scrolling text</td></tr>
+          <tr><td><code>status</code></td><td>Advisory status (polite live region)</td></tr>
+          <tr><td><code>timer</code></td><td>Live countdown/timer</td></tr>
+          <tr><td><code>scrollbar</code></td><td>Custom scrollbar</td></tr>
+          <tr><td><code>progress</code> + <code>progressbar</code></td><td>Use &lt;progress&gt;</td></tr>
+          <tr><td><code>meter</code></td><td>Use &lt;meter&gt;</td></tr>
+          <tr><td><code>application</code></td><td>Web app (use sparingly — high bar)</td></tr>
+          <tr><td><code>presentation</code> / <code>none</code></td><td>Strip semantics</td></tr>
+          <tr><td><code>group</code></td><td>Group of related elements</td></tr>
+          <tr><td><code>radiogroup</code></td><td>Container for radio buttons</td></tr>
+          <tr><td><code>feed</code></td><td>Infinite scroll feed (social)</td></tr>
+          <tr><td><code>table</code> / <code>row</code> / <code>cell</code></td><td>ARIA table (use &lt;table&gt;)</td></tr>
+          <tr><td><code>term</code></td><td>Term being defined</td></tr>
+          <tr><td><code>math</code></td><td>Math expression</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Key ARIA attributes</h3>
+      <table class="info-table">
+        <thead><tr><th>Attribute</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>aria-label</code></td><td>Accessible name when no visible text.</td></tr>
+          <tr><td><code>aria-labelledby</code></td><td>ID(s) of element(s) that label this one.</td></tr>
+          <tr><td><code>aria-describedby</code></td><td>ID(s) of element(s) that describe.</td></tr>
+          <tr><td><code>aria-hidden</code></td><td>Hide from assistive tech (but keep visible).</td></tr>
+          <tr><td><code>aria-disabled</code></td><td>Visually disabled but focusable (use <code>disabled</code> if focusable not desired).</td></tr>
+          <tr><td><code>aria-expanded</code></td><td>Disclosure state. <code>true</code> / <code>false</code>.</td></tr>
+          <tr><td><code>aria-controls</code></td><td>ID of element this controls (toggles).</td></tr>
+          <tr><td><code>aria-haspopup</code></td><td>Has a popup (menu/dialog/listbox...).</td></tr>
+          <tr><td><code>aria-current</code></td><td>Current page/step/location. <code>page</code>, <code>step</code>, <code>true</code>.</td></tr>
+          <tr><td><code>aria-selected</code></td><td>Selected state in a listbox/tab.</td></tr>
+          <tr><td><code>aria-checked</code></td><td>Checkbox state.</td></tr>
+          <tr><td><code>aria-pressed</code></td><td>Toggle button state.</td></tr>
+          <tr><td><code>aria-live</code></td><td>Live region politeness. <code>polite</code> / <code>assertive</code>.</td></tr>
+          <tr><td><code>aria-atomic</code></td><td>Announce entire region on change.</td></tr>
+          <tr><td><code>aria-relevant</code></td><td>What changes to announce.</td></tr>
+          <tr><td><code>aria-busy</code></td><td>Region is updating.</td></tr>
+          <tr><td><code>aria-required</code></td><td>Field required (use <code>required</code> where native).</td></tr>
+          <tr><td><code>aria-invalid</code></td><td>Field failed validation.</td></tr>
+          <tr><td><code>aria-placeholder</code></td><td>Use <code>placeholder</code> attribute instead.</td></tr>
+          <tr><td><code>aria-roledescription</code></td><td>Custom role description for screen readers.</td></tr>
+          <tr><td><code>aria-level</code> / <code>aria-posinset</code> / <code>aria-setsize</code></td><td>Hierarchy position (headings, treeitems).</td></tr>
+          <tr><td><code>aria-orientation</code></td><td><code>horizontal</code> / <code>vertical</code>.</td></tr>
+          <tr><td><code>aria-modal</code></td><td>Modal dialog blocks background.</td></tr>
+          <tr><td><code>aria-flowto</code></td><td>Custom reading order.</td></tr>
+          <tr><td><code>aria-keyshortcuts</code></td><td>Documented keyboard shortcuts.</td></tr>
+          <tr><td><code>aria-details</code></td><td>Link to extended description.</td></tr>
+          <tr><td><code>aria-errormessage</code></td><td>ID of error message element.</td></tr>
+          <tr><td><code>aria-valuemin</code> / <code>valuemax</code> / <code>valuenow</code> / <code>valuetext</code></td><td>Range widget values.</td></tr>
+          <tr><td><code>aria-activedescendant</code></td><td>Which descendant has focus (comboboxes).</td></tr>
+          <tr><td><code>aria-owns</code></td><td>Treat element as child (DOM rearrangement).</td></tr>
+          <tr><td><code>aria-rowcount</code> / <code>colcount</code> / <code>rowindex</code> / <code>colindex</code> / <code>colspan</code> / <code>rowspan</code></td><td>Grid/table geometry.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The five rules of ARIA: (1) If you can use a native HTML element, do that instead. (2) Don't change native semantics. (3) All interactive ARIA elements must be keyboard-operable. (4) Don't use <code>role="application"</code> unless you really mean it. (5) All interactive elements need an accessible name.
+      </div>
+    </section>
+
+    <section id="meta-tags">
+      <h2><span class="num">19</span> Meta Tag Reference</h2>
+      <p>The complete production-ready <code>&lt;head&gt;</code>. Steal this template.</p>
+
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+
+  &lt;!-- Primary --&gt;</span>
+  &lt;title&gt;Page Title (50–60 chars) | Brand&lt;/title&gt;
+  &lt;meta name="description" content="150–160 char summary."&gt;
+  &lt;link rel="canonical" href="https://example.com/page"&gt;
+
+  &lt;!-- Robots --&gt;</span>
+  &lt;meta name="robots" content="index, follow, max-image-preview:large"&gt;
+  &lt;meta name="googlebot" content="notranslate"&gt;
+
+  &lt;!-- Open Graph (Facebook, LinkedIn, Slack) --&gt;</span>
+  &lt;meta property="og:type" content="article"&gt;
+  &lt;meta property="og:title" content="..."&gt;
+  &lt;meta property="og:description" content="..."&gt;
+  &lt;meta property="og:url" content="https://example.com/page"&gt;
+  &lt;meta property="og:image" content="https://example.com/og.png"&gt;
+  &lt;meta property="og:image:width" content="1200"&gt;
+  &lt;meta property="og:image:height" content="630"&gt;
+  &lt;meta property="og:site_name" content="Brand"&gt;
+  &lt;meta property="og:locale" content="en_US"&gt;
+  &lt;meta property="article:published_time" content="2025-03-12T09:00:00Z"&gt;
+  &lt;meta property="article:author" content="Maya Kowalski"&gt;
+
+  &lt;!-- Twitter Card --&gt;</span>
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:site" content="@brand"&gt;
+  &lt;meta name="twitter:creator" content="@author"&gt;
+  &lt;meta name="twitter:title" content="..."&gt;
+  &lt;meta name="twitter:description" content="..."&gt;
+  &lt;meta name="twitter:image" content="https://example.com/twitter.png"&gt;
+
+  &lt;!-- i18n --&gt;</span>
+  &lt;link rel="alternate" hreflang="en" href="https://example.com/page"&gt;
+  &lt;link rel="alternate" hreflang="es" href="https://example.com/es/page"&gt;
+  &lt;link rel="alternate" hreflang="x-default" href="https://example.com/page"&gt;
+
+  &lt;!-- Icons --&gt;</span>
+  &lt;link rel="icon" href="/favicon.ico"&gt;
+  &lt;link rel="icon" href="/favicon.svg" type="image/svg+xml"&gt;
+  &lt;link rel="apple-touch-icon" href="/apple-touch-icon.png"&gt;
+  &lt;link rel="manifest" href="/manifest.webmanifest"&gt;
+
+  &lt;!-- Theme --&gt;</span>
+  &lt;meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)"&gt;
+  &lt;meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"&gt;
+  &lt;meta name="color-scheme" content="dark light"&gt;
+
+  &lt;!-- Performance hints --&gt;</span>
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com" crossorigin&gt;
+  &lt;link rel="dns-prefetch" href="https://cdn.example.com"&gt;
+  &lt;link rel="preload" as="image" href="/hero.webp" fetchpriority="high"&gt;
+  &lt;link rel="preload" as="font" href="/fonts/inter.woff2"
+        type="font/woff2" crossorigin&gt;
+  &lt;link rel="modulepreload" href="/app.mjs"&gt;
+
+  &lt;!-- Structured data (JSON-LD) --&gt;</span>
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "...",
+    "image": "https://example.com/og.png",
+    "datePublished": "2025-03-12",
+    "author": { "@type": "Person", "name": "Maya Kowalski" }
+  }
+  &lt;/script&gt;
+
+  &lt;!-- CSS &amp; JS --&gt;</span>
+  &lt;link rel="stylesheet" href="/styles.css"&gt;
+  &lt;script src="/app.mjs" type="module" defer&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+
+      <div class="callout exercise">
+        <strong>Exercise</strong>
+        Take any web page you've built and audit its <code>&lt;head&gt;</code> against this template. Most pages are missing <code>canonical</code>, <code>theme-color</code>, or proper <code>og:image</code> dimensions. Add them — they're free wins for SEO and social sharing.
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">∎</span> Final Notes</h2>
+      <p>This cheat sheet covers the elements and attributes you'll use 95% of the time. The HTML Living Standard has more — deprecated elements like <code>&lt;frame&gt;</code>, <code>&lt;center&gt;</code>, <code>&lt;font&gt;</code>, <code>&lt;marquee&gt;</code>, <code>&lt;blink&gt;</code>, and experimental ones like <code>&lt;portal&gt;</code> — but you should avoid them.</p>
+
+      <p>For the canonical reference, always check <a href="#" style="color: var(--brand)">MDN Web Docs</a>. For the spec itself, the <a href="#" style="color: var(--brand)">WHATWG HTML Living Standard</a> is the source of truth.</p>
+
+      <div class="callout tip">
+        <strong>Three habits that will save you</strong>
+        (1) Validate your HTML with the W3C validator. (2) Use semantic elements first, ARIA second. (3) Test with a keyboard — if you can't use it without a mouse, neither can your screen reader users.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="../glossary.html">← Glossary</a>
+  <a href="../glossary.html">Glossary →</a>
+</footer>
+
+</body>
+</html>

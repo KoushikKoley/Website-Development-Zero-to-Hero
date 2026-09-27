@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadow DOM — attachShadow, Encapsulation &amp; Slots — HTML Mastery</title>
+  <meta name="description" content="Shadow DOM deep dive: attachShadow({mode: 'open'|'closed'}), shadow root, CSS scoping, DOM hiding, the slot element for light DOM projection, templates with shadow DOM, browser dev tools inspection, and when to use shadow DOM.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    fancy-button {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white; padding: 10px 18px; border-radius: 10px; font-weight: 600;
+      cursor: pointer; user-select: none; box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    fancy-button:hover { filter: brightness(1.08); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Web Components</span>
+    <h1>Shadow DOM — <code>attachShadow</code> &amp; Encapsulation</h1>
+    <p>Attach a private, scoped subtree to any element. CSS inside the shadow root never leaks out; CSS outside never leaks in. The DOM inside is hidden from <code>querySelector</code> on the host document. The basis for real component isolation on the web.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#why">Why Shadow DOM</a></li>
+        <li><a href="#attach">attachShadow Basics</a></li>
+        <li><a href="#open-closed">Open vs Closed Mode</a></li>
+        <li><a href="#css-scoping">CSS Scoping Rules</a></li>
+        <li><a href="#host-selector">The :host Selector</a></li>
+        <li><a href="#slots">Slots — Light DOM Projection</a></li>
+        <li><a href="#templates">Combining with &lt;template&gt;</a></li>
+        <li><a href="#devtools">Inspecting in Dev Tools</a></li>
+        <li><a href="#when-to-use">When to Use Shadow DOM</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="why">
+        <h2><span class="num">1</span> Why Shadow DOM?</h2>
+        <p>CSS's global namespace is the single biggest source of fragility in front-end code. One stray <code>p { margin: 0 }</code> rule can break layouts across thousands of pages. Shadow DOM solves this by giving an element its own <strong>shadow tree</strong>: a separate DOM that the browser treats as if it lived in its own document. Styles inside the shadow root cannot escape, and styles outside cannot reach in.</p>
+        <p>Shadow DOM also gives you a place to put private structure — buttons, icons, internal layout divs — without polluting the host document's tree. Consumers see a tidy <code>&lt;my-tooltip&gt;</code> tag; the internal SVG and floating logic are nobody's business.</p>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          Shadow DOM is independent of Custom Elements — you can attach a shadow root to a plain <code>&lt;div&gt;</code> via JavaScript. But 95% of real usage is inside a Custom Element's constructor.
+        </div>
+      </section>
+
+      <section id="attach">
+        <h2><span class="num">2</span> attachShadow Basics</h2>
+        <pre><code>class FancyButton extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `
+      &lt;style&gt;
+        button {
+          background: linear-gradient(135deg, #2563eb, #7c3aed);
+          color: white; border: 0; padding: 10px 18px;
+          border-radius: 10px; font-weight: 600; cursor: pointer;
+        }
+        button:hover { filter: brightness(1.1); }
+      &lt;/style&gt;
+      &lt;button&gt;&lt;slot&gt;Click me&lt;/slot&gt;&lt;/button&gt;
+    `;
+  }
+}
+customElements.define('fancy-button', FancyButton);</code></pre>
+
+        <pre><code>&lt;fancy-button&gt;Save changes&lt;/fancy-button&gt;
+&lt;fancy-button&gt;Delete&lt;/fancy-button&gt;</code></pre>
+
+        <p>This page actually defines <code>fancy-button</code> in a script tag — try it:</p>
+        <p>
+          <fancy-button>Save changes</fancy-button>
+          <fancy-button>Cancel</fancy-button>
+        </p>
+
+        <script>
+          class FancyButton extends HTMLElement {
+            constructor() {
+              super();
+              const shadow = this.attachShadow({ mode: 'open' });
+              shadow.innerHTML = `
+                <style>
+                  button {
+                    background: linear-gradient(135deg, #2563eb, #7c3aed);
+                    color: white; border: 0; padding: 10px 18px;
+                    border-radius: 10px; font-weight: 600; cursor: pointer;
+                    font-size: inherit; font-family: inherit;
+                  }
+                  button:hover { filter: brightness(1.1); }
+                </style>
+                <button><slot>Click me</slot></button>
+              `;
+            }
+          }
+          customElements.define('fancy-button', FancyButton);
+        </script>
+
+        <h3>Anatomy of a shadow tree</h3>
+        <ul>
+          <li><strong>Host element</strong> — the element the shadow root is attached to (e.g. <code>&lt;fancy-button&gt;</code>).</li>
+          <li><strong>Shadow root</strong> — the special node returned by <code>attachShadow</code>. Has <code>mode</code> 'open' or 'closed'.</li>
+          <li><strong>Shadow tree</strong> — the children you place inside the shadow root.</li>
+          <li><strong>Light DOM</strong> — the children the consumer places <em>inside</em> the host tag (the "Save changes" text above). These get projected into <code>&lt;slot&gt;</code> elements.</li>
+        </ul>
+      </section>
+
+      <section id="open-closed">
+        <h2><span class="num">3</span> Open vs Closed Mode</h2>
+        <table class="info-table">
+          <thead><tr><th>Property</th><th><code>open</code></th><th><code>closed</code></th></tr></thead>
+          <tbody>
+            <tr><td><code>element.shadowRoot</code> from outside</td><td>Returns the root</td><td>Returns <code>null</code></td></tr>
+            <tr><td>Encapsulation strength</td><td>"Soft" — JS can still poke in</td><td>"Hard" — root hidden from external JS</td></tr>
+            <tr><td>Recommended?</td><td>Yes — almost always</td><td>Rarely; only for genuine DRM-style hiding</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Choosing <code>closed</code> thinking it provides security. It does not — a determined attacker can still reach the shadow tree via DevTools overrides or by intercepting <code>attachShadow</code> before your script runs. Use <code>closed</code> only to signal "this is private API"; use real authorization on the server for actual security.
+        </div>
+        <p>Most production web components — including those in major design systems — use <code>open</code> because tests and integrators need access.</p>
+      </section>
+
+      <section id="css-scoping">
+        <h2><span class="num">4</span> CSS Scoping Rules</h2>
+        <p>Three rules govern styles in shadow DOM:</p>
+        <ol>
+          <li><strong>Outer styles don't apply inside</strong> (with rare exceptions like <code>inherit</code>-able properties such as <code>color</code> and <code>font-family</code>).</li>
+          <li><strong>Inner styles don't leak out.</strong> A <code>button { background: red }</code> inside the shadow root will not affect buttons outside.</li>
+          <li><strong>Selector lists cross the shadow boundary only when they explicitly pierce it</strong>, using <code>:host</code>, <code>::part()</code>, or <code>::slotted()</code>.</li>
+        </ol>
+        <pre><code>/* Outside the shadow root: this NEVER reaches &lt;button&gt; inside */
+button { background: red; }   /* no effect on fancy-button's button */
+
+/* The shadow root's style block is the only place that styles its button */</code></pre>
+
+        <h3>CSS Custom Properties DO cross</h3>
+        <p>CSS custom properties inherit through the shadow boundary. This is the standard mechanism for theming components.</p>
+        <pre><code>/* Consumer's global stylesheet */
+:root {
+  --brand-color: #16a34a;
+}
+
+/* Inside the component's shadow root */
+button {
+  background: var(--brand-color);  /* picks up the green from outside */
+  color: white;
+}</code></pre>
+      </section>
+
+      <section id="host-selector">
+        <h2><span class="num">5</span> The :host Selector Family</h2>
+        <pre><code>/* Match the host element itself */
+:host {
+  display: inline-block;
+}
+
+/* Match only when host has a specific class */
+:host(.dark) {
+  background: #0f172a; color: #f8fafc;
+}
+
+/* Match only when an ancestor matches (NOT a descendant!) */
+:host-context(.theme-dark) {
+  --text-color: #f8fafc;
+}</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>:host-context()</code> is a Chrome/Safari feature that Firefox has historically not shipped. Avoid relying on it; pass theme info through attributes or custom properties instead.
+        </div>
+
+        <h3>::part() — punching selective holes</h3>
+        <p>By default the outside world cannot style anything inside your shadow root. <code>::part()</code> lets you expose specific inner elements that you have tagged with a <code>part</code> attribute.</p>
+        <pre><code>/* Inside shadow root */
+&lt;div part="panel"&gt;Hello&lt;/div&gt;
+
+/* Outside (consumer CSS) */
+my-widget::part(panel) {
+  background: pink;
+  border-radius: 8px;
+}</code></pre>
+      </section>
+
+      <section id="slots">
+        <h2><span class="num">6</span> Slots — Light DOM Projection</h2>
+        <p>The <code>&lt;slot&gt;</code> element is the bridge between the consumer's light DOM and your shadow DOM. It says "render whatever children the user put inside my host tag, right here."</p>
+        <pre><code>&lt;!-- Component definition --&gt;
+&lt;template id="card-template"&gt;
+  &lt;style&gt; .card { border: 1px solid #ddd; padding: 16px; border-radius: 12px; } &lt;/style&gt;
+  &lt;div class="card"&gt;
+    &lt;h3&gt;&lt;slot name="title"&gt;Default Title&lt;/slot&gt;&lt;/h3&gt;
+    &lt;div&gt;&lt;slot&gt;Default body text.&lt;/slot&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+
+        <pre><code>&lt;!-- Consumer markup --&gt;
+&lt;my-card&gt;
+  &lt;span slot="title"&gt;Project Update&lt;/span&gt;
+  &lt;p&gt;We shipped 12 stories this sprint.&lt;/p&gt;
+&lt;/my-card&gt;</code></pre>
+
+        <p>Children without a <code>slot</code> attribute land in the <strong>default slot</strong> (the one with no <code>name</code>). Named children route to matching named slots.</p>
+        <p>If the consumer provides no children, the slot's <strong>fallback content</strong> (whatever is inside <code>&lt;slot&gt;…&lt;/slot&gt;</code>) is shown instead.</p>
+      </section>
+
+      <section id="templates">
+        <h2><span class="num">7</span> Combining with &lt;template&gt;</h2>
+        <p>The <code>&lt;template&gt;</code> element gives you an inert, parsed-but-not-rendered chunk of markup. Cloning a template into a shadow root is the cleanest way to set up a component's structure.</p>
+        <pre><code>&lt;template id="weather-card"&gt;
+  &lt;style&gt;
+    :host { display: block; }
+    .card { padding: 16px; border-radius: 12px;
+            background: linear-gradient(135deg, #38bdf8, #6366f1); color: white; }
+  &lt;/style&gt;
+  &lt;div class="card"&gt;
+    &lt;p&gt;&lt;slot name="city"&gt;Unknown city&lt;/slot&gt;&lt;/p&gt;
+    &lt;p class="temp"&gt;--°C&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  class WeatherCard extends HTMLElement {
+    constructor() {
+      super();
+      const root = this.attachShadow({ mode: 'open' });
+      const tpl  = document.getElementById('weather-card');
+      root.appendChild(tpl.content.cloneNode(true));
+    }
+    connectedCallback() {
+      // update the temperature via an API call, then:
+      this.shadowRoot.querySelector('.temp').textContent = '21°C';
+    }
+  }
+  customElements.define('weather-card', WeatherCard);
+&lt;/script&gt;</code></pre>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always use <code>template.content.cloneNode(true)</code> rather than <code>shadow.innerHTML = '…'</code> when your markup is complex. <code>innerHTML</code> re-parses the string each time the constructor runs; templates are parsed once by the HTML parser.
+        </div>
+      </section>
+
+      <section id="devtools">
+        <h2><span class="num">8</span> Inspecting Shadow DOM in DevTools</h2>
+        <p>Chrome, Edge, and Firefox DevTools all reveal shadow trees when you enable the right setting:</p>
+        <ul>
+          <li><strong>Chrome / Edge:</strong> DevTools → Settings (gear) → Preferences → Elements → check "Show user agent shadow DOM".</li>
+          <li><strong>Firefox:</strong> Settings → Inspector → check "Show Browser Styles" and look for the <code>#shadow-root</code> node in the tree.</li>
+          <li><strong>Safari:</strong> The Elements tab shows <code>#shadow-root (open)</code> nodes inline.</li>
+        </ul>
+        <p>Once enabled, you'll see a <code>#shadow-root</code> node expandable like any other, with full style inspection and event listeners.</p>
+      </section>
+
+      <section id="when-to-use">
+        <h2><span class="num">9</span> When to Use Shadow DOM</h2>
+        <div class="grid-2">
+          <div class="card"><h4>Use it when…</h4><p>You're building a reusable widget that could be dropped into many sites with different CSS. You want guarantees that your visual style won't be clobbered.</p></div>
+          <div class="card"><h4>Skip it when…</h4><p>Your markup is the page's main content (articles, headings, navigation). Shadow DOM hides content from some crawlers and accessibility tools, and prevents global styles from reaching it.</p></div>
+          <div class="card"><h4>Caveat — SEO &amp; a11y</h4><p>Content in a closed shadow root is not indexed by most crawlers. Keep primary content in light DOM; use shadow DOM for chrome (controls, panels, decorations).</p></div>
+          <div class="card"><h4>Caveat — forms</h4><p>Form controls inside a shadow root do not participate in the outer form by default. Use the <code>ElementInternals</code> API to wire them up.</p></div>
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Encapsulated button</strong>
+          Build <code>&lt;neon-button&gt;</code> with a shadow root, internal <code>&lt;style&gt;</code>, and a glow effect. Drop two of them on a page that also has a global <code>button { background: red }</code> rule. Confirm the global rule does not leak in.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Theme via custom property</strong>
+          Define <code>--neon-color</code> in your consumer CSS, read it inside the shadow root, and confirm the button color changes when you toggle a class on <code>:root</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Named slots</strong>
+          Build a <code>&lt;profile-card&gt;</code> with three named slots: <code>avatar</code>, <code>name</code>, <code>bio</code>. Author markup that fills all three, and a second instance that only fills <code>name</code> to confirm the other slots show fallback content.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Template-driven</strong>
+          Move your shadow DOM markup into a <code>&lt;template&gt;</code> element and clone it via <code>content.cloneNode(true)</code>. Use the Network panel to confirm no extra HTML requests are made.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Inspect &amp; experiment</strong>
+          Enable "Show user agent shadow DOM" in Chrome DevTools. Inspect the native <code>&lt;video&gt;</code> element to find its shadow root, and try overriding <code>::part()</code> styles on the play button.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Design systems</h4><p>Ship components immune to host-page CSS — perfect for embedded widgets and SaaS embeds.</p></div>
+          <div class="card"><h4>Browser built-ins</h4><p>The native <code>&lt;video&gt;</code> controls, <code>&lt;input type="range"&gt;</code> thumb, and <code>&lt;details&gt;</code> marker are all shadow DOM.</p></div>
+          <div class="card"><h4>Third-party widgets</h4><p>Disqus comments, Stripe payment iframe, Twitter embed buttons all isolate their styles.</p></div>
+          <div class="card"><h4>Editor surfaces</h4><p>Rich-text editors (ProseMirror, TipTap, Quill) use shadow boundaries for floating menus.</p></div>
+          <div class="card"><h4>Micro-frontends</h4><p>Independent teams' UIs can coexist without CSS clashes.</p></div>
+          <div class="card"><h4>White-label theming</h4><p>Custom properties crossing the boundary let one component serve many brands.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="custom-elements.html">← Previous: Custom Elements</a>
+    <a class="next" href="../03-Templates-Slots/template-element.html">Next: &lt;template&gt; Element →</a>
+  </footer>
+</body>
+</html>

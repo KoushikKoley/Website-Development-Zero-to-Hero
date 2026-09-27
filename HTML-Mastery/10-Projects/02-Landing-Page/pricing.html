@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskFlow pricing — transparent plans for teams of every size. Free for small teams, Pro for growing teams, custom Enterprise.">
+  <title>Pricing — TaskFlow</title>
+  <!--
+    TaskFlow Pricing Page
+    Design decisions:
+    - CSS-only monthly/annual toggle using a hidden checkbox + :checked pseudo-class.
+      A visible note explains that JavaScript would normally drive this state.
+    - Three pricing cards with the Pro tier visually featured ("Most popular" ribbon + scale).
+    - Feature comparison matrix uses semantic <table> with <th scope> for accessibility.
+    - FAQ uses native <details>/<summary> for keyboard and screen-reader friendliness.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #faf5ff;
+      --color-border: #ede9fe;
+      --color-text: #1e1b4b;
+      --color-muted: #6b7280;
+      --color-accent: #7c3aed;
+      --color-accent-2: #ec4899;
+      --color-accent-soft: #f5f3ff;
+      --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      --gradient-soft: linear-gradient(135deg, #f5f3ff 0%, #fce7f3 100%);
+      --radius: 16px;
+      --shadow-sm: 0 1px 2px rgba(30, 27, 75, 0.05);
+      --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.12);
+      --shadow-lg: 0 24px 48px rgba(124, 58, 237, 0.18);
+      --max-width: 1180px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+    section { padding: 80px 0; }
+
+    /* ===== Header (shared) ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; min-height: 68px; }
+    .logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--color-text); }
+    .logo-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--gradient); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.9rem; }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 32px; list-style: none; }
+    .nav-menu a { color: var(--color-text); font-weight: 500; font-size: 0.95rem; opacity: 0.85; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { opacity: 1; color: var(--color-accent); text-decoration: none; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: var(--shadow-md); }
+    .btn-primary:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    .btn-white { background: #fff; color: var(--color-accent); }
+    @media (max-width: 860px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu { position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; gap: 0; background: #fff; border-bottom: 1px solid var(--color-border); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta-desktop { display: none; }
+    }
+
+    /* ===== Page hero ===== */
+    .page-hero { padding: 88px 0 32px; background: var(--gradient-soft); text-align: center; position: relative; overflow: hidden; }
+    .page-hero::before { content: ""; position: absolute; width: 320px; height: 320px; background: #c4b5fd; filter: blur(100px); opacity: 0.5; top: -120px; right: -60px; border-radius: 50%; }
+    .page-hero .container { position: relative; z-index: 1; }
+    .page-hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 16px; }
+    .page-hero h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-hero p { color: var(--color-muted); font-size: 1.15rem; max-width: 580px; margin: 0 auto 32px; }
+
+    /* ===== Billing toggle ===== */
+    .billing-toggle { display: inline-flex; align-items: center; gap: 16px; background: #fff; padding: 6px; border-radius: 999px; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); }
+    .billing-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+    .billing-toggle label {
+      padding: 8px 18px; border-radius: 999px; cursor: pointer;
+      font-weight: 600; font-size: 0.92rem; color: var(--color-muted);
+      transition: all 0.15s ease;
+    }
+    .billing-toggle label:hover { color: var(--color-accent); }
+    /* CSS-only switch — JS would normally toggle this */
+    #billing-monthly:checked ~ label[for="billing-monthly"],
+    #billing-annual:checked ~ label[for="billing-annual"] {
+      background: var(--gradient); color: #fff;
+    }
+    .billing-toggle .save-badge {
+      background: #dcfce7; color: #16a34a; font-size: 0.72rem;
+      padding: 2px 8px; border-radius: 999px; font-weight: 700;
+      margin-left: 6px;
+    }
+    .toggle-note {
+      margin-top: 16px; font-size: 0.82rem; color: var(--color-muted);
+      font-style: italic;
+    }
+
+    /* ===== Pricing cards ===== */
+    .pricing-section { padding-top: 56px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1080px; margin: 0 auto; }
+    @media (max-width: 860px) { .pricing-grid { grid-template-columns: 1fr; max-width: 480px; } }
+    .price-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 32px;
+      position: relative; display: flex; flex-direction: column;
+    }
+    .price-card.featured { border-color: var(--color-accent); box-shadow: var(--shadow-md); transform: scale(1.02); }
+    @media (max-width: 860px) { .price-card.featured { transform: none; } }
+    .price-card .ribbon { position: absolute; top: -12px; right: 24px; background: var(--gradient); color: #fff; font-size: 0.72rem; padding: 4px 12px; border-radius: 999px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .price-card h3 { font-size: 1.3rem; margin-bottom: 4px; }
+    .price-card .price-sub { color: var(--color-muted); font-size: 0.9rem; margin-bottom: 20px; min-height: 40px; }
+    .price-card .price { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; display: flex; align-items: baseline; gap: 4px; margin-bottom: 6px; }
+    .price-card .price small { font-size: 0.95rem; font-weight: 500; color: var(--color-muted); }
+    .price-card .price-note { color: var(--color-muted); font-size: 0.85rem; margin-bottom: 24px; min-height: 22px; }
+    /* Annual prices hidden by default — JS would normally toggle these */
+    .price-monthly { display: block; }
+    .price-annual { display: none; }
+    #billing-annual:checked ~ .pricing-grid .price-card .price-monthly { display: none; }
+    #billing-annual:checked ~ .pricing-grid .price-card .price-annual { display: block; }
+    .price-features { list-style: none; margin: 0 0 24px; flex: 1; }
+    .price-features li {
+      padding: 10px 0 10px 28px; position: relative; color: var(--color-text);
+      font-size: 0.95rem; border-bottom: 1px dashed var(--color-border);
+    }
+    .price-features li:last-child { border-bottom: none; }
+    .price-features li::before {
+      content: "✓"; position: absolute; left: 0; top: 10px;
+      color: var(--color-accent); font-weight: 700;
+    }
+    .price-features li.muted { color: var(--color-muted); }
+    .price-features li.muted::before { content: "—"; color: var(--color-muted); }
+
+    /* ===== Comparison matrix ===== */
+    .matrix-section { background: var(--color-surface); }
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto 48px; }
+    .section-eyebrow { display: inline-block; color: var(--color-accent); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+    .section-title { font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 16px; }
+    .section-intro { color: var(--color-muted); font-size: 1.05rem; }
+    .matrix-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--color-border); background: #fff; }
+    table.matrix { width: 100%; border-collapse: collapse; min-width: 720px; }
+    table.matrix caption { caption-side: top; text-align: left; padding: 16px 20px; font-weight: 600; color: var(--color-muted); font-size: 0.9rem; }
+    table.matrix th, table.matrix td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--color-border); }
+    table.matrix thead th { background: var(--color-surface); font-weight: 700; font-size: 0.95rem; position: sticky; top: 0; }
+    table.matrix thead th.taskflow { background: var(--gradient); color: #fff; }
+    table.matrix td.feat { font-weight: 500; color: var(--color-text); }
+    table.matrix td.group { background: #faf5ff; font-weight: 700; color: var(--color-accent); font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    table.matrix td.yes, table.matrix td.no { text-align: center; font-weight: 700; }
+    table.matrix td.yes { color: var(--color-accent); }
+    table.matrix td.no { color: #cbd5e1; }
+    table.matrix tbody tr:hover { background: var(--color-surface); }
+    @media (max-width: 720px) { table.matrix th, table.matrix td { padding: 10px 12px; font-size: 0.85rem; } }
+
+    /* ===== FAQ ===== */
+    .faq-section { background: var(--color-bg); }
+    .faq-list { max-width: 760px; margin: 0 auto; }
+    .faq-item { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+    .faq-item summary { padding: 18px 22px; cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after { content: "+"; font-size: 1.4rem; font-weight: 400; color: var(--color-accent); transition: transform 0.2s ease; }
+    .faq-item[open] summary::after { content: "−"; }
+    .faq-item p { padding: 0 22px 22px; color: var(--color-muted); font-size: 0.95rem; }
+
+    /* ===== Final CTA ===== */
+    .final-cta { background: var(--color-bg); padding-top: 24px; }
+    .cta-band { background: var(--gradient); color: #fff; border-radius: var(--radius); padding: 56px 48px; text-align: center; box-shadow: var(--shadow-lg); }
+    .cta-band h2 { font-size: clamp(1.7rem, 3.5vw, 2.3rem); margin-bottom: 12px; letter-spacing: -0.02em; }
+    .cta-band p { color: rgba(255, 255, 255, 0.92); max-width: 540px; margin: 0 auto 28px; }
+    @media (max-width: 600px) { .cta-band { padding: 36px 24px; } }
+
+    /* ===== Footer (shared) ===== */
+    .site-footer { background: #1e1b4b; color: #c7d2fe; padding: 64px 0 32px; margin-top: 80px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; }
+    @media (max-width: 860px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-brand-col .logo { color: #fff; }
+    .footer-brand-col p { color: #a5b4fc; margin-top: 12px; max-width: 280px; font-size: 0.92rem; }
+    .footer-col h4 { color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a { color: #c7d2fe; font-size: 0.92rem; }
+    .footer-col a:hover { color: #fff; text-decoration: none; }
+    .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: #a5b4fc; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo"><span class="logo-mark">T</span>TaskFlow</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="features.html">Features</a></li>
+          <li><a href="pricing.html" aria-current="page">Pricing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#">Docs</a></li>
+        </ul>
+      </nav>
+      <div class="header-cta-desktop" style="display:flex; gap:10px;">
+        <a href="#" class="btn btn-ghost">Sign in</a>
+        <a href="#" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Page hero ===== -->
+    <section class="page-hero">
+      <div class="container">
+        <h1>Simple, honest <span class="grad">pricing.</span></h1>
+        <p>Start free. Pay only when your team grows. No hidden fees, no per-feature upsells.</p>
+
+        <!-- CSS-only billing toggle. Note: in a production build a small JS handler would
+             update aria-pressed and persist the user's choice. -->
+        <div class="billing-toggle" role="group" aria-label="Billing period">
+          <input type="radio" name="billing" id="billing-monthly" checked>
+          <label for="billing-monthly">Monthly</label>
+          <input type="radio" name="billing" id="billing-annual">
+          <label for="billing-annual">Annual <span class="save-badge">Save 20%</span></label>
+        </div>
+        <p class="toggle-note">(Toggle is CSS-only in this demo — JavaScript would persist your choice in production.)</p>
+      </div>
+    </section>
+
+    <!-- ===== Pricing cards ===== -->
+    <section class="pricing-section">
+      <div class="container">
+        <div class="pricing-grid">
+          <!-- Starter -->
+          <article class="price-card">
+            <h3>Starter</h3>
+            <p class="price-sub">For small teams and side projects getting off the ground.</p>
+            <div class="price price-monthly">$0 <small>/month</small></div>
+            <div class="price price-annual">$0 <small>/month, billed annually</small></div>
+            <p class="price-note">Free forever for teams up to 10.</p>
+            <ul class="price-features">
+              <li>Up to 10 members</li>
+              <li>3 active projects</li>
+              <li>Kanban + list views</li>
+              <li>Basic automations (5 rules)</li>
+              <li>7-day revision history</li>
+              <li>Community support</li>
+              <li class="muted">AI sprint planner</li>
+              <li class="muted">SAML SSO</li>
+              <li class="muted">Audit logs</li>
+            </ul>
+            <a href="#" class="btn btn-ghost">Get started free</a>
+          </article>
+
+          <!-- Pro (featured) -->
+          <article class="price-card featured">
+            <span class="ribbon">Most popular</span>
+            <h3>Pro</h3>
+            <p class="price-sub">For growing product teams that ship every week.</p>
+            <div class="price price-monthly">$12 <small>/user / mo</small></div>
+            <div class="price price-annual">$9.60 <small>/user / mo, billed annually</small></div>
+            <p class="price-note">14-day free trial. No credit card required.</p>
+            <ul class="price-features">
+              <li>Unlimited members</li>
+              <li>Unlimited projects</li>
+              <li>All views (timeline, calendar, workload)</li>
+              <li>Unlimited automations</li>
+              <li>Unlimited revision history</li>
+              <li>Priority email + chat support</li>
+              <li>AI sprint planner</li>
+              <li>Custom roles &amp; permissions</li>
+              <li class="muted">SAML SSO</li>
+              <li class="muted">Audit logs</li>
+            </ul>
+            <a href="#" class="btn btn-primary">Start 14-day trial</a>
+          </article>
+
+          <!-- Enterprise -->
+          <article class="price-card">
+            <h3>Enterprise</h3>
+            <p class="price-sub">For organizations with scale, security, and compliance needs.</p>
+            <div class="price">Custom</div>
+            <p class="price-note">Volume pricing. Annual contracts. Custom MSAs.</p>
+            <ul class="price-features">
+              <li>Everything in Pro</li>
+              <li>SAML SSO + SCIM provisioning</li>
+              <li>Granular audit logs</li>
+              <li>Dedicated CSM + onboarding</li>
+              <li>99.9% uptime SLA</li>
+              <li>Custom data residency (US, EU, APAC)</li>
+              <li>DLP &amp; advanced DLP integrations</li>
+              <li>Custom contract &amp; DPA</li>
+              <li>Quarterly security reviews</li>
+            </ul>
+            <a href="contact.html" class="btn btn-ghost">Contact sales</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Comparison matrix ===== -->
+    <section class="matrix-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Compare plans</span>
+          <h2 class="section-title">Every feature, side by side</h2>
+          <p class="section-intro">A complete list of what's included in each plan. No asterisks.</p>
+        </div>
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <caption>Detailed feature comparison across Starter, Pro, and Enterprise plans.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Starter</th>
+                <th scope="col" class="taskflow">Pro</th>
+                <th scope="col">Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="4" class="group">Core</td></tr>
+              <tr>
+                <td class="feat">Members</td>
+                <td class="yes">Up to 10</td>
+                <td class="yes">Unlimited</td>
+                <td class="yes">Unlimited</td>
+              </tr>
+              <tr>
+                <td class="feat">Active projects</td>
+                <td class="yes">3</td>
+                <td class="yes">Unlimited</td>
+                <td class="yes">Unlimited</td>
+              </tr>
+              <tr>
+                <td class="feat">Storage per member</td>
+                <td class="yes">1 GB</td>
+                <td class="yes">10 GB</td>
+                <td class="yes">100 GB</td>
+              </tr>
+              <tr>
+                <td class="feat">Views</td>
+                <td class="yes">Kanban, list</td>
+                <td class="yes">All</td>
+                <td class="yes">All</td>
+              </tr>
+
+              <tr><td colspan="4" class="group">Automation &amp; AI</td></tr>
+              <tr>
+                <td class="feat">Automation rules</td>
+                <td class="yes">5</td>
+                <td class="yes">Unlimited</td>
+                <td class="yes">Unlimited</td>
+              </tr>
+              <tr>
+                <td class="feat">AI sprint planner</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">AI task summaries</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Custom AI templates</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+
+              <tr><td colspan="4" class="group">Security &amp; compliance</td></tr>
+              <tr>
+                <td class="feat">SOC 2 Type II</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">SAML SSO</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">SCIM user provisioning</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Audit logs</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Custom data residency</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">DPA &amp; custom MSA</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+
+              <tr><td colspan="4" class="group">Support</td></tr>
+              <tr>
+                <td class="feat">Community forum</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Email support</td>
+                <td class="yes">Best-effort</td>
+                <td class="yes">Priority</td>
+                <td class="yes">24/7</td>
+              </tr>
+              <tr>
+                <td class="feat">Dedicated CSM</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">✓</td>
+              </tr>
+              <tr>
+                <td class="feat">Uptime SLA</td>
+                <td class="no">—</td>
+                <td class="no">—</td>
+                <td class="yes">99.9%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Pricing FAQ</span>
+          <h2 class="section-title">Questions about plans &amp; billing</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Is there really a free plan?</summary>
+            <p>
+              Yes. Starter is free forever for teams of up to 10 members, with 3 active
+              projects and community support. We make money on Pro and Enterprise — not
+              by bait-and-switching small teams.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>How does per-user pricing work?</summary>
+            <p>
+              Pro is billed per active member per month (or per year on annual billing).
+              You only pay for humans with edit access — read-only viewers, guests, and
+              automation bots are always free.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>What counts as an "active member"?</summary>
+            <p>
+              Anyone who has logged in and edited at least one task in the last 30 days.
+              Inactive members are automatically paused from billing — no manual cleanup needed.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I switch between monthly and annual?</summary>
+            <p>
+              Yes, anytime. Upgrading to annual applies a prorated credit for the
+              remaining monthly period. Downgrading back to monthly takes effect at the
+              end of your current annual cycle.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you offer discounts for startups or nonprofits?</summary>
+            <p>
+              We offer 50% off Pro for the first year to eligible early-stage startups
+              (under $2M raised) and 30% off for registered nonprofits. Reach out via
+              our contact page and we'll get you set up.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>What payment methods do you accept?</summary>
+            <p>
+              All major credit cards via Stripe, ACH transfer for annual plans, and
+              wire/invoice for Enterprise contracts above $25k/year. We can also accept
+              purchase orders from qualified organizations.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>What happens to my data if I cancel?</summary>
+            <p>
+              You keep read-only access for 90 days after cancellation, with full export
+              to CSV, JSON, and Markdown. After 90 days we permanently delete your
+              workspace — no dark patterns, no retention lock-in.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Final CTA ===== -->
+    <section class="final-cta">
+      <div class="container">
+        <div class="cta-band">
+          <h2>Try TaskFlow free for 14 days.</h2>
+          <p>
+            Spin up a workspace with your team in under five minutes. No credit card
+            required — keep your Starter plan forever if you decide not to upgrade.
+          </p>
+          <a href="#" class="btn btn-white">Start free trial →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <a href="index.html" class="logo"><span class="logo-mark">T</span>TaskFlow</a>
+          <p>The project management tool built for teams who'd rather ship than configure.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="#">Integrations</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Docs</a></li>
+            <li><a href="#">API reference</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Templates</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">DPA</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 TaskFlow, Inc. All rights reserved.</span>
+        <span>Made with care in San Francisco &amp; Berlin</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

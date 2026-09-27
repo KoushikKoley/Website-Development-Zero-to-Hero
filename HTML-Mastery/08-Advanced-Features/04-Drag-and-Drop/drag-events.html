@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag Events Lifecycle — dragstart, dragover, drop &amp; More — HTML Mastery</title>
+  <meta name="description" content="The HTML5 drag events lifecycle: dragstart, drag, dragenter, dragover (must preventDefault), dragleave, drop, dragend. Event ordering, the dataTransfer object, drop zones, common UX patterns for visual feedback on dragover.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    .dnd-board { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .dnd-column {
+      background: white; border: 2px dashed #cbd5e1; border-radius: 10px;
+      padding: 12px; min-height: 120px; transition: all 0.15s;
+    }
+    .dnd-column.over { border-color: #2563eb; background: #eff6ff; }
+    .dnd-item {
+      background: linear-gradient(135deg, #2563eb, #7c3aed); color: white;
+      padding: 10px 14px; border-radius: 8px; margin-bottom: 8px;
+      cursor: grab; user-select: none; font-weight: 600;
+    }
+    .dnd-item.dragging { opacity: 0.4; }
+    .dnd-item:active { cursor: grabbing; }
+    .dnd-log {
+      background: #1e1e2e; color: #cdd6f4; padding: 10px 14px;
+      border-radius: 8px; font-family: monospace; font-size: 0.85rem;
+      max-height: 140px; overflow-y: auto; margin-top: 10px;
+    }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .dnd-board { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Drag and Drop</span>
+    <h1>Drag Events Lifecycle</h1>
+    <p>Seven events span the full drag-and-drop journey: <code>dragstart</code>, <code>drag</code>, <code>dragenter</code>, <code>dragover</code>, <code>dragleave</code>, <code>drop</code>, <code>dragend</code>. Master their ordering and the <code>dataTransfer</code> object and you can build anything from sortable lists to cross-window file uploads.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">The Seven Events</a></li>
+        <li><a href="#ordering">Event Ordering</a></li>
+        <li><a href="#dataTransfer">The dataTransfer Object</a></li>
+        <li><a href="#dragover">Why dragover Needs preventDefault</a></li>
+        <li><a href="#source-events">Source-Side: dragstart &amp; dragend</a></li>
+        <li><a href="#target-events">Target-Side: enter, over, leave, drop</a></li>
+        <li><a href="#ux-patterns">UX Patterns for Visual Feedback</a></li>
+        <li><a href="#full-example">Full Example: Kanban</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> The Seven Events</h2>
+        <table class="info-table">
+          <thead><tr><th>Event</th><th>Fires on</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>dragstart</code></td><td>Source</td><td>User starts dragging. Set <code>dataTransfer</code> payload.</td></tr>
+            <tr><td><code>drag</code></td><td>Source (continuously)</td><td>Fires repeatedly during the drag. Use sparingly — it's expensive.</td></tr>
+            <tr><td><code>dragenter</code></td><td>Potential target</td><td>Dragged element enters a drop zone. Highlight the zone.</td></tr>
+            <tr><td><code>dragover</code></td><td>Potential target (continuously)</td><td>Dragged element is moving over a drop zone. Must <code>preventDefault()</code> to allow drop.</td></tr>
+            <tr><td><code>dragleave</code></td><td>Potential target</td><td>Dragged element leaves the drop zone. Remove highlight.</td></tr>
+            <tr><td><code>drop</code></td><td>Drop target</td><td>User released the mouse over a valid zone. Read the payload and act.</td></tr>
+            <tr><td><code>dragend</code></td><td>Source</td><td>Drag finished — either dropped or canceled (ESC). Final cleanup.</td></tr>
+          </tbody>
+        </table>
+        <p>Three events fire on the <em>source</em> element (the thing being dragged). Four fire on <em>potential targets</em> (drop zones).</p>
+      </section>
+
+      <section id="ordering">
+        <h2><span class="num">2</span> Event Ordering</h2>
+        <p>A typical successful drag fires events in this order:</p>
+        <pre><code>dragstart        (source)
+  drag            (source, repeatedly)
+  dragenter       (target A)
+  dragover        (target A, repeatedly)
+  dragleave       (target A)
+  dragenter       (target B)
+  dragover        (target B, repeatedly)
+  drop            (target B)
+dragend          (source)</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          <code>dragleave</code> fires when you move <em>between child elements</em> inside the drop zone — not just when you leave the zone entirely. This is the notorious "flicker bug." The robust fix is to track a counter (increment on <code>dragenter</code>, decrement on <code>dragleave</code>, clear only when it reaches zero), or use the <code>relatedTarget</code> property to check whether you're still inside the parent.
+        </div>
+      </section>
+
+      <section id="dataTransfer">
+        <h2><span class="num">3</span> The dataTransfer Object</h2>
+        <p>Every drag event's <code>event.dataTransfer</code> is the clipboard-like payload that carries data from source to drop target. The source sets it; the target reads it.</p>
+        <pre><code>// Source
+element.addEventListener('dragstart', (e) =&gt; {
+  e.dataTransfer.setData('text/plain', element.dataset.id);
+  e.dataTransfer.setData('application/json', JSON.stringify({ id: 7, label: 'Task' }));
+  e.dataTransfer.effectAllowed = 'move';
+});
+
+// Target
+zone.addEventListener('drop', (e) =&gt; {
+  e.preventDefault();
+  const id = e.dataTransfer.getData('text/plain');
+  const raw = e.dataTransfer.getData('application/json');
+  const data = raw ? JSON.parse(raw) : null;
+});</code></pre>
+
+        <h3>Common MIME types used as "data kinds"</h3>
+        <table class="info-table">
+          <thead><tr><th>MIME type</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><code>text/plain</code></td><td>Plain text or simple IDs.</td></tr>
+            <tr><td><code>text/uri-list</code></td><td>URLs being dragged from anchor tags.</td></tr>
+            <tr><td><code>application/json</code></td><td>Structured data — custom payloads.</td></tr>
+            <tr><td><code>text/html</code></td><td>HTML snippets (e.g. rich-text editors).</td></tr>
+            <tr><td><code>Files</code></td><td>Native OS file drops — read via <code>e.dataTransfer.files</code>.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          You can call <code>setData</code> multiple times with different MIME types, and the target can probe them in priority order — falling back to text/plain if a richer format is missing.
+        </div>
+      </section>
+
+      <section id="dragover">
+        <h2><span class="num">4</span> Why dragover Needs preventDefault</h2>
+        <p>By default, the browser <em>disallows</em> drops on most elements. To opt a zone in as a drop target, you must call <code>preventDefault()</code> on every <code>dragover</code> event (and on <code>dragenter</code> for safety). Without this, the <code>drop</code> event will never fire.</p>
+        <pre><code>zone.addEventListener('dragover', (e) =&gt; {
+  e.preventDefault();            // required for drop to fire
+  e.dataTransfer.dropEffect = 'move';
+});
+
+zone.addEventListener('drop', (e) =&gt; {
+  e.preventDefault();            // also required — browsers may otherwise navigate
+  const id = e.dataTransfer.getData('text/plain');
+  // ... handle the drop
+});</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Authors attach only a <code>drop</code> handler and find it never fires. The <code>dragover</code> <code>preventDefault()</code> is the single most-forgotten line in the entire drag-and-drop API. Without it, the browser shows a "no-drop" cursor and silently cancels the drop.
+        </div>
+      </section>
+
+      <section id="source-events">
+        <h2><span class="num">5</span> Source-Side Events</h2>
+        <pre><code>function onDragStart(e) {
+  e.dataTransfer.setData('text/plain', e.target.dataset.id);
+  e.dataTransfer.effectAllowed = 'move';
+  e.target.classList.add('dragging');
+}
+
+function onDrag(e) {
+  // Fires continuously. Avoid heavy work here —
+  // useful for live position indicators, but expensive.
+}
+
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+  // Optional: animate snap-back, fire analytics, refresh model
+}
+
+source.addEventListener('dragstart', onDragStart);
+source.addEventListener('drag',     onDrag);    // optional
+source.addEventListener('dragend',  onDragEnd);</code></pre>
+      </section>
+
+      <section id="target-events">
+        <h2><span class="num">6</span> Target-Side Events</h2>
+        <pre><code>let dragCounter = 0;   // track nested enters/leaves
+
+zone.addEventListener('dragenter', (e) =&gt; {
+  e.preventDefault();
+  dragCounter++;
+  zone.classList.add('over');
+});
+
+zone.addEventListener('dragover', (e) =&gt; {
+  e.preventDefault();                // MUST call this
+  e.dataTransfer.dropEffect = 'move';
+});
+
+zone.addEventListener('dragleave', (e) =&gt; {
+  dragCounter--;
+  if (dragCounter === 0) {
+    zone.classList.remove('over');
+  }
+});
+
+zone.addEventListener('drop', (e) =&gt; {
+  e.preventDefault();
+  dragCounter = 0;
+  zone.classList.remove('over');
+  const id = e.dataTransfer.getData('text/plain');
+  const dragged = document.querySelector(`[data-id="${id}"]`);
+  if (dragged) zone.appendChild(dragged);
+});</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The counter pattern handles nested children. Without it, entering a child <code>div</code> inside your zone fires <code>dragleave</code> on the zone, removing the highlight prematurely — even though the user is still inside the zone.
+        </div>
+      </section>
+
+      <section id="ux-patterns">
+        <h2><span class="num">7</span> UX Patterns for Visual Feedback</h2>
+        <div class="grid-2">
+          <div class="card"><h4>Drop-zone highlight</h4><p>Add a <code>.over</code> class on <code>dragenter</code>, remove on <code>dragleave</code>/<code>drop</code>. Use dashed border + tinted background.</p></div>
+          <div class="card"><h4>Cursor hints</h4><p>Set <code>dropEffect</code> to <code>copy</code>, <code>move</code>, <code>link</code>, or <code>none</code> inside <code>dragover</code> to show the right cursor.</p></div>
+          <div class="card"><h4>Source fade</h4><p>Add <code>opacity: 0.4</code> on the source during drag so users see it is "in flight." Restore on <code>dragend</code>.</p></div>
+          <div class="card"><h4>Placeholder insertion</h4><p>For sortable lists, render a thin placeholder bar at the projected insertion point as <code>dragover</code> fires.</p></div>
+          <div class="card"><h4>Custom drag image</h4><p><code>e.dataTransfer.setDragImage(el, x, y)</code> shows a custom ghost — useful for multi-select previews.</p></div>
+          <div class="card"><h4>Cancel feedback</h4><p>On <code>dragend</code> with no drop, animate the source back to its origin so users know it didn't move.</p></div>
+        </div>
+      </section>
+
+      <section id="full-example">
+        <h2><span class="num">8</span> Full Example: Two-Column Kanban</h2>
+        <pre><code>&lt;div class="board"&gt;
+  &lt;div class="column" data-column="todo"&gt;
+    &lt;h3&gt;Todo&lt;/h3&gt;
+    &lt;div class="item" draggable="true" data-id="1"&gt;Write blog&lt;/div&gt;
+    &lt;div class="item" draggable="true" data-id="2"&gt;Review PR&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="column" data-column="done"&gt;
+    &lt;h3&gt;Done&lt;/h3&gt;
+    &lt;div class="item" draggable="true" data-id="3"&gt;Ship release&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  document.querySelectorAll('.item').forEach(setupSource);
+  document.querySelectorAll('.column').forEach(setupDropZone);
+
+  function setupSource(item) {
+    item.addEventListener('dragstart', e =&gt; {
+      e.dataTransfer.setData('text/plain', item.dataset.id);
+      e.dataTransfer.effectAllowed = 'move';
+      item.classList.add('dragging');
+    });
+    item.addEventListener('dragend', () =&gt; item.classList.remove('dragging'));
+  }
+
+  function setupDropZone(zone) {
+    let count = 0;
+    zone.addEventListener('dragenter', e =&gt; { e.preventDefault(); count++; zone.classList.add('over'); });
+    zone.addEventListener('dragover',  e =&gt; { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+    zone.addEventListener('dragleave', () =&gt; { if (--count === 0) zone.classList.remove('over'); });
+    zone.addEventListener('drop', e =&gt; {
+      e.preventDefault(); count = 0; zone.classList.remove('over');
+      const id = e.dataTransfer.getData('text/plain');
+      const item = document.querySelector(`[data-id="${id}"]`);
+      if (item) zone.appendChild(item);
+      log(`Moved ${id} → ${zone.dataset.column}`);
+    });
+  }
+&lt;/script&gt;</code></pre>
+
+        <div class="demo-output">
+          <h4>Live demo — drag tasks between columns</h4>
+          <div class="dnd-board" id="dnd-board">
+            <div class="dnd-column" data-column="todo">
+              <h3 style="margin:0 0 8px;font-size:1rem;">Todo</h3>
+              <div class="dnd-item" draggable="true" data-id="1">Write blog</div>
+              <div class="dnd-item" draggable="true" data-id="2">Review PR</div>
+            </div>
+            <div class="dnd-column" data-column="done">
+              <h3 style="margin:0 0 8px;font-size:1rem;">Done</h3>
+              <div class="dnd-item" draggable="true" data-id="3">Ship release</div>
+            </div>
+          </div>
+          <div class="dnd-log" id="dnd-log">— drag events will be logged here —</div>
+        </div>
+
+        <script>
+          (function () {
+            const board = document.getElementById('dnd-board');
+            const log = document.getElementById('dnd-log');
+            function append(line) {
+              const t = new Date().toLocaleTimeString();
+              log.textContent = `[${t}] ${line}\n` + log.textContent;
+            }
+            board.querySelectorAll('.dnd-item').forEach(setupSource);
+            board.querySelectorAll('.dnd-column').forEach(setupZone);
+
+            function setupSource(item) {
+              item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', item.dataset.id);
+                e.dataTransfer.effectAllowed = 'move';
+                item.classList.add('dragging');
+                append(`dragstart item #${item.dataset.id}`);
+              });
+              item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                append(`dragend item #${item.dataset.id}`);
+              });
+            }
+            function setupZone(zone) {
+              let count = 0;
+              zone.addEventListener('dragenter', e => { e.preventDefault(); count++; zone.classList.add('over'); append(`dragenter → ${zone.dataset.column}`); });
+              zone.addEventListener('dragover',  e => { e.preventDefault(); });
+              zone.addEventListener('dragleave', () => { if (--count === 0) { zone.classList.remove('over'); append(`dragleave ← ${zone.dataset.column}`); } });
+              zone.addEventListener('drop', e => {
+                e.preventDefault(); count = 0; zone.classList.remove('over');
+                const id = e.dataTransfer.getData('text/plain');
+                const item = board.querySelector(`.dnd-item[data-id="${id}"]`);
+                if (item) { zone.appendChild(item); append(`drop: moved #${id} → ${zone.dataset.column}`); }
+              });
+            }
+          })();
+        </script>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Missing <code>preventDefault</code> on <code>dragover</code>.</strong> Drop never fires; browser shows "no-drop" cursor.</li>
+          <li><strong>Forgetting <code>preventDefault</code> on <code>drop</code>.</strong> Some browsers navigate to a dropped URL or open a file.</li>
+          <li><strong>Reading <code>dataTransfer</code> in <code>dragover</code>.</strong> Security restrictions: in dragover, <code>getData</code> often returns empty — you can only read it inside <code>drop</code>.</li>
+          <li><strong>Nested-element flicker.</strong> Forgetting the counter pattern for <code>dragenter</code>/<code>dragleave</code>.</li>
+          <li><strong>Heavy work in <code>drag</code>.</strong> It fires dozens of times per second — keep it cheap.</li>
+          <li><strong>Not handling <code>dragend</code> after cancel.</strong> The <code>dragging</code> class stays; the source looks faded forever.</li>
+          <li><strong>Setting <code>setData</code> asynchronously.</strong> Must be set synchronously inside <code>dragstart</code>.</li>
+          <li><strong>Expecting drag events to fire on touch devices.</strong> They don't — see the touch fallback note in the previous page.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Minimal drop</strong>
+          Build a draggable <code>&lt;div&gt;</code> and a drop zone. Confirm that without <code>preventDefault</code> on <code>dragover</code>, the drop is silently ignored. Then add it and watch it work.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Event log</strong>
+          Build the kanban example. Add a log panel that prints every drag event with a timestamp. Confirm the order matches section 2.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Counter pattern</strong>
+          Add a nested <code>&lt;h3&gt;</code> and <code>&lt;p&gt;</code> inside your drop zone. Without the counter, confirm the highlight flickers when crossing the heading. Add the counter and confirm it stops flickering.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Two MIME types</strong>
+          Set both <code>text/plain</code> and <code>application/json</code> in <code>dragstart</code>. In <code>drop</code>, try reading the JSON first, fall back to plain text. Confirm both work.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — File drop</strong>
+          Add a drop zone that reads <code>e.dataTransfer.files</code> on drop and lists the file names. Drag an image from your desktop into the zone — no <code>&lt;input type="file"&gt;</code> required.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>Kanban / task boards</h4><p>Trello, Linear, GitHub Projects, Jira — drag issues between status columns.</p></div>
+          <div class="card"><h4>Drag-to-upload</h4><p>Gmail attachments, Slack file shares, Notion embeds.</p></div>
+          <div class="card"><h4>Reorderable lists</h4><p>Spotify playlists, photo gallery order, CMS nav menus.</p></div>
+          <div class="card"><h4>Visual page builders</h4><p>Webflow, Wix, Elementor — drag blocks into the canvas.</p></div>
+          <div class="card"><h4>Email composers</h4><p>Drag attachments between email and folder panes.</p></div>
+          <div class="card"><h4>Cross-window drops</h4><p>Drag an image from one browser tab into a Dropbox upload zone in another.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="draggable.html">← Previous: draggable Attribute</a>
+    <a class="next" href="../05-Details-Summary/details-summary.html">Next: &lt;details&gt; &amp; &lt;summary&gt; →</a>
+  </footer>
+</body>
+</html>

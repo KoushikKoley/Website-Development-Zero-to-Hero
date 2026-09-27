@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML5 Built-in Validation — required, pattern, type — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML5 built-in form validation: required, type=email validation, pattern (regex), min/max/step for numerics, minlength/maxlength. CSS pseudo-classes: :valid, :invalid, :required, :optional, :placeholder-shown, :in-range, :out-of-range. Browser error UI explained.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 320px;
+    }
+    .demo-box input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+    /* Validation styling */
+    .demo-box input:invalid { border-color: var(--warn); background: #fef2f2; }
+    .demo-box input:invalid:focus { border-color: var(--warn); }
+    .demo-box input:valid { border-color: var(--success); }
+    .demo-box button[type="submit"] {
+      background: var(--brand); color: white; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem;
+      cursor: pointer; font-family: inherit; margin-top: 12px;
+    }
+    .pseudo-demo { padding: 12px; border: 1px dashed var(--line); border-radius: 8px; margin: 8px 0; }
+    .pseudo-demo input { max-width: 200px; }
+    .pseudo-demo input:required { border-left: 4px solid var(--accent); }
+    .pseudo-demo input:optional { border-left: 4px solid var(--line); }
+    .pseudo-demo input:invalid { border-color: var(--warn); background: #fef2f2; }
+    .pseudo-demo input:valid { border-color: var(--success); background: #f0fdf4; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 12</span>
+    <h1>HTML5 Built-in Validation</h1>
+    <p>HTML5 ships with a complete validation system: <code>required</code>, <code>type="email"</code>, <code>pattern</code>, <code>min</code>/<code>max</code>, <code>minlength</code>/<code>maxlength</code> — all enforced by the browser before form submission, plus CSS pseudo-classes for styling valid and invalid fields.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#how-it-works">How native validation works</a></li>
+        <li><a href="#required">required</a></li>
+        <li><a href="#type-validation">type-based validation</a></li>
+        <li><a href="#pattern">pattern (regex)</a></li>
+        <li><a href="#min-max-step">min / max / step</a></li>
+        <li><a href="#minlength-maxlength">minlength / maxlength</a></li>
+        <li><a href="#pseudo-classes">CSS pseudo-classes</a></li>
+        <li><a href="#browser-ui">Browser error UI</a></li>
+        <li><a href="#novalidate">Disabling: novalidate</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="how-it-works">
+        <h2><span class="num">1</span> How native validation works</h2>
+        <p>When the user submits a form (clicks submit or presses Enter), the browser runs built-in validation <em>before</em> firing the <code>submit</code> event. If any field fails, submission is cancelled and the browser focuses the first invalid field with an error tooltip.</p>
+        <p>Validation is driven by attributes:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Attribute</th><th>Validates</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>required</code></td><td>Field must have a value</td></tr>
+            <tr><td><code>type="email"</code></td><td>Value matches RFC email format</td></tr>
+            <tr><td><code>type="url"</code></td><td>Value is an absolute URL</td></tr>
+            <tr><td><code>pattern="regex"</code></td><td>Value matches the regex (anchored)</td></tr>
+            <tr><td><code>min</code> / <code>max</code></td><td>Numeric/date values in range</td></tr>
+            <tr><td><code>step</code></td><td>Numeric value is a valid step from min</td></tr>
+            <tr><td><code>minlength</code> / <code>maxlength</code></td><td>Text length within bounds</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          Native validation runs <em>before</em> the <code>submit</code> event — meaning your JS submit handler won't even fire if validation fails. To intercept and customize validation, use the Constraint Validation API (covered in the next lesson).
+        </div>
+      </section>
+
+      <section id="required">
+        <h2><span class="num">2</span> required</h2>
+        <p>Boolean attribute. Field must have a non-empty value. Browser shows "Please fill out this field" on submit attempt with empty value.</p>
+        <pre><code>&lt;label for="email"&gt;Email&lt;/label&gt;
+&lt;input type="email" id="email" name="email" required&gt;
+
+&lt;!-- Required radio group: at least one must be selected --&gt;
+&lt;fieldset&gt;
+  &lt;legend&gt;Plan&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="free" required&gt; Free&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="pro"&gt; Pro&lt;/label&gt;
+&lt;/fieldset&gt;
+
+&lt;!-- Required checkbox (e.g., "accept terms") --&gt;
+&lt;label&gt;&lt;input type="checkbox" name="agree" required&gt;
+  I accept the terms&lt;/label&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">required demo — submit with empty fields</div>
+          <form onsubmit="event.preventDefault(); alert('All required fields satisfied!');">
+            <label for="demo-req-email">Email (required)</label>
+            <input type="email" id="demo-req-email" name="email" required>
+            <label for="demo-req-name">Name (optional)</label>
+            <input type="text" id="demo-req-name" name="name">
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="type-validation">
+        <h2><span class="num">3</span> type-based validation</h2>
+        <p>Setting <code>type</code> to <code>email</code>, <code>url</code>, or <code>number</code> triggers automatic format validation:</p>
+        <pre><code>&lt;!-- Validates against RFC 5322 email format --&gt;
+&lt;input type="email" name="email"&gt;
+
+&lt;!-- Must be absolute URL (with scheme) --&gt;
+&lt;input type="url" name="website"&gt;
+
+&lt;!-- Must parse as a number --&gt;
+&lt;input type="number" name="qty"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">type validation demos — try invalid values then submit</div>
+          <form onsubmit="event.preventDefault(); alert('All values valid!');">
+            <label for="demo-type-email">Email</label>
+            <input type="email" id="demo-type-email" name="email" required placeholder="you@example.com">
+            <label for="demo-type-url">URL</label>
+            <input type="url" id="demo-type-url" name="url" required placeholder="https://example.com">
+            <label for="demo-type-num">Quantity</label>
+            <input type="number" id="demo-type-num" name="qty" required placeholder="42">
+            <button type="submit">Test</button>
+          </form>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          The native email validation is intentionally lenient (allows <code>user@localhost</code>). For stricter rules, add <code>pattern</code>. Always re-validate on the server — client validation is for UX, not security.
+        </div>
+      </section>
+
+      <section id="pattern">
+        <h2><span class="num">4</span> pattern (regex)</h2>
+        <p>JavaScript regular expression the value must match. The regex is auto-anchored (wrapped in <code>^(?: ... )$</code>) — you don't need <code>^</code> and <code>$</code>. Pair with <code>title</code> for a helpful hint in the error tooltip:</p>
+        <pre><code>&lt;!-- US ZIP code --&gt;
+&lt;input type="text" name="zip"
+       pattern="[0-9]{5}(-[0-9]{4})?"
+       title="5-digit ZIP, optionally with -4 extension"&gt;
+
+&lt;!-- Hex color --&gt;
+&lt;input type="text" name="hex"
+       pattern="#?[0-9a-fA-F]{6}"
+       title="Hex color like #ff0080"&gt;
+
+&lt;!-- Username (3-20 alphanumeric) --&gt;
+&lt;input type="text" name="username"
+       pattern="[a-zA-Z0-9_]{3,20}"
+       title="3-20 letters, numbers, or underscores"&gt;
+
+&lt;!-- Strong password --&gt;
+&lt;input type="password" name="password"
+       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}"
+       title="Min 8 chars, with uppercase, lowercase, and number"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">pattern demo — try entering invalid patterns</div>
+          <form onsubmit="event.preventDefault(); alert('All patterns matched!');">
+            <label for="demo-pat-zip">US ZIP (5 digits, optional -4)</label>
+            <input type="text" id="demo-pat-zip" name="zip" pattern="[0-9]{5}(-[0-9]{4})?" title="5-digit ZIP, optionally with -4 extension" placeholder="12345 or 12345-6789">
+            <label for="demo-pat-hex">Hex color</label>
+            <input type="text" id="demo-pat-hex" name="hex" pattern="#?[0-9a-fA-F]{6}" title="Hex color like #ff0080" placeholder="#2563eb">
+            <label for="demo-pat-user">Username (3-20 alphanumeric)</label>
+            <input type="text" id="demo-pat-user" name="username" pattern="[a-zA-Z0-9_]{3,20}" title="3-20 letters, numbers, or underscores" placeholder="alice_42">
+            <button type="submit">Test</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="min-max-step">
+        <h2><span class="num">5</span> min / max / step</h2>
+        <p>For numeric (<code>number</code>, <code>range</code>) and temporal (<code>date</code>, <code>time</code>, etc.) inputs:</p>
+        <pre><code>&lt;!-- Quantity 1-100, integers only --&gt;
+&lt;input type="number" name="qty" min="1" max="100" step="1"&gt;
+
+&lt;!-- Price 0+, to nearest cent --&gt;
+&lt;input type="number" name="price" min="0" step="0.01"&gt;
+
+&lt;!-- Date in 2024 --&gt;
+&lt;input type="date" name="when" min="2024-01-01" max="2024-12-31"&gt;
+
+&lt;!-- Time, 15-min intervals, 9am-5pm --&gt;
+&lt;input type="time" name="appt" min="09:00" max="17:00" step="900"&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">min / max / step demo — try entering out-of-range values</div>
+          <form onsubmit="event.preventDefault(); alert('All values in range!');">
+            <label for="demo-mms-qty">Quantity (1-100)</label>
+            <input type="number" id="demo-mms-qty" name="qty" min="1" max="100" step="1" required>
+            <label for="demo-mms-price">Price (min 0, step 0.01)</label>
+            <input type="number" id="demo-mms-price" name="price" min="0" step="0.01" required>
+            <label for="demo-mms-date">Date (2024 only)</label>
+            <input type="date" id="demo-mms-date" name="when" min="2024-01-01" max="2024-12-31" required>
+            <button type="submit">Test</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="minlength-maxlength">
+        <h2><span class="num">6</span> minlength / maxlength</h2>
+        <p>Length constraints on text inputs and textareas. <code>maxlength</code> hard-blocks typing beyond the limit; <code>minlength</code> triggers validation error on submit if too short.</p>
+        <pre><code>&lt;!-- Username 3-20 chars --&gt;
+&lt;input type="text" name="username"
+       minlength="3" maxlength="20" required&gt;
+
+&lt;!-- Bio up to 280 chars (Twitter-style) --&gt;
+&lt;textarea name="bio" maxlength="280"&gt;&lt;/textarea&gt;
+
+&lt;!-- Password min 8 chars --&gt;
+&lt;input type="password" name="password"
+       minlength="8" required&gt;</code></pre>
+      </section>
+
+      <section id="pseudo-classes">
+        <h2><span class="num">7</span> CSS pseudo-classes</h2>
+        <p>Seven pseudo-classes let you style fields based on validation state:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Pseudo-class</th><th>Matches when</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>:valid</code></td><td>Field passes validation</td></tr>
+            <tr><td><code>:invalid</code></td><td>Field fails validation</td></tr>
+            <tr><td><code>:required</code></td><td>Field has <code>required</code> attribute</td></tr>
+            <tr><td><code>:optional</code></td><td>Field does not have <code>required</code></td></tr>
+            <tr><td><code>:placeholder-shown</code></td><td>Field is empty (placeholder visible)</td></tr>
+            <tr><td><code>:in-range</code></td><td>Numeric/date value within min/max</td></tr>
+            <tr><td><code>:out-of-range</code></td><td>Numeric/date value outside min/max</td></tr>
+          </tbody>
+        </table>
+        <pre><code>input:invalid { border-color: var(--warn); background: #fef2f2; }
+input:valid   { border-color: var(--success); }
+
+/* Only show invalid state after user has interacted */
+input:not(:placeholder-shown):invalid { border-color: var(--warn); }
+input:not(:placeholder-shown):valid   { border-color: var(--success); }
+
+/* Mark required fields visually */
+input:required { border-left: 3px solid var(--accent); }
+
+/* Style in-range and out-of-range differently */
+input[type="number"]:out-of-range { background: #fef2f2; }
+input[type="number"]:in-range     { background: #f0fdf4; }</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Pseudo-class demo — required fields get an amber left border; valid/invalid get colored</div>
+          <form onsubmit="event.preventDefault(); alert('Form valid!');">
+            <label for="demo-ps-email">Email (required)</label>
+            <div class="pseudo-demo">
+              <input type="email" id="demo-ps-email" name="email" placeholder="you@example.com" required>
+            </div>
+            <label for="demo-ps-zip">ZIP code</label>
+            <div class="pseudo-demo">
+              <input type="text" id="demo-ps-zip" name="zip" pattern="[0-9]{5}" placeholder="12345">
+            </div>
+            <label for="demo-ps-opt">Optional note</label>
+            <div class="pseudo-demo">
+              <input type="text" id="demo-ps-opt" name="note" placeholder="anything">
+            </div>
+            <button type="submit">Test</button>
+          </form>
+        </div>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Styling <code>:invalid</code> from page load. Empty required fields are "invalid" immediately, showing red borders before the user has touched anything. Use <code>:not(:placeholder-shown)</code> to only style invalid after typing, or check <code>:focus</code>/<code>:blur</code> states.
+        </div>
+      </section>
+
+      <section id="browser-ui">
+        <h2><span class="num">8</span> Browser error UI</h2>
+        <p>Each browser renders validation errors differently:</p>
+        <ul>
+          <li><strong>Chrome / Edge:</strong> Small tooltip below the field with the error message; focuses the first invalid field.</li>
+          <li><strong>Firefox:</strong> Similar tooltip, with a red "drop shadow" around the field.</li>
+          <li><strong>Safari:</strong> Focuses the invalid field; shows a tooltip — though Safari historically had weaker error UI.</li>
+          <li><strong>Mobile:</strong> On-screen message above the keyboard; focuses the field.</li>
+        </ul>
+        <p>The default error messages are browser-generated and localized to the user's language. You can customize them via the Constraint Validation API (<code>setCustomValidity()</code>) — covered in the next lesson.</p>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          The <code>title</code> attribute is included in pattern-mismatch tooltips. Set it to a human-readable hint about the expected format: <code>title="5-digit ZIP code"</code>.
+        </div>
+      </section>
+
+      <section id="novalidate">
+        <h2><span class="num">9</span> Disabling: novalidate</h2>
+        <p>Two ways to skip native validation:</p>
+        <pre><code>&lt;!-- Form-level: skip validation for entire form --&gt;
+&lt;form action="/save" method="post" novalidate&gt;...&lt;/form&gt;
+
+&lt;!-- Button-level: skip validation when this button is clicked --&gt;
+&lt;button type="submit" formnovalidate&gt;Save draft&lt;/button&gt;</code></pre>
+        <p>Common use cases:</p>
+        <ul>
+          <li>"Save draft" button that saves progress without requiring all fields filled</li>
+          <li>Forms handled entirely via JavaScript with custom validation</li>
+          <li>Multi-step wizards that validate per step, not all at once</li>
+        </ul>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Styling <code>:invalid</code> from page load</td><td>Required fields show red before user interaction</td><td>Use <code>:not(:placeholder-shown):invalid</code></td></tr>
+            <tr><td>Relying on client validation only</td><td>Users can bypass via dev tools; never trust client</td><td>Always re-validate on the server</td></tr>
+            <tr><td>Overly strict <code>pattern</code> on email</td><td>Rejects valid emails (international, +aliases)</td><td>Trust native <code>type="email"</code> validation</td></tr>
+            <tr><td>Forgetting <code>title</code> on pattern fields</td><td>Generic "Please match the requested format" error</td><td>Add descriptive <code>title</code></td></tr>
+            <tr><td>Using <code>maxlength</code> on passwords</td><td>Forces weaker passwords</td><td>Set high limit (128+) or omit</td></tr>
+            <tr><td><code>required</code> on submit button thinking it blocks</td><td><code>required</code> doesn't apply to buttons</td><td>Put <code>required</code> on inputs</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Registration form</strong>
+          Build a signup form: username (3-20 alphanumeric), email, password (8+ with upper/lower/number), and a required "accept terms" checkbox. Use <code>pattern</code>, <code>minlength</code>, and <code>required</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Style validation states</strong>
+          Use CSS <code>:valid</code> / <code>:invalid</code> to color-code field borders green/red. Use <code>:not(:placeholder-shown)</code> to delay invalid styling until the user types. Add a green checkmark via <code>::after</code> on valid fields.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Save draft button</strong>
+          Add two submit buttons to a form. One ("Publish") requires validation; the other ("Save Draft") uses <code>formnovalidate</code> to skip it. Test that the draft button submits even with empty required fields.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">required, type=email/url — universal</span>
+          <span class="pill yes">pattern — universal</span>
+          <span class="pill yes">min / max / step — universal on supported input types</span>
+          <span class="pill yes">minlength / maxlength — universal</span>
+          <span class="pill yes">:valid, :invalid, :required, :optional — universal</span>
+          <span class="pill yes">:placeholder-shown — all modern browsers</span>
+          <span class="pill yes">:in-range, :out-of-range — universal</span>
+          <span class="pill yes">novalidate, formnovalidate — universal</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Signup forms</h4>
+            <p>required + pattern on username, type=email, strong password pattern.</p>
+          </div>
+          <div class="card">
+            <h4>Checkout flows</h4>
+            <p>Required fields, ZIP pattern per country, credit card pattern.</p>
+          </div>
+          <div class="card">
+            <h4>Booking systems</h4>
+            <p>min/max on date pickers (no past dates); step on time (15-min slots).</p>
+          </div>
+          <div class="card">
+            <h4>Settings panels</h4>
+            <p>Range sliders with min/max/step for numeric preferences.</p>
+          </div>
+          <div class="card">
+            <h4>Save Draft / Publish</h4>
+            <p>Two submit buttons; one uses formnovalidate.</p>
+          </div>
+          <div class="card">
+            <h4>Survey forms</h4>
+            <p>Required radios grouped in fieldsets; pattern for text answers.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../03-Labels-Buttons/fieldset-legend.html">← Previous: Fieldset &amp; Legend</a>
+    <a class="next" href="constraint-validation-api.html">Next: Constraint Validation API →</a>
+  </footer>
+</body>
+</html>

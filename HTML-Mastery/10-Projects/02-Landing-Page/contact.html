@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact TaskFlow — talk to sales, get product support, or ask us anything. Offices in San Francisco, Berlin, and Singapore.">
+  <title>Contact — TaskFlow</title>
+  <!--
+    TaskFlow Contact Page
+    Design decisions:
+    - Two-column layout: form on the left, info / locations on the right.
+    - Inquiry type uses a single-select radio group with custom-styled labels (no JS).
+    - Office locations use semantic <address> + schema-style markup so search engines and
+      screen readers can parse the address data.
+    - Form includes native HTML5 validation (required, type=email, minlength, pattern)
+      plus aria-describedby for accessible error messaging.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #faf5ff;
+      --color-border: #ede9fe;
+      --color-text: #1e1b4b;
+      --color-muted: #6b7280;
+      --color-accent: #7c3aed;
+      --color-accent-2: #ec4899;
+      --color-accent-soft: #f5f3ff;
+      --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      --gradient-soft: linear-gradient(135deg, #f5f3ff 0%, #fce7f3 100%);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-sm: 0 1px 2px rgba(30, 27, 75, 0.05);
+      --shadow-md: 0 8px 24px rgba(124, 58, 237, 0.12);
+      --shadow-lg: 0 24px 48px rgba(124, 58, 237, 0.18);
+      --max-width: 1100px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+
+    /* ===== Header (shared) ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; min-height: 68px; }
+    .logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--color-text); }
+    .logo-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--gradient); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.9rem; }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 32px; list-style: none; }
+    .nav-menu a { color: var(--color-text); font-weight: 500; font-size: 0.95rem; opacity: 0.85; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { opacity: 1; color: var(--color-accent); text-decoration: none; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: var(--shadow-md); }
+    .btn-primary:hover { text-decoration: none; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    @media (max-width: 860px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu { position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; gap: 0; background: #fff; border-bottom: 1px solid var(--color-border); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta-desktop { display: none; }
+    }
+
+    /* ===== Page hero ===== */
+    .page-hero { padding: 72px 0 32px; background: var(--gradient-soft); position: relative; overflow: hidden; }
+    .page-hero::before { content: ""; position: absolute; width: 280px; height: 280px; background: #fbcfe8; filter: blur(100px); opacity: 0.5; top: -100px; left: -60px; border-radius: 50%; }
+    .page-hero .container { position: relative; z-index: 1; }
+    .breadcrumb { color: var(--color-muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .breadcrumb a { color: var(--color-muted); }
+    .page-hero h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .page-hero h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-hero p { color: var(--color-muted); max-width: 580px; font-size: 1.05rem; }
+
+    /* ===== Contact layout ===== */
+    .contact-section { padding: 40px 0 80px; }
+    .contact-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: start; }
+    @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    /* ===== Form ===== */
+    .form-card { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow-sm); }
+    .form-card h2 { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .form-card .sub { color: var(--color-muted); font-size: 0.95rem; margin-bottom: 28px; }
+
+    .inquiry-type { margin-bottom: 24px; }
+    .inquiry-type legend { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; padding: 0; }
+    .inquiry-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    @media (max-width: 540px) { .inquiry-options { grid-template-columns: 1fr; } }
+    .inquiry-options input { position: absolute; opacity: 0; pointer-events: none; }
+    .inquiry-options label {
+      display: block; padding: 16px 12px; text-align: center;
+      border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+      cursor: pointer; font-weight: 500; font-size: 0.92rem;
+      transition: all 0.15s ease; background: #fff;
+    }
+    .inquiry-options label .emoji { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+    .inquiry-options label:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .inquiry-options input:checked + label {
+      background: var(--gradient); color: #fff; border-color: transparent;
+      box-shadow: var(--shadow-md);
+    }
+    .inquiry-options input:focus-visible + label { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
+    .field .req { color: #dc2626; }
+    .field .hint { font-size: 0.82rem; color: var(--color-muted); margin-top: 6px; }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%; padding: 12px 14px; font-size: 0.95rem; font-family: inherit;
+      color: var(--color-text); background: #fff;
+      border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      outline: none; border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px var(--color-accent-soft);
+    }
+    .field input:invalid:not(:placeholder-shown) { border-color: #dc2626; }
+    .field textarea { resize: vertical; min-height: 140px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 540px) { .field-row { grid-template-columns: 1fr; } }
+
+    .form-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 8px; }
+    .form-note { font-size: 0.82rem; color: var(--color-muted); }
+
+    /* ===== Sidebar ===== */
+    .info-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .info-card h3 { font-size: 1.05rem; margin-bottom: 12px; letter-spacing: -0.01em; }
+    .info-list { list-style: none; }
+    .info-list li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--color-border); }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .ico { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; color: var(--color-accent); font-weight: 700; font-size: 0.95rem; border: 1px solid var(--color-border); }
+    .info-list .lbl { font-size: 0.75rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .info-list .val { font-size: 0.95rem; font-weight: 500; }
+    .info-list .val a { color: var(--color-text); }
+    .info-list .val a:hover { color: var(--color-accent); }
+
+    .hours-list { list-style: none; }
+    .hours-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--color-border); font-size: 0.92rem; }
+    .hours-list li:last-child { border-bottom: none; }
+    .hours-list .day { color: var(--color-text); font-weight: 500; }
+    .hours-list .time { color: var(--color-muted); }
+    .hours-list .time .urgent { color: var(--color-accent-2); font-weight: 600; }
+
+    /* ===== Office locations ===== */
+    .locations-section { background: var(--color-surface); padding: 80px 0; }
+    .section-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+    .section-eyebrow { display: inline-block; color: var(--color-accent); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+    .section-title { font-size: clamp(1.7rem, 4vw, 2.3rem); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 12px; }
+    .section-intro { color: var(--color-muted); font-size: 1.02rem; }
+
+    .locations-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    @media (max-width: 860px) { .locations-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; } }
+    .location-card { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius); padding: 28px; position: relative; }
+    .location-card .pin {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--gradient); display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.1rem; margin-bottom: 16px;
+    }
+    .location-card h3 { font-size: 1.15rem; margin-bottom: 4px; }
+    .location-card .role { color: var(--color-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 14px; }
+    .location-card address { font-style: normal; color: var(--color-text); font-size: 0.92rem; line-height: 1.6; }
+    .location-card address a { color: var(--color-muted); }
+    .location-card .hours { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--color-border); color: var(--color-muted); font-size: 0.85rem; }
+
+    /* ===== Final CTA ===== */
+    .final-cta { padding: 56px 0 80px; }
+    .cta-band { background: var(--gradient); color: #fff; border-radius: var(--radius); padding: 48px 40px; text-align: center; }
+    .cta-band h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 10px; }
+    .cta-band p { color: rgba(255, 255, 255, 0.92); max-width: 520px; margin: 0 auto 24px; }
+    .cta-band .btn-white { background: #fff; color: var(--color-accent); }
+    .cta-band .btn-white:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); text-decoration: none; }
+    @media (max-width: 600px) { .cta-band { padding: 32px 24px; } }
+
+    /* ===== Footer (shared) ===== */
+    .site-footer { background: #1e1b4b; color: #c7d2fe; padding: 64px 0 32px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; }
+    @media (max-width: 860px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-brand-col .logo { color: #fff; }
+    .footer-brand-col p { color: #a5b4fc; margin-top: 12px; max-width: 280px; font-size: 0.92rem; }
+    .footer-col h4 { color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a { color: #c7d2fe; font-size: 0.92rem; }
+    .footer-col a:hover { color: #fff; text-decoration: none; }
+    .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: #a5b4fc; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo"><span class="logo-mark">T</span>TaskFlow</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="features.html">Features</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="contact.html" aria-current="page">Contact</a></li>
+          <li><a href="#">Docs</a></li>
+        </ul>
+      </nav>
+      <div class="header-cta-desktop" style="display:flex; gap:10px;">
+        <a href="#" class="btn btn-ghost">Sign in</a>
+        <a href="#" class="btn btn-primary">Start free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== Page hero ===== -->
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb"><a href="index.html">Home</a> / Contact</p>
+        <h1>Talk to <span class="grad">a human.</span></h1>
+        <p>
+          Whether you're evaluating TaskFlow for your team, need a hand migrating, or just
+          have a question — we'd love to hear from you.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== Contact form + sidebar ===== -->
+    <section class="contact-section">
+      <div class="container">
+        <div class="contact-grid">
+          <!-- Form -->
+          <div class="form-card">
+            <h2>Send us a message</h2>
+            <p class="sub">We reply to most messages within one business day.</p>
+
+            <form action="https://httpbin.org/post" method="post" novalidate>
+              <fieldset class="inquiry-type">
+                <legend>Who do you want to reach?</legend>
+                <div class="inquiry-options">
+                  <input type="radio" name="inquiry" id="i-sales" value="sales" checked>
+                  <label for="i-sales"><span class="emoji" aria-hidden="true">💼</span>Sales</label>
+                  <input type="radio" name="inquiry" id="i-support" value="support">
+                  <label for="i-support"><span class="emoji" aria-hidden="true">🛟</span>Support</label>
+                  <input type="radio" name="inquiry" id="i-general" value="general">
+                  <label for="i-general"><span class="emoji" aria-hidden="true">✉️</span>General</label>
+                </div>
+              </fieldset>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="name">Full name <span class="req" aria-hidden="true">*</span></label>
+                  <input type="text" id="name" name="name" required minlength="2" maxlength="80" autocomplete="name" placeholder="Jordan Rivera" aria-required="true">
+                </div>
+                <div class="field">
+                  <label for="email">Work email <span class="req" aria-hidden="true">*</span></label>
+                  <input type="email" id="email" name="email" required autocomplete="email" placeholder="jordan@company.com" aria-required="true" aria-describedby="email-hint">
+                  <p class="hint" id="email-hint">We'll only use this to reply — never shared.</p>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="company">Company <span style="color:var(--color-muted); font-weight:400;">(optional)</span></label>
+                  <input type="text" id="company" name="company" autocomplete="organization" placeholder="Acme Inc.">
+                </div>
+                <div class="field">
+                  <label for="team-size">Team size</label>
+                  <select id="team-size" name="team_size">
+                    <option value="">Choose…</option>
+                    <option value="1-10">1 – 10</option>
+                    <option value="11-50">11 – 50</option>
+                    <option value="51-200">51 – 200</option>
+                    <option value="201-1000">201 – 1,000</option>
+                    <option value="1000+">1,000+</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="subject">Subject <span class="req" aria-hidden="true">*</span></label>
+                <input type="text" id="subject" name="subject" required minlength="4" maxlength="120"
+                  placeholder="What's this about?" aria-required="true">
+              </div>
+
+              <div class="field">
+                <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+                <textarea id="message" name="message" required minlength="20" maxlength="3000"
+                  placeholder="Tell us what you're working on, what you've tried, and how we can help."
+                  aria-required="true"></textarea>
+                <p class="hint">Min 20 characters. Plain text is fine.</p>
+              </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" name="consent" required style="width:auto; margin-right:8px;">
+                  I agree to the <a href="#">Privacy Policy</a> and to be contacted about my inquiry. (Required)
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Send message →</button>
+                <p class="form-note">Avg. response time: 4 hours.</p>
+              </div>
+            </form>
+          </div>
+
+          <!-- Sidebar -->
+          <aside>
+            <div class="info-card">
+              <h3>Other ways to reach us</h3>
+              <ul class="info-list">
+                <li>
+                  <span class="ico" aria-hidden="true">✉</span>
+                  <div>
+                    <div class="lbl">Sales &amp; general</div>
+                    <a class="val" href="mailto:hello@taskflow.io">hello@taskflow.io</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">🛟</span>
+                  <div>
+                    <div class="lbl">Product support</div>
+                    <a class="val" href="mailto:support@taskflow.io">support@taskflow.io</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">☎</span>
+                  <div>
+                    <div class="lbl">Phone (sales)</div>
+                    <a class="val" href="tel:+14155550123">+1 (415) 555-0123</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">#</span>
+                  <div>
+                    <div class="lbl">Community</div>
+                    <a class="val" href="#">community.taskflow.io</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <h3>Support hours</h3>
+              <ul class="hours-list">
+                <li><span class="day">Mon – Fri</span><span class="time">06:00 – 18:00 PT</span></li>
+                <li><span class="day">Saturday</span><span class="time">09:00 – 13:00 PT</span></li>
+                <li><span class="day">Sunday</span><span class="time">Closed</span></li>
+                <li><span class="day">Critical incidents</span><span class="time"><span class="urgent">24/7 on Enterprise</span></span></li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <h3>Status &amp; docs</h3>
+              <ul class="info-list">
+                <li>
+                  <span class="ico" aria-hidden="true">●</span>
+                  <div>
+                    <div class="lbl">System status</div>
+                    <span class="val" style="color:#16a34a;">All systems operational</span>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">▸</span>
+                  <div>
+                    <div class="lbl">Documentation</div>
+                    <a class="val" href="#">docs.taskflow.io</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">⌘</span>
+                  <div>
+                    <div class="lbl">API reference</div>
+                    <a class="val" href="#">api.taskflow.io</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Office locations ===== -->
+    <section class="locations-section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Our offices</span>
+          <h2 class="section-title">Three time zones, one team</h2>
+          <p class="section-intro">Visit us in person or send mail — we're always happy to host.</p>
+        </div>
+        <div class="locations-grid">
+          <article class="location-card">
+            <div class="pin" aria-hidden="true">🌉</div>
+            <h3>San Francisco</h3>
+            <p class="role">Headquarters</p>
+            <address>
+              TaskFlow, Inc.<br>
+              548 Market Street, Suite 1200<br>
+              San Francisco, CA 94104<br>
+              United States<br>
+              <a href="tel:+14155550123">+1 (415) 555-0123</a>
+            </address>
+            <p class="hours">Mon – Fri · 9:00 – 17:00 PT</p>
+          </article>
+
+          <article class="location-card">
+            <div class="pin" aria-hidden="true">🇩🇪</div>
+            <h3>Berlin</h3>
+            <p class="role">EMEA office</p>
+            <address>
+              TaskFlow GmbH<br>
+              Friedrichstraße 76<br>
+              10117 Berlin<br>
+              Germany<br>
+              <a href="tel:+49305550123">+49 30 5550-123</a>
+            </address>
+            <p class="hours">Mon – Fri · 9:00 – 17:00 CET</p>
+          </article>
+
+          <article class="location-card">
+            <div class="pin" aria-hidden="true">🇸🇬</div>
+            <h3>Singapore</h3>
+            <p class="role">APAC office</p>
+            <address>
+              TaskFlow Asia Pte. Ltd.<br>
+              8 Marina Boulevard, #05-02<br>
+              Marina Bay Financial Centre<br>
+              Singapore 018981<br>
+              <a href="tel:+65550123">+65 6555-0123</a>
+            </address>
+            <p class="hours">Mon – Fri · 9:00 – 17:00 SGT</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Final CTA ===== -->
+    <section class="final-cta">
+      <div class="container">
+        <div class="cta-band">
+          <h2>Not ready to talk yet?</h2>
+          <p>Start a free 14-day trial and explore on your own. You can always reach us from inside the app.</p>
+          <a href="#" class="btn btn-white">Start free trial →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <a href="index.html" class="logo"><span class="logo-mark">T</span>TaskFlow</a>
+          <p>The project management tool built for teams who'd rather ship than configure.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="#">Integrations</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Docs</a></li>
+            <li><a href="#">API reference</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Templates</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">DPA</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 TaskFlow, Inc. All rights reserved.</span>
+        <span>Made with care in San Francisco &amp; Berlin</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

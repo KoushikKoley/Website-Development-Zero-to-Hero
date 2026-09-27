@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constraint Validation API — JavaScript Form Validation — HTML Mastery</title>
+  <meta name="description" content="Complete guide to the Constraint Validation API in JavaScript: checkValidity(), reportValidity(), setCustomValidity(), the validity object with 10+ flags (valueMissing, typeMismatch, patternMismatch, etc.), validationMessage, willValidate, the invalid event. Custom error UI patterns.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.88rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; }
+    .info-table th, .info-table td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .info-table code { font-size: 0.85em; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box input {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; max-width: 320px;
+    }
+    .demo-box input:invalid { border-color: var(--warn); }
+    .demo-box input:valid { border-color: var(--success); }
+    .demo-box button {
+      background: var(--brand); color: white; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem;
+      cursor: pointer; font-family: inherit; margin-top: 12px;
+    }
+    .demo-box button:hover { background: #1d4ed8; }
+    .validity-output {
+      margin-top: 14px; padding: 10px 12px; background: #0f172a; color: #cbd5e1;
+      border-radius: 8px; font-family: "JetBrains Mono", monospace; font-size: 0.82rem;
+      word-break: break-all; min-height: 24px;
+    }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 13</span>
+    <h1>Constraint Validation API</h1>
+    <p>HTML5's native validation has a JavaScript counterpart: the Constraint Validation API. Run <code>checkValidity()</code> programmatically, customize error messages with <code>setCustomValidity()</code>, inspect the <code>validity</code> object to see exactly which constraint failed, and build fully custom error UIs.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">API overview</a></li>
+        <li><a href="#willValidate">willValidate</a></li>
+        <li><a href="#validity-object">The validity object</a></li>
+        <li><a href="#checkValidity">checkValidity()</a></li>
+        <li><a href="#reportValidity">reportValidity()</a></li>
+        <li><a href="#setCustomValidity">setCustomValidity()</a></li>
+        <li><a href="#validationMessage">validationMessage</a></li>
+        <li><a href="#invalid-event">The invalid event</a></li>
+        <li><a href="#custom-ui">Custom error UI patterns</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> API overview</h2>
+        <p>The Constraint Validation API exposes native validation through JavaScript properties and methods on form elements:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Member</th><th>Type</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>willValidate</code></td><td>Property (boolean)</td><td>Whether the element participates in validation</td></tr>
+            <tr><td><code>validity</code></td><td>Object (ValidityState)</td><td>10+ flags showing which constraints failed</td></tr>
+            <tr><td><code>validationMessage</code></td><td>Property (string)</td><td>Localized error message (empty if valid)</td></tr>
+            <tr><td><code>checkValidity()</code></td><td>Method</td><td>Returns true/false; fires <code>invalid</code> event if false</td></tr>
+            <tr><td><code>reportValidity()</code></td><td>Method</td><td>Like checkValidity, but also shows native UI</td></tr>
+            <tr><td><code>setCustomValidity(msg)</code></td><td>Method</td><td>Set a custom error message (empty string to clear)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="willValidate">
+        <h2><span class="num">2</span> willValidate</h2>
+        <p>Boolean property indicating whether the element participates in constraint validation. Returns <code>false</code> for elements like <code>disabled</code> fields, <code>&lt;input type="hidden"&gt;</code>, or buttons that aren't submittable.</p>
+        <pre><code>const input = document.querySelector('input[name="email"]');
+console.log(input.willValidate); // true (typical text input)
+
+const hidden = document.querySelector('input[type="hidden"]');
+console.log(hidden.willValidate); // false
+
+const disabled = document.querySelector('input:disabled');
+console.log(disabled.willValidate); // false</code></pre>
+      </section>
+
+      <section id="validity-object">
+        <h2><span class="num">3</span> The validity object</h2>
+        <p>The <code>validity</code> property is a <code>ValidityState</code> object with 10 boolean flags:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Flag</th><th>True when</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>valueMissing</code></td><td>Required field is empty</td></tr>
+            <tr><td><code>typeMismatch</code></td><td>Value doesn't match the type (email/url format)</td></tr>
+            <tr><td><code>patternMismatch</code></td><td>Value doesn't match <code>pattern</code> regex</td></tr>
+            <tr><td><code>tooLong</code></td><td>Value exceeds <code>maxlength</code></td></tr>
+            <tr><td><code>tooShort</code></td><td>Value shorter than <code>minlength</code></td></tr>
+            <tr><td><code>rangeUnderflow</code></td><td>Numeric/date value below <code>min</code></td></tr>
+            <tr><td><code>rangeOverflow</code></td><td>Numeric/date value above <code>max</code></td></tr>
+            <tr><td><code>stepMismatch</code></td><td>Value not aligned to <code>step</code></td></tr>
+            <tr><td><code>badInput</code></td><td>Browser can't parse the value (e.g., non-numeric in number field)</td></tr>
+            <tr><td><code>customError</code></td><td>A custom error was set via <code>setCustomValidity()</code></td></tr>
+            <tr><td><code>valid</code></td><td><strong>True only when all other flags are false</strong> — the field is valid</td></tr>
+          </tbody>
+        </table>
+        <pre><code>const email = document.querySelector('input[type="email"]');
+const v = email.validity;
+console.log(v.valid);             // false if any constraint failed
+console.log(v.valueMissing);      // true if required & empty
+console.log(v.typeMismatch);      // true if format invalid
+console.log(v.patternMismatch);   // true if pattern failed</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">validity object inspector — type and watch flags update</div>
+          <label for="demo-val-email">Email (required)</label>
+          <input type="email" id="demo-val-email" name="email" required placeholder="you@example.com" oninput="updateValidityReport();">
+          <div class="validity-output" id="demo-val-out">valid: false
+valueMissing: true</div>
+        </div>
+        <script>
+          function updateValidityReport() {
+            const el = document.getElementById('demo-val-email');
+            const v = el.validity;
+            const lines = [];
+            for (const key of ['valid','valueMissing','typeMismatch','patternMismatch','tooLong','tooShort','rangeUnderflow','rangeOverflow','stepMismatch','badInput','customError']) {
+              if (v[key]) lines.push(key + ': true');
+            }
+            if (lines.length === 0) lines.push('valid: true (no flags set)');
+            document.getElementById('demo-val-out').textContent = lines.join('\n');
+          }
+          updateValidityReport();
+        </script>
+      </section>
+
+      <section id="checkValidity">
+        <h2><span class="num">4</span> checkValidity()</h2>
+        <p>Runs validation silently — returns <code>true</code> if valid, <code>false</code> if not. Also fires an <code>invalid</code> event if invalid (which you can prevent to suppress default UI).</p>
+        <pre><code>const form = document.querySelector('form');
+
+form.addEventListener('submit', (e) =&gt; {
+  if (!form.checkValidity()) {
+    e.preventDefault();    // stop native submit
+    // ... show custom errors
+  }
+});
+
+// Or check a single field
+const email = document.querySelector('input[type="email"]');
+if (!email.checkValidity()) {
+  console.log(email.validationMessage);
+}</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          <code>checkValidity()</code> doesn't show the browser's native error UI — it just returns a boolean. To trigger the native UI programmatically, use <code>reportValidity()</code>.
+        </div>
+      </section>
+
+      <section id="reportValidity">
+        <h2><span class="num">5</span> reportValidity()</h2>
+        <p>Like <code>checkValidity()</code>, but also shows the browser's native error UI for invalid fields. Returns <code>true</code> if all valid.</p>
+        <pre><code>const form = document.querySelector('form');
+
+document.querySelector('#validate-btn').addEventListener('click', () =&gt; {
+  if (form.reportValidity()) {
+    console.log('All fields valid!');
+  } else {
+    console.log('Invalid — browser shows errors');
+  }
+});</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">reportValidity() demo — click to validate without submitting</div>
+          <form id="demo-report-form" onsubmit="event.preventDefault();">
+            <label for="demo-rp-email">Email (required)</label>
+            <input type="email" id="demo-rp-email" name="email" required placeholder="you@example.com">
+            <label for="demo-rp-zip">ZIP (5 digits)</label>
+            <input type="text" id="demo-rp-zip" name="zip" pattern="[0-9]{5}" placeholder="12345">
+          </form>
+          <button type="button" onclick="document.getElementById('demo-report-form').reportValidity();">Validate now</button>
+        </div>
+      </section>
+
+      <section id="setCustomValidity">
+        <h2><span class="num">6</span> setCustomValidity()</h2>
+        <p>The key to custom validation messages. Pass a non-empty string to mark the field invalid with that message; pass an empty string to clear the custom error.</p>
+        <pre><code>// Set a custom error
+passwordInput.setCustomValidity('Password must include a number');
+
+// Clear it
+passwordInput.setCustomValidity('');
+
+// Common pattern: check on input
+passwordInput.addEventListener('input', () =&gt; {
+  if (!/\d/.test(passwordInput.value)) {
+    passwordInput.setCustomValidity('Password must include a number');
+  } else {
+    passwordInput.setCustomValidity('');  // clear
+  }
+});</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">setCustomValidity() demo — password must include a number</div>
+          <form id="demo-scv-form" onsubmit="event.preventDefault(); if(this.checkValidity()) alert('Password accepted!');">
+            <label for="demo-scv-pw">Password</label>
+            <input type="password" id="demo-scv-pw" name="password" required placeholder="Try 'secret' then 'secret1'">
+            <button type="submit">Test submit</button>
+          </form>
+        </div>
+        <script>
+          (function() {
+            const pw = document.getElementById('demo-scv-pw');
+            pw.addEventListener('input', () => {
+              if (pw.value && !/\d/.test(pw.value)) {
+                pw.setCustomValidity('Password must include at least one number');
+              } else {
+                pw.setCustomValidity('');
+              }
+            });
+          })();
+        </script>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Setting a custom error and forgetting to clear it. The field stays invalid forever, even after the user fixes the input. Always pair the set with a clear in your input/change handler.
+        </div>
+      </section>
+
+      <section id="validationMessage">
+        <h2><span class="num">7</span> validationMessage</h2>
+        <p>Read-only property returning the localized error message the browser would show. Empty string if valid. Useful for displaying in custom UI:</p>
+        <pre><code>const input = document.querySelector('input');
+if (!input.checkValidity()) {
+  errorElement.textContent = input.validationMessage;
+  errorElement.style.display = 'block';
+}</code></pre>
+      </section>
+
+      <section id="invalid-event">
+        <h2><span class="num">8</span> The invalid event</h2>
+        <p>Fires on each invalid field during <code>checkValidity()</code> or form submission. Can be canceled (via <code>event.preventDefault()</code>) to suppress native UI and show your own:</p>
+        <pre><code>document.querySelectorAll('input, textarea, select').forEach(el =&gt; {
+  el.addEventListener('invalid', (e) =&gt; {
+    e.preventDefault();        // suppress native tooltip
+    // Show custom error UI for this element
+    const error = document.createElement('div');
+    error.className = 'error-message';
+    error.textContent = e.target.validationMessage;
+    e.target.after(error);
+  });
+});</code></pre>
+      </section>
+
+      <section id="custom-ui">
+        <h2><span class="num">9</span> Custom error UI patterns</h2>
+        <p>Combining the API pieces, here's a complete custom error UI pattern:</p>
+        <pre><code>// 1. Suppress native UI on each field
+document.querySelectorAll('input, textarea, select').forEach(el =&gt; {
+  el.addEventListener('invalid', (e) =&gt; {
+    e.preventDefault();
+    showCustomError(e.target);
+  });
+  el.addEventListener('input', () =&gt; {
+    clearCustomError(el);
+  });
+});
+
+function showCustomError(el) {
+  const errId = el.id + '-error';
+  let err = document.getElementById(errId);
+  if (!err) {
+    err = document.createElement('div');
+    err.id = errId;
+    err.className = 'error';
+    err.setAttribute('role', 'alert');
+    el.setAttribute('aria-describedby', errId);
+    el.insertAdjacentElement('afterend', err);
+  }
+  err.textContent = el.validationMessage;
+  el.setAttribute('aria-invalid', 'true');
+}
+
+function clearCustomError(el) {
+  const err = document.getElementById(el.id + '-error');
+  if (err) err.remove();
+  el.removeAttribute('aria-invalid');
+  el.removeAttribute('aria-describedby');
+}
+
+// 2. Intercept form submit
+form.addEventListener('submit', (e) =&gt; {
+  if (!form.checkValidity()) {
+    e.preventDefault();
+    // The invalid events fired above already showed errors.
+  }
+});</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Always use <code>role="alert"</code> and <code>aria-describedby</code> on error messages. Screen readers will announce the error when it appears, and read it when the user focuses the field.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Setting <code>setCustomValidity()</code> and forgetting to clear it</td><td>Field stays invalid forever</td><td>Always clear with empty string when valid</td></tr>
+            <tr><td>Calling <code>checkValidity()</code> expecting UI</td><td>Returns boolean, no UI shown</td><td>Use <code>reportValidity()</code> for UI</td></tr>
+            <tr><td>Not preventing default on <code>invalid</code> event</td><td>Native UI shows alongside custom UI</td><td>Call <code>e.preventDefault()</code> in invalid handler</td></tr>
+            <tr><td>Adding error div without <code>role="alert"</code></td><td>Screen readers may not announce it</td><td>Always set <code>role="alert"</code> on error elements</td></tr>
+            <tr><td>Clearing errors only on submit</td><td>Stale errors persist after user fixes input</td><td>Clear on <code>input</code> event</td></tr>
+            <tr><td>Re-validating only on submit</td><td>User gets no feedback until they try to submit</td><td>Validate on <code>blur</code> or debounced <code>input</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Validity inspector</strong>
+          Build a small form with a text input + email input + number input. On each input, log the entire <code>validity</code> object to the console. Try empty values, invalid emails, out-of-range numbers — see which flags flip.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Custom password rules</strong>
+          Build a password field with rules: 8+ chars, contains uppercase, lowercase, and a digit. Use <code>setCustomValidity()</code> in an <code>input</code> handler to set a descriptive error message. Clear it when the password matches all rules. Show the error in a custom div with <code>role="alert"</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Custom error UI</strong>
+          Replace the browser's native error tooltips with your own styled error messages. Use the <code>invalid</code> event with <code>preventDefault()</code> and a <code>showCustomError()</code> function. Clear errors on input.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Constraint Validation API — all modern browsers</span>
+          <span class="pill yes">checkValidity, reportValidity — universal</span>
+          <span class="pill yes">setCustomValidity — universal</span>
+          <span class="pill yes">validity object (all 10+ flags) — universal</span>
+          <span class="pill yes">invalid event — universal</span>
+          <span class="pill yes">validationMessage — universal</span>
+          <span class="pill yes">willValidate — universal</span>
+        </div>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Custom error UI</h4>
+            <p>Replace native tooltips with branded error messages below each field.</p>
+          </div>
+          <div class="card">
+            <h4>Async validation</h4>
+            <p>Check username availability via fetch; set custom error if taken.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-step forms</h4>
+            <p>Validate one step at a time via <code>checkValidity()</code> before showing next.</p>
+          </div>
+          <div class="card">
+            <h4>Password strength</h4>
+            <p>Custom rules beyond pattern; live feedback with <code>setCustomValidity</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Conditional requirements</h4>
+            <p>Fields required only if another field has a certain value.</p>
+          </div>
+          <div class="card">
+            <h4>Server-side validation echo</h4>
+            <p>After server rejects, set custom errors on the relevant fields.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="html5-validation.html">← Previous: HTML5 Validation</a>
+    <a class="next" href="custom-validation.html">Next: Custom Validation Patterns →</a>
+  </footer>
+</body>
+</html>

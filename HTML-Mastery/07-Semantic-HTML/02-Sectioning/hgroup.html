@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;hgroup&gt; — The Element with a Checkered History — HTML Mastery</title>
+  <meta name="description" content="The hgroup element: introduced in HTML5, removed in 2013, re-introduced in 2020 with new semantics. Now wraps a heading plus subheading/alternative title and removes the subheading from the document outline. Accessibility, browser support, real-world examples.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .timeline { border-left: 3px solid var(--brand); margin: 16px 0; padding: 0 0 0 20px; }
+    .timeline .event { position: relative; margin: 14px 0; }
+    .timeline .event::before { content: ''; position: absolute; left: -28px; top: 8px;
+                                width: 12px; height: 12px; border-radius: 50%;
+                                background: var(--brand); border: 3px solid #fff;
+                                box-shadow: 0 0 0 2px var(--brand); }
+    .timeline .year { display: inline-block; background: var(--brand); color: white;
+                      padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; margin-right: 8px; }
+    .demo-box { border: 2px dashed var(--line); border-radius: 12px; padding: 18px;
+                background: #f8fafc; margin: 14px 0; }
+    .demo-box h4 { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.8rem;
+                   text-transform: uppercase; letter-spacing: 0.06em; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.partial { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Sectioning · Lesson 7</span>
+    <h1><code>&lt;hgroup&gt;</code></h1>
+    <p>It was introduced in HTML5 (2009), deprecated in 2013, then resurrected in 2020 with a totally new meaning. Few HTML elements have such a checkered history. The modern <code>&lt;hgroup&gt;</code> groups a heading with a subheading or alternative title — and crucially, removes the secondary text from the document outline.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#history">A brief history</a></li>
+        <li><a href="#modern-meaning">Modern meaning (2020+)</a></li>
+        <li><a href="#syntax">Syntax &amp; rules</a></li>
+        <li><a href="#outline">Effect on document outline</a></li>
+        <li><a href="#examples">Real-world examples</a></li>
+        <li><a href="#accessibility">Accessibility</a></li>
+        <li><a href="#anti-patterns">Anti-patterns</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="history">
+        <h2><span class="num">1</span> A Brief and Tumultuous History</h2>
+        <p>Few elements have been on as wild a ride as <code>&lt;hgroup&gt;</code>. Understanding the history explains why so many tutorials (and developers) still get it wrong.</p>
+
+        <div class="timeline">
+          <div class="event">
+            <span class="year">2009</span>
+            <strong>Introduced in HTML5 (WD).</strong>
+            <p>Original purpose: wrap a heading (e.g. <code>&lt;h1&gt;</code>) together with one or more of <code>&lt;h2&gt;</code>–<code>&lt;h6&gt;</code> used as a subheading, so that only the highest-ranked heading counted toward the document outline. This was tied to the proposed (but never-implemented) "outline algorithm".</p>
+          </div>
+          <div class="event">
+            <span class="year">2013</span>
+            <strong>Removed from W3C spec.</strong>
+            <p>The W3C dropped <code>&lt;hgroup&gt;</code> because the outline algorithm had never shipped in any browser, and authors were using <code>&lt;hgroup&gt;</code> to hide <code>&lt;h2&gt;</code>-ranked subheadings from accessibility tools — a clear anti-pattern.</p>
+          </div>
+          <div class="event">
+            <span class="year">2017–2019</span>
+            <strong>WHATWG kept it alive.</strong>
+            <p>While the W3C removed it, the WHATWG Living Standard retained a placeholder definition. Browsers never stopped parsing it; it just had no defined semantics.</p>
+          </div>
+          <div class="event">
+            <span class="year">April 2020</span>
+            <strong>Re-introduced with NEW semantics.</strong>
+            <p>Steve Faulkner proposed a new, accessibility-friendly definition: <code>&lt;hgroup&gt;</code> groups a single heading element with one or more <code>&lt;p&gt;</code> elements representing a subheading, tagline, or alternative title. The <code>&lt;p&gt;</code> contents are visible but do <em>not</em> create an extra outline entry.</p>
+          </div>
+          <div class="event">
+            <span class="year">2023+</span>
+            <strong>Back in W3C HTML 5.3 drafts.</strong>
+            <p>Now also part of the W3C HTML 5.3 working drafts. Finally safe to use — provided you use the modern syntax.</p>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Older tutorials still teach the 2009 syntax: <code>&lt;hgroup&gt;&lt;h1&gt;Title&lt;/h1&gt;&lt;h2&gt;Subtitle&lt;/h2&gt;&lt;/hgroup&gt;</code>. <strong>This is wrong in modern HTML.</strong> Using <code>&lt;h2&gt;</code> inside <code>&lt;hgroup&gt;</code> is invalid; you must use <code>&lt;p&gt;</code> for the subheading.
+        </div>
+      </section>
+
+      <section id="modern-meaning">
+        <h2><span class="num">2</span> The Modern Meaning (2020+)</h2>
+        <p>The new <code>&lt;hgroup&gt;</code> is a wrapper that pairs a single heading element (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>) with one or more <code>&lt;p&gt;</code> elements that act as a subtitle, tagline, or alternative title. The <code>&lt;p&gt;</code> content is fully visible but does <em>not</em> appear as a separate outline entry.</p>
+
+        <pre><code>&lt;hgroup&gt;
+  &lt;h1&gt;Rush&lt;/h1&gt;
+  &lt;p&gt;The unofficial history of the 1976 Formula 1 season&lt;/p&gt;
+&lt;/hgroup&gt;</code></pre>
+
+        <p>This solves a real, long-standing problem: how do you mark up a title plus a subtitle without the subtitle polluting the heading hierarchy? Before <code>&lt;hgroup&gt;</code>, authors had two bad choices:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Bad choice A — &lt;h2&gt;</h4>
+            <p>Make the subtitle an <code>&lt;h2&gt;</code>. Problem: the subtitle is now a real section heading in the document outline, so screen-reader users get a spurious "section" jump.</p>
+          </div>
+          <div class="card">
+            <h4>Bad choice B — styled &lt;span&gt;</h4>
+            <p>Style a <code>&lt;span&gt;</code> to look like a subtitle. Problem: semantics are lost — assistive tech has no idea of the relationship.</p>
+          </div>
+        </div>
+
+        <p><code>&lt;hgroup&gt;</code> gives you the best of both worlds: the subtitle is semantically associated with the heading, and it stays out of the outline.</p>
+      </section>
+
+      <section id="syntax">
+        <h2><span class="num">3</span> Syntax &amp; Rules</h2>
+        <p>The content model is strict. Violating it makes the markup invalid.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Child allowed inside &lt;hgroup&gt;</th><th>How many</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A single heading element (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>)</td><td>Exactly one (required)</td><td>The primary title</td></tr>
+            <tr><td><code>&lt;p&gt;</code> elements</td><td>One or more (optional)</td><td>Subtitles, taglines, alternative titles</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Valid patterns</h3>
+        <pre><code>&lt;!-- Title + subtitle --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;Climate Report 2024&lt;/h1&gt;
+  &lt;p&gt;A year of records broken and lines crossed&lt;/p&gt;
+&lt;/hgroup&gt;
+
+&lt;!-- Title + tagline --&gt;
+&lt;hgroup&gt;
+  &lt;h2&gt;The New Yorker&lt;/h2&gt;
+  &lt;p&gt;Reporting since 1925&lt;/p&gt;
+&lt;/hgroup&gt;
+
+&lt;!-- Heading alone — also valid (degenerate case) --&gt;
+&lt;hgroup&gt;&lt;h1&gt;Just a title&lt;/h1&gt;&lt;/hgroup&gt;
+
+&lt;!-- Title with multiple subtitles --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;Markdown&lt;/h1&gt;
+  &lt;p&gt;A lightweight markup language&lt;/p&gt;
+  &lt;p&gt;Or: how I learned to stop worrying and write prose&lt;/p&gt;
+&lt;/hgroup&gt;</code></pre>
+
+        <h3>Invalid patterns</h3>
+        <pre><code>&lt;!-- ❌ WRONG: using &lt;h2&gt; as a subheading --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;The Matrix&lt;/h1&gt;
+  &lt;h2&gt;Welcome to the real world&lt;/h2&gt;
+&lt;/hgroup&gt;
+
+&lt;!-- ❌ WRONG: more than one heading --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;The Matrix&lt;/h1&gt;
+  &lt;h1&gt;Reloaded&lt;/h1&gt;
+&lt;/hgroup&gt;
+
+&lt;!-- ❌ WRONG: div instead of p for subtitle --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;The Matrix&lt;/h1&gt;
+  &lt;div&gt;Welcome to the real world&lt;/div&gt;
+&lt;/hgroup&gt;
+
+&lt;!-- ❌ WRONG: nested hgroup --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;The Matrix&lt;/h1&gt;
+  &lt;hgroup&gt;
+    &lt;h2&gt;Reloaded&lt;/h2&gt;
+    &lt;p&gt;subtitle&lt;/p&gt;
+  &lt;/hgroup&gt;
+&lt;/hgroup&gt;</code></pre>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The W3C Nu Html Checker (<code>validator.w3.org/nu</code>) correctly validates the modern <code>&lt;hgroup&gt;</code> syntax. If your markup passes, you're safe.
+        </div>
+      </section>
+
+      <section id="outline">
+        <h2><span class="num">4</span> Effect on the Document Outline</h2>
+        <p>Only the single heading inside <code>&lt;hgroup&gt;</code> contributes to the outline. The <code>&lt;p&gt;</code> children are skipped entirely — they are <em>phrasing context</em>, not headings.</p>
+
+        <p>Compare these two snippets. Both render visually similar, but their outlines differ dramatically:</p>
+
+        <pre><code>&lt;!-- Using hgroup: clean outline --&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;Lord of the Flies&lt;/h1&gt;
+  &lt;p&gt;A novel by William Golding&lt;/p&gt;
+&lt;/hgroup&gt;
+&lt;h2&gt;Chapter 1: The Sound of the Shell&lt;/h2&gt;
+&lt;p&gt;...&lt;/p&gt;
+&lt;h2&gt;Chapter 2: Fire on the Mountain&lt;/h2&gt;
+&lt;p&gt;...&lt;/p&gt;</code></pre>
+
+        <p>Outline:</p>
+        <pre><code>1. Lord of the Flies
+  1.1. Chapter 1: The Sound of the Shell
+  1.2. Chapter 2: Fire on the Mountain</code></pre>
+
+        <pre><code>&lt;!-- Using &lt;h2&gt; as subtitle: polluted outline --&gt;
+&lt;h1&gt;Lord of the Flies&lt;/h1&gt;
+&lt;h2&gt;A novel by William Golding&lt;/h2&gt;
+&lt;h2&gt;Chapter 1: The Sound of the Shell&lt;/h2&gt;
+&lt;p&gt;...&lt;/p&gt;
+&lt;h2&gt;Chapter 2: Fire on the Mountain&lt;/h2&gt;
+&lt;p&gt;...&lt;/p&gt;</code></pre>
+
+        <p>Outline (note the bogus entry):</p>
+        <pre><code>1. Lord of the Flies
+  1.1. A novel by William Golding     ← spurious!
+  1.2. Chapter 1: The Sound of the Shell
+  1.3. Chapter 2: Fire on the Mountain</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Tools like the "Headings Map" browser extension show the outline as parsed by the browser. Older extensions may not understand modern <code>&lt;hgroup&gt;</code> and will display the <code>&lt;p&gt;</code> as a heading. Use a current version, or check the spec instead.
+        </div>
+      </section>
+
+      <section id="examples">
+        <h2><span class="num">5</span> Real-World Examples</h2>
+
+        <h3>Blog masthead</h3>
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <hgroup style="border-bottom:2px solid #0f172a; padding-bottom:8px; margin-bottom:12px;">
+            <h1 style="margin:0; font-size:2.2rem;">Signal v. Noise</h1>
+            <p style="margin:4px 0 0; color:#475569; font-style:italic;">Strong opinions and weakly held takes, since 1999.</p>
+          </hgroup>
+        </div>
+        <pre><code>&lt;header&gt;
+  &lt;hgroup&gt;
+    &lt;h1&gt;Signal v. Noise&lt;/h1&gt;
+    &lt;p&gt;Strong opinions and weakly held takes, since 1999.&lt;/p&gt;
+  &lt;/hgroup&gt;
+  &lt;nav&gt;...&lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+
+        <h3>Movie or book page</h3>
+        <pre><code>&lt;article&gt;
+  &lt;hgroup&gt;
+    &lt;h1&gt;Dune: Part Two&lt;/h1&gt;
+    &lt;p&gt;Long live the fighters.&lt;/p&gt;
+  &lt;/hgroup&gt;
+  &lt;p&gt;Paul Atreides unites with the Fremen ...&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+
+        <h3>Product page with tagline</h3>
+        <pre><code>&lt;section class="product"&gt;
+  &lt;hgroup&gt;
+    &lt;h2&gt;AirPods Pro&lt;/h2&gt;
+    &lt;p&gt;Adaptive Audio. Now playing.&lt;/p&gt;
+  &lt;/hgroup&gt;
+  &lt;p class="price"&gt;$249&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+
+        <h3>Conference talk listing</h3>
+        <pre><code>&lt;article&gt;
+  &lt;hgroup&gt;
+    &lt;h3&gt;The Cost of Accessibility&lt;/h3&gt;
+    &lt;p&gt;Spoiler: it's less than the cost of inaccessibility&lt;/p&gt;
+  &lt;/hgroup&gt;
+  &lt;p&gt;Presented by Léonie Watson · 45 min · Room 3&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="accessibility">
+        <h2><span class="num">6</span> Accessibility Considerations</h2>
+        <p>The whole point of the 2020 redesign was to fix accessibility issues that plagued the original 2009 element.</p>
+
+        <h3>How screen readers handle it</h3>
+        <p>NVDA, JAWS, and VoiceOver treat <code>&lt;hgroup&gt;</code> as transparent: they announce the heading inside it normally, and the <code>&lt;p&gt;</code> is read as ordinary paragraph text in reading order. No phantom heading is created, and users navigate by the heading keyboard shortcut (e.g., <kbd>H</kbd> in NVDA) without picking up the subtitle.</p>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For maximum screen-reader clarity, you can pair <code>&lt;hgroup&gt;</code> with <code>aria-label</code> on the heading itself to provide a shortened title (the in-page visible text stays the full version). However, this is rarely necessary — the default behaviour is already clean.
+        </div>
+
+        <h3>Why the old syntax hurt accessibility</h3>
+        <p>The pre-2020 version allowed multiple heading levels inside <code>&lt;hgroup&gt;</code>, and the outline algorithm was supposed to mask the lower-ranked ones. But because no browser ever implemented the outline algorithm, screen readers saw every heading inside the <code>&lt;hgroup&gt;</code> as a real outline entry — so authors were effectively hiding content from sighted readers (visually) while exposing duplicate phantom headings to assistive tech. The 2020 redesign eliminates this entire class of bugs.</p>
+
+        <h3>When to prefer a different pattern</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Situation</th><th>Better than &lt;hgroup&gt;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Subtitle is a long-form deck paragraph (multiple sentences)</td><td>Use a plain <code>&lt;p&gt;</code> after the <code>&lt;h1&gt;</code>, no wrapper</td></tr>
+            <tr><td>Subtitle is decorative / non-essential</td><td>Plain <code>&lt;span&gt;</code> styled with CSS</td></tr>
+            <tr><td>You need a separate section navigation entry</td><td>Use a real <code>&lt;h2&gt;</code>, not <code>&lt;p&gt;</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="anti-patterns">
+        <h2><span class="num">7</span> Anti-Patterns to Avoid</h2>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Using &lt;h2&gt;–&lt;h6&gt; as the subheading</h4>
+            <p>The single most common mistake. Inside <code>&lt;hgroup&gt;</code>, only a heading + <code>&lt;p&gt;</code> children are valid. Anything else is invalid HTML.</p>
+          </div>
+          <div class="card">
+            <h4>Using &lt;span&gt; or &lt;div&gt; for the subtitle</h4>
+            <p>You lose the semantic relationship between the heading and its tagline. The whole point of <code>&lt;hgroup&gt;</code> is to mark that relationship.</p>
+          </div>
+          <div class="card">
+            <h4>Multiple headings in one &lt;hgroup&gt;</h4>
+            <p>One heading, period. If you have two titles, you have two <code>&lt;hgroup&gt;</code>s (or two headings with no wrapper).</p>
+          </div>
+          <div class="card">
+            <h4>Wrapping every heading</h4>
+            <p>Don't use <code>&lt;hgroup&gt;</code> for headings that have no subtitle. A bare <code>&lt;h1&gt;</code> is correct; wrapping it in <code>&lt;hgroup&gt;</code> just adds noise.</p>
+          </div>
+          <div class="card">
+            <h4>Styling &lt;hgroup&gt; with display:none</h4>
+            <p>If the subtitle shouldn't appear, don't put it in markup. Hiding real content from everyone is bad UX and bad SEO.</p>
+          </div>
+          <div class="card">
+            <h4>Using &lt;hgroup&gt; inside a &lt;button&gt; or &lt;a&gt;</p>
+            <p>Phrasing content only — <code>&lt;hgroup&gt;</code> is flow content and can't go inside interactive phrasing elements.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser Support</h2>
+        <p>Because <code>&lt;hgroup&gt;</code> has no DOM behaviour and no default styling beyond what its children provide, every browser has "supported" it for years — the only question is whether the modern content model is enforced.</p>
+
+        <div class="browser-support">
+          <span class="pill yes">Chrome 5+</span>
+          <span class="pill yes">Firefox 4+</span>
+          <span class="pill yes">Safari 5+</span>
+          <span class="pill yes">Edge 12+</span>
+          <span class="pill yes">Opera 11.5+</span>
+          <span class="pill yes">iOS Safari</span>
+          <span class="pill yes">Android Chrome</span>
+        </div>
+
+        <p>Browsers do <strong>not</strong> enforce the content model — you can put anything inside <code>&lt;hgroup&gt;</code> and it will render. The W3C validator (<code>validator.w3.org/nu</code>) does enforce it, however, and that is your source of truth.</p>
+
+        <div class="callout info">
+          <strong>Default styling</strong>
+          <code>&lt;hgroup&gt;</code> has no default UA styles — <code>display:block</code> and no margin, padding, font, or color. You'll want to add your own typography rules.
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Convert legacy markup</strong>
+          Take this legacy (2009-era) snippet and rewrite it using the modern <code>&lt;hgroup&gt;</code> syntax:
+          <pre><code>&lt;hgroup&gt;
+  &lt;h1&gt;Apollo 13&lt;/h1&gt;
+  &lt;h2&gt;Houston, we've had a problem&lt;/h2&gt;
+&lt;/hgroup&gt;</code></pre>
+          <em>Hint: only one element changes. Validate at validator.w3.org/nu when you're done.</em>
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Style a magazine masthead</strong>
+          Build an <code>&lt;hgroup&gt;</code> for an online magazine where the main title uses a serif font at <code>3rem</code> and the tagline uses a smaller italic serif. Add a thin rule beneath the group. (No JavaScript required.)
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Inspect the outline</strong>
+          Build a page with three sections, each with an <code>&lt;hgroup&gt;</code> containing an <code>&lt;h2&gt;</code> plus a <code>&lt;p&gt;</code> tagline. Then add subsections with <code>&lt;h3&gt;</code> inside each. Open a headings-map extension and confirm the taglines do NOT appear in the outline.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Decide when NOT to use it</strong>
+          Write a paragraph explaining why a "featured product card" with a name + price + "Add to cart" button does <em>not</em> need an <code>&lt;hgroup&gt;</code> — and what you should use instead.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">10</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Blog / news mastheads</h4>
+            <p>Site name + tagline at the top of every page. The most common real-world use of <code>&lt;hgroup&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Movie, book, game databases</h4>
+            <p>Title + tagline or logline on a detail page (IMDb, Goodreads, Steam).</p>
+          </div>
+          <div class="card">
+            <h4>Conference agendas</h4>
+            <p>Talk title + catchphrase subtitle per session.</p>
+          </div>
+          <div class="card">
+            <h4>Marketing landing pages</h4>
+            <p>Hero title + value proposition sub-line. (Often paired with a CTA button below.)</p>
+          </div>
+          <div class="card">
+            <h4>Documentation headers</h4>
+            <p>API name + version tagline at the top of a docs page.</p>
+          </div>
+          <div class="card">
+            <h4>Product detail pages</h4>
+            <p>Product name + marketing tagline above the price.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="section-vs-article.html">← Previous: Section vs Article</a>
+    <a class="next" href="../03-Content-Grouping/div-span.html">Next: div &amp; span →</a>
+  </footer>
+</body>
+</html>

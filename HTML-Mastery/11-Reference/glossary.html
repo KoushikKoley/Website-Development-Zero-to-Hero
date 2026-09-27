@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The HTML glossary — 100+ terms defined, from Element and Attribute to Shadow DOM and Constraint Validation. Alphabetical, with cross-links.">
+  <title>HTML Glossary — HTML Mastery</title>
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero p { max-width: 760px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hero .stats { display: flex; justify-content: center; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+    .hero .stats div { font-size: 0.85rem; color: #94a3b8; }
+    .hero .stats strong { display: block; font-size: 1.4rem; color: #fbbf24; font-weight: 700; }
+
+    .layout { max-width: 1280px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 220px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc .alpha-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    nav.toc .alpha-grid a {
+      display: flex; align-items: center; justify-content: center;
+      padding: 8px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;
+      color: var(--ink); text-decoration: none; background: var(--card);
+      border: 1px solid var(--line);
+    }
+    nav.toc .alpha-grid a:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 18px; font-size: 1.8rem; display: flex; align-items: center; gap: 12px; letter-spacing: -0.02em; }
+    section h2 .letter { display: inline-flex; align-items: center; justify-content: center;
+                       width: 40px; height: 40px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1.2rem; font-weight: 700; }
+
+    .term {
+      padding: 14px 0; border-bottom: 1px solid var(--line);
+    }
+    .term:last-child { border-bottom: 0; }
+    .term h3 {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1rem; color: var(--brand); margin: 0 0 6px;
+      display: inline-block;
+    }
+    .term h3 .pos { font-family: inherit; color: var(--ink-soft); font-size: 0.78rem; font-weight: 400; margin-left: 8px; font-style: italic; }
+    .term p { margin: 0; font-size: 0.94rem; color: var(--ink); }
+    .term p code, .term h3 code { font-family: "JetBrains Mono", ui-monospace, monospace; background: #eef2ff; color: #1e3a8a; padding: 1px 5px; border-radius: 4px; font-size: 0.88em; }
+    .term .see { font-size: 0.82rem; color: var(--ink-soft); margin-top: 4px; }
+    .term .see a { color: var(--brand); text-decoration: none; }
+    .term .see a:hover { text-decoration: underline; }
+
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+
+    footer.page-nav { max-width: 1280px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 22px 20px; }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 11 · Reference</span>
+  <h1>The HTML <code>Glossary</code></h1>
+  <p>Every term you'll meet on the road from beginner to expert — alphabetized, with cross-links. From <em>Attribute</em> and <em>Element</em> to <em>Shadow DOM</em> and <em>WCAG</em>.</p>
+  <div class="stats">
+    <div><strong>120+</strong> Terms</div>
+    <div><strong>26</strong> Sections</div>
+    <div><strong>∞</strong> Cross-refs</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Alphabetical index">
+    <h2>Jump to letter</h2>
+    <div class="alpha-grid">
+      <a href="#A">A</a><a href="#B">B</a><a href="#C">C</a><a href="#D">D</a>
+      <a href="#E">E</a><a href="#F">F</a><a href="#G">G</a><a href="#H">H</a>
+      <a href="#I">I</a><a href="#J">J</a><a href="#K">K</a><a href="#L">L</a>
+      <a href="#M">M</a><a href="#N">N</a><a href="#O">O</a><a href="#P">P</a>
+      <a href="#Q">Q</a><a href="#R">R</a><a href="#S">S</a><a href="#T">T</a>
+      <a href="#U">U</a><a href="#V">V</a><a href="#W">W</a><a href="#X">X</a>
+      <a href="#Y">Y</a><a href="#Z">Z</a>
+    </div>
+    <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);">
+      <h2>Major topics</h2>
+      <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; line-height: 1.8;">
+        <li><a href="#S" style="color: var(--brand); text-decoration: none;">Semantic HTML</a></li>
+        <li><a href="#A" style="color: var(--brand); text-decoration: none;">Accessibility / ARIA</a></li>
+        <li><a href="#W" style="color: var(--brand); text-decoration: none;">Web Components</a></li>
+        <li><a href="#C" style="color: var(--brand); text-decoration: none;">Constraint Validation</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <section id="A">
+      <h2><span class="letter">A</span></h2>
+
+      <div class="term">
+        <h3>Accessibility<span class="pos">noun</span></h3>
+        <p>The practice of building websites that people with disabilities can use — keyboard-only users, screen reader users, people with low vision, color blindness, motor impairments, and cognitive differences. Abbreviated <code>a11y</code> (11 letters between a and y).</p>
+        <div class="see">See also: <a href="#A">ARIA</a>, <a href="#W">WCAG</a>, <a href="#S">Semantic HTML</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Anchor<span class="pos">noun</span></h3>
+        <p>The <code>&lt;a&gt;</code> element — a hyperlink. Despite the name, <code>name</code> attributes for in-page anchors are obsolete; use <code>id</code> on the target element and link to <code>#id</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>ARIA<span class="pos">noun</span></h3>
+        <p>Accessible Rich Internet Applications. A W3C spec adding roles, states, and properties to HTML for widgets that have no native equivalent (comboboxes, tree views, live regions). The first rule: don't use ARIA if a native element exists.</p>
+        <div class="see">See also: <a href="#A">Accessibility</a>, <a href="#W">WAI-ARIA</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Attribute<span class="pos">noun</span></h3>
+        <p>A name/value pair on an HTML element that configures its behavior or provides metadata. Written as <code>name="value"</code> inside the opening tag. Boolean attributes (<code>disabled</code>, <code>required</code>) need no value.</p>
+        <div class="see">See also: <a href="#G">Global attribute</a>, <a href="#B">Boolean attribute</a></div>
+      </div>
+
+      <div class="term">
+        <h3>ARIA role<span class="pos">noun</span></h3>
+        <p>The <code>role</code> attribute tells assistive tech what an element does. Three categories: landmark (<code>banner</code>, <code>main</code>), document (<code>heading</code>, <code>list</code>), and widget (<code>tab</code>, <code>combobox</code>).</p>
+      </div>
+
+      <div class="term">
+        <h3>Async<span class="pos">adjective</span></h3>
+        <p>The <code>async</code> attribute on <code>&lt;script&gt;</code> tells the browser to download the script in parallel with HTML parsing, then execute it as soon as it's ready — out of DOM order. Useful for independent scripts like analytics.</p>
+        <div class="see">See also: <a href="#D">Defer</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Autofill<span class="pos">noun</span></h3>
+        <p>The browser's ability to fill form fields automatically using stored data (name, address, credit card). Triggered by the <code>autocomplete</code> attribute with specific tokens like <code>name</code>, <code>email</code>, <code>street-address</code>.</p>
+      </div>
+    </section>
+
+    <section id="B">
+      <h2><span class="letter">B</span></h2>
+
+      <div class="term">
+        <h3>Block element<span class="pos">noun</span></h3>
+        <p>An element that occupies the full width of its container by default, starting on a new line. Examples: <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;section&gt;</code>. CSS controls this — "block" is the default <code>display</code> value.</p>
+        <div class="see">See also: <a href="#I">Inline element</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Boolean attribute<span class="pos">noun</span></h3>
+        <p>An attribute whose presence alone is meaningful — the value is irrelevant. Examples: <code>disabled</code>, <code>required</code>, <code>checked</code>, <code>readonly</code>, <code>multiple</code>. Writing <code>disabled="false"</code> still enables the disabled state.</p>
+      </div>
+
+      <div class="term">
+        <h3>Browser dev tools<span class="pos">noun</span></h3>
+        <p>Built-in browser developer tools (F12 / Cmd+Opt+I). Includes Elements panel (DOM inspection), Console, Network, Performance, Application, and Accessibility panels. Essential for debugging HTML, CSS, JS, and performance.</p>
+      </div>
+    </section>
+
+    <section id="C">
+      <h2><span class="letter">C</span></h2>
+
+      <div class="term">
+        <h3>Canvas<span class="pos">noun</span></h3>
+        <p>The <code>&lt;canvas&gt;</code> element — a resolution-dependent bitmap drawing surface manipulated via JavaScript 2D or WebGL context. Used for games, data visualization, image editing. Unlike SVG, the drawn pixels are not part of the DOM.</p>
+        <div class="see">See also: <a href="#S">SVG</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Categorical content<span class="pos">noun</span></h3>
+        <p>The HTML spec groups elements into seven content categories: metadata, flow, sectioning, heading, phrasing, embedded, and interactive. An element can belong to multiple categories; this determines where it can be placed.</p>
+      </div>
+
+      <div class="term">
+        <h3>Cild element<span class="pos">noun</span></h3>
+        <p>An element nested inside another (its parent). The DOM forms a tree of parents and children.</p>
+        <div class="see">See also: <a href="#D">DOM</a>, <a href="#N">Nesting</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Closed shadow DOM<span class="pos">noun</span></h3>
+        <p>A shadow root created with <code>attachShadow({ mode: 'closed' })</code>. External JavaScript cannot access its internal nodes via <code>shadowRoot</code>. Useful for security-sensitive widgets but rarely needed.</p>
+        <div class="see">See also: <a href="#S">Shadow DOM</a>, <a href="#O">Open shadow DOM</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Constraint validation<span class="pos">noun</span></h3>
+        <p>The native HTML5 form validation API. The browser checks fields against constraints (<code>required</code>, <code>type="email"</code>, <code>pattern</code>, <code>min</code>/<code>max</code>) and shows native error UI. JavaScript can hook into it via the <code>ValidityState</code> object.</p>
+        <div class="see">See also: <a href="#F">Form validation</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Content category<span class="pos">noun</span></h3>
+        <p>See <a href="#C">Categorical content</a>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Crawl<span class="pos">verb</span></h3>
+        <p>The process by which a search engine bot downloads and parses pages. Pages it can't crawl (noindex, robots.txt disallow, behind login) won't appear in search results.</p>
+        <div class="see">See also: <a href="#S">SEO</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Critical rendering path<span class="pos">noun</span></h3>
+        <p>The sequence of steps the browser takes to render a page: HTML → DOM, CSS → CSSOM, combined into render tree, then layout → paint → composite. Optimizing this path (smaller HTML, deferred JS, inlined critical CSS) is the foundation of web performance.</p>
+      </div>
+
+      <div class="term">
+        <h3>Custom element<span class="pos">noun</span></h3>
+        <p>A user-defined HTML element registered via <code>customElements.define()</code>. Names must contain a hyphen (e.g. <code>&lt;my-button&gt;</code>). Two kinds: autonomous (extends HTMLElement) and customized built-in (extends HTMLButtonElement, used via <code>is="my-button"</code>).</p>
+        <div class="see">See also: <a href="#W">Web component</a>, <a href="#S">Shadow DOM</a></div>
+      </div>
+
+      <div class="term">
+        <h3>CSSOM<span class="pos">noun</span></h3>
+        <p>CSS Object Model. The browser's in-memory tree representation of parsed CSS, analogous to the DOM for HTML. The render tree combines DOM + CSSOM nodes that are visible.</p>
+      </div>
+    </section>
+
+    <section id="D">
+      <h2><span class="letter">D</span></h2>
+
+      <div class="term">
+        <h3>Data attribute<span class="pos">noun</span></h3>
+        <p>Any attribute starting with <code>data-</code>. Used to store custom data on elements for JavaScript to read via the <code>dataset</code> property. Example: <code>data-user-id="42"</code> becomes <code>element.dataset.userId</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Defer<span class="pos">adjective</span></h3>
+        <p>The <code>defer</code> attribute on <code>&lt;script&gt;</code> tells the browser to download in parallel but execute in DOM order, after HTML parsing completes. Default choice for non-urgent scripts. Modules are implicitly deferred.</p>
+        <div class="see">See also: <a href="#A">Async</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Deprecated<span class="pos">adjective</span></h3>
+        <p>An element or attribute that the spec marks as "do not use" but browsers still support for backwards compatibility. Examples: <code>&lt;center&gt;</code>, <code>&lt;font&gt;</code>, the <code>bgcolor</code> attribute. May be removed eventually.</p>
+      </div>
+
+      <div class="term">
+        <h3>Dialog<span class="pos">noun</span></h3>
+        <p>The <code>&lt;dialog&gt;</code> element — a native modal or non-modal popup. <code>show()</code> for non-modal, <code>showModal()</code> for modal (with backdrop, focus trap, ESC handling). The <code>::backdrop</code> pseudo-element styles the overlay.</p>
+      </div>
+
+      <div class="term">
+        <h3>Disc<span class="pos">noun</span></h3>
+        <p>The default bullet style for unordered lists. Override via <code>list-style-type</code> CSS.</p>
+      </div>
+
+      <div class="term">
+        <h3>Distributed content<span class="pos">noun</span></h3>
+        <p>Children of a host element that are projected into a shadow DOM tree via <code>&lt;slot&gt;</code>. The original nodes stay in the light DOM; only their rendering moves into the shadow tree.</p>
+        <div class="see">See also: <a href="#S">Slot</a>, <a href="#S">Shadow DOM</a></div>
+      </div>
+
+      <div class="term">
+        <h3>DOCTYPE<span class="pos">noun</span></h3>
+        <p>The first line of an HTML document: <code>&lt;!DOCTYPE html&gt;</code>. Tells the browser to use standards mode. Without it, browsers enter quirks mode where box model and other behaviors differ from the spec.</p>
+      </div>
+
+      <div class="term">
+        <h3>DOM<span class="pos">noun</span></h3>
+        <p>Document Object Model. The browser's in-memory tree representation of the parsed HTML, accessible via JavaScript (<code>document.querySelector</code>, etc.). Each node is an Element, Text node, Comment, or Document.</p>
+      </div>
+
+      <div class="term">
+        <h3>Drag and drop<span class="pos">noun</span></h3>
+        <p>The native HTML drag-and-drop API: <code>draggable</code> attribute, <code>dragstart</code>/<code>dragover</code>/<code>drop</code> events, and the <code>dataTransfer</code> object. Doesn't fire on touch devices — use Pointer Events for cross-platform.</p>
+      </div>
+    </section>
+
+    <section id="E">
+      <h2><span class="letter">E</span></h2>
+
+      <div class="term">
+        <h3>Edge<span class="pos">noun</span></h3>
+        <p>Microsoft Edge, the default Windows browser since 2020. Chromium-based (shares engine with Chrome). Not to be confused with legacy EdgeHTML Edge (2015–2020), which is deprecated.</p>
+      </div>
+
+      <div class="term">
+        <h3>Element<span class="pos">noun</span></h3>
+        <p>A single node in HTML, defined by a tag. Example: <code>&lt;p&gt;Hello&lt;/p&gt;</code> is a paragraph element. The opening tag, content, and closing tag together form the element. Void elements (e.g. <code>&lt;img&gt;</code>) have no closing tag.</p>
+        <div class="see">See also: <a href="#T">Tag</a>, <a href="#V">Void element</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Embedded content<span class="pos">noun</span></h3>
+        <p>A content category for elements that import external resources: <code>&lt;img&gt;</code>, <code>&lt;iframe&gt;</code>, <code>&lt;video&gt;</code>, <code>&lt;audio&gt;</code>, <code>&lt;object&gt;</code>, <code>&lt;embed&gt;</code>, <code>&lt;canvas&gt;</code>, <code>&lt;svg&gt;</code>, <code>&lt;math&gt;</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Empty element<span class="pos">noun</span></h3>
+        <p>Alternative name for void element. An element with no content and no closing tag, like <code>&lt;br&gt;</code> or <code>&lt;hr&gt;</code>.</p>
+      </div>
+    </section>
+
+    <section id="F">
+      <h2><span class="letter">F</span></h2>
+
+      <div class="term">
+        <h3>Facade<span class="pos">noun</span></h3>
+        <p>A pattern for third-party embeds (YouTube, maps): show a static preview image and only load the real embed when the user clicks. Drastically improves load performance.</p>
+      </div>
+
+      <div class="term">
+        <h3>Fieldset<span class="pos">noun</span></h3>
+        <p>The <code>&lt;fieldset&gt;</code> element groups related form controls. Always pair with a <code>&lt;legend&gt;</code> for an accessible group label. Screen readers announce the legend when entering the fieldset.</p>
+      </div>
+
+      <div class="term">
+        <h3>Flow content<span class="pos">noun</span></h3>
+        <p>The largest content category — most elements that can appear in <code>&lt;body&gt;</code>. Includes headings, paragraphs, lists, sections, articles, etc.</p>
+      </div>
+
+      <div class="term">
+        <h3>Focus trap<span class="pos">noun</span></h3>
+        <p>A pattern for modal dialogs: keyboard focus cycles only within the dialog until it closes. Implemented with <code>tabindex="-1"</code> on focusable elements outside, or by listening for Tab and redirecting focus.</p>
+      </div>
+
+      <div class="term">
+        <h3>Form validation<span class="pos">noun</span></h3>
+        <p>The browser's built-in checking of form fields before submission. Triggers when the user clicks submit. Controlled by attributes (<code>required</code>, <code>pattern</code>, <code>min</code>/<code>max</code>/<code>step</code>, <code>minlength</code>/<code>maxlength</code>) and the <code>novalidate</code> form attribute.</p>
+        <div class="see">See also: <a href="#C">Constraint validation</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Fragment identifier<span class="pos">noun</span></h3>
+        <p>The <code>#id</code> part of a URL that scrolls the page to the matching element. Example: <code>example.com/page#section-2</code> jumps to <code>id="section-2"</code>. Used heavily in tables of contents.</p>
+      </div>
+    </section>
+
+    <section id="G">
+      <h2><span class="letter">G</span></h2>
+
+      <div class="term">
+        <h3>Global attribute<span class="pos">noun</span></h3>
+        <p>An attribute that can appear on any HTML element. Examples: <code>id</code>, <code>class</code>, <code>style</code>, <code>title</code>, <code>lang</code>, <code>tabindex</code>, <code>hidden</code>, <code>data-*</code>, <code>aria-*</code>.</p>
+      </div>
+    </section>
+
+    <section id="H">
+      <h2><span class="letter">H</span></h2>
+
+      <div class="term">
+        <h3>Heading<span class="pos">noun</span></h3>
+        <p>An <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code> element. Headings form the page outline that screen reader users navigate. Use exactly one <code>h1</code> per page, and don't skip levels (h1 → h3 is wrong).</p>
+      </div>
+
+      <div class="term">
+        <h3>Host element<span class="pos">noun</span></h3>
+        <p>The custom element that owns a shadow DOM tree. Inside the shadow tree, the <code>:host</code> CSS selector matches it.</p>
+      </div>
+
+      <div class="term">
+        <h3>href<span class="pos">attribute</span></h3>
+        <p>Hyperlink Reference. The URL an <code>&lt;a&gt;</code> points to. Without <code>href</code>, the element is not a link — it becomes inert text styled like a link.</p>
+      </div>
+
+      <div class="term">
+        <h3>hreflang<span class="pos">attribute</span></h3>
+        <p>Declares the language of the page a link points to. Used in <code>&lt;link rel="alternate"&gt;</code> for internationalization: one link per language version, plus <code>x-default</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>HTML entity<span class="pos">noun</span></h3>
+        <p>A special character encoded for HTML. Examples: <code>&amp;amp;</code> for <code>&amp;</code>, <code>&amp;lt;</code> for <code>&lt;</code>, <code>&amp;copy;</code> for ©, <code>&amp;mdash;</code> for —. Always escape <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code> in code samples.</p>
+      </div>
+
+      <div class="term">
+        <h3>HTTP<span class="pos">noun</span></h3>
+        <p>HyperText Transfer Protocol. The application-layer protocol HTML travels over. Modern web uses HTTPS (encrypted via TLS). Browsers speak HTTP/2 or HTTP/3 by default.</p>
+      </div>
+    </section>
+
+    <section id="I">
+      <h2><span class="letter">I</span></h2>
+
+      <div class="term">
+        <h3>Iframe<span class="pos">noun</span></h3>
+        <p>The <code>&lt;iframe&gt;</code> element — an inline frame that embeds another document. Always include a <code>title</code> for accessibility, and use <code>sandbox</code> for untrusted content.</p>
+      </div>
+
+      <div class="term">
+        <h3>Inline element<span class="pos">noun</span></h3>
+        <p>An element that doesn't break the line of text — flows inline like a word. Examples: <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;code&gt;</code>.</p>
+        <div class="see">See also: <a href="#B">Block element</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Inert<span class="pos">adjective</span></h3>
+        <p>The <code>inert</code> attribute makes an element and all its descendants non-interactive: not focusable, not clickable, removed from accessibility tree. Used for content behind a modal overlay.</p>
+      </div>
+
+      <div class="term">
+        <h3>Input mode<span class="pos">noun</span></h3>
+        <p>The <code>inputmode</code> attribute hints which mobile keyboard to show: <code>numeric</code>, <code>decimal</code>, <code>tel</code>, <code>email</code>, <code>url</code>, <code>search</code>. Different from <code>type</code> — you can have <code>type="text"</code> with <code>inputmode="numeric"</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Intersection Observer<span class="pos">noun</span></h3>
+        <p>A JavaScript API that fires a callback when an element enters or leaves the viewport. Used for lazy loading, infinite scroll, and triggering animations. Replaces scroll-event listeners (which are expensive).</p>
+      </div>
+    </section>
+
+    <section id="J">
+      <h2><span class="letter">J</span></h2>
+
+      <div class="term">
+        <h3>JSON-LD<span class="pos">noun</span></h3>
+        <p>JavaScript Object Notation for Linked Data. The recommended way to add Schema.org structured data to a page — a <code>&lt;script type="application/ld+json"&gt;</code> block. Google uses it for rich results (FAQs, recipes, products).</p>
+        <div class="see">See also: <a href="#S">Structured data</a></div>
+      </div>
+    </section>
+
+    <section id="K">
+      <h2><span class="letter">K</span></h2>
+
+      <div class="term">
+        <h3>Keyboard navigation<span class="pos">noun</span></h3>
+        <p>Using the keyboard (Tab, Shift+Tab, Enter, Space, arrows, ESC) to navigate and operate a page. Required for accessibility — many users cannot use a mouse. Test by tabbing through your page: every interactive element should have a visible focus ring.</p>
+      </div>
+
+      <div class="term">
+        <h3>kbd<span class="pos">element</span></h3>
+        <p>The <code>&lt;kbd&gt;</code> element represents keyboard input: <code>&lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;S&lt;/kbd&gt;</code>. Visually monospace by default. Pair with <code>&lt;samp&gt;</code> for program output.</p>
+      </div>
+    </section>
+
+    <section id="L">
+      <h2><span class="letter">L</span></h2>
+
+      <div class="term">
+        <h3>Landmark<span class="pos">noun</span></h3>
+        <p>An HTML element that maps to an ARIA landmark role: <code>&lt;header&gt;</code> (banner), <code>&lt;nav&gt;</code> (navigation), <code>&lt;main&gt;</code> (main), <code>&lt;aside&gt;</code> (complementary), <code>&lt;footer&gt;</code> (contentinfo), <code>&lt;section&gt;</code> (region), <code>&lt;form&gt;</code> (form), <code>&lt;search&gt;</code> (search). Screen readers can jump between them.</p>
+      </div>
+
+      <div class="term">
+        <h3>Lazy loading<span class="pos">noun</span></h3>
+        <p>Deferring the fetch of off-screen images and iframes until they're about to enter the viewport. Native via <code>loading="lazy"</code>. Reduces initial page weight and bandwidth.</p>
+      </div>
+
+      <div class="term">
+        <h3>Light DOM<span class="pos">noun</span></h3>
+        <p>The regular DOM tree — children of an element that are not in any shadow root. When a custom element has a shadow root, its light DOM children get distributed into slots.</p>
+        <div class="see">See also: <a href="#S">Shadow DOM</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Living Standard<span class="pos">noun</span></h3>
+        <p>The HTML specification maintained by WHATWG. Unlike versioned specs (HTML 4.01, HTML5), it's a continuous document with no version numbers — features ship as they're ready. The canonical URL: <code>html.spec.whatwg.org</code>.</p>
+      </div>
+    </section>
+
+    <section id="M">
+      <h2><span class="letter">M</span></h2>
+
+      <div class="term">
+        <h3>Manifest<span class="pos">noun</span></h3>
+        <p>A JSON file (<code>manifest.webmanifest</code>) referenced via <code>&lt;link rel="manifest"&gt;</code> that lets users install your site as a PWA. Contains name, icons, theme color, display mode.</p>
+      </div>
+
+      <div class="term">
+        <h3>Metadata<span class="pos">noun</span></h3>
+        <p>Data about the page — title, description, author, charset, viewport, OG tags, structured data. Lives in <code>&lt;head&gt;</code>, invisible to users but critical for browsers, search engines, and social platforms.</p>
+      </div>
+
+      <div class="term">
+        <h3>Microdata<span class="pos">noun</span></h3>
+        <p>An older syntax for embedding structured data via <code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code> attributes on regular HTML elements. Largely replaced by JSON-LD, which is easier to maintain.</p>
+        <div class="see">See also: <a href="#S">Structured data</a>, <a href="#J">JSON-LD</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Mobile-first<span class="pos">adjective</span></h3>
+        <p>A design and CSS strategy: write styles for mobile screens first, then add media queries for larger screens. Forces focus on essential content. Google uses mobile-first indexing — the mobile version is the canonical one for SEO.</p>
+      </div>
+
+      <div class="term">
+        <h3>Module<span class="pos">noun</span></h3>
+        <p>ES modules — native JavaScript modules loaded via <code>&lt;script type="module"&gt;</code>. Always deferred, run in strict mode, support <code>import</code> / <code>export</code>. Use <code>modulepreload</code> to fetch them early.</p>
+      </div>
+    </section>
+
+    <section id="N">
+      <h2><span class="letter">N</span></h2>
+
+      <div class="term">
+        <h3>Name<span class="pos">noun</span></h3>
+        <p>The accessible name of an element — what a screen reader announces. Derived from: <code>aria-label</code> &gt; <code>aria-labelledby</code> &gt; visible text &gt; <code>title</code> attribute. Every interactive element needs one.</p>
+      </div>
+
+      <div class="term">
+        <h3>Nesting<span class="pos">noun</span></h3>
+        <p>Placing one element inside another. Rules: block elements can contain inline; inline generally cannot contain block; some elements have specific nesting rules (e.g., <code>&lt;a&gt;</code> cannot contain another <code>&lt;a&gt;</code>).</p>
+      </div>
+
+      <div class="term">
+        <h3>Noscript<span class="pos">element</span></h3>
+        <p>The <code>&lt;noscript&gt;</code> element renders its content only when JavaScript is disabled. Use for graceful degradation messages or no-JS fallback content.</p>
+      </div>
+    </section>
+
+    <section id="O">
+      <h2><span class="letter">O</span></h2>
+
+      <div class="term">
+        <h3>Open Graph<span class="pos">noun</span></h3>
+        <p>The <code>og:*</code> meta tags (created by Facebook, now used everywhere) that control how a link preview appears when shared on social media: <code>og:title</code>, <code>og:description</code>, <code>og:image</code>, <code>og:url</code>, <code>og:type</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Open shadow DOM<span class="pos">noun</span></h3>
+        <p>A shadow root created with <code>attachShadow({ mode: 'open' })</code>. External JavaScript can access it via <code>element.shadowRoot</code>. The default and recommended mode for most components.</p>
+        <div class="see">See also: <a href="#S">Shadow DOM</a>, <a href="#C">Closed shadow DOM</a></div>
+      </div>
+    </section>
+
+    <section id="P">
+      <h2><span class="letter">P</span></h2>
+
+      <div class="term">
+        <h3>Page outline<span class="pos">noun</span></h3>
+        <p>The structure formed by headings (<code>h1</code>–<code>h6</code>) on a page. Screen reader users navigate by it. Test by viewing the outline view (some browsers and tools can show it).</p>
+      </div>
+
+      <div class="term">
+        <h3>Phrasing content<span class="pos">noun</span></h3>
+        <p>A content category of inline elements: <code>&lt;a&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;code&gt;</code>, etc. Can appear inside paragraphs and other phrasing elements.</p>
+      </div>
+
+      <div class="term">
+        <h3>Picture<span class="pos">element</span></h3>
+        <p>The <code>&lt;picture&gt;</code> element wraps <code>&lt;source&gt;</code> + <code>&lt;img&gt;</code> for art direction: serving different images based on viewport, format support, or resolution.</p>
+      </div>
+
+      <div class="term">
+        <h3>Popover<span class="pos">noun</span></h3>
+        <p>The Popover API (HTML 2023+): the <code>popover</code> attribute makes an element a popover, <code>popovertarget</code> on a button toggles it. Native support for tooltips, menus, modals without JS. Light-dismiss (click outside) when <code>popover="auto"</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Preconnect<span class="pos">noun</span></h3>
+        <p>A <code>&lt;link rel="preconnect"&gt;</code> hint that tells the browser to warm up a connection (DNS, TCP, TLS) to a third-party origin. Use for fonts, CDNs, APIs you'll fetch from soon.</p>
+      </div>
+
+      <div class="term">
+        <h3>Preload<span class="pos">noun</span></h3>
+        <p>A <code>&lt;link rel="preload" as="image"&gt;</code> hint that fetches a high-priority resource the page will need soon. Required <code>as</code> attribute. Use for the LCP image.</p>
+      </div>
+
+      <div class="term">
+        <h3>Prefetch<span class="pos">noun</span></h3>
+        <p>A <code>&lt;link rel="prefetch"&gt;</code> hint that fetches a resource at low priority for the next navigation. Useful for the next page the user is likely to visit.</p>
+      </div>
+    </section>
+
+    <section id="Q">
+      <h2><span class="letter">Q</span></h2>
+
+      <div class="term">
+        <h3>Quirks mode<span class="pos">noun</span></h3>
+        <p>A non-standard rendering mode browsers enter when a page is missing the <code>&lt;!DOCTYPE html&gt;</code> declaration. Box model and other behaviors differ from spec. Always include the doctype.</p>
+        <div class="see">See also: <a href="#D">DOCTYPE</a></div>
+      </div>
+    </section>
+
+    <section id="R">
+      <h2><span class="letter">R</span></h2>
+
+      <div class="term">
+        <h3>Render tree<span class="pos">noun</span></h3>
+        <p>The combination of DOM and CSSOM that contains only the visible elements (excludes <code>display:none</code> and elements inside <code>&lt;head&gt;</code>). The browser uses it to compute layout and paint pixels.</p>
+      </div>
+
+      <div class="term">
+        <h3>Required<span class="pos">attribute</span></h3>
+        <p>A boolean attribute that makes a form field mandatory. The browser blocks submission and shows an error if empty. Pair with <code>aria-required="true"</code> for older screen readers (modern ones respect the attribute).</p>
+      </div>
+
+      <div class="term">
+        <h3>Responsive images<span class="pos">noun</span></h3>
+        <p>Serving different image files based on viewport size and pixel density. Implemented via <code>srcset</code> + <code>sizes</code> attributes (resolution switching) or <code>&lt;picture&gt;</code> + <code>&lt;source&gt;</code> (art direction).</p>
+      </div>
+
+      <div class="term">
+        <h3>Role<span class="pos">noun</span></h3>
+        <p>See <a href="#A">ARIA role</a>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Root element<span class="pos">noun</span></h3>
+        <p>The <code>&lt;html&gt;</code> element — the top of every HTML document. Required. Has a <code>lang</code> attribute that sets the document's language for screen readers and translation tools.</p>
+      </div>
+
+      <div class="term">
+        <h3>Roving tabindex<span class="pos">noun</span></h3>
+        <p>A pattern for composite widgets (toolbars, tablists, menus): only one child has <code>tabindex="0"</code>, the rest have <code>tabindex="-1"</code>. Arrow keys move focus between them. Reduces Tab stops for keyboard users.</p>
+      </div>
+    </section>
+
+    <section id="S">
+      <h2><span class="letter">S</span></h2>
+
+      <div class="term">
+        <h3>Schema.org<span class="pos">noun</span></h3>
+        <p>A vocabulary of structured data types (Article, Product, Event, Recipe, FAQPage, HowTo, etc.) maintained by Google, Microsoft, Yahoo, and Yandex. Embedded in pages via JSON-LD, Microdata, or RDFa. Powers rich search results.</p>
+        <div class="see">See also: <a href="#S">Structured data</a>, <a href="#J">JSON-LD</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Screen reader<span class="pos">noun</span></h3>
+        <p>Software that reads the page aloud (or outputs to a Braille display) for blind users. Examples: NVDA (Windows, free), JAWS (Windows, paid), VoiceOver (macOS/iOS), TalkBack (Android), Orca (Linux).</p>
+      </div>
+
+      <div class="term">
+        <h3>SEO<span class="pos">noun</span></h3>
+        <p>Search Engine Optimization — practices that make a page rank higher in search results. Includes semantic HTML, descriptive titles and meta descriptions, structured data, fast page loads, mobile friendliness, and quality content.</p>
+      </div>
+
+      <div class="term">
+        <h3>Semantic HTML<span class="pos">noun</span></h3>
+        <p>Using HTML elements for their meaning, not their appearance. <code>&lt;button&gt;</code> for clickable actions (not <code>&lt;div onclick&gt;</code>), <code>&lt;nav&gt;</code> for navigation, <code>&lt;article&gt;</code> for self-contained content. Semantic HTML is the foundation of accessibility and SEO.</p>
+      </div>
+
+      <div class="term">
+        <h3>Shadow DOM<span class="pos">noun</span></h3>
+        <p>An encapsulated DOM tree attached to an element via <code>attachShadow()</code>. Styles and IDs inside don't leak out; outside styles don't leak in. Foundation of reusable web components.</p>
+        <div class="see">See also: <a href="#W">Web component</a>, <a href="#S">Slot</a>, <a href="#C">Custom element</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Slot<span class="pos">noun</span></h3>
+        <p>The <code>&lt;slot&gt;</code> element inside a shadow DOM tree — a placeholder where light DOM children get projected. Named slots (<code>name="header"</code>) match children with <code>slot="header"</code>; the default slot catches unmatched children.</p>
+      </div>
+
+      <div class="term">
+        <h3>Source<span class="pos">element</span></h3>
+        <p>The <code>&lt;source&gt;</code> element — a void element providing alternative formats inside <code>&lt;picture&gt;</code> or alternative codecs inside <code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code>. Browser picks the first one it supports.</p>
+      </div>
+
+      <div class="term">
+        <h3>Srcset<span class="pos">attribute</span></h3>
+        <p>An attribute on <code>&lt;img&gt;</code> that lists image candidates at different widths: <code>srcset="img-400.jpg 400w, img-800.jpg 800w"</code>. Browser picks the best one based on viewport and pixel density. Pair with <code>sizes</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>Structured data<span class="pos">noun</span></h3>
+        <p>Machine-readable information about the page embedded in HTML — typically via JSON-LD using Schema.org vocabulary. Lets search engines show rich results: star ratings, event times, recipe ingredients, FAQ accordions.</p>
+        <div class="see">See also: <a href="#J">JSON-LD</a>, <a href="#S">Schema.org</a></div>
+      </div>
+
+      <div class="term">
+        <h3>SVG<span class="pos">noun</span></h3>
+        <p>Scalable Vector Graphics — an XML-based format for vector images that scales crisply at any size. Can be embedded inline in HTML (<code>&lt;svg&gt;</code>) or as an image source (<code>&lt;img src="logo.svg"&gt;</code>).</p>
+        <div class="see">See also: <a href="#C">Canvas</a></div>
+      </div>
+    </section>
+
+    <section id="T">
+      <h2><span class="letter">T</span></h2>
+
+      <div class="term">
+        <h3>Tab order<span class="pos">noun</span></h3>
+        <p>The order in which elements receive focus when the user presses Tab. Defaults to DOM order. Modify with <code>tabindex</code>: positive values create explicit order (avoid), <code>0</code> includes in natural order, <code>-1</code> removes from tab order.</p>
+      </div>
+
+      <div class="term">
+        <h3>Table<span class="pos">noun</span></h3>
+        <p>The <code>&lt;table&gt;</code> element — for tabular data only, never for layout. Use <code>&lt;caption&gt;</code>, <code>&lt;thead&gt;</code>/<code>&lt;tbody&gt;</code>/<code>&lt;tfoot&gt;</code>, and <code>scope</code> on <code>&lt;th&gt;</code> for accessibility.</p>
+      </div>
+
+      <div class="term">
+        <h3>Tag<span class="pos">noun</span></h3>
+        <p>The markup delimiters that wrap an element's content: <code>&lt;p&gt;</code> is an opening tag, <code>&lt;/p&gt;</code> is a closing tag. Together they form an element. Void elements have only an opening tag (<code>&lt;br&gt;</code>).</p>
+        <div class="see">See also: <a href="#E">Element</a>, <a href="#V">Void element</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Template<span class="pos">element</span></h3>
+        <p>The <code>&lt;template&gt;</code> element — inert HTML that the browser parses but doesn't render. Clone its <code>.content</code> with JavaScript to stamp out repeated UI. Foundation of client-side rendering.</p>
+      </div>
+
+      <div class="term">
+        <h3>Title<span class="pos">noun</span></h3>
+        <p>(1) The <code>&lt;title&gt;</code> element in <code>&lt;head&gt;</code> — page title shown in the browser tab and search results. 50–60 chars ideal. <br>(2) The <code>title</code> attribute on any element — provides a tooltip on hover.</p>
+      </div>
+    </section>
+
+    <section id="U">
+      <h2><span class="letter">U</span></h2>
+
+      <div class="term">
+        <h3>URL<span class="pos">noun</span></h3>
+        <p>Uniform Resource Locator — the address of a web resource. Anatomy: <code>scheme://host:port/path?query#fragment</code>. Example: <code>https://example.com/page?id=42#top</code>.</p>
+      </div>
+
+      <div class="term">
+        <h3>User agent<span class="pos">noun</span></h3>
+        <p>The software that fetches and renders HTML — typically a browser, but also crawlers (Googlebot), screen readers, and download tools. Identified by the User-Agent string, though this is being phased out for privacy.</p>
+      </div>
+    </section>
+
+    <section id="V">
+      <h2><span class="letter">V</span></h2>
+
+      <div class="term">
+        <h3>ValidityState<span class="pos">noun</span></h3>
+        <p>A JavaScript object available on every form field via <code>element.validity</code>. Contains booleans: <code>valueMissing</code>, <code>typeMismatch</code>, <code>patternMismatch</code>, <code>tooLong</code>, <code>rangeUnderflow</code>, etc. Plus <code>valid</code> as a summary.</p>
+      </div>
+
+      <div class="term">
+        <h3>Viewport<span class="pos">noun</span></h3>
+        <p>(1) The visible area of the page in the browser. (2) The <code>&lt;meta name="viewport"&gt;</code> tag — required for responsive mobile design. Without it, mobile browsers render at desktop width and zoom out.</p>
+      </div>
+
+      <div class="term">
+        <h3>Void element<span class="pos">noun</span></h3>
+        <p>An element with no content and no closing tag. The full list: <code>&lt;area&gt;</code>, <code>&lt;base&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;col&gt;</code>, <code>&lt;embed&gt;</code>, <code>&lt;hr&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;link&gt;</code>, <code>&lt;meta&gt;</code>, <code>&lt;param&gt;</code>, <code>&lt;source&gt;</code>, <code>&lt;track&gt;</code>, <code>&lt;wbr&gt;</code>.</p>
+      </div>
+    </section>
+
+    <section id="W">
+      <h2><span class="letter">W</span></h2>
+
+      <div class="term">
+        <h3>WAI-ARIA<span class="pos">noun</span></h3>
+        <p>Web Accessibility Initiative – Accessible Rich Internet Applications. The W3C working group that maintains the ARIA spec. Often shortened to "ARIA".</p>
+      </div>
+
+      <div class="term">
+        <h3>WCAG<span class="pos">noun</span></h3>
+        <p>Web Content Accessibility Guidelines — the W3C standard for web accessibility. Current version: 2.2 (2023). Three conformance levels: A (minimum), AA (legal baseline in most jurisdictions), AAA (highest, not always achievable). Built on four principles: Perceivable, Operable, Understandable, Robust.</p>
+        <div class="see">See also: <a href="#A">Accessibility</a></div>
+      </div>
+
+      <div class="term">
+        <h3>Web component<span class="pos">noun</span></h3>
+        <p>A set of three native technologies for reusable UI: Custom Elements, Shadow DOM, and HTML Templates. Together they let you build framework-agnostic, encapsulated components. Used by YouTube, GitHub, Adobe, LinkedIn.</p>
+        <div class="see">See also: <a href="#C">Custom element</a>, <a href="#S">Shadow DOM</a>, <a href="#T">Template</a></div>
+      </div>
+
+      <div class="term">
+        <h3>WHATWG<span class="pos">noun</span></h3>
+        <p>Web Hypertext Application Technology Working Group — the community that maintains the HTML Living Standard, plus Fetch, DOM, URL, and other specs. Formed in 2004 in response to slow W3C progress on HTML.</p>
+      </div>
+    </section>
+
+    <section id="X">
+      <h2><span class="letter">X</span></h2>
+
+      <div class="term">
+        <h3>XHTML<span class="pos">noun</span></h3>
+        <p>HTML reformulated as XML (strict: all attributes quoted, all tags closed). Popular in the early 2000s, now mostly historical. HTML5 absorbed its discipline without requiring XML strictness.</p>
+      </div>
+
+      <div class="term">
+        <h3>X-default<span class="pos">noun</span></h3>
+        <p>The <code>hreflang="x-default"</code> attribute on a <code>&lt;link rel="alternate"&gt;</code> declares the fallback page for users whose language isn't explicitly listed. Always include one per localized site.</p>
+      </div>
+    </section>
+
+    <section id="Y">
+      <h2><span class="letter">Y</span></h2>
+
+      <div class="term">
+        <h3>YouTube facade<span class="pos">noun</span></h3>
+        <p>The most common facade pattern: show a thumbnail of a YouTube video with a play button, and only embed the actual <code>&lt;iframe&gt;</code> when the user clicks. Saves ~1MB of JavaScript on initial load.</p>
+        <div class="see">See also: <a href="#F">Facade</a></div>
+      </div>
+    </section>
+
+    <section id="Z">
+      <h2><span class="letter">Z</span></h2>
+
+      <div class="term">
+        <h3>Zero-width space<span class="pos">noun</span></h3>
+        <p>The Unicode character <code>U+200B</code> — invisible but marks a place where a line can break. Useful in long URLs or technical strings. HTML also has <code>&lt;wbr&gt;</code> for the same purpose.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="font-size: 1.6rem;">Final notes</h2>
+      <p>This glossary isn't exhaustive — the HTML spec has more — but it covers the vocabulary you'll meet on the road from beginner to expert. When you meet an unfamiliar term in the wild, come back here.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The best way to learn HTML vocabulary is to read the source of pages you admire. Right-click → View Source on any well-built site. You'll see these terms in context, which is worth more than any glossary.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="cheatsheet.html">← Cheat Sheet</a>
+  <a href="resources.html">Resources →</a>
+</footer>
+
+</body>
+</html>

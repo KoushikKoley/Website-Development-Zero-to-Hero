@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Navigation — tabindex, focus-visible, skip links, focus traps — HTML Mastery</title>
+  <meta name="description" content="Keyboard navigation in depth: tab order, tabindex (0, -1, positive values are anti-pattern), :focus-visible styling, skip links, focus traps for modals, roving tabindex for widgets, and why accesskey should usually be avoided. Includes a complete keyboard testing workflow.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .demo { border: 2px solid var(--line); border-radius: 12px; padding: 18px;
+            background: #f8fafc; margin: 14px 0; }
+    .demo button { padding: 8px 16px; border: 2px solid var(--brand); background: white;
+                   border-radius: 6px; cursor: pointer; font-size: 0.95rem; margin: 4px; }
+    .demo button:focus-visible { outline: 4px solid #f59e0b; outline-offset: 2px; }
+    .demo .skip-link { position: absolute; left: -9999px; }
+    .demo .skip-link:focus { position: static; background: #fbbf24; padding: 8px 12px;
+                              border-radius: 6px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Accessibility</span>
+  <h1>Keyboard <code>Navigation</code></h1>
+  <p>For 8% of users, the keyboard is the only way to navigate. Tab order, <code>tabindex</code>, <code>:focus-visible</code>, skip links, focus traps, and roving tabindex are the techniques that make your site usable without a mouse.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why Keyboard Matters</a></li>
+      <li><a href="#order">Tab Order</a></li>
+      <li><a href="#tabindex">tabindex Values</a></li>
+      <li><a href="#focus-visible">:focus-visible</a></li>
+      <li><a href="#skip">Skip Links</a></li>
+      <li><a href="#trap">Focus Traps for Modals</a></li>
+      <li><a href="#roving">Roving Tabindex</a></li>
+      <li><a href="#accesskey">accesskey (Avoid)</a></li>
+      <li><a href="#testing">Keyboard Testing Workflow</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Browser Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="why">
+      <h2><span class="num">1</span> Why Keyboard Matters</h2>
+      <p>Keyboard-only users include people with motor disabilities, screen reader users (who rarely use a mouse), power users, and anyone with a broken trackpad. WCAG 2.1.1 (Level A) requires all functionality to be operable from the keyboard — not as a nice-to-have, as a legal baseline.</p>
+
+      <p>Native HTML elements (<code>&lt;button&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>) get keyboard behavior for free: they're in the tab order, they respond to Enter/Space, and they emit focus events. Most keyboard accessibility failures come from custom widgets that rebuild what the browser already does.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        If your custom <code>&lt;div&gt;</code>-based widget needs <code>tabindex</code>, <code>role</code>, <code>aria-*</code>, keyboard handlers, and focus management to be accessible — you probably should have used a native element. The browser does all of this for free.
+      </div>
+    </section>
+
+    <section id="order">
+      <h2><span class="num">2</span> Tab Order</h2>
+      <p>The default tab order follows the DOM order. Pressing Tab moves focus from one focusable element to the next, top to bottom, left to right. This is almost always the correct order.</p>
+
+      <p>Problems arise when:</p>
+      <ul>
+        <li><strong>CSS reorders elements visually</strong> (<code>flex-direction: row-reverse</code>, <code>order: 5</code>) — visual order doesn't match tab order, disorienting keyboard users</li>
+        <li><strong>Positive <code>tabindex</code> values</strong> — force a different order (almost always wrong; see below)</li>
+        <li><strong>Hidden content</strong> becomes visible via JS but isn't focusable</li>
+        <li><strong>Newly inserted elements</strong> aren't reached because they were added after the initial tab sequence</li>
+      </ul>
+
+      <pre><code>&lt;!-- DOM order = visual order = tab order (correct) --&gt;
+&lt;header&gt;
+  &lt;a href="/"&gt;Home&lt;/a&gt;
+  &lt;a href="/blog"&gt;Blog&lt;/a&gt;
+  &lt;a href="/about"&gt;About&lt;/a&gt;
+&lt;/header&gt;
+
+&lt;!-- Problematic: CSS order changes visual order but tab order
+     follows DOM, so Tab jumps "backwards" --&gt;
+&lt;div style="display:flex; flex-direction: row-reverse;"&gt;
+  &lt;a href="/a"&gt;First in DOM, last visually&lt;/a&gt;
+  &lt;a href="/b"&gt;Second in DOM, first visually&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+    </section>
+
+    <section id="tabindex">
+      <h2><span class="num">3</span> tabindex Values</h2>
+      <p>The <code>tabindex</code> attribute controls whether an element participates in keyboard focus. Three cases:</p>
+
+      <table class="info-table">
+        <thead><tr><th>Value</th><th>Behavior</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td><em>(no attribute)</em></td><td>Default — focusable only if it's a native interactive element</td><td>Buttons, links, inputs — never add <code>tabindex</code> to these</td></tr>
+          <tr><td><code>tabindex="0"</code></td><td>Element is focusable in its natural DOM order</td><td>Custom widgets that should be in tab order (e.g. a custom <code>&lt;div&gt;</code> acting as a button)</td></tr>
+          <tr><td><code>tabindex="-1"</code></td><td>Element is NOT in tab order, but can be focused programmatically via JS <code>.focus()</code></td><td>Modals, off-screen menus, dynamically inserted content</td></tr>
+          <tr><td><code>tabindex="1+"</code></td><td>Element is focusable and is visited in numerical order, before <code>tabindex="0"</code></td><td><strong>Anti-pattern — avoid</strong></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Using positive <code>tabindex</code> values like <code>tabindex="1"</code>, <code>tabindex="2"</code>. This creates a parallel tab order that breaks when content is added or removed. Always use <code>tabindex="0"</code> for natural-order focus, and re-order the DOM if you need a different sequence.
+      </div>
+
+      <pre><code>&lt;!-- DON'T: positive tabindex --&gt;
+&lt;a href="/search" tabindex="1"&gt;Search&lt;/a&gt;
+&lt;a href="/home"  tabindex="2"&gt;Home&lt;/a&gt;
+&lt;a href="/blog"  tabindex="3"&gt;Blog&lt;/a&gt;
+
+&lt;!-- DO: let DOM order handle it --&gt;
+&lt;a href="/home"&gt;Home&lt;/a&gt;
+&lt;a href="/blog"&gt;Blog&lt;/a&gt;
+&lt;a href="/search"&gt;Search&lt;/a&gt;
+
+&lt;!-- Focusable programmatically only --&gt;
+&lt;div id="modal" role="dialog" tabindex="-1" aria-modal="true"&gt;
+  ...
+&lt;/div&gt;</code></pre>
+    </section>
+
+    <section id="focus-visible">
+      <h2><span class="num">4</span> <code>:focus-visible</code> Styling</h2>
+      <p>For decades, web developers removed focus outlines with <code>outline: none</code> — making keyboard navigation invisible. WCAG 2.4.7 (Level AA) requires a visible focus indicator. The modern solution is <code>:focus-visible</code>, which shows focus rings only for keyboard users, not mouse clickers.</p>
+
+      <pre><code>/* Bad: removes focus for everyone, including keyboard users */
+button { outline: none; }
+
+/* Better: removes for mouse, keeps for keyboard */
+button:focus { outline: none; }
+button:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Best: pair with :hover and :active for full state styling */
+button { outline: none; }
+button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+}</code></pre>
+
+      <div class="demo">
+        <button type="button">Click me (mouse)</button>
+        <button type="button">Tab to me (keyboard)</button>
+        <p style="font-size:0.85rem;color:var(--ink-soft);margin-top:10px;">
+          ↑ Try clicking the first button — no ring. Try Tabbing to the second — visible ring.
+        </p>
+      </div>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Never use <code>:focus</code> to show the ring — it shows for mouse clickers too, which looks noisy. Use <code>:focus-visible</code>: the browser intelligently shows it for keyboard users and skips it for mouse users.
+      </div>
+    </section>
+
+    <section id="skip">
+      <h2><span class="num">5</span> Skip Links</h2>
+      <p>A skip link is the first focusable element on the page. It's visually hidden until focused, then jumps the user past repetitive navigation to the main content.</p>
+
+      <pre><code>&lt;body&gt;
+  &lt;a href="#main" class="skip-link"&gt;Skip to main content&lt;/a&gt;
+  &lt;header&gt;...site nav...&lt;/header&gt;
+  &lt;main id="main" tabindex="-1"&gt;
+    &lt;h1&gt;Main content starts here&lt;/h1&gt;
+    ...
+  &lt;/main&gt;
+&lt;/body&gt;</code></pre>
+
+      <pre><code>.skip-link {
+  position: absolute;
+  top: -100px;       /* off-screen by default */
+  left: 0;
+  background: #fbbf24;
+  color: #000;
+  padding: 12px 18px;
+  z-index: 1000;
+  border-radius: 0 0 8px 0;
+  text-decoration: none;
+  font-weight: bold;
+}
+.skip-link:focus {
+  top: 0;            /* slides in when focused */
+}
+main:focus { outline: none; }</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Adding a skip link but no <code>tabindex="-1"</code> on the target. When the user clicks the link, focus doesn't actually move — the browser only scrolls. Adding <code>tabindex="-1"</code> to <code>&lt;main&gt;</code> makes it programmatically focusable, so the next Tab goes to the first interactive element inside main, not back to the header.
+      </div>
+    </section>
+
+    <section id="trap">
+      <h2><span class="num">6</span> Focus Traps for Modals</h2>
+      <p>When a modal opens, focus must move into the modal, stay inside it while the user Tabs, and return to the triggering element when the modal closes. Without this, keyboard users Tab out of the modal into hidden page content.</p>
+
+      <pre><code>function openModal(trigger) {
+  const modal = document.getElementById('modal');
+  modal.classList.add('open');
+
+  // Find all focusable elements inside the modal
+  const focusables = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+
+  // Move focus into the modal
+  first.focus();
+
+  // Trap Tab inside the modal
+  modal.addEventListener('keydown', e =&gt; {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+
+  // Close handler: restore focus to trigger
+  modal.addEventListener('close', () =&gt; trigger.focus());
+}</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Use the native <code>&lt;dialog&gt;</code> element with <code>showModal()</code> — it handles focus trapping, restoration, and ESC-to-close automatically. Only build custom traps if you can't use <code>&lt;dialog&gt;</code>.
+      </div>
+    </section>
+
+    <section id="roving">
+      <h2><span class="num">7</span> Roving Tabindex for Widgets</h2>
+      <p>For composite widgets like toolbars, tab lists, menus, and grids, you don't want every child in the tab order — that would require 10+ Tabs to traverse a menu. Instead, only one child is <code>tabindex="0"</code>; the rest are <code>tabindex="-1"</code>. Arrow keys move the "roving" tabindex between them.</p>
+
+      <pre><code>&lt;!-- Toolbar: only "Save" is in the tab order initially --&gt;
+&lt;div role="toolbar" aria-label="Text formatting"&gt;
+  &lt;button tabindex="0"&gt;Bold&lt;/button&gt;
+  &lt;button tabindex="-1"&gt;Italic&lt;/button&gt;
+  &lt;button tabindex="-1"&gt;Underline&lt;/button&gt;
+  &lt;button tabindex="-1"&gt;Save&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+      <pre><code>const toolbar = document.querySelector('[role="toolbar"]');
+const buttons = Array.from(toolbar.querySelectorAll('button'));
+
+toolbar.addEventListener('keydown', e =&gt; {
+  const current = document.activeElement;
+  const i = buttons.indexOf(current);
+  if (i === -1) return;
+
+  let next = i;
+  if (e.key === 'ArrowRight') next = (i + 1) % buttons.length;
+  if (e.key === 'ArrowLeft')  next = (i - 1 + buttons.length) % buttons.length;
+  if (next === i) return;
+
+  e.preventDefault();
+  buttons.forEach((b, idx) =&gt; b.tabIndex = idx === next ? 0 : -1);
+  buttons[next].focus();
+});</code></pre>
+
+      <p>The W3C <a href="https://www.w3.org/WAI/ARIA/apg/">ARIA Authoring Practices Guide (APG)</a> has fully-worked examples for tabs, menus, comboboxes, and grids. Don't reinvent these — copy the patterns.</p>
+    </section>
+
+    <section id="accesskey">
+      <h2><span class="num">8</span> <code>accesskey</code> (Avoid)</h2>
+      <p>The <code>accesskey</code> attribute assigns a keyboard shortcut to an element. Sounds helpful — in practice, it's almost always harmful:</p>
+
+      <pre><code>&lt;!-- Avoid this --&gt;
+&lt;a href="/home" accesskey="h"&gt;Home&lt;/a&gt;</code></pre>
+
+      <h3>Problems</h3>
+      <ul>
+        <li><strong>Conflicts with browser/OS shortcuts</strong> — Alt+H might be "History" menu in one browser, "Help" in another</li>
+        <li><strong>Hidden from users</strong> — sighted users can't see the shortcut without inspecting source or using an extension</li>
+        <li><strong>Inconsistent modifiers</strong> — Alt on Windows, Ctrl+Option on Mac, varies by browser</li>
+        <li><strong>Conflicts with screen reader shortcuts</strong> — JAWS and NVDA use Alt+letter combos heavily</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Using <code>accesskey</code> on every nav item. Power users who know the shortcut use it; everyone else doesn't know it exists; some users have it silently break their browser shortcuts. Skip <code>accesskey</code> entirely unless you have a very specific use case (e.g. an internal tool with documented shortcuts).
+      </div>
+    </section>
+
+    <section id="testing">
+      <h2><span class="num">9</span> Keyboard Testing Workflow</h2>
+      <p>A simple, thorough manual test takes 5 minutes. Do this on every page before shipping:</p>
+
+      <table class="info-table">
+        <thead><tr><th>Step</th><th>Action</th><th>What to verify</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Unplug your mouse. Put it in a drawer.</td><td>You can't accidentally use it</td></tr>
+          <tr><td>2</td><td>Press Tab from page load.</td><td>First focus should be the skip link</td></tr>
+          <tr><td>3</td><td>Tab through every focusable element.</td><td>Focus moves in visual order; nothing is skipped; nothing is unreachable</td></tr>
+          <tr><td>4</td><td>Press Enter on links and buttons.</td><td>Actions fire</td></tr>
+          <tr><td>5</td><td>Press Space on buttons.</td><td>Actions fire (different from Enter on links)</td></tr>
+          <tr><td>6</td><td>Use arrow keys in form selects, dropdowns.</td><td>Options cycle without a mouse</td></tr>
+          <tr><td>7</td><td>Open any modal/dialog.</td><td>Focus jumps into the modal; Tab cycles inside; Escape closes; focus returns to trigger</td></tr>
+          <tr><td>8</td><td>Tab through any custom widget (tabs, accordion, menu).</td><td>Arrow keys move within the widget; Tab exits cleanly</td></tr>
+          <tr><td>9</td><td>Verify the visible focus indicator.</td><td>Every focused element has a clearly visible ring</td></tr>
+          <tr><td>10</td><td>Use Shift+Tab to go backward through the page.</td><td>Same elements focus in reverse; nothing is unreachable backward</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Pair this with screen reader testing (next file). Many keyboard failures are also screen reader failures — but some (like focus traps) are keyboard-only. Test both.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">10</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Removing outlines globally</h4>
+          <p><code>* { outline: none }</code> at the top of every CSS file. Replace with <code>:focus-visible</code> styling.</p>
+        </div>
+        <div class="card">
+          <h4>Positive tabindex</h4>
+          <p>Always use 0 or -1. Positive values create brittle, parallel tab orders.</p>
+        </div>
+        <div class="card">
+          <h4>Modals without focus traps</h4>
+          <p>Tab escapes to background content that's invisible. Use native <code>&lt;dialog&gt;</code> or implement a trap.</p>
+        </div>
+        <div class="card">
+          <h4>No skip link</h4>
+          <p>Keyboard users Tab through 30 nav links on every page before reaching content. Add a skip link as the first focusable element.</p>
+        </div>
+        <div class="card">
+          <h4>Hidden focusable elements</h4>
+          <p>Elements with <code>display: none</code> are removed from tab order (good), but <code>visibility: hidden</code> children of <code>visibility: visible</code> parents are still focusable. Verify with Tab.</p>
+        </div>
+        <div class="card">
+          <h4>Mismatched DOM/visual order</h4>
+          <p>CSS <code>order</code>, <code>flex-direction: row-reverse</code>, and absolute positioning can make Tab jump backwards through visible content.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">11</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Fix a Modal Dialog</strong>
+        <p>Below is a modal implementation with several keyboard accessibility problems. Identify each and rewrite the code.</p>
+        <pre><code>&lt;div class="backdrop" onclick="close()"&gt;
+  &lt;div class="modal"&gt;
+    &lt;h2&gt;Confirm Delete&lt;/h2&gt;
+    &lt;p&gt;Are you sure you want to delete this item?&lt;/p&gt;
+    &lt;div class="actions"&gt;
+      &lt;div class="btn" onclick="cancel()"&gt;Cancel&lt;/div&gt;
+      &lt;div class="btn danger" onclick="confirm()"&gt;Delete&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>Problems to find:</strong></p>
+        <ul>
+          <li>No <code>role="dialog"</code> or <code>aria-modal</code></li>
+          <li>No focus trap — Tab escapes to the background</li>
+          <li>No focus on open — focus stays on the trigger button behind the modal</li>
+          <li>No focus restoration on close</li>
+          <li>Divs-as-buttons — no keyboard activation</li>
+          <li>Backdrop click closes the modal without warning (unexpected)</li>
+          <li>No Escape key handler</li>
+        </ul>
+        <p><strong>Deliverable:</strong> Rewrite using <code>&lt;dialog&gt;</code> where possible, or with all accessibility attributes and handlers if not.</p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">12</span> Browser Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">tabindex: all browsers</span>
+        <span class="pill yes">:focus-visible: Chrome 86+, Firefox 85+, Safari 15.4+</span>
+        <span class="pill yes">&lt;dialog&gt;: Chrome 37+, Firefox 98+, Safari 15.4+</span>
+        <span class="pill yes">Arrow key navigation: native to select, details, dialog</span>
+        <span class="pill yes">Element.focus(): all browsers</span>
+      </div>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A SaaS dashboard rebuilt their custom dropdown component with native <code>&lt;select&gt;</code> and added <code>:focus-visible</code> rings everywhere. Keyboard-only user testing showed task completion time dropped from 4.2 minutes to 1.8 minutes — a 2.3× speedup that benefited power users (who increasingly use keyboard shortcuts) as much as users with disabilities.
+      </div>
+
+      <h3>Testing tools</h3>
+      <ul>
+        <li><strong>Your keyboard</strong> — the only essential tool. Tab through every page before shipping.</li>
+        <li><strong>axe DevTools</strong> — automated check for missing focus indicators and tabindex issues</li>
+        <li><strong>Lighthouse</strong> — flags missing <code>tabindex</code> on custom interactive elements</li>
+        <li><strong>Chrome DevTools → Elements → Accessibility</strong> — inspect computed role/name/focusability</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="wcag-basics.html">← Previous: WCAG Basics</a>
+  <a href="screen-readers.html">Next: Screen Readers →</a>
+</footer>
+</body>
+</html>

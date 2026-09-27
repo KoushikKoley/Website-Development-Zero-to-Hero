@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Reader Testing — NVDA, JAWS, VoiceOver, TalkBack, Orca — HTML Mastery</title>
+  <meta name="description" content="Screen reader testing deep dive: NVDA (Windows, free), JAWS (Windows, paid), VoiceOver (macOS/iOS, free), TalkBack (Android), and Orca (Linux). How to use each, common HTML patterns they announce, live regions, ARIA announcements, and how to test without a screen reader using browser extensions.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .browser-support .pill.free { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+    .browser-support .pill.paid { background: #fef3c7; border-color: #fde68a; color: #92400e; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Accessibility</span>
+  <h1>Screen Reader <code>Testing</code></h1>
+  <p>NVDA, JAWS, VoiceOver, TalkBack, and Orca turn HTML into spoken words. Knowing how each announces your markup — and how to test without a screen reader — closes the gap between "passes axe" and "actually usable".</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why Test with Screen Readers?</a></li>
+      <li><a href="#nvda">NVDA (Windows, free)</a></li>
+      <li><a href="#jaws">JAWS (Windows, paid)</a></li>
+      <li><a href="#voiceover">VoiceOver (macOS/iOS)</a></li>
+      <li><a href="#talkback">TalkBack (Android)</a></li>
+      <li><a href="#orca">Orca (Linux)</a></li>
+      <li><a href="#announce">What Screen Readers Announce</a></li>
+      <li><a href="#live">Live Regions</a></li>
+      <li><a href="#extensions">Testing Without a Screen Reader</a></li>
+      <li><a href="#workflow">Testing Workflow</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="why">
+      <h2><span class="num">1</span> Why Test with Screen Readers?</h2>
+      <p>Automated tools (axe, Lighthouse, WAVE) catch maybe 30% of accessibility issues. The rest — incorrect reading order, confusing announcements, broken live regions, missing context — only surface when you actually use the page with a screen reader.</p>
+
+      <p>Screen readers are not browsers. They're <strong>separate applications</strong> that sit on top of the browser's accessibility API and re-speak the DOM. Different screen readers interpret the same HTML differently. A page that works in NVDA may break in VoiceOver.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        You don't need every screen reader. Pick one primary (NVDA on Windows is free and represents ~40% of users) and one secondary (VoiceOver on macOS for Mac users). Test on those two, then do spot-checks on JAWS before major releases.
+      </div>
+    </section>
+
+    <section id="nvda">
+      <h2><span class="num">2</span> NVDA (Windows, Free)</h2>
+      <p><strong>NVDA (NonVisual Desktop Access)</strong> is the most widely used screen reader among accessibility professionals — and it's free, open-source, and developed by NV Access. Runs on Windows.</p>
+
+      <h3>Install and start</h3>
+      <ol>
+        <li>Download from <a href="https://www.nvaccess.org/download/">nvaccess.org</a></li>
+        <li>Run the installer — you can use it as a portable app or install it</li>
+        <li>Press <code>Ctrl + Alt + N</code> to launch (or use the desktop shortcut)</li>
+        <li>NVDA will start speaking immediately</li>
+      </ol>
+
+      <h3>Essential shortcuts</h3>
+      <table class="info-table">
+        <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><code>Insert + Q</code></td><td>Quit NVDA</td></tr>
+          <tr><td><code>Insert + S</code></td><td>Stop speech</td></tr>
+          <tr><td><code>Insert + T</code></td><td>Read window title</td></tr>
+          <tr><td><code>Down Arrow</code></td><td>Read next line</td></tr>
+          <tr><td><code>Up Arrow</code></td><td>Read previous line</td></tr>
+          <tr><td><code>Tab</code></td><td>Move to next focusable element</td></tr>
+          <tr><td><code>H</code></td><td>Next heading (with H key, in browse mode)</td></tr>
+          <tr><td><code>1</code>–<code>6</code></td><td>Next heading of level N</td></tr>
+          <tr><td><code>K</code></td><td>Next link</td></tr>
+          <tr><td><code>F</code></td><td>Next form field</td></tr>
+          <tr><td><code>B</code></td><td>Next button</td></tr>
+          <tr><td><code>Insert + F7</code></td><td>Open elements list (headings, links, landmarks)</td></tr>
+          <tr><td><code>Insert + Space</code></td><td>Toggle browse mode vs. focus mode</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        In <em>browse mode</em>, NVDA reads the page like a document (arrow keys navigate, single-letter shortcuts work). In <em>focus mode</em>, NVDA passes keys to the application (needed for complex widgets). Press <code>Insert + Space</code> to toggle. NVDA usually beeps when switching automatically.
+      </div>
+    </section>
+
+    <section id="jaws">
+      <h2><span class="num">3</span> JAWS (Windows, Paid)</h2>
+      <p><strong>JAWS (Job Access With Speech)</strong> by Freedom Scientific is the dominant screen reader in corporate and government environments. It's expensive (~$95/year subscription or ~$1,200 perpetual), but the most-used screen reader in employment contexts.</p>
+
+      <h3>Why test in JAWS?</h3>
+      <ul>
+        <li>Government contracts and enterprise clients often mandate JAWS compatibility</li>
+        <li>JAWS has some unique behaviors not matched by NVDA (e.g. virtual PC cursor mode, custom scripts)</li>
+        <li>JAWS users have specific expectations for app-like behavior</li>
+      </ul>
+
+      <p>Essential shortcuts overlap with NVDA: H for next heading, Tab for next control, Insert+F7 for elements list. JAWS uses the <code>Insert</code> key as the "JAWS key" (also called the "virtual buffer modifier").</p>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A B2B SaaS company ignored JAWS testing because their internal users used NVDA. A Fortune 100 prospect evaluated the product with their corporate-standard JAWS 2024 and found a focus-trap failure in the date picker — costing a $180k contract. JAWS testing is now part of their QA gate.
+      </div>
+    </section>
+
+    <section id="voiceover">
+      <h2><span class="num">4</span> VoiceOver (macOS/iOS, Free)</h2>
+      <p><strong>VoiceOver</strong> is built into every Mac, iPhone, and iPad. It's the only major screen reader for macOS, and the dominant one on mobile (after TalkBack). Free, no install needed.</p>
+
+      <h3>On macOS</h3>
+      <ol>
+        <li>Press <code>Cmd + F5</code> to toggle VoiceOver on/off</li>
+        <li>Use the VoiceOver modifier: <code>Control + Option</code> (or Caps Lock)</li>
+        <li>Press <code>VO + Right Arrow</code> to move to the next item</li>
+        <li>Press <code>VO + Left Arrow</code> to move backward</li>
+        <li>Press <code>VO + Shift + Down Arrow</code> to enter a "VO cursor group" (like a list)</li>
+      </ol>
+
+      <h3>On iOS</h3>
+      <ol>
+        <li>Settings → Accessibility → VoiceOver → On</li>
+        <li>Tap once to focus an item (VoiceOver speaks it)</li>
+        <li>Double-tap anywhere to activate the focused item</li>
+        <li>Swipe right/left to move to next/previous element</li>
+        <li>Two-finger flick up to read from top of screen</li>
+      </ol>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        VoiceOver on iOS is the easiest way to do quick mobile screen reader testing. Turn it on, navigate your site, find the issues. Many users with motor disabilities also use VoiceOver on iOS — testing here catches real-world issues that desktop testing misses.
+      </div>
+    </section>
+
+    <section id="talkback">
+      <h2><span class="num">5</span> TalkBack (Android)</h2>
+      <p><strong>TalkBack</strong> is Android's built-in screen reader. Free, included with all Android devices. Behavior is similar to iOS VoiceOver — tap to focus, double-tap to activate, swipe to navigate.</p>
+
+      <h3>Enable</h3>
+      <ol>
+        <li>Settings → Accessibility → TalkBack → On</li>
+        <li>Or: hold both volume keys for 3 seconds (on Android 12+)</li>
+      </ol>
+
+      <h3>Gestures</h3>
+      <table class="info-table">
+        <thead><tr><th>Gesture</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Tap once</td><td>Focus and speak an item</td></tr>
+          <tr><td>Double-tap anywhere</td><td>Activate the focused item</td></tr>
+          <tr><td>Swipe right</td><td>Move to next item</td></tr>
+          <tr><td>Swipe left</td><td>Move to previous item</td></tr>
+          <tr><td>Swipe up then right</td><td>Open TalkBack menu (reading controls)</td></tr>
+          <tr><td>Swipe down then up</td><td>Read from current item to bottom</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="orca">
+      <h2><span class="num">6</span> Orca (Linux)</h2>
+      <p><strong>Orca</strong> is the screen reader for Linux desktops (GNOME, Mate). Free and open-source, maintained by the GNOME project. Less common in enterprise but relevant for users on Linux.</p>
+
+      <p>Install via your distro's package manager (e.g. <code>sudo apt install gnome-orca</code> on Ubuntu). Launch with <code>Super + Alt + S</code>. Keyboard shortcuts use the <code>Insert</code> or <code>Caps Lock</code> modifier — similar to NVDA.</p>
+
+      <p>Orca is most useful if you're testing accessibility for an audience that includes Linux users (e.g. developer tools, open-source projects).</p>
+    </section>
+
+    <section id="announce">
+      <h2><span class="num">7</span> What Screen Readers Announce</h2>
+      <p>Screen readers translate the accessibility tree (a cleaned-up version of the DOM) into speech. Here's what they say for common HTML patterns:</p>
+
+      <table class="info-table">
+        <thead><tr><th>HTML</th><th>NVDA announcement</th></tr></thead>
+        <tbody>
+          <tr><td><code>&lt;h1&gt;Welcome&lt;/h1&gt;</code></td><td>"Welcome, heading level 1"</td></tr>
+          <tr><td><code>&lt;a href="/"&gt;Home&lt;/a&gt;</code></td><td>"Home, link"</td></tr>
+          <tr><td><code>&lt;button&gt;Submit&lt;/button&gt;</code></td><td>"Submit, button"</td></tr>
+          <tr><td><code>&lt;img src="logo.png" alt="Acme"&gt;</code></td><td>"Acme, graphic"</td></tr>
+          <tr><td><code>&lt;img src="x.png" alt=""&gt;</code></td><td>(silence — decorative)</td></tr>
+          <tr><td><code>&lt;img src="x.png"&gt;</code></td><td>"x dot png, graphic" (filename — bad)</td></tr>
+          <tr><td><code>&lt;input type="text" id="e"&gt;&lt;label for="e"&gt;Email&lt;/label&gt;</code></td><td>"Email, edit, blank"</td></tr>
+          <tr><td><code>&lt;input type="checkbox"&gt;</code></td><td>"checkbox, not checked"</td></tr>
+          <tr><td><code>&lt;nav aria-label="Main"&gt;...&lt;/nav&gt;</code></td><td>"Main, navigation, landmark"</td></tr>
+          <tr><td><code>&lt;ul&gt;&lt;li&gt;A&lt;/li&gt;&lt;li&gt;B&lt;/li&gt;&lt;/ul&gt;</code></td><td>"List, 2 items. Bullet 1: A. Bullet 2: B."</td></tr>
+          <tr><td><code>&lt;select&gt;&lt;option&gt;A&lt;/option&gt;&lt;/select&gt;</code></td><td>"Combo box, A, collapsed"</td></tr>
+          <tr><td><code>&lt;table&gt;</code> with proper <code>&lt;th scope&gt;</code></td><td>"Table with 3 rows and 2 columns. Row 1, column 1, [th text], ..."</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Building custom UI without testing what the screen reader announces. A <code>&lt;div onclick&gt;</code> with no role announces as "Click here" with no element type — totally useless. Always test what NVDA/JAWS/VoiceOver actually say.
+      </div>
+    </section>
+
+    <section id="live">
+      <h2><span class="num">8</span> Live Regions</h2>
+      <p>Dynamic content updates (toasts, sports scores, chat messages, form errors) need to be announced without focus moving. Use <code>aria-live</code> for this:</p>
+
+      <pre><code>&lt;!-- Toast: announced when it appears --&gt;
+&lt;div role="status" aria-live="polite"&gt;
+  &lt;!-- JS injects: "Item added to cart" --&gt;
+&lt;/div&gt;
+
+&lt;!-- Critical alert: interrupts current speech --&gt;
+&lt;div role="alert" aria-live="assertive"&gt;
+  &lt;!-- JS injects: "Connection lost" --&gt;
+&lt;/div&gt;</code></pre>
+
+      <table class="info-table">
+        <thead><tr><th>Value</th><th>Behavior</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td><code>aria-live="polite"</code></td><td>Announces when screen reader is idle</td><td>Toasts, status updates, non-critical errors</td></tr>
+          <tr><td><code>aria-live="assertive"</code></td><td>Interrupts current speech immediately</td><td>Critical alerts, validation errors blocking action</td></tr>
+          <tr><td><code>aria-live="off"</code></td><td>Doesn't announce (default)</td><td>Static content</td></tr>
+        </tbody>
+      </table>
+
+      <p>Shortcut roles:</p>
+      <ul>
+        <li><code>role="status"</code> = polite live region</li>
+        <li><code>role="alert"</code> = assertive live region</li>
+        <li><code>role="log"</code> = chat log, polite, new entries announced</li>
+        <li><code>role="timer"</code> = assertive, for countdowns</li>
+      </ul>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The live region element must exist in the DOM <em>before</em> its content changes — otherwise screen readers don't pick it up. Pre-render an empty <code>&lt;div role="status"&gt;</code>, then update its <code>textContent</code> later.
+      </div>
+    </section>
+
+    <section id="extensions">
+      <h2><span class="num">9</span> Testing Without a Screen Reader</h2>
+      <p>You can't always boot NVDA or borrow a Mac. These browser extensions simulate (imperfectly) what screen readers experience:</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Chrome screen reader</h4>
+          <p>ChromeOS includes "ChromeVox" — installable as an extension on Chrome desktop for free. Limited but useful for quick checks.</p>
+        </div>
+        <div class="card">
+          <h4>Accessibility Insights for Web</h4>
+          <p>Microsoft's browser extension. Visualizes the accessibility tree, tab order, and automated issues. Free.</p>
+        </div>
+        <div class="card">
+          <h4>axe DevTools</h4>
+          <p>Deque's automated audit. Doesn't simulate screen reader, but catches the missing <code>alt</code>s, <code>role</code>s, and contrast issues that break screen reader UX.</p>
+        </div>
+        <div class="card">
+          <h4>Chrome DevTools → Accessibility tree</h4>
+          <p>Built into Chrome. View → Developer Tools → More tools → Accessibility. Shows the tree the screen reader actually reads.</p>
+        </div>
+        <div class="card">
+          <h4>Safari Accessibility Inspector</h4>
+          <p>Built into macOS Safari. Develop → Show Accessibility Inspector. See VoiceOver's view of your DOM.</p>
+        </div>
+        <div class="card">
+          <h4>WebAIM WAVE</h4>
+          <p>Browser extension + web service. Visual overlay of accessibility issues. Not a screen reader but quick sanity check.</p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Treating these as substitutes for screen reader testing. They're complements — they help find issues, but they don't tell you how the page actually <em>sounds</em>. Real screen reader testing is irreplaceable.
+      </div>
+    </section>
+
+    <section id="workflow">
+      <h2><span class="num">10</span> Testing Workflow</h2>
+      <ol>
+        <li><strong>Run automated checks first</strong> — axe, Lighthouse, WAVE. Fix all reported issues.</li>
+        <li><strong>Keyboard test</strong> — Tab through the whole page. See the keyboard-nav file in this section.</li>
+        <li><strong>Screen reader test with NVDA (or VoiceOver if on Mac)</strong>:
+          <ul>
+            <li>Read from top of page — verify the order makes sense</li>
+            <li>Use the headings list (<code>Insert + F7</code>) — verify every section is there and labeled</li>
+            <li>Use the landmarks list — verify <code>main</code>, <code>nav</code>, <code>footer</code> are present</li>
+            <li>Tab through interactive elements — verify each announces a name and role</li>
+            <li>Submit a form with errors — verify errors are announced (live region)</li>
+            <li>Open a modal — verify focus traps and the dialog is announced</li>
+          </ul>
+        </li>
+        <li><strong>Mobile test</strong> — VoiceOver on iOS, TalkBack on Android</li>
+        <li><strong>JAWS spot-check</strong> — before major releases, run through key flows on JAWS</li>
+        <li><strong>Test with real users</strong> — at least quarterly, with users who rely on screen readers daily</li>
+      </ol>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Test on the screen reader <em>your users actually use</em>. If your audience is government employees, that's JAWS. If it's general public, that's NVDA + VoiceOver. Survey platforms like WebAIM's annual Screen Reader Survey tell you what to prioritize.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">11</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Assuming "passes axe" = accessible</h4>
+          <p>Automated checks catch ~30% of issues. Live regions, reading order, and confusing announcements require manual screen reader testing.</p>
+        </div>
+        <div class="card">
+          <h4>Skipping mobile screen readers</h4>
+          <p>NVDA-only testing misses VoiceOver/TalkBack quirks. Mobile users are a growing majority.</p>
+        </div>
+        <div class="card">
+          <h4>Adding <code>aria-live</code> without pre-rendering the container</h4>
+          <p>Live region must exist in DOM before content updates. Dynamically inserting it doesn't work.</p>
+        </div>
+        <div class="card">
+          <h4>Over-announcing</h4>
+          <p>Marking everything as <code>aria-live="assertive"</code> interrupts every action. Use polite for almost everything.</p>
+        </div>
+        <div class="card">
+          <h4>Testing only with mouse</h4>
+          <p>Most screen reader users don't use a mouse. Test purely via keyboard commands.</p>
+        </div>
+        <div class="card">
+          <h4>Forgetting headings list</h4>
+          <p>Screen reader users navigate via the headings list (Insert+F7). If your headings are wrong, they can't find anything.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">12</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Test a Real Page with NVDA</strong>
+        <p>If you're on Windows, install NVDA and perform a complete screen reader test on any news article (e.g. one from a major news site). Otherwise, use VoiceOver on Mac or your platform's equivalent.</p>
+        <p><strong>Steps:</strong></p>
+        <ol>
+          <li>Open the article in your browser</li>
+          <li>Launch the screen reader</li>
+          <li>From the top of the page, navigate using arrow keys — note the reading order</li>
+          <li>Use the headings list (Insert+F7) — list every heading and its level</li>
+          <li>Use the landmarks list — note which landmarks are present</li>
+          <li>Tab through interactive elements (links, buttons) — verify each announces a meaningful name and role</li>
+          <li>Submit the comments form with empty fields — verify the error is announced via live region</li>
+        </ol>
+        <p><strong>Deliverable:</strong> A short report listing what worked, what didn't, and which WCAG criteria each failure violated.</p>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2>Browser Support</h2>
+      <div class="browser-support">
+        <span class="pill free">NVDA: Windows 7+, free, 50+ languages</span>
+        <span class="pill paid">JAWS: Windows 10+, ~$95/year subscription</span>
+        <span class="pill free">VoiceOver: macOS 10.4+, iOS 3.0+, free (built-in)</span>
+        <span class="pill free">TalkBack: Android 4.1+, free (built-in)</span>
+        <span class="pill free">Orca: Linux (GNOME), free</span>
+        <span class="pill yes">ChromeVox: Chrome extension, free</span>
+      </div>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A travel booking site ran their first full screen reader audit (NVDA + VoiceOver) and found that their date picker announced as "clickable, clickable, clickable" with no dates or context. After rebuilding with a native <code>&lt;input type="date"&gt;</code> and ARIA labels, booking completion by screen reader users went from 6% to 71% — making the site usable for a population that had previously been excluded.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="keyboard-nav.html">← Previous: Keyboard Navigation</a>
+  <a href="../04-Code-Quality/validation.html">Next: HTML Validation →</a>
+</footer>
+</body>
+</html>

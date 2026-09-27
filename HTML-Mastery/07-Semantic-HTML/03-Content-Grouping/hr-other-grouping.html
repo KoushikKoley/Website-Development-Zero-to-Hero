@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;hr&gt;, &lt;bdi&gt;, &lt;bdo&gt;, &lt;wbr&gt;, &lt;ruby&gt; — Specialized Grouping — HTML Mastery</title>
+  <meta name="description" content="hr is a thematic break (semantic, not just visual). bdi isolates bidirectional text (user-generated content with unknown direction). bdo overrides direction explicitly. wbr offers word-break opportunities. ruby/rt/rp annotate CJK characters with pronunciation guides.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 2px dashed var(--line); border-radius: 12px; padding: 18px;
+                background: #f8fafc; margin: 14px 0; font-size: 1.1rem; }
+    .demo-box h4 { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.8rem;
+                   text-transform: uppercase; letter-spacing: 0.06em; }
+    .demo-box hr { border: 0; border-top: 2px solid var(--ink); margin: 16px 0; }
+    .demo-box .rtl { direction: rtl; text-align: right; }
+    .demo-box .bdi-demo { font-size: 1.2rem; }
+    .demo-box ruby { ruby-position: over; }
+    .demo-box rt { font-size: 0.6em; color: var(--brand); }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Content Grouping · Lesson 3</span>
+    <h1><code>&lt;hr&gt;</code>, <code>&lt;bdi&gt;</code>, <code>&lt;bdo&gt;</code>, <code>&lt;wbr&gt;</code>, <code>&lt;ruby&gt;</code></h1>
+    <p>Five specialized elements with narrow but important jobs: <code>&lt;hr&gt;</code> marks a thematic break (not just a line). <code>&lt;bdi&gt;</code> isolates bidirectional text. <code>&lt;bdo&gt;</code> overrides direction explicitly. <code>&lt;wbr&gt;</code> hints where a long word can break. <code>&lt;ruby&gt;</code>/<code>&lt;rt&gt;</code>/<code>&lt;rp&gt;</code> annotate CJK characters with pronunciation.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#hr">hr — Thematic break</a></li>
+        <li><a href="#bdi">bdi — Bidirectional isolation</a></li>
+        <li><a href="#bdo">bdo — Bidirectional override</a></li>
+        <li><a href="#wbr">wbr — Word break opportunity</a></li>
+        <li><a href="#ruby">ruby, rt, rp — CJK annotations</a></li>
+        <li><a href="#bidi-deep">Bidirectional text deep dive</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="hr">
+        <h2><span class="num">1</span> <code>&lt;hr&gt;</code> — Thematic Break</h2>
+        <p>Long called a "horizontal rule", <code>&lt;hr&gt;</code> was redefined in HTML5 as a <em>thematic break</em> — a transition between topics within a single section. It carries actual semantic meaning: "what comes next is a different topic".</p>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <p>First, we'll cover the history of HTML.</p>
+          <hr>
+          <p>Now, let's look at where HTML is going next.</p>
+        </div>
+        <pre><code>&lt;p&gt;First, we'll cover the history of HTML.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Now, let's look at where HTML is going next.&lt;/p&gt;</code></pre>
+
+        <h3>When to use it</h3>
+        <ul>
+          <li>Switching between two distinct topics within the same article.</li>
+          <li>Separating the main story from an "About the author" note.</li>
+          <li>Transitioning from narrative to a sidebar callout box (when not using <code>&lt;aside&gt;</code>).</li>
+          <li>In poetry, separating stanzas where a clear thematic shift occurs (otherwise use <code>&lt;p&gt;</code>).</li>
+        </ul>
+
+        <h3>When NOT to use it</h3>
+        <div class="callout warn">
+          <strong>Common Mistakes</strong>
+          <ul style="margin: 6px 0 0; padding-left: 20px;">
+            <li>Using <code>&lt;hr&gt;</code> for visual decoration (a line for the sake of a line). Use a styled <code>&lt;div&gt;</code> or CSS border instead.</li>
+            <li>Adding <code>&lt;hr&gt;</code> between every paragraph. That's not a thematic break — that's a typographic choice.</li>
+            <li>Using it to separate sections that should be marked up with <code>&lt;section&gt;</code>.</li>
+          </ul>
+        </div>
+
+        <h3>Styling</h3>
+        <p>Default UA styling renders <code>&lt;hr&gt;</code> as a 1-2px gray line with margins. You can heavily customize it:</p>
+        <pre><code>/* Modern flat style */
+hr {
+  border: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+              transparent, var(--brand), transparent);
+  margin: 32px 0;
+}
+
+/* Dotted */
+hr { border: 0; border-top: 2px dotted #94a3b8; }
+
+/* Decorative centered glyph */
+hr {
+  border: 0;
+  text-align: center;
+  height: 30px;
+}
+hr::after {
+  content: '❧';
+  color: var(--brand);
+  font-size: 1.4rem;
+}</code></pre>
+
+        <h3>Accessibility</h3>
+        <p>Screen readers may announce <code>&lt;hr&gt;</code> as "separator" or "thematic break" depending on the reader. It's a useful navigation cue. Don't replace it with a styled <code>&lt;div&gt;</code> unless you add <code>role="separator"</code> to maintain parity.</p>
+      </section>
+
+      <section id="bdi">
+        <h2><span class="num">2</span> <code>&lt;bdi&gt;</code> — Bidirectional Isolation</h2>
+        <p>The <code>&lt;bdi&gt;</code> element isolates a span of text from the surrounding bidirectional algorithm. Use it when you're displaying user-generated content whose writing direction you don't know in advance.</p>
+
+        <h3>The problem it solves</h3>
+        <p>The Unicode Bidirectional Algorithm assumes neighboring text shares a direction. When you mix LTR (left-to-right, e.g. English) and RTL (right-to-left, e.g. Arabic or Hebrew) text without isolation, the algorithm can produce garbled output.</p>
+
+        <p>Imagine a chat application displaying messages from users with usernames in mixed scripts:</p>
+
+        <pre><code>&lt;!-- Without bdi --&gt;
+&lt;p&gt;User &lt;b&gt;إبراهيم&lt;/b&gt;: 5 wins&lt;/p&gt;
+
+&lt;!-- The "5 wins" may render to the LEFT of the username
+     on RTL-aware browsers, because the algorithm thinks
+     the surrounding context inherits direction from "إبراهيم". --&gt;</code></pre>
+
+        <pre><code>&lt;!-- With bdi — correctly isolated --&gt;
+&lt;p&gt;User &lt;bdi&gt;&lt;b&gt;إبراهيم&lt;/b&gt;&lt;/bdi&gt;: 5 wins&lt;/p&gt;</code></pre>
+
+        <h3>When to use bdi</h3>
+        <ul>
+          <li>Displaying usernames, handles, or display names from user accounts (any language).</li>
+          <li>Embedding numbers or codes between RTL and LTR text.</li>
+          <li>Anywhere you insert content of unknown direction into a sentence.</li>
+        </ul>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          <code>&lt;bdi&gt;</code> defaults to <code>dir="auto"</code> — it figures out its own direction from the content's first strong directional character. You rarely need to add an explicit <code>dir</code> attribute.
+        </div>
+      </section>
+
+      <section id="bdo">
+        <h2><span class="num">3</span> <code>&lt;bdo&gt;</code> — Bidirectional Override</h2>
+        <p>While <code>&lt;bdi&gt;</code> isolates direction, <code>&lt;bdo&gt;</code> <em>forces</em> a specific direction on its contents, overriding the Unicode Bidi algorithm entirely. It's a stronger, more invasive tool.</p>
+
+        <h3>The <code>dir</code> attribute is required</h3>
+        <p><code>&lt;bdo&gt;</code> requires an explicit <code>dir</code> attribute — either <code>"ltr"</code>, <code>"rtl"</code>, or <code>"auto"</code>. Without it, the element does nothing meaningful.</p>
+
+        <pre><code>&lt;p&gt;The Hebrew word for "peace" is
+   &lt;bdo dir="rtl"&gt;שלום&lt;/bdo&gt;,
+   written right-to-left.&lt;/p&gt;</code></pre>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <p>The Hebrew word for "peace" is <bdo dir="rtl">שלום</bdo>, written right-to-left.</p>
+        </div>
+
+        <h3>bdi vs bdo — when to pick which</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Criterion</th><th>&lt;bdi&gt;</th><th>&lt;bdo&gt;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Purpose</td><td>Isolate (let content's direction win)</td><td>Override (force a direction)</td></tr>
+            <tr><td><code>dir</code> attribute</td><td>Optional (defaults to <code>auto</code>)</td><td>Required (<code>ltr</code>/<code>rtl</code>)</td></tr>
+            <tr><td>Typical use</td><td>User-generated content of unknown direction</td><td>You know the direction should be different from context</td></tr>
+            <tr><td>Example</td><td>Username from a database</td><td>Displaying Hebrew text in an English sentence</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using <code>&lt;bdo dir="rtl"&gt;</code> just to right-align text. <code>&lt;bdo&gt;</code> changes the direction of characters, not their alignment. To right-align text, use CSS <code>text-align: right</code> and <code>direction: rtl</code> on a regular element.
+        </div>
+      </section>
+
+      <section id="wbr">
+        <h2><span class="num">4</span> <code>&lt;wbr&gt;</code> — Word Break Opportunity</h2>
+        <p>The <code>&lt;wbr&gt;</code> element represents a position in the text where the browser may break a line if needed. It produces no visible character, no hyphen, and no extra space — it's purely a hint that "if you need to wrap, here is a good place".</p>
+
+        <h3>Use cases</h3>
+        <ul>
+          <li>Long URLs or email addresses that should wrap gracefully.</li>
+          <li>CamelCase identifiers in code samples (break between word boundaries).</li>
+          <li>Long compound words in German or other languages that allow mid-word breaks.</li>
+          <li>Path strings like <code>/usr/local/bin/some-very-long-tool-name</code>.</li>
+        </ul>
+
+        <pre><code>&lt;p&gt;For details, see
+   https://example.com/very/long/path&lt;wbr&gt;/that/might/wrap&lt;/p&gt;
+
+&lt;p&gt;The exception was thrown by
+   FileSystem&lt;wbr&gt;Interactor&lt;wbr&gt;Factory&lt;wbr&gt;Impl.&lt;/p&gt;</code></pre>
+
+        <div class="demo-box">
+          <h4>Rendered output (resize the window to see wrapping)</h4>
+          <p style="word-break: normal; overflow-wrap: normal;">For details, see https://example.com/very/long/path<wbr>/that/might/wrap/and/continue/on/for/ever</p>
+        </div>
+
+        <h3>wbr vs zero-width space (U+200B)</h3>
+        <p>Both achieve the same effect, but <code>&lt;wbr&gt;</code> is a real HTML element visible in source code, while <code>&amp;#8203;</code> is invisible and easy to copy-paste accidentally. Prefer the element form for clarity.</p>
+
+        <h3>wbr vs soft hyphen (&amp;shy;)</h3>
+        <p>The soft hyphen <code>&amp;shy;</code> (U+00AD) also marks a break opportunity, but adds a visible hyphen when the line breaks there. <code>&lt;wbr&gt;</code> never adds a hyphen. Choose based on whether you want the break to be visible.</p>
+      </section>
+
+      <section id="ruby">
+        <h2><span class="num">5</span> <code>&lt;ruby&gt;</code>, <code>&lt;rt&gt;</code>, <code>&lt;rp&gt;</code> — CJK Annotations</h2>
+        <p>Ruby annotations are small pronunciation guides (or other annotations) placed above or beside CJK (Chinese, Japanese, Korean) characters. They're common in:</p>
+        <ul>
+          <li><strong>Japanese furigana</strong> — hiragana above kanji to indicate pronunciation.</li>
+          <li><strong>Chinese pinyin/bopomofo</strong> — romanized or zhuyin pronunciation above characters.</li>
+          <li><strong>Korean hangul</strong> — for hanja characters.</li>
+        </ul>
+
+        <h3>The three elements</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;ruby&gt;</code></td><td>Container for the base text plus its annotation(s)</td></tr>
+            <tr><td><code>&lt;rt&gt;</code></td><td>Ruby text — the annotation itself (e.g. pronunciation)</td></tr>
+            <tr><td><code>&lt;rp&gt;</code></td><td>Fallback parenthesis shown only by browsers that DON'T support ruby</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Basic example — Japanese furigana</h3>
+        <pre><code>&lt;ruby&gt;
+  漢&lt;rp&gt;(&lt;/rp&gt;&lt;rt&gt;かん&lt;/rt&gt;&lt;rp&gt;)&lt;/rp&gt;
+  字&lt;rp&gt;(&lt;/rp&gt;&lt;rt&gt;じ&lt;/rt&gt;&lt;rp&gt;)&lt;/rp&gt;
+&lt;/ruby&gt;</code></pre>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <ruby>漢<rp>(</rp><rt>かん</rt><rp>)</rp>字<rp>(</rp><rt>じ</rt><rp>)</rp></ruby>
+        </div>
+
+        <h3>Chinese pinyin example</h3>
+        <pre><code>&lt;ruby&gt;
+  北&lt;rp&gt;(&lt;/rp&gt;&lt;rt&gt;běi&lt;/rt&gt;&lt;rp&gt;)&lt;/rp&gt;
+  京&lt;rp&gt;(&lt;/rp&gt;&lt;rt&gt;jīng&lt;/rt&gt;&lt;rp&gt;)&lt;/rp&gt;
+&lt;/ruby&gt;</code></pre>
+
+        <div class="demo-box">
+          <h4>Rendered output</h4>
+          <ruby>北<rp>(</rp><rt>běi</rt><rp>)</rp>京<rp>(</rp><rt>jīng</rt><rp>)</rp></ruby>
+        </div>
+
+        <h3>Why the &lt;rp&gt; element matters</h3>
+        <p>In browsers that don't support <code>&lt;ruby&gt;</code>, the <code>&lt;rt&gt;</code> content would render inline with the base text — turning "漢字" into "漢かん字じ" — which is unreadable. The <code>&lt;rp&gt;</code> ("ruby parenthesis") element wraps parentheses that browsers <em>with</em> ruby support hide, but browsers <em>without</em> ruby support render. So unsupported browsers show "漢(かん)字(じ)" — at least readable as "kanji with annotations".</p>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          All modern browsers support <code>&lt;ruby&gt;</code>. You can technically skip the <code>&lt;rp&gt;</code> element today, but including it costs nothing and provides a graceful fallback for ancient browsers and some screen readers that don't process ruby.
+        </div>
+
+        <h3>Styling ruby</h3>
+        <pre><code>/* Position annotation above by default */
+ruby { ruby-position: over; }
+
+/* For Chinese pinyin (or any language where annotation
+   below is preferred) */
+ruby { ruby-position: under; }
+
+/* Larger, colored furigana */
+rt { font-size: 0.55em; color: var(--brand); }</code></pre>
+      </section>
+
+      <section id="bidi-deep">
+        <h2><span class="num">6</span> Bidirectional Text Deep Dive</h2>
+        <p>HTML's bidirectional support is rooted in Unicode's Bidi Algorithm (UAX #9). The HTML-level tools layer on top:</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Tool</th><th>Level</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>dir</code> attribute on any element</td><td>HTML</td><td>Sets the base direction for that element's content</td></tr>
+            <tr><td><code>&lt;bdo dir="..."&gt;</code></td><td>HTML</td><td>Forces the direction regardless of content</td></tr>
+            <tr><td><code>&lt;bdi&gt;</code></td><td>HTML</td><td>Isolates content so it can't influence surrounding text</td></tr>
+            <tr><td>Unicode Bidi Control chars (<code>LRE</code>, <code>RLE</code>, <code>PDF</code>)</td><td>Unicode</td><td>Deprecated in favor of HTML elements</td></tr>
+            <tr><td>Unicode Isolate chars (<code>FSI</code>/<code>PDI</code>)</td><td>Unicode</td><td>Equivalent to <code>&lt;bdi&gt;</code> at character level</td></tr>
+          </tbody>
+        </table>
+
+        <h3>When mixing content from multiple users</h3>
+        <p>This is the canonical case for <code>&lt;bdi&gt;</code>:</p>
+        <pre><code>&lt;ul class="leaderboard"&gt;
+  &lt;li&gt;
+    &lt;span class="rank"&gt;1&lt;/span&gt;
+    &lt;bdi class="name"&gt;محمد&lt;/bdi&gt;
+    &lt;span class="score"&gt;12,450&lt;/span&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;span class="rank"&gt;2&lt;/span&gt;
+    &lt;bdi class="name"&gt;David&lt;/bdi&gt;
+    &lt;span class="score"&gt;11,830&lt;/span&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        <p>Wrapping each name in <code>&lt;bdi&gt;</code> ensures the Arabic name doesn't cause the score number to render in the wrong position.</p>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">7</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">&lt;hr&gt; — universal</span>
+          <span class="pill yes">&lt;bdi&gt; — Chrome 16+, Firefox 11+, Safari 5.1+</span>
+          <span class="pill yes">&lt;bdo&gt; — universal</span>
+          <span class="pill yes">&lt;wbr&gt; — IE 5.5+, all modern</span>
+          <span class="pill yes">&lt;ruby&gt;/&lt;rt&gt;/&lt;rp&gt; — IE 5+, all modern</span>
+        </div>
+        <p>All five element groups have universal support in modern browsers. <code>&lt;bdi&gt;</code> is the youngest, but it shipped in 2011, so you don't need polyfills.</p>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">8</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Thematic breaks</strong>
+          Take a 5-paragraph article on a topic of your choice. Insert <code>&lt;hr&gt;</code> elements only between paragraphs where the topic genuinely shifts. Style the <code>&lt;hr&gt;</code> with a custom CSS gradient.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Chat message list</strong>
+          Build a chat interface with three messages from three different users. Use mixed-script usernames (one English, one Arabic, one Hebrew or Chinese). Wrap each username in <code>&lt;bdi&gt;</code>. Verify in a browser that messages render correctly without bizarre reordering.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Long URL wrap</strong>
+          Insert a long URL into a narrow column (200px wide) and demonstrate the difference between no wrapping, <code>overflow-wrap: break-word</code>, and strategic <code>&lt;wbr&gt;</code> placement.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Furigana</strong>
+          Mark up the Japanese phrase "おはようございます" (ohayō gozaimasu) with <code>&lt;ruby&gt;</code> annotations providing romaji pronunciation above each segment. Add <code>&lt;rp&gt;</code> parentheses for fallback.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">9</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>hr</h4>
+            <p>Blog posts switching topics, recipe "method" to "serving suggestion", legal document section transitions.</p>
+          </div>
+          <div class="card">
+            <h4>bdi</h4>
+            <p>Chat apps, leaderboards, comment sections, anywhere user-generated names appear.</p>
+          </div>
+          <div class="card">
+            <h4>bdo</h4>
+            <p>Language-learning sites, dictionaries, multilingual marketing pages with deliberate RTL/LTR mixing.</p>
+          </div>
+          <div class="card">
+            <h4>wbr</h4>
+            <p>Code samples in documentation, URLs in forum posts, file paths in error messages.</p>
+          </div>
+          <div class="card">
+            <h4>ruby/rt/rp</h4>
+            <p>Japanese learning apps, Chinese study sites, Bopomofo teaching tools, dictionaries.</p>
+          </div>
+          <div class="card">
+            <h4>Combined: i18n page</h4>
+            <p>Multilingual pages combine <code>dir</code>, <code>bdi</code>, <code>ruby</code>, and Unicode Bidi controls to handle any mix of scripts.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="address-figure-time.html">← Previous: address, figure, time</a>
+    <a class="next" href="../04-Accessibility/landmark-roles.html">Next: Landmark Roles →</a>
+  </footer>
+</body>
+</html>

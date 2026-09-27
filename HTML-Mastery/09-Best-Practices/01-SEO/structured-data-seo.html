@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structured Data for SEO — JSON-LD, Schema.org, Rich Results — HTML Mastery</title>
+  <meta name="description" content="Structured data for SEO with JSON-LD: Article, Product, BreadcrumbList, FAQPage, HowTo, Recipe, Event, and Organization schemas. Google Rich Results eligibility, testing tools, and the common mistakes that disqualify your markup.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.82rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · SEO</span>
+  <h1>Structured Data &amp; <code>Rich Results</code></h1>
+  <p>JSON-LD structured data is the language Google uses to understand your content. Add Article, Product, FAQ, Recipe, Event, and HowTo schemas to unlock rich results — the visual carousels, ratings, and answer boxes that dominate modern search.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#what">What is Structured Data?</a></li>
+      <li><a href="#formats">JSON-LD vs Microdata vs RDFa</a></li>
+      <li><a href="#article">Article Schema</a></li>
+      <li><a href="#product">Product Schema</a></li>
+      <li><a href="#breadcrumb">BreadcrumbList</a></li>
+      <li><a href="#faq">FAQPage</a></li>
+      <li><a href="#howto">HowTo</a></li>
+      <li><a href="#recipe">Recipe</a></li>
+      <li><a href="#event">Event</a></li>
+      <li><a href="#organization">Organization</a></li>
+      <li><a href="#testing">Testing Tools</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Crawler Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="what">
+      <h2><span class="num">1</span> What is Structured Data?</h2>
+      <p>Structured data is a machine-readable description of your page's content, written in a vocabulary called <a href="https://schema.org">Schema.org</a> and embedded in the HTML. Search engines use it to display <strong>rich results</strong> — visual enhancements like star ratings, event dates, recipe cook times, FAQ accordions, and breadcrumb trails.</p>
+
+      <p>Without structured data, Google reads your page as a stream of words. With it, Google knows "this is a recipe for sourdough bread, takes 4 hours, has 12 ingredients, has 4.7 stars from 230 reviews".</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Structured data doesn't directly boost rankings, but it dramatically increases click-through rate (CTR) by making your result more visually prominent. Higher CTR is a ranking signal. The indirect effect is substantial.
+      </div>
+    </section>
+
+    <section id="formats">
+      <h2><span class="num">2</span> JSON-LD vs Microdata vs RDFa</h2>
+      <p>Three formats exist for embedding structured data. Google <strong>strongly recommends JSON-LD</strong> — it's the only one they actively document, and the only format new features are tested against.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <h4>JSON-LD <span style="color:var(--success);font-size:.8rem">✓ Recommended</span></h4>
+          <p>A <code>&lt;script type="application/ld+json"&gt;</code> block in the head. Separates data from markup, easiest to maintain, easiest to test.</p>
+        </div>
+        <div class="card">
+          <h4>Microdata</h4>
+          <p>Attributes like <code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code> sprinkled through HTML. Couples data to markup. Discouraged.</p>
+        </div>
+        <div class="card">
+          <h4>RDFa</h4>
+          <p>Similar to Microdata but uses <code>vocab</code> and <code>property</code> attributes. Rarely used for SEO. Discouraged.</p>
+        </div>
+      </div>
+
+      <pre><code>&lt;!-- JSON-LD: clean, separate from HTML --&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Sourdough Hydration Guide",
+  "author": { "@type": "Person", "name": "Jane Dough" }
+}
+&lt;/script&gt;
+
+&lt;!-- Microdata: attributes polluting the HTML --&gt;
+&lt;article itemscope itemtype="https://schema.org/Article"&gt;
+  &lt;h1 itemprop="headline"&gt;Sourdough Hydration Guide&lt;/h1&gt;
+  &lt;span itemprop="author" itemscope itemtype="https://schema.org/Person"&gt;
+    &lt;span itemprop="name"&gt;Jane Dough&lt;/span&gt;
+  &lt;/span&gt;
+&lt;/article&gt;</code></pre>
+    </section>
+
+    <section id="article">
+      <h2><span class="num">3</span> Article Schema</h2>
+      <p>For news articles, blog posts, and editorial content. Eligible for "Top stories" carousel and rich title treatment.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Sourdough Hydration: A Complete Guide from 60% to 85%",
+  "description": "Understand sourdough hydration ratios from 60% to 85%.",
+  "image": "https://example.com/img/sourdough-1200x800.jpg",
+  "datePublished": "2024-03-14T08:00:00+00:00",
+  "dateModified": "2024-09-02T10:30:00+00:00",
+  "author": {
+    "@type": "Person",
+    "name": "Jane Dough",
+    "url": "https://example.com/authors/jane"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "BakeLab",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://example.com/logo.png",
+      "width": 512,
+      "height": 512
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://example.com/guides/hydration"
+  }
+}
+&lt;/script&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Image too small. Google requires images at least 1200px wide and encoded as JPG, PNG, or WebP. A 400px square thumbnail will disqualify you from Top stories.
+      </div>
+    </section>
+
+    <section id="product">
+      <h2><span class="num">4</span> Product Schema</h2>
+      <p>For e-commerce product pages. Eligible for price snippets, availability, and review star ratings in search results.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Whisper-Q Wireless Headphones",
+  "image": [
+    "https://example.com/img/headphones-1x1.jpg",
+    "https://example.com/img/headphones-4x3.jpg",
+    "https://example.com/img/headphones-16x9.jpg"
+  ],
+  "description": "Over-ear wireless headphones with active noise cancellation.",
+  "sku": "WQ-2024-BLK",
+  "mpn": "ACME-12345",
+  "brand": { "@type": "Brand", "name": "Acme" },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://example.com/products/whisper-q",
+    "priceCurrency": "USD",
+    "price": "249.00",
+    "availability": "https://schema.org/InStock",
+    "priceValidUntil": "2025-12-31",
+    "itemCondition": "https://schema.org/NewCondition"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.7",
+    "reviewCount": "230"
+  }
+}
+&lt;/script&gt;</code></pre>
+
+      <h3>Required fields</h3>
+      <table class="info-table">
+        <thead><tr><th>Field</th><th>Required?</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>name</code></td><td>Required</td><td>Product name</td></tr>
+          <tr><td><code>image</code></td><td>Required</td><td>≥ 1200px, multiple aspect ratios recommended</td></tr>
+          <tr><td><code>offers.price</code></td><td>Required for price snippet</td><td>Number, not string</td></tr>
+          <tr><td><code>offers.priceCurrency</code></td><td>Required</td><td>ISO 4217: <code>USD</code>, <code>EUR</code></td></tr>
+          <tr><td><code>offers.availability</code></td><td>Required</td><td><code>InStock</code>, <code>OutOfStock</code>, etc.</td></tr>
+          <tr><td><code>aggregateRating</code></td><td>Optional but recommended</td><td>Required for star ratings</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="breadcrumb">
+      <h2><span class="num">5</span> BreadcrumbList</h2>
+      <p>Displays breadcrumb trails in search results (e.g., <em>Home › Electronics › Headphones › Whisper-Q</em>). Improves UX and signals site hierarchy.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://example.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Electronics",
+      "item": "https://example.com/electronics"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Headphones",
+      "item": "https://example.com/electronics/headphones"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Whisper-Q Wireless Headphones",
+      "item": "https://example.com/electronics/headphones/whisper-q"
+    }
+  ]
+}
+&lt;/script&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The <code>position</code> field is 1-indexed (starts at 1, not 0). Mismatching the breadcrumb visible on the page (which usually hides "Home") is a common cause of warnings.
+      </div>
+    </section>
+
+    <section id="faq">
+      <h2><span class="num">6</span> FAQPage</h2>
+      <p>Displays an accordion of questions and answers directly in search results. Excellent for capturing traffic from question-based queries.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the ideal sourdough hydration for beginners?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For beginners, 70% hydration offers the best balance between workability and crumb openness. Doughs at 70% are tacky but not unmanageable, and they tolerate fermentation timing errors well."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use cold water for my sourdough starter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cold water slows fermentation but won't kill your starter. Use water between 75°F and 85°F (24–29°C) for optimal yeast activity. Avoid chlorinated tap water."
+      }
+    }
+  ]
+}
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="howto">
+      <h2><span class="num">7</span> HowTo</h2>
+      <p>For step-by-step instructions. Eligible for an image-rich step-by-step carousel in search results.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Feed a Sourdough Starter",
+  "description": "Step-by-step guide to maintaining a healthy sourdough starter.",
+  "totalTime": "PT15M",
+  "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "5" },
+  "supply": [
+    { "@type": "HowToSupply", "name": "100g active starter" },
+    { "@type": "HowToSupply", "name": "100g bread flour" },
+    { "@type": "HowToSupply", "name": "100g filtered water (80°F)" }
+  ],
+  "tool": [
+    { "@type": "HowToTool", "name": "Digital scale" },
+    { "@type": "HowToTool", "name": "Glass jar" }
+  ],
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Discard excess",
+      "text": "Remove all but 100g of starter from the jar.",
+      "url": "https://example.com/howto/feed#step1"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Add flour",
+      "text": "Add 100g of bread flour to the jar.",
+      "url": "https://example.com/howto/feed#step2"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Add water",
+      "text": "Add 100g of 80°F filtered water and stir until combined.",
+      "url": "https://example.com/howto/feed#step3"
+    }
+  ]
+}
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="recipe">
+      <h2><span class="num">8</span> Recipe</h2>
+      <p>Unlocks recipe cards with cook time, calories, ratings, and ingredient lists. Powerful for food blogs.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "name": "Classic Sourdough Bread",
+  "image": "https://example.com/img/sourdough-loaf.jpg",
+  "author": { "@type": "Person", "name": "Jane Dough" },
+  "datePublished": "2024-03-14",
+  "description": "A simple rustic sourdough loaf with 75% hydration.",
+  "prepTime": "PT30M",
+  "cookTime": "PT45M",
+  "totalTime": "PT5H",
+  "recipeYield": "1 loaf",
+  "recipeCategory": "Bread",
+  "recipeCuisine": "French",
+  "keywords": "sourdough, bread, artisan",
+  "nutrition": {
+    "@type": "NutritionInformation",
+    "calories": "180 cal",
+    "carbohydrateContent": "35g",
+    "proteinContent": "6g"
+  },
+  "recipeIngredient": [
+    "500g bread flour",
+    "375g water (75% hydration)",
+    "100g active sourdough starter",
+    "10g sea salt"
+  ],
+  "recipeInstructions": [
+    { "@type": "HowToStep", "text": "Mix flour and water, autolyse 1 hour." },
+    { "@type": "HowToStep", "text": "Add starter and salt, mix." },
+    { "@type": "HowToStep", "text": "Bulk ferment 4 hours with folds every 30 min." },
+    { "@type": "HowToStep", "text": "Shape, cold retard overnight." },
+    { "@type": "HowToStep", "text": "Bake at 450°F in dutch oven 45 min covered, 15 min uncovered." }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "412"
+  }
+}
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="event">
+      <h2><span class="num">9</span> Event</h2>
+      <p>For concerts, conferences, webinars, classes. Eligible for event carousels in search and Google Discover.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Sourdough Masterclass with Jane Dough",
+  "description": "Hands-on class covering starters, bulk fermentation, and shaping.",
+  "image": "https://example.com/img/masterclass.jpg",
+  "startDate": "2024-11-09T14:00:00-08:00",
+  "endDate": "2024-11-09T17:00:00-08:00",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {
+    "@type": "Place",
+    "name": "BakeLab Studio",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Flour St",
+      "addressLocality": "Portland",
+      "addressRegion": "OR",
+      "postalCode": "97201",
+      "addressCountry": "US"
+    }
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "BakeLab",
+    "url": "https://example.com"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://example.com/events/masterclass",
+    "price": "85.00",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2024-09-01T00:00:00-08:00"
+  }
+}
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="organization">
+      <h2><span class="num">10</span> Organization</h2>
+      <p>For business identity — appears in knowledge panels and brand searches. Place on the homepage.</p>
+
+      <pre><code>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "BakeLab",
+  "url": "https://example.com",
+  "logo": "https://example.com/logo.png",
+  "description": "BakeLab teaches home bakers how to make exceptional sourdough bread.",
+  "foundingDate": "2019",
+  "founder": { "@type": "Person", "name": "Jane Dough" },
+  "sameAs": [
+    "https://www.instagram.com/bakelab",
+    "https://www.youtube.com/@bakelab",
+    "https://twitter.com/bakelab",
+    "https://www.linkedin.com/company/bakelab"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+1-503-555-0142",
+    "contactType": "customer service",
+    "areaServed": "US",
+    "availableLanguage": ["English"]
+  }
+}
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="testing">
+      <h2><span class="num">11</span> Testing Tools</h2>
+      <table class="info-table">
+        <thead><tr><th>Tool</th><th>Use</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Rich Results Test</strong></td><td>Validate structured data for Google eligibility</td><td>search.google.com/test/rich-results</td></tr>
+          <tr><td><strong>Schema.org Validator</strong></td><td>Validate against Schema.org spec (not just Google)</td><td>validator.schema.org</td></tr>
+          <tr><td><strong>Schema Marker</strong></td><td>Google's official markup generator</td><td>developers.google.com/search/docs/appearance/structured-data</td></tr>
+          <tr><td><strong>Search Console</strong></td><td>Monitor which rich results Google actually shows</td><td>search.google.com/search-console</td></tr>
+          <tr><td><strong>Chrome DevTools</strong></td><td>Inspect the JSON-LD block in the Elements panel</td><td>Built-in</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The Rich Results Test is the only tool that tells you exactly which features your markup qualifies for. Run every page through it before launch. Errors and warnings are listed with line numbers and actionable suggestions.
+      </div>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">12</span> Common Mistakes</h2>
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Disqualifying errors</h4>
+          <ul>
+            <li>Markup mismatches visible content (FAQ schema for content that isn't a real FAQ on the page)</li>
+            <li>Missing required fields (e.g., Product without <code>offers</code>)</li>
+            <li>Image under 1200px wide</li>
+            <li>Dates in wrong format (use ISO 8601: <code>2024-09-02T10:30:00+00:00</code>)</li>
+            <li>Prices as strings with currency symbols (<code>"$249.00"</code>)</li>
+            <li>Property names in camelCase wrong (<code>aggregateRating</code> not <code>aggregate_rating</code>)</li>
+            <li>Multiple conflicting schemas on the same page</li>
+          </ul>
+        </div>
+        <div class="good">
+          <h4>✓ Best practices</h4>
+          <ul>
+            <li>Markup must describe content that's actually visible on the page</li>
+            <li>Include all required fields for the schema type</li>
+            <li>Use multiple image URLs with different aspect ratios</li>
+            <li>ISO 8601 dates with timezone offsets</li>
+            <li>Numbers as raw numbers, currency in <code>priceCurrency</code></li>
+            <li>Copy exact property names from Schema.org</li>
+            <li>One primary entity per page; use <code>@graph</code> for multiple</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Adding FAQ schema to a page that doesn't visibly show FAQs. Google manual reviewers and algorithmic checks compare the structured data to the rendered DOM. Mismatches lead to manual actions and loss of all rich results across the site.
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">13</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Build Structured Data for a Recipe Blog</strong>
+        <p>You're publishing a recipe page titled "Tahini Chocolate Chip Cookies". The page contains:</p>
+        <ul>
+          <li>Recipe: 12 ingredients, 6 steps, 25 min prep + 12 min bake</li>
+          <li>4.6 stars from 87 reviews</li>
+          <li>Breadcrumb: Home › Recipes › Cookies › Tahini Chocolate Chip</li>
+          <li>FAQ: "Can I substitute sunflower seed butter?", "Are these vegan?"</li>
+        </ul>
+        <p><strong>Tasks:</strong></p>
+        <ol>
+          <li>Write a <code>Recipe</code> JSON-LD block with all required fields.</li>
+          <li>Add a <code>BreadcrumbList</code> block.</li>
+          <li>Add a <code>FAQPage</code> block for the two questions.</li>
+          <li>Combine all three into a single <code>&lt;script type="application/ld+json"&gt;</code> using a <code>@graph</code> array.</li>
+          <li>Run the result through the Rich Results Test and fix any errors.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">14</span> Crawler Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">Google: full JSON-LD support, all documented features</span>
+        <span class="pill yes">Bing: supports JSON-LD for most types</span>
+        <span class="pill yes">Yandex: supports JSON-LD</span>
+        <span class="pill yes">DuckDuckGo: parses for recipe &amp; product enrichment</span>
+        <span class="pill yes">All modern browsers: render the script block silently</span>
+      </div>
+      <p>JSON-LD is invisible to users — the script tag's contents are not rendered. Search engines parse it server-side or during the second-wave render. There is zero performance penalty for including structured data.</p>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A recipe blog added structured data (Recipe, BreadcrumbList, FAQPage) to its top 50 recipes. Within 60 days, 38 of those recipes appeared with rich results, and organic traffic to those pages increased 64%. The FAQ accordions alone captured an estimated 12% of long-tail question searches.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="meta-tags-seo.html">← Previous: SEO Meta Tags</a>
+  <a href="../02-Performance/critical-rendering-path.html">Next: Critical Rendering Path →</a>
+</footer>
+</body>
+</html>

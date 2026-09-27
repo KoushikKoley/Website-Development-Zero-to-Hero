@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Maya Chen — Senior Frontend Engineer crafting fast, accessible, and delightful web experiences.">
+  <meta name="author" content="Maya Chen">
+  <title>Maya Chen — Senior Frontend Engineer</title>
+  <!--
+    Portfolio Home Page
+    Design decisions:
+    - Mobile-first layout with CSS grid for the projects section.
+    - Indigo accent (#4f46e5) on white background for a clean, professional look.
+    - System font stack for instant text rendering without web font requests.
+    - Subtle elevation via box-shadow rather than heavy borders.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-text: #0f172a;
+      --color-muted: #64748b;
+      --color-accent: #4f46e5;
+      --color-accent-hover: #4338ca;
+      --color-accent-soft: #eef2ff;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --max-width: 1120px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; display: block; }
+
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+
+    /* ===== Header ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 64px;
+    }
+    .brand {
+      font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em;
+      color: var(--color-text);
+    }
+    .brand span { color: var(--color-accent); }
+    .nav-toggle { display: none; }
+    .nav-toggle-label {
+      display: none; cursor: pointer; padding: 8px;
+      flex-direction: column; gap: 4px; background: none; border: none;
+    }
+    .nav-toggle-label span {
+      display: block; width: 22px; height: 2px; background: var(--color-text);
+    }
+    .nav-menu { display: flex; gap: 28px; list-style: none; }
+    .nav-menu a {
+      color: var(--color-muted); font-weight: 500; font-size: 0.95rem;
+    }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] {
+      color: var(--color-accent); text-decoration: none;
+    }
+    .btn {
+      display: inline-block; padding: 12px 22px; border-radius: 999px;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn-primary { background: var(--color-accent); color: #fff; }
+    .btn-primary:hover { background: var(--color-accent-hover); text-decoration: none; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    .btn-large { padding: 14px 28px; font-size: 1rem; }
+
+    @media (max-width: 768px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 64px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta { display: none; }
+    }
+
+    /* ===== Hero ===== */
+    .hero { padding: 80px 0 60px; }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px; align-items: center;
+    }
+    .hero-eyebrow {
+      color: var(--color-accent); font-weight: 600;
+      font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: normal; color: var(--color-accent);
+    }
+    .hero-tagline {
+      font-size: 1.15rem; color: var(--color-muted); max-width: 540px; margin-bottom: 32px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-photo {
+      width: 100%; aspect-ratio: 4 / 5; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--color-accent-soft), #c7d2fe);
+      position: relative; overflow: hidden; box-shadow: var(--shadow-md);
+    }
+    .hero-photo::after {
+      content: "MC"; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6rem; font-weight: 800; color: #fff;
+      letter-spacing: -0.04em;
+    }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 40px;
+      border-top: 1px solid var(--color-border); padding-top: 24px;
+    }
+    .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--color-text); }
+    .stat-label { font-size: 0.85rem; color: var(--color-muted); }
+    @media (max-width: 768px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .hero-photo { max-width: 320px; }
+      .hero-stats { gap: 18px; flex-wrap: wrap; }
+    }
+
+    /* ===== Section base ===== */
+    section { padding: 72px 0; }
+    .section-eyebrow {
+      color: var(--color-accent); font-weight: 600; font-size: 0.8rem;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(1.7rem, 3.5vw, 2.3rem); letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .section-intro { color: var(--color-muted); max-width: 640px; margin-bottom: 40px; }
+
+    /* ===== About preview ===== */
+    .about-preview {
+      background: var(--color-surface);
+      border-radius: var(--radius);
+      padding: 48px;
+    }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: center;
+    }
+    .about-photo {
+      width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius);
+      background: linear-gradient(135deg, #fbcfe8, #c7d2fe);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; color: #fff; font-weight: 800;
+    }
+    .about-text p { color: var(--color-muted); margin-bottom: 16px; }
+    .about-text p strong { color: var(--color-text); }
+    @media (max-width: 768px) {
+      .about-preview { padding: 28px; }
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== Projects grid ===== */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    @media (max-width: 900px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .projects-grid { grid-template-columns: 1fr; } }
+    .project-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-4px); box-shadow: var(--shadow-md);
+      border-color: var(--color-accent);
+    }
+    .project-thumb {
+      aspect-ratio: 16 / 10; background: linear-gradient(135deg, #e0e7ff, #fbcfe8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 800; color: #6366f1; letter-spacing: -0.04em;
+    }
+    .project-body { padding: 22px; }
+    .project-card h3 { font-size: 1.2rem; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .project-card p { color: var(--color-muted); font-size: 0.95rem; margin-bottom: 14px; }
+    .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.75rem; padding: 4px 10px; border-radius: 999px;
+      background: var(--color-accent-soft); color: var(--color-accent);
+      font-weight: 500;
+    }
+    .projects-cta { text-align: center; margin-top: 40px; }
+
+    /* ===== Skills ===== */
+    .skills-section { background: var(--color-surface); }
+    .skill-groups {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+    }
+    @media (max-width: 900px) { .skill-groups { grid-template-columns: 1fr; } }
+    .skill-group h3 {
+      font-size: 1.05rem; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .skill-group h3 .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent);
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: 8px; padding: 8px 14px; font-size: 0.9rem;
+      color: var(--color-text); font-weight: 500;
+    }
+
+    /* ===== CTA band ===== */
+    .cta-band {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff; border-radius: var(--radius);
+      padding: 56px 48px; text-align: center;
+    }
+    .cta-band h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 12px; }
+    .cta-band p { color: rgba(255, 255, 255, 0.9); margin-bottom: 28px; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .cta-band .btn-primary { background: #fff; color: var(--color-accent); }
+    .cta-band .btn-primary:hover { background: #f1f5f9; }
+    .cta-band .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, 0.5); }
+    .cta-band .btn-ghost:hover { border-color: #fff; color: #fff; }
+
+    /* ===== Footer ===== */
+    .site-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 48px 0 32px; margin-top: 72px;
+    }
+    .footer-grid {
+      display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between;
+      align-items: flex-start;
+    }
+    .footer-brand p { color: var(--color-muted); max-width: 320px; margin-top: 8px; font-size: 0.95rem; }
+    .footer-social { display: flex; gap: 18px; list-style: none; }
+    .footer-social a {
+      color: var(--color-muted); font-weight: 500;
+    }
+    .footer-social a:hover { color: var(--color-accent); text-decoration: none; }
+    .footer-bottom {
+      margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-border);
+      color: var(--color-muted); font-size: 0.85rem;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip link for keyboard users -->
+  <a href="#main" class="skip-link" style="position:absolute;left:-9999px;">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="index.html" aria-current="page">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="contact.html" class="btn btn-primary header-cta">Let's talk</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div>
+            <p class="hero-eyebrow">Senior Frontend Engineer</p>
+            <h1>Building the web with <em>care, craft,</em> and curiosity.</h1>
+            <p class="hero-tagline">
+              I'm Maya — a frontend engineer based in Portland who designs and ships
+              accessible, performant interfaces for SaaS, climate-tech, and developer tools.
+            </p>
+            <div class="hero-actions">
+              <a href="projects.html" class="btn btn-primary btn-large">View my work</a>
+              <a href="contact.html" class="btn btn-ghost btn-large">Get in touch</a>
+            </div>
+            <div class="hero-stats">
+              <div>
+                <div class="stat-num">9+</div>
+                <div class="stat-label">Years building</div>
+              </div>
+              <div>
+                <div class="stat-num">40+</div>
+                <div class="stat-label">Shipped products</div>
+              </div>
+              <div>
+                <div class="stat-num">12</div>
+                <div class="stat-label">Open-source repos</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="hero-photo" role="img" aria-label="Portrait of Maya Chen"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== About preview ===== -->
+    <section>
+      <div class="container">
+        <div class="about-preview">
+          <div class="about-grid">
+            <div class="about-photo" role="img" aria-label="Maya at her standing desk">M</div>
+            <div class="about-text">
+              <p class="section-eyebrow">About</p>
+              <h2 class="section-title">I turn fuzzy product ideas into accessible interfaces people love.</h2>
+              <p>
+                For nearly a decade I've worked at the seam between design and engineering —
+                translating Figma frames into <strong>production-grade React</strong>, polishing
+                motion to 60fps, and writing the design tokens that keep whole teams consistent.
+              </p>
+              <p>
+                I care about the unglamorous parts: <strong>semantics, performance budgets,
+                keyboard navigation, and color contrast</strong>. The result is software that
+                loads fast, works for everyone, and feels calm to use.
+              </p>
+              <p style="margin-top:24px;">
+                <a href="about.html" class="btn btn-ghost">More about me →</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Featured projects ===== -->
+    <section>
+      <div class="container">
+        <p class="section-eyebrow">Selected work</p>
+        <h2 class="section-title">Featured projects</h2>
+        <p class="section-intro">
+          A small slice of recent client and personal work. Each project below links to a
+          case study with the goals, constraints, and outcomes.
+        </p>
+        <div class="projects-grid">
+          <article class="project-card">
+            <div class="project-thumb" aria-hidden="true">Aurora</div>
+            <div class="project-body">
+              <h3>Aurora Design System</h3>
+              <p>A token-driven component library adopted across four product teams, cutting UI bugs by 38%.</p>
+              <div class="tag-row">
+                <span class="tag">React</span>
+                <span class="tag">TypeScript</span>
+                <span class="tag">Storybook</span>
+              </div>
+            </div>
+          </article>
+          <article class="project-card">
+            <div class="project-thumb" aria-hidden="true">Tideline</div>
+            <div class="project-body">
+              <h3>Tideline Climate Dashboard</h3>
+              <p>Interactive coastal-flood visualizations for a climate nonprofit, used in three city briefings.</p>
+              <div class="tag-row">
+                <span class="tag">D3.js</span>
+                <span class="tag">Next.js</span>
+                <span class="tag">Mapbox</span>
+              </div>
+            </div>
+          </article>
+          <article class="project-card">
+            <div class="project-thumb" aria-hidden="true">Pace</div>
+            <div class="project-body">
+              <h3>Pace — Runner's Companion</h3>
+              <p>An offline-first PWA for marathon training plans with a 4.8★ average across 18k installs.</p>
+              <div class="tag-row">
+                <span class="tag">PWA</span>
+                <span class="tag">IndexedDB</span>
+                <span class="tag">Vue</span>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="projects-cta">
+          <a href="projects.html" class="btn btn-ghost btn-large">See all projects →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Skills ===== -->
+    <section class="skills-section">
+      <div class="container">
+        <p class="section-eyebrow">What I work with</p>
+        <h2 class="section-title">Skills & tooling</h2>
+        <p class="section-intro">
+          The technologies I reach for most often, grouped by what they help me do.
+        </p>
+        <div class="skill-groups">
+          <div class="skill-group">
+            <h3><span class="dot"></span>Languages &amp; core</h3>
+            <div class="chips">
+              <span class="chip">HTML5</span>
+              <span class="chip">CSS3</span>
+              <span class="chip">JavaScript (ES2023)</span>
+              <span class="chip">TypeScript</span>
+              <span class="chip">Node.js</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h3><span class="dot"></span>Frameworks & libraries</h3>
+            <div class="chips">
+              <span class="chip">React</span>
+              <span class="chip">Next.js</span>
+              <span class="chip">Vue 3</span>
+              <span class="chip">Svelte</span>
+              <span class="chip">Astro</span>
+              <span class="chip">Tailwind CSS</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h3><span class="dot"></span>Craft &amp; tooling</h3>
+            <div class="chips">
+              <span class="chip">Figma</span>
+              <span class="chip">Storybook</span>
+              <span class="chip">Playwright</span>
+              <span class="chip">Vite</span>
+              <span class="chip">GitHub Actions</span>
+              <span class="chip">Lighthouse CI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section>
+      <div class="container">
+        <div class="cta-band">
+          <h2>Have a project in mind?</h2>
+          <p>
+            I take on a small number of freelance engagements each quarter — usually design
+            systems, accessibility audits, or a focused frontend rebuild. Tell me what you're building.
+          </p>
+          <div class="hero-actions" style="justify-content:center;">
+            <a href="contact.html" class="btn btn-primary btn-large">Start a conversation</a>
+            <a href="about.html" class="btn btn-ghost btn-large">Read my story</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+          <p>Senior Frontend Engineer crafting accessible, performant interfaces from Portland, Oregon.</p>
+        </div>
+        <nav aria-label="Footer">
+          <ul class="footer-social">
+            <li><a href="https://github.com/" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+            <li><a href="https://dribbble.com/" rel="noopener">Dribbble</a></li>
+            <li><a href="https://bsky.app/" rel="noopener">Bluesky</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Maya Chen. Crafted with semantic HTML &amp; CSS.</span>
+        <span>Built mobile-first · Lighthouse 100/100</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

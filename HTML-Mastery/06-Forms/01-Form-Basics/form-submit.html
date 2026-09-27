@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Submission — How Browsers Build the Request — HTML Mastery</title>
+  <meta name="description" content="Understand exactly what happens when a form submits: browser builds the HTTP request, GET query string construction, POST body encoding, multipart file uploads, implicit submission via Enter key, submit button types, preventing default with JS, and the FormData API.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 10px 0 4px; }
+    .demo-box input[type="text"], .demo-box input[type="search"], .demo-box input[type="email"] {
+      width: 100%; max-width: 320px; padding: 8px 10px;
+      border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-family: inherit;
+    }
+    .demo-box button {
+      background: var(--brand); color: white; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.95rem;
+      cursor: pointer; font-family: inherit; margin-top: 12px;
+    }
+    .demo-box button:hover { background: #1d4ed8; }
+    .demo-output {
+      margin-top: 14px; padding: 10px 12px; background: #0f172a; color: #cbd5e1;
+      border-radius: 8px; font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.82rem; word-break: break-all; min-height: 24px;
+    }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 3</span>
+    <h1>Form Submission</h1>
+    <p>What actually happens when the user clicks "Submit"? The browser collects every named control, encodes the values, builds an HTTP request, and sends it to the action URL. Let's trace every step — and learn how JavaScript can intercept and reshape the whole process via the FormData API.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#submission-flow">The submission flow</a></li>
+        <li><a href="#get-query">GET: query string building</a></li>
+        <li><a href="#post-body">POST: body building</a></li>
+        <li><a href="#file-uploads">File uploads (multipart)</a></li>
+        <li><a href="#implicit">Implicit submission (Enter key)</a></li>
+        <li><a href="#submit-buttons">Submit button types</a></li>
+        <li><a href="#prevent-default">Preventing default with JS</a></li>
+        <li><a href="#formdata-api">The FormData API</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="submission-flow">
+        <h2><span class="num">1</span> The submission flow</h2>
+        <p>When a form submits, the browser follows a precise sequence:</p>
+        <ol>
+          <li><strong>Validation</strong> — runs native HTML5 validation (<code>required</code>, <code>type="email"</code>, <code>pattern</code>, etc.). If any field is invalid, the browser cancels submission and shows the first invalid field's error.</li>
+          <li><strong>Construct entry list</strong> — gathers all "submittable" elements with a <code>name</code> attribute that aren't <code>disabled</code>. Each contributes one or more <code>[name, value]</code> entries.</li>
+          <li><strong>Encoding</strong> — applies the <code>enctype</code> rules to produce the body or query string.</li>
+          <li><strong>Request build</strong> — creates an HTTP request with the chosen <code>method</code>, target <code>action</code> URL, encoded data, and fires it.</li>
+          <li><strong>Response handling</strong> — the result page (HTML, JSON, redirect) replaces the current page (or loads in the target window).</li>
+        </ol>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          Only "submittable" elements contribute: <code>&lt;input&gt;</code> (except <code>type="image"</code>, <code>type="submit"</code>, <code>type="reset"</code>, <code>type="button"</code> unless they're the submitter), <code>&lt;textarea&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;output&gt;</code>, and <code>&lt;button type="submit"&gt;</code> (its name/value, when activated). A <code>&lt;button type="button"&gt;</code> or <code>disabled</code> field contributes nothing.
+        </div>
+      </section>
+
+      <section id="get-query">
+        <h2><span class="num">2</span> GET: query string building</h2>
+        <p>With <code>method="get"</code> (the default), the browser takes the entry list and appends it to the action URL as a query string:</p>
+        <pre><code>&lt;form action="/search" method="get"&gt;
+  &lt;input name="q" value="html forms"&gt;
+  &lt;input name="lang" value="en"&gt;
+&lt;/form&gt;
+
+&lt;!-- Resulting request URL: --&gt;
+/search?q=html+forms&amp;lang=en</code></pre>
+        <p>Rules:</p>
+        <ul>
+          <li>Each entry is <code>name=value</code>, joined by <code>&amp;</code></li>
+          <li>Spaces become <code>+</code> (or <code>%20</code>)</li>
+          <li>Special characters are percent-encoded (<code>&amp;</code> → <code>%26</code>, <code>=</code> → <code>%3D</code>, etc.)</li>
+          <li>If the action URL already has a query string, the existing one is replaced (not merged)</li>
+          <li>Fragment identifiers (<code>#section</code>) in the action URL are stripped</li>
+        </ul>
+        <div class="demo-box">
+          <div class="demo-label">Live GET form — watch the URL preview update</div>
+          <form id="get-demo" action="/search" method="get" onsubmit="event.preventDefault(); const fd = new FormData(this); const qs = new URLSearchParams(fd).toString(); document.getElementById('get-out').textContent = '/search?' + qs;">
+            <label for="gd-q">Query</label>
+            <input type="search" id="gd-q" name="q" value="html forms" autocomplete="off">
+            <label for="gd-lang">Language</label>
+            <input type="text" id="gd-lang" name="lang" value="en" autocomplete="off">
+            <button type="submit">Submit (no actual nav)</button>
+          </form>
+          <div class="demo-output" id="get-out">/search?q=html+forms&amp;lang=en</div>
+        </div>
+      </section>
+
+      <section id="post-body">
+        <h2><span class="num">3</span> POST: body building</h2>
+        <p>With <code>method="post"</code>, the entry list goes in the HTTP request body instead of the URL. The encoding depends on <code>enctype</code>:</p>
+        <h3>application/x-www-form-urlencoded (default)</h3>
+        <p>Same encoding as a query string, but in the body:</p>
+        <pre><code>POST /login HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+email=alice%40example.com&amp;password=secret</code></pre>
+        <h3>multipart/form-data</h3>
+        <p>Each entry becomes a MIME part with its own headers. Larger payload, but required for file uploads and binary data:</p>
+        <pre><code>POST /upload HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="title"
+
+My Photo
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+&lt;binary bytes&gt;
+------WebKitFormBoundary7MA4YWxkTrZu0gW--</code></pre>
+      </section>
+
+      <section id="file-uploads">
+        <h2><span class="num">4</span> File uploads (multipart)</h2>
+        <p>File uploads require three things working together:</p>
+        <ol>
+          <li><code>&lt;form method="post"&gt;</code> (GET can't carry files)</li>
+          <li><code>enctype="multipart/form-data"</code></li>
+          <li><code>&lt;input type="file" name="..."&gt;</code></li>
+        </ol>
+        <pre><code>&lt;form action="/upload" method="post" enctype="multipart/form-data"&gt;
+  &lt;label for="u-file"&gt;Choose file&lt;/label&gt;
+  &lt;input type="file" id="u-file" name="attachment" required&gt;
+
+  &lt;label for="u-desc"&gt;Description&lt;/label&gt;
+  &lt;input type="text" id="u-desc" name="description"&gt;
+
+  &lt;button&gt;Upload&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Forgetting <code>enctype="multipart/form-data"</code> silently breaks the upload — the server receives the filename string, not the file content. Always set it on file upload forms.
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          On the server side, frameworks expose multipart uploads through request parsers: <code>req.files.attachment</code> (Express + multer), <code>request.FILES['attachment']</code> (Django), <code>$_FILES['attachment']</code> (PHP). Each handles boundary parsing transparently.
+        </div>
+      </section>
+
+      <section id="implicit">
+        <h2><span class="num">5</span> Implicit submission (Enter key)</h2>
+        <p>A form can be submitted without clicking any button — pressing Enter while focused on a single-line input triggers "implicit submission." The browser's rules:</p>
+        <ul>
+          <li>The form must contain at least one submittable element.</li>
+          <li>If the form has exactly one <code>&lt;input&gt;</code> (any type except <code>image</code>), Enter submits the form even with no submit button.</li>
+          <li>If the form has multiple inputs, Enter submits if there's a default submit button (the first <code>&lt;button type="submit"&gt;</code> or <code>&lt;input type="submit"&gt;</code> in source order).</li>
+          <li>Pressing Enter on a <code>&lt;textarea&gt;</code> inserts a newline — does <em>not</em> submit.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Removing the submit button on a search form (relying on JS to handle Enter) breaks accessibility. Always include a submit button — screen readers and keyboard users expect it.
+        </div>
+      </section>
+
+      <section id="submit-buttons">
+        <h2><span class="num">6</span> Submit button types</h2>
+        <p>Three ways to make a submit control:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Submits?</th><th>Sends name/value?</th><th>Allows HTML content?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;button type="submit"&gt;Save&lt;/button&gt;</code></td><td>Yes</td><td>Yes — name/value sent if name set</td><td>Yes — icons, spans, etc.</td></tr>
+            <tr><td><code>&lt;input type="submit" value="Save"&gt;</code></td><td>Yes</td><td>Yes — name/value (value defaults to "Submit")</td><td>No — only <code>value</code> string</td></tr>
+            <tr><td><code>&lt;input type="image" src="go.png" alt="Go"&gt;</code></td><td>Yes</td><td>Yes — sends <code>name.x</code> and <code>name.y</code> click coords</td><td>No — uses image source</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Multiple submit buttons - each sends its own name/value --&gt;
+&lt;form action="/admin" method="post"&gt;
+  &lt;input type="hidden" name="id" value="42"&gt;
+  &lt;button type="submit" name="action" value="save"&gt;Save&lt;/button&gt;
+  &lt;button type="submit" name="action" value="publish"&gt;Publish&lt;/button&gt;
+  &lt;button type="submit" name="action" value="delete" formnovalidate&gt;Delete&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- Server receives: id=42 &amp; action=save  (only the clicked button's value) --&gt;</code></pre>
+      </section>
+
+      <section id="prevent-default">
+        <h2><span class="num">7</span> Preventing default with JS</h2>
+        <p>The <code>submit</code> event fires <em>before</em> the request is sent — the last chance to intercept and customize:</p>
+        <pre><code>const form = document.querySelector('form');
+
+form.addEventListener('submit', (event) =&gt; {
+  event.preventDefault();          // stop the native submission
+  // ... do custom work here (validate, fetch, etc.)
+});</code></pre>
+        <p>Important details:</p>
+        <ul>
+          <li>The <code>submit</code> event fires on the <code>&lt;form&gt;</code>, not the button.</li>
+          <li>It does <em>not</em> fire if native validation fails (the browser shows the error first).</li>
+          <li>It does <em>not</em> fire on forms with <code>method="dialog"</code> (those just close the dialog).</li>
+          <li>Calling <code>event.preventDefault()</code> in a non-async handler is enough — for async work, use the FormData API (below).</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Listening for <code>click</code> on the submit button instead of <code>submit</code> on the form. Click misses Enter-key submissions and gets the wrong timing relative to validation.
+        </div>
+      </section>
+
+      <section id="formdata-api">
+        <h2><span class="num">8</span> The FormData API</h2>
+        <p>FormData is the modern, idiomatic way to serialize a form for JavaScript-driven submission (AJAX via <code>fetch()</code>). It handles all field types — including files — correctly.</p>
+        <pre><code>const form = document.querySelector('form');
+
+form.addEventListener('submit', async (event) =&gt; {
+  event.preventDefault();
+  const data = new FormData(form);   // captures all named fields + files
+
+  // Inspect
+  for (const [name, value] of data.entries()) {
+    console.log(name, value);
+  }
+
+  // Send via fetch (multipart auto-set)
+  const res = await fetch('/api/save', {
+    method: 'POST',
+    body: data,                  // NO Content-Type header — fetch sets boundary
+  });
+  console.log(await res.json());
+});</code></pre>
+        <h3>Key methods</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Method</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>append(name, value)</code></td><td>Add a new entry (allows duplicates)</td></tr>
+            <tr><td><code>set(name, value)</code></td><td>Replace all entries for name with one</td></tr>
+            <tr><td><code>get(name)</code></td><td>First value for name (or null)</td></tr>
+            <tr><td><code>getAll(name)</code></td><td>Array of all values for name (checkbox groups)</td></tr>
+            <tr><td><code>has(name)</code></td><td>Boolean: any entry with name?</td></tr>
+            <tr><td><code>delete(name)</code></td><td>Remove all entries for name</td></tr>
+            <tr><td><code>entries() / keys() / values()</code></td><td>Iterators for traversal</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Never set <code>Content-Type</code> manually when sending FormData via <code>fetch()</code> — the browser sets it to <code>multipart/form-data</code> with the correct boundary. Setting it yourself strips the boundary, and the server rejects the parse.
+        </div>
+        <div class="demo-box">
+          <div class="demo-label">Live FormData demo — submit and inspect</div>
+          <form id="fd-demo" onsubmit="event.preventDefault(); const d = new FormData(this); const out = [...d.entries()].map(([k,v]) => `${k} = ${v}`).join('\n'); document.getElementById('fd-out').textContent = out || '(no fields submitted)';">
+            <label for="fd-name">Name</label>
+            <input type="text" id="fd-name" name="name" value="Ada Lovelace" autocomplete="off">
+            <label for="fd-email">Email</label>
+            <input type="email" id="fd-email" name="email" value="ada@example.com" autocomplete="off">
+            <label for="fd-role">Role</label>
+            <select id="fd-role" name="role">
+              <option value="admin">Admin</option>
+              <option value="user" selected>User</option>
+            </select>
+            <button type="submit">Build FormData</button>
+          </form>
+          <div class="demo-output" id="fd-out">name = Ada Lovelace
+email = ada@example.com
+role = user</div>
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>name</code> on a control</td><td>Field never submitted</td><td>Always set <code>name</code> on every control whose value you need</td></tr>
+            <tr><td><code>disabled</code> instead of <code>readonly</code></td><td>Disabled fields are not submitted at all</td><td>Use <code>readonly</code> if you need the value sent</td></tr>
+            <tr><td>Listening to <code>click</code> on submit button</td><td>Misses Enter-key submits</td><td>Listen to <code>submit</code> on the form</td></tr>
+            <tr><td>Setting <code>Content-Type</code> when sending FormData via fetch</td><td>Server can't parse the multipart body</td><td>Let fetch set it</td></tr>
+            <tr><td>Forgetting <code>event.preventDefault()</code></td><td>Form does native full-page submit anyway, breaking SPA behavior</td><td>Always prevent when intercepting</td></tr>
+            <tr><td>Using <code>&lt;input type="submit"&gt;</code> and wanting an icon</td><td>Can't add HTML inside an input</td><td>Use <code>&lt;button type="submit"&gt;</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Trace a GET request</strong>
+          Build a search form with three fields. Submit it. Look at the URL bar. Decode the query string by hand and verify each <code>name=value</code> pair matches your inputs.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Submit via fetch</strong>
+          Build a contact form. Attach a <code>submit</code> handler that calls <code>event.preventDefault()</code>, builds a <code>FormData</code>, and <code>console.log()</code>s every entry. Verify your file input's value is a <code>File</code> object — not a string.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Two submit buttons</strong>
+          Add two submit buttons to a single form. Use the same <code>name</code> ("action") with different <code>value</code>s ("save" and "publish"). In your JS, read <code>event.submitter.value</code> to find out which button was clicked.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Form submission — universal</span>
+          <span class="pill yes">multipart/form-data — universal</span>
+          <span class="pill yes">FormData API — universal in modern browsers</span>
+          <span class="pill yes">event.submitter — Chrome 82+, Firefox 87+, Safari 14.1+</span>
+          <span class="pill yes">Implicit submission — universal</span>
+        </div>
+        <p><code>event.submitter</code> (the element that triggered submit) is the only modern addition; older code uses <code>document.activeElement</code> workaround.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Search filters</h4>
+            <p>GET form: changes URL on submit so users can bookmark or share filtered views.</p>
+          </div>
+          <div class="card">
+            <h4>SPA form submission</h4>
+            <p>FormData + fetch — single-page apps submit without page reload.</p>
+          </div>
+          <div class="card">
+            <h4>Drag-and-drop uploads</h4>
+            <p>Build FormData programmatically with appended File objects, send via fetch.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-action toolbars</h4>
+            <p>One form, multiple submit buttons with different <code>name=value</code> pairs.</p>
+          </div>
+          <div class="card">
+            <h4>Progressive enhancement</h4>
+            <p>Native submit works without JS; JS intercepts submit for better UX when available.</p>
+          </div>
+          <div class="card">
+            <h4>Save Draft / Publish</h4>
+            <p>Different submit buttons: draft uses <code>formnovalidate</code>, publish runs full validation.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="form-attributes.html">← Previous: Form Attributes</a>
+    <a class="next" href="../02-Input-Types/text-inputs.html">Next: Text Inputs →</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choice Inputs — checkbox, radio, select, datalist — HTML Mastery</title>
+  <meta name="description" content="Complete guide to HTML choice inputs: checkbox (multiple selections), radio (single selection from a group), select/option/optgroup (dropdown), datalist (autocomplete suggestions). checked, selected, multiple, size attributes. Name grouping rules for radios.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .demo-box label { display: block; font-size: 0.9rem; font-weight: 500; margin: 12px 0 4px; }
+    .demo-box label.inline { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; margin-right: 14px; }
+    .demo-box input[type="checkbox"], .demo-box input[type="radio"] {
+      width: 18px; height: 18px; vertical-align: middle;
+    }
+    .demo-box select {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; min-width: 240px;
+    }
+    .demo-box input[type="text"], .demo-box input[type="email"] {
+      padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; min-width: 240px;
+    }
+    .demo-box .check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 24px; margin-top: 8px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 6</span>
+    <h1>Choice Inputs</h1>
+    <p>When users pick from a fixed set of options, the right element matters: <code>checkbox</code> for multi-select, <code>radio</code> for single-select, <code>&lt;select&gt;</code> for dropdowns, and <code>&lt;datalist&gt;</code> for free-text-with-suggestions. Pick wrong and users fight the UI; pick right and the form feels effortless.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Choice input types overview</a></li>
+        <li><a href="#checkbox">Checkbox (multiple selections)</a></li>
+        <li><a href="#radio">Radio (single selection)</a></li>
+        <li><a href="#radio-grouping">Name grouping for radios</a></li>
+        <li><a href="#select">select + option</a></li>
+        <li><a href="#optgroup">optgroup (grouping options)</a></li>
+        <li><a href="#datalist">datalist (autocomplete suggestions)</a></li>
+        <li><a href="#attributes">checked, selected, multiple, size</a></li>
+        <li><a href="#when-to-use">When to use each</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Choice input types overview</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Element</th><th>Selection model</th><th>UI</th><th>Typical use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;input type="checkbox"&gt;</code></td><td>Multi-select (each is independent)</td><td>Square check box</td><td>Tags, preferences, "remember me"</td></tr>
+            <tr><td><code>&lt;input type="radio"&gt;</code></td><td>Single-select (within name group)</td><td>Round radio</td><td>Plan choice, gender, yes/no</td></tr>
+            <tr><td><code>&lt;select&gt;</code> + <code>&lt;option&gt;</code></td><td>Single or multi</td><td>Dropdown list</td><td>Country, state, large option sets</td></tr>
+            <tr><td><code>&lt;datalist&gt;</code></td><td>Free text + suggestions</td><td>Text input with autocomplete dropdown</td><td>City, airport code, custom values</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info">
+          <strong>Key insight</strong>
+          Radio buttons share state by <code>name</code> — pick one in a group and the others deselect. Checkboxes are independent even with the same name (you get multiple values submitted). The <code>name</code> attribute is the grouping mechanism, not the surrounding <code>&lt;fieldset&gt;</code>.
+        </div>
+      </section>
+
+      <section id="checkbox">
+        <h2><span class="num">2</span> Checkbox (multiple selections)</h2>
+        <p>Each checkbox is independent. Submitting a form with checkboxes of the same name sends multiple <code>name=value</code> entries — one per checked box.</p>
+        <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Which languages do you speak?&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="lang" value="en"&gt; English&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="lang" value="fr"&gt; French&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="lang" value="es"&gt; Spanish&lt;/label&gt;
+  &lt;label&gt;&lt;input type="checkbox" name="lang" value="de"&gt; German&lt;/label&gt;
+&lt;/fieldset&gt;
+
+&lt;!-- Single boolean --&gt;
+&lt;label&gt;&lt;input type="checkbox" name="agree" required&gt;
+  I accept the terms&lt;/label&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Checkbox demo — check multiple</div>
+          <fieldset style="border:1px solid var(--line); padding:14px; border-radius:8px;">
+            <legend style="font-weight:600;">Which languages do you speak?</legend>
+            <div class="check-grid">
+              <label class="inline"><input type="checkbox" name="lang" value="en"> English</label>
+              <label class="inline"><input type="checkbox" name="lang" value="fr"> French</label>
+              <label class="inline"><input type="checkbox" name="lang" value="es"> Spanish</label>
+              <label class="inline"><input type="checkbox" name="lang" value="de"> German</label>
+              <label class="inline"><input type="checkbox" name="lang" value="ja"> Japanese</label>
+              <label class="inline"><input type="checkbox" name="lang" value="zh"> Chinese</label>
+            </div>
+          </fieldset>
+          <label class="inline" style="margin-top:14px;"><input type="checkbox" name="agree" required> I accept the terms</label>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          For boolean "yes/no" fields (like "Subscribe to newsletter"), use a single checkbox with a meaningful <code>value</code> (e.g., <code>value="yes"</code>). The server checks presence: if the field name appears in the submission, the user checked it; otherwise, they didn't.
+        </div>
+      </section>
+
+      <section id="radio">
+        <h2><span class="num">3</span> Radio (single selection)</h2>
+        <p>Radio buttons in the same <code>name</code> group are mutually exclusive — selecting one deselects the others. Always pre-check a default with <code>checked</code> to avoid "no selection" states (unless you genuinely need the user to choose).</p>
+        <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Plan&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="free" checked&gt; Free&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="pro"&gt; Pro ($9/mo)&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="plan" value="team"&gt; Team ($29/mo)&lt;/label&gt;
+&lt;/fieldset&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Radio demo — pick only one</div>
+          <fieldset style="border:1px solid var(--line); padding:14px; border-radius:8px;">
+            <legend style="font-weight:600;">Subscription plan</legend>
+            <label class="inline"><input type="radio" name="plan" value="free" checked> Free</label>
+            <label class="inline"><input type="radio" name="plan" value="pro"> Pro ($9/mo)</label>
+            <label class="inline"><input type="radio" name="plan" value="team"> Team ($29/mo)</label>
+          </fieldset>
+        </div>
+      </section>
+
+      <section id="radio-grouping">
+        <h2><span class="num">4</span> Name grouping for radios</h2>
+        <p>The <code>name</code> attribute defines the radio group. All radios with the same <code>name</code> are exclusive; different names are independent. This lets you have multiple radio groups in the same form.</p>
+        <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Delivery method&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="delivery" value="standard" checked&gt; Standard&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="delivery" value="express"&gt; Express&lt;/label&gt;
+&lt;/fieldset&gt;
+
+&lt;fieldset&gt;
+  &lt;legend&gt;Gift wrap?&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="wrap" value="no" checked&gt; No&lt;/label&gt;
+  &lt;label&gt;&lt;input type="radio" name="wrap" value="yes"&gt; Yes (+$5)&lt;/label&gt;
+&lt;/fieldset&gt;
+
+&lt;!-- Server receives: delivery=express &amp; wrap=yes --&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Forgetting the <code>name</code> attribute on radios. Without it, each radio is its own group of one — you can select all of them, defeating the purpose.
+        </div>
+      </section>
+
+      <section id="select">
+        <h2><span class="num">5</span> select + option</h2>
+        <p>Dropdown picker. The first <code>&lt;option&gt;</code> becomes the default (unless another has <code>selected</code>). The submitted value is the <code>value</code> attribute of the selected option, or the option's text content if <code>value</code> is omitted.</p>
+        <pre><code>&lt;label for="country"&gt;Country&lt;/label&gt;
+&lt;select id="country" name="country" autocomplete="country"&gt;
+  &lt;option value=""&gt;Select a country...&lt;/option&gt;
+  &lt;option value="us"&gt;United States&lt;/option&gt;
+  &lt;option value="ca"&gt;Canada&lt;/option&gt;
+  &lt;option value="uk"&gt;United Kingdom&lt;/option&gt;
+  &lt;option value="au"&gt;Australia&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- Pre-selected option --&gt;
+&lt;select name="size"&gt;
+  &lt;option value="s"&gt;Small&lt;/option&gt;
+  &lt;option value="m" selected&gt;Medium&lt;/option&gt;
+  &lt;option value="l"&gt;Large&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Select demo</div>
+          <label for="demo-country">Country</label>
+          <select id="demo-country" name="country" autocomplete="country">
+            <option value="">Select a country...</option>
+            <option value="us">United States</option>
+            <option value="ca">Canada</option>
+            <option value="uk">United Kingdom</option>
+            <option value="au">Australia</option>
+            <option value="de">Germany</option>
+            <option value="fr">France</option>
+          </select>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Include a "Select..." placeholder option with empty <code>value</code> as the first option (and add <code>required</code> if needed). This forces users to actively choose rather than accepting a default they didn't read.
+        </div>
+      </section>
+
+      <section id="optgroup">
+        <h2><span class="num">6</span> optgroup (grouping options)</h2>
+        <p>For long option lists, group options with <code>&lt;optgroup label="..."&gt;</code>. Browsers render group headers (non-selectable) — users see structure.</p>
+        <pre><code>&lt;select name="car"&gt;
+  &lt;optgroup label="American"&gt;
+    &lt;option value="ford"&gt;Ford&lt;/option&gt;
+    &lt;option value="chevy"&gt;Chevrolet&lt;/option&gt;
+    &lt;option value="tesla"&gt;Tesla&lt;/option&gt;
+  &lt;/optgroup&gt;
+  &lt;optgroup label="German"&gt;
+    &lt;option value="bmw"&gt;BMW&lt;/option&gt;
+    &lt;option value="merc"&gt;Mercedes&lt;/option&gt;
+    &lt;option value="audi"&gt;Audi&lt;/option&gt;
+  &lt;/optgroup&gt;
+  &lt;optgroup label="Japanese"&gt;
+    &lt;option value="toyota"&gt;Toyota&lt;/option&gt;
+    &lt;option value="honda"&gt;Honda&lt;/option&gt;
+    &lt;option value="mazda"&gt;Mazda&lt;/option&gt;
+  &lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">optgroup demo — note the non-selectable group headers</div>
+          <label for="demo-car">Choose a car</label>
+          <select id="demo-car" name="car">
+            <optgroup label="American">
+              <option value="ford">Ford</option>
+              <option value="chevy">Chevrolet</option>
+              <option value="tesla">Tesla</option>
+            </optgroup>
+            <optgroup label="German">
+              <option value="bmw">BMW</option>
+              <option value="merc">Mercedes</option>
+              <option value="audi">Audi</option>
+            </optgroup>
+            <optgroup label="Japanese">
+              <option value="toyota">Toyota</option>
+              <option value="honda">Honda</option>
+              <option value="mazda">Mazda</option>
+            </optgroup>
+          </select>
+        </div>
+      </section>
+
+      <section id="datalist">
+        <h2><span class="num">7</span> datalist (autocomplete suggestions)</h2>
+        <p>A <code>&lt;datalist&gt;</code> provides suggestion values for a text input. Unlike a <code>&lt;select&gt;</code>, users can type their own value — suggestions are non-binding. Great for cities, airports, tags, or any value where you want to suggest common ones but allow custom.</p>
+        <pre><code>&lt;label for="city"&gt;City&lt;/label&gt;
+&lt;input type="text" id="city" name="city" list="cities"&gt;
+&lt;datalist id="cities"&gt;
+  &lt;option value="New York"&gt;
+  &lt;option value="Los Angeles"&gt;
+  &lt;option value="Chicago"&gt;
+  &lt;option value="Houston"&gt;
+  &lt;option value="Phoenix"&gt;
+&lt;/datalist&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">datalist demo — type to filter suggestions, or pick from list</div>
+          <label for="demo-city">City</label>
+          <input type="text" id="demo-city" name="city" list="demo-cities" placeholder="Start typing...">
+          <datalist id="demo-cities">
+            <option value="New York">
+            <option value="Los Angeles">
+            <option value="Chicago">
+            <option value="Houston">
+            <option value="Phoenix">
+            <option value="Philadelphia">
+            <option value="San Antonio">
+            <option value="San Diego">
+            <option value="Dallas">
+            <option value="San Jose">
+          </datalist>
+        </div>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          <code>&lt;option&gt;</code> in <code>&lt;datalist&gt;</code> can also have a text content (e.g., <code>&lt;option value="NYC"&gt;New York City&lt;/option&gt;</code>) — some browsers show both. Useful when the value is an airport code but the user knows the city name.
+        </div>
+      </section>
+
+      <section id="attributes">
+        <h2><span class="num">8</span> checked, selected, multiple, size</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Attribute</th><th>Applies to</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>checked</code></td><td>checkbox, radio</td><td>Pre-select the control on page load</td></tr>
+            <tr><td><code>selected</code></td><td><code>&lt;option&gt;</code></td><td>Pre-select the option</td></tr>
+            <tr><td><code>multiple</code></td><td><code>&lt;select&gt;</code>, <code>&lt;input type="email"&gt;</code>, <code>&lt;input type="file"&gt;</code></td><td>Allow multiple values; for select, renders as a list box</td></tr>
+            <tr><td><code>size</code></td><td><code>&lt;select&gt;</code></td><td>Number of visible options (renders list box instead of dropdown)</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Multi-select list box --&gt;
+&lt;select name="skills" multiple size="5"&gt;
+  &lt;option value="html"&gt;HTML&lt;/option&gt;
+  &lt;option value="css"&gt;CSS&lt;/option&gt;
+  &lt;option value="js"&gt;JavaScript&lt;/option&gt;
+  &lt;option value="react"&gt;React&lt;/option&gt;
+  &lt;option value="vue"&gt;Vue&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- Hold Ctrl/Cmd to select multiple --&gt;</code></pre>
+        <div class="demo-box">
+          <div class="demo-label">Multi-select list box demo — hold Ctrl/Cmd to pick multiple</div>
+          <label for="demo-skills">Skills (multi-select)</label>
+          <select id="demo-skills" name="skills" multiple size="5" style="min-width:240px;">
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="js">JavaScript</option>
+            <option value="react">React</option>
+            <option value="vue">Vue</option>
+            <option value="angular">Angular</option>
+            <option value="node">Node.js</option>
+          </select>
+        </div>
+      </section>
+
+      <section id="when-to-use">
+        <h2><span class="num">9</span> When to use each</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Use case</th><th>Recommended element</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2-4 options, single select</td><td>Radio buttons</td><td>Visible at once; users see all choices</td></tr>
+            <tr><td>5-15 options, single select</td><td>Select dropdown</td><td>Saves space; manageable list length</td></tr>
+            <tr><td>16+ options, single select</td><td>Select with optgroup, or datalist</td><td>Avoid overwhelming users; grouping or autocomplete helps</td></tr>
+            <tr><td>Multiple selections from list</td><td>Checkboxes, or select multiple</td><td>Checkboxes are more discoverable</td></tr>
+            <tr><td>Suggestions but custom allowed</td><td>datalist</td><td>Combines free text with hints</td></tr>
+            <tr><td>Yes/No</td><td>Single checkbox, or two radios</td><td>Checkbox for "yes"; radios if you need explicit "no"</td></tr>
+            <tr><td>Accept terms</td><td>Single checkbox with required</td><td>Standard pattern; boolean state</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Same <code>value</code> for all radios</td><td>Server can't tell which was selected</td><td>Each radio needs a unique <code>value</code></td></tr>
+            <tr><td>Missing <code>name</code> on radios</td><td>All become independently selectable</td><td>Always set <code>name</code></td></tr>
+            <tr><td>Checkbox with no <code>value</code></td><td>Submits "on" if checked; useless value</td><td>Always set explicit <code>value</code></td></tr>
+            <tr><td>Using <code>&lt;select&gt;</code> for 2 options</td><td>Requires extra click to see choices</td><td>Use radio buttons</td></tr>
+            <tr><td>Using <code>&lt;select&gt;</code> for searchable lists</td><td>Hard to find one item in 50+</td><td>Use <code>&lt;datalist&gt;</code> or a custom autocomplete widget</td></tr>
+            <tr><td>No default <code>checked</code> on radios</td><td>Form submits with no value; user may not realize they need to pick</td><td>Pre-check a default</td></tr>
+            <tr><td>Forgetting <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code></td><td>Screen readers can't announce group context</td><td>Wrap related radios/checkboxes</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Build a preferences form</strong>
+          Create a form with: gender (radio group), preferred contact method (radio group), and newsletter topics (checkboxes for Tech, Sports, Politics, Business). Use <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> for each group.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Country selector</strong>
+          Build a <code>&lt;select&gt;</code> with at least 20 countries, grouped by continent using <code>&lt;optgroup&gt;</code>. Include a placeholder "Select..." option with empty value. Make the field required.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — City autocomplete</strong>
+          Create a text input with <code>list</code> pointing to a <code>&lt;datalist&gt;</code> of 10 major world cities. Verify that you can type a custom value (e.g., "Reykjavik") even if it's not in the suggestions.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">checkbox / radio — universal</span>
+          <span class="pill yes">select / option / optgroup — universal</span>
+          <span class="pill yes">datalist — all modern browsers (Safari 12.1+)</span>
+          <span class="pill yes">multiple on select — universal</span>
+          <span class="pill yes">checked / selected — universal</span>
+        </div>
+        <p><code>&lt;datalist&gt;</code> is the only one with non-universal historical support — it works in all modern browsers including Safari 12.1+.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Country / region pickers</h4>
+            <p><code>&lt;select&gt;</code> with optgroup by continent. ~200 countries.</p>
+          </div>
+          <div class="card">
+            <h4>Subscription tiers</h4>
+            <p>Radio buttons for Free / Pro / Team — visible, easy comparison.</p>
+          </div>
+          <div class="card">
+            <h4>Tag selectors</h4>
+            <p>Checkboxes for multi-tag selection in CMS, social platforms.</p>
+          </div>
+          <div class="card">
+            <h4>City / airport lookup</h4>
+            <p><code>&lt;datalist&gt;</code> with suggestions; allows custom input.</p>
+          </div>
+          <div class="card">
+            <h4>Terms acceptance</h4>
+            <p>Single required checkbox at signup.</p>
+          </div>
+          <div class="card">
+            <h4>Multi-skill selection</h4>
+            <p><code>&lt;select multiple&gt;</code> or checkboxes — depends on count.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="numeric-inputs.html">← Previous: Numeric &amp; Temporal Inputs</a>
+    <a class="next" href="special-inputs.html">Next: Special Inputs →</a>
+  </footer>
+</body>
+</html>

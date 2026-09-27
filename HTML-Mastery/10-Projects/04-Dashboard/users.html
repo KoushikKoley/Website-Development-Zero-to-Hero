@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Helios Admin — user management. Search, filter, and manage team members, roles, and statuses.">
+  <title>Users · Helios Admin</title>
+  <style>
+    :root {
+      --slate-900: #0f172a; --slate-850: #1e293b; --slate-800: #1e293b;
+      --slate-700: #334155; --slate-600: #475569; --slate-400: #94a3b8;
+      --slate-300: #cbd5e1; --slate-200: #e2e8f0; --slate-100: #f1f5f9;
+      --slate-50: #f8fafc; --white: #ffffff;
+      --blue: #2563eb; --blue-dark: #1d4ed8; --blue-soft: #dbeafe;
+      --green: #16a34a; --green-soft: #dcfce7;
+      --amber: #d97706; --amber-soft: #fef3c7;
+      --red: #dc2626; --red-soft: #fee2e2;
+      --purple: #7c3aed; --purple-soft: #ede9fe;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --radius: 12px; --radius-sm: 8px; --sidebar-w: 248px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--slate-50); color: var(--slate-900); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--slate-900); color: var(--slate-300); padding: 20px 0; overflow-y: auto; z-index: 60; }
+    .sidebar-brand { padding: 0 20px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--slate-800); }
+    .sidebar-brand .mark { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #7c3aed); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.95rem; }
+    .sidebar-brand strong { color: #fff; font-size: 1.05rem; }
+    .sidebar-brand .sub { font-size: 0.72rem; color: var(--slate-400); display: block; }
+    .nav-section { padding: 18px 0 8px; }
+    .nav-section .label { padding: 0 20px 8px; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-600); font-weight: 600; }
+    .nav-section ul { list-style: none; }
+    .nav-section li a { display: flex; align-items: center; gap: 12px; padding: 10px 20px; font-size: 0.92rem; color: var(--slate-300); border-left: 3px solid transparent; transition: all 0.15s; }
+    .nav-section li a:hover { background: var(--slate-850); color: #fff; }
+    .nav-section li a.active { background: var(--slate-850); color: #fff; border-left-color: var(--blue); }
+    .nav-section li a .icon { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--slate-400); }
+    .nav-section li a.active .icon { color: var(--blue); }
+    .nav-section li a .badge { margin-left: auto; background: var(--slate-700); color: #fff; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; }
+    .sidebar-user { padding: 16px 20px; margin: 8px 16px; border-radius: var(--radius-sm); background: var(--slate-850); display: flex; align-items: center; gap: 10px; }
+    .sidebar-user .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar-user .info { flex: 1; min-width: 0; }
+    .sidebar-user .name { color: #fff; font-size: 0.9rem; font-weight: 600; }
+    .sidebar-user .role { font-size: 0.78rem; color: var(--slate-400); }
+    .main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+    .topbar { position: sticky; top: 0; z-index: 40; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--slate-200); padding: 14px 28px; display: flex; align-items: center; gap: 16px; }
+    .topbar .page-title { font-size: 1.15rem; font-weight: 700; }
+    .topbar .page-title small { color: var(--slate-400); font-size: 0.85rem; font-weight: 400; margin-left: 8px; }
+    .search { flex: 1; max-width: 420px; position: relative; margin-left: auto; }
+    .search input { width: 100%; padding: 9px 14px 9px 36px; border: 1px solid var(--slate-200); border-radius: 8px; background: var(--slate-50); font-family: inherit; font-size: 0.9rem; }
+    .search input:focus { outline: 2px solid var(--blue); border-color: var(--blue); background: #fff; }
+    .search .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--slate-400); font-size: 0.95rem; }
+    .icon-btn { position: relative; width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--slate-200); background: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-600); font-size: 1.05rem; }
+    .icon-btn:hover { background: var(--slate-50); color: var(--slate-900); }
+    .icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid #fff; }
+    .user-menu { display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 4px; border-radius: 999px; border: 1px solid var(--slate-200); background: #fff; cursor: pointer; }
+    .user-menu .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; font-weight: 700; font-size: 0.78rem; display: inline-flex; align-items: center; justify-content: center; }
+    .user-menu .name { font-size: 0.88rem; font-weight: 500; }
+    .content { padding: 28px; }
+
+    /* ===== Filter bar ===== */
+    .filter-bar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius);
+      padding: 14px 18px; margin-bottom: 20px; box-shadow: var(--shadow);
+    }
+    .filter-bar .table-search {
+      flex: 1; min-width: 240px; position: relative;
+    }
+    .filter-bar .table-search input {
+      width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--slate-200);
+      border-radius: 8px; background: var(--slate-50); font-family: inherit; font-size: 0.88rem;
+    }
+    .filter-bar .table-search input:focus { outline: 2px solid var(--blue); border-color: var(--blue); background: #fff; }
+    .filter-bar .table-search .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--slate-400); font-size: 0.9rem; }
+
+    .filter-select {
+      padding: 8px 28px 8px 12px; border: 1px solid var(--slate-200); border-radius: 8px;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23475569' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 10px center;
+      font-family: inherit; font-size: 0.85rem; color: var(--slate-700); cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+    }
+    .filter-select:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
+
+    .btn-primary {
+      padding: 8px 16px; border-radius: 8px; border: 0;
+      background: var(--blue); color: #fff; font-weight: 600;
+      cursor: pointer; font-family: inherit; font-size: 0.88rem;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-secondary {
+      padding: 8px 16px; border-radius: 8px; border: 1px solid var(--slate-200);
+      background: #fff; color: var(--slate-700); font-weight: 500;
+      cursor: pointer; font-family: inherit; font-size: 0.88rem;
+    }
+    .btn-secondary:hover { background: var(--slate-50); }
+
+    /* ===== Bulk action bar ===== */
+    .bulk-bar {
+      display: none; align-items: center; gap: 12px; padding: 12px 18px;
+      background: var(--blue-soft); border: 1px solid var(--blue); border-radius: var(--radius);
+      margin-bottom: 16px; font-size: 0.88rem;
+    }
+    .bulk-bar.visible { display: flex; }
+    .bulk-bar .count { color: var(--blue-dark); font-weight: 600; }
+    .bulk-bar .spacer { flex: 1; }
+    .bulk-bar button { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--blue); background: #fff; color: var(--blue-dark); font-family: inherit; font-size: 0.82rem; cursor: pointer; }
+    .bulk-bar button:hover { background: var(--blue); color: #fff; }
+
+    /* ===== Table ===== */
+    .table-panel { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .table-wrap { overflow-x: auto; }
+    table.users-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .users-table th {
+      text-align: left; padding: 14px 16px; background: var(--slate-50);
+      color: var(--slate-600); font-weight: 600; font-size: 0.76rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      border-bottom: 1px solid var(--slate-200);
+    }
+    .users-table th:first-child, .users-table td:first-child { padding-left: 18px; }
+    .users-table th:last-child, .users-table td:last-child { padding-right: 18px; text-align: right; }
+    .users-table td { padding: 14px 16px; border-bottom: 1px solid var(--slate-100); vertical-align: middle; }
+    .users-table tbody tr:hover { background: var(--slate-50); }
+    .users-table tbody tr:last-child td { border-bottom: 0; }
+    .users-table input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--blue); }
+
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .av-1 { background: linear-gradient(135deg, #2563eb, #7c3aed); }
+    .av-2 { background: linear-gradient(135deg, #16a34a, #15803d); }
+    .av-3 { background: linear-gradient(135deg, #d97706, #ea580c); }
+    .av-4 { background: linear-gradient(135deg, #db2777, #be185d); }
+    .av-5 { background: linear-gradient(135deg, #0d9488, #0f766e); }
+    .av-6 { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
+    .av-7 { background: linear-gradient(135deg, #475569, #1e293b); }
+    .av-8 { background: linear-gradient(135deg, #f59e0b, #b45309); }
+
+    .user-name { font-weight: 600; color: var(--slate-900); }
+    .user-email { display: block; color: var(--slate-600); font-size: 0.8rem; font-weight: 400; }
+
+    .role-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 0.74rem; font-weight: 600;
+    }
+    .role-pill.owner { background: var(--purple-soft); color: var(--purple); }
+    .role-pill.admin { background: var(--blue-soft); color: var(--blue-dark); }
+    .role-pill.editor { background: var(--amber-soft); color: var(--amber); }
+    .role-pill.viewer { background: var(--slate-100); color: var(--slate-600); }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 0.74rem; font-weight: 600;
+    }
+    .status-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .status-pill.active { background: var(--green-soft); color: var(--green); }
+    .status-pill.invited { background: var(--amber-soft); color: var(--amber); }
+    .status-pill.suspended { background: var(--red-soft); color: var(--red); }
+
+    .last-active { color: var(--slate-600); font-size: 0.85rem; }
+
+    .actions-cell { display: inline-flex; gap: 4px; }
+    .actions-cell button {
+      width: 30px; height: 30px; border-radius: 6px;
+      border: 1px solid var(--slate-200); background: #fff;
+      cursor: pointer; color: var(--slate-600); font-size: 0.88rem;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .actions-cell button:hover { background: var(--slate-50); color: var(--slate-900); border-color: var(--slate-300); }
+    .actions-cell button.danger:hover { background: var(--red-soft); color: var(--red); border-color: var(--red); }
+
+    /* ===== Pagination ===== */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-top: 1px solid var(--slate-200); background: var(--slate-50);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .pagination .info { font-size: 0.85rem; color: var(--slate-600); }
+    .pagination .pages { display: flex; gap: 4px; }
+    .pagination .pages a, .pagination .pages span {
+      min-width: 32px; height: 32px; padding: 0 8px; border-radius: 6px;
+      border: 1px solid var(--slate-200); background: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: var(--slate-600); cursor: pointer;
+    }
+    .pagination .pages a:hover { background: var(--slate-100); color: var(--slate-900); text-decoration: none; }
+    .pagination .pages .current { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .pagination .pages .ellipsis { border: 0; background: transparent; cursor: default; }
+    .page-size { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--slate-600); }
+
+    /* ===== Mobile sidebar ===== */
+    .sidebar-toggle { display: none; }
+    @media (max-width: 880px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
+      .sidebar-toggle:checked ~ .sidebar { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-btn { display: inline-flex; width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--slate-200); background: #fff; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-600); font-size: 1.05rem; }
+    }
+    @media (min-width: 881px) { .menu-btn { display: none; } }
+  </style>
+</head>
+<body>
+
+<input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
+
+<aside class="sidebar" aria-label="Primary navigation">
+  <div class="sidebar-brand">
+    <span class="mark">H</span>
+    <div><strong>Helios</strong><span class="sub">Admin Console</span></div>
+  </div>
+  <nav class="nav-section">
+    <div class="label">Workspace</div>
+    <ul>
+      <li><a href="index.html"><span class="icon">▤</span> Overview</a></li>
+      <li><a href="analytics.html"><span class="icon">📈</span> Analytics</a></li>
+      <li><a href="users.html" class="active"><span class="icon">👥</span> Users <span class="badge">12</span></a></li>
+      <li><a href="settings.html"><span class="icon">⚙</span> Settings</a></li>
+    </ul>
+  </nav>
+  <nav class="nav-section">
+    <div class="label">Account</div>
+    <ul>
+      <li><a href="#"><span class="icon">🔔</span> Notifications</a></li>
+      <li><a href="#"><span class="icon">🧾</span> Billing</a></li>
+      <li><a href="#"><span class="icon">↩</span> Logout</a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-user">
+    <span class="avatar">AK</span>
+    <div class="info"><div class="name">Amara Kahn</div><div class="role">Owner</div></div>
+    <span style="color: var(--slate-400)">⋯</span>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <label for="sidebar-toggle" class="menu-btn" aria-label="Toggle menu">≡</label>
+    <div class="page-title">Users <small>2,847 total · 2,801 active</small></div>
+    <div class="search">
+      <span class="search-icon">🔍</span>
+      <input type="search" placeholder="Search users..." aria-label="Search users">
+    </div>
+    <button class="icon-btn" aria-label="Notifications">🔔<span class="dot"></span></button>
+    <div class="user-menu">
+      <span class="avatar">AK</span>
+      <span class="name">Amara</span>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="table-search">
+        <span class="search-icon">🔍</span>
+        <input type="search" placeholder="Search by name or email..." aria-label="Search by name or email">
+      </div>
+      <select class="filter-select" aria-label="Filter by role">
+        <option value="">All roles</option>
+        <option>Owner</option>
+        <option>Admin</option>
+        <option>Editor</option>
+        <option>Viewer</option>
+      </select>
+      <select class="filter-select" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option>Active</option>
+        <option>Invited</option>
+        <option>Suspended</option>
+      </select>
+      <select class="filter-select" aria-label="Sort by">
+        <option>Newest first</option>
+        <option>Oldest first</option>
+        <option>Name (A–Z)</option>
+        <option>Last active</option>
+      </select>
+      <button class="btn-secondary">⤓ Export</button>
+      <button class="btn-primary">+ Add user</button>
+    </div>
+
+    <!-- Bulk action bar (visible when checkboxes are checked) -->
+    <div class="bulk-bar" role="region" aria-label="Bulk actions">
+      <span class="count">0 users selected</span>
+      <span class="spacer"></span>
+      <button>Change role</button>
+      <button>Suspend</button>
+      <button>Delete</button>
+      <button>Clear</button>
+    </div>
+
+    <!-- Users table -->
+    <div class="table-panel">
+      <div class="table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;"><input type="checkbox" aria-label="Select all users"></th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Last active</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Amara Kahn"></td>
+              <td><div class="user-cell"><span class="user-avatar av-3">AK</span><span><span class="user-name">Amara Kahn</span><span class="user-email">amara@helios.app</span></span></div></td>
+              <td><span class="role-pill owner">★ Owner</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">Just now</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Marcus Bell"></td>
+              <td><div class="user-cell"><span class="user-avatar av-1">MB</span><span><span class="user-name">Marcus Bell</span><span class="user-email">marcus.bell@helios.app</span></span></div></td>
+              <td><span class="role-pill admin">Admin</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">2 min ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Hannah Osei"></td>
+              <td><div class="user-cell"><span class="user-avatar av-4">HO</span><span><span class="user-name">Hannah Osei</span><span class="user-email">hannah@helios.app</span></span></div></td>
+              <td><span class="role-pill admin">Admin</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">14 min ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Priya Anand"></td>
+              <td><div class="user-cell"><span class="user-avatar av-2">PA</span><span><span class="user-name">Priya Anand</span><span class="user-email">priya.anand@helios.app</span></span></div></td>
+              <td><span class="role-pill editor">Editor</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">1 hour ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Diego Marín"></td>
+              <td><div class="user-cell"><span class="user-avatar av-5">DM</span><span><span class="user-name">Diego Marín</span><span class="user-email">diego@helios.app</span></span></div></td>
+              <td><span class="role-pill editor">Editor</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">3 hours ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Eleanor Frost"></td>
+              <td><div class="user-cell"><span class="user-avatar av-6">EF</span><span><span class="user-name">Eleanor Frost</span><span class="user-email">nell.frost@helios.app</span></span></div></td>
+              <td><span class="role-pill viewer">Viewer</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">Yesterday</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Yuki Tanaka"></td>
+              <td><div class="user-cell"><span class="user-avatar av-7">YT</span><span><span class="user-name">Yuki Tanaka</span><span class="user-email">yuki.t@helios.app</span></span></div></td>
+              <td><span class="role-pill viewer">Viewer</span></td>
+              <td><span class="status-pill invited">Invited</span></td>
+              <td><span class="last-active">—</span></td>
+              <td><div class="actions-cell"><button aria-label="Resend invite">✉</button><button aria-label="Edit">✎</button><button class="danger" aria-label="Cancel invite">✕</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Tomas Lindqvist"></td>
+              <td><div class="user-cell"><span class="user-avatar av-8">TL</span><span><span class="user-name">Tomas Lindqvist</span><span class="user-email">tomas@helios.app</span></span></div></td>
+              <td><span class="role-pill editor">Editor</span></td>
+              <td><span class="status-pill suspended">Suspended</span></td>
+              <td><span class="last-active">3 weeks ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button class="danger" aria-label="Delete">🗑</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Jules Lin"></td>
+              <td><div class="user-cell"><span class="user-avatar av-4">JL</span><span><span class="user-name">Jules Lin</span><span class="user-email">jules@helios.app</span></span></div></td>
+              <td><span class="role-pill admin">Admin</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">8 min ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="Select Sana Rahman"></td>
+              <td><div class="user-cell"><span class="user-avatar av-3">SR</span><span><span class="user-name">Sana Rahman</span><span class="user-email">sana.r@helios.app</span></span></div></td>
+              <td><span class="role-pill editor">Editor</span></td>
+              <td><span class="status-pill active">Active</span></td>
+              <td><span class="last-active">2 days ago</span></td>
+              <td><div class="actions-cell"><button aria-label="View">👁</button><button aria-label="Edit">✎</button><button aria-label="More">⋯</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="pagination" aria-label="Pagination">
+        <div class="info">Showing <strong>1–10</strong> of <strong>2,847</strong> users</div>
+        <div class="pages">
+          <a href="#" aria-label="Previous page">←</a>
+          <span class="current" aria-current="page">1</span>
+          <a href="#">2</a>
+          <a href="#">3</a>
+          <a href="#">4</a>
+          <span class="ellipsis">…</span>
+          <a href="#">285</a>
+          <a href="#" aria-label="Next page">→</a>
+        </div>
+        <div class="page-size">
+          <span>Rows per page:</span>
+          <select class="filter-select" aria-label="Rows per page">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+      </nav>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

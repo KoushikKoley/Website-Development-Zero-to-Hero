@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;details&gt; &amp; &lt;summary&gt; — Native Disclosure Widget — HTML Mastery</title>
+  <meta name="description" content="The details and summary HTML elements: native disclosure widget, the open attribute, toggling via JavaScript, the toggle event, styling the disclosure marker (list-style, ::-webkit-details-marker, ::marker), use cases like FAQ accordions, advanced settings, and tables of contents. Zero JavaScript required.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .demo-output { border: 2px dashed var(--brand-2); border-radius: 12px; padding: 16px;
+                    background: #faf5ff; margin: 16px 0; }
+    .demo-output h4 { margin: 0 0 8px; color: var(--brand-2); font-size: 0.9rem;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    /* Style details in demo area */
+    .demo-output details {
+      background: white; border: 1px solid var(--line); border-radius: 10px;
+      padding: 0; margin: 8px 0; overflow: hidden;
+    }
+    .demo-output details > summary {
+      cursor: pointer; padding: 12px 16px; font-weight: 600; color: var(--ink);
+      list-style: none; display: flex; align-items: center; gap: 8px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+    }
+    .demo-output details > summary::-webkit-details-marker { display: none; }
+    .demo-output details > summary::before {
+      content: "▶"; font-size: 0.75rem; transition: transform 0.15s;
+      color: var(--brand);
+    }
+    .demo-output details[open] > summary::before { transform: rotate(90deg); }
+    .demo-output details > div { padding: 12px 16px; border-top: 1px solid var(--line); color: var(--ink-soft); }
+    .name-marker details > summary { list-style: revert; }
+    .hide-marker details > summary { list-style: none; }
+    .hide-marker details > summary::-webkit-details-marker { display: none; }
+    .custom-marker details > summary { list-style: none; }
+    .custom-marker details > summary::-webkit-details-marker { display: none; }
+    .custom-marker details > summary::before {
+      content: "+"; color: #2563eb; font-weight: 700; margin-right: 8px;
+    }
+    .custom-marker details[open] > summary::before { content: "−"; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Advanced Features · Details &amp; Summary</span>
+    <h1><code>&lt;details&gt;</code> &amp; <code>&lt;summary&gt;</code></h1>
+    <p>The native disclosure widget — collapsible content with zero JavaScript. The browser handles the open/close toggle, keyboard focus, and accessibility for free. Perfect for FAQs, settings panels, and table-of-contents navigation.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#anatomy">Anatomy</a></li>
+        <li><a href="#open">The open Attribute</a></li>
+        <li><a href="#toggle-event">The toggle Event</a></li>
+        <li><a href="#js-control">JS Control</a></li>
+        <li><a href="#styling">Styling the Marker</a></li>
+        <li><a href="#nested">Nested Accordions</a></li>
+        <li><a href="#faq">Building an FAQ Accordion</a></li>
+        <li><a href="#browser-support">Browser Support</a></li>
+        <li><a href="#common-mistakes">Common Mistakes</a></li>
+        <li><a href="#exercises">Exercises</a></li>
+        <li><a href="#use-cases">Real-World Use Cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="anatomy">
+        <h2><span class="num">1</span> Anatomy</h2>
+        <pre><code>&lt;details&gt;
+  &lt;summary&gt;Click to expand&lt;/summary&gt;
+  &lt;p&gt;Hidden by default, this content appears when the summary is clicked.&lt;/p&gt;
+&lt;/details&gt;</code></pre>
+        <p>Two elements do all the work:</p>
+        <ul>
+          <li><strong><code>&lt;details&gt;</code></strong> — the wrapper. Tracks its own open/closed state via the <code>open</code> attribute.</li>
+          <li><strong><code>&lt;summary&gt;</code></strong> — the visible label that the user clicks. Must be the first child of <code>&lt;details&gt;</code>. If omitted, the browser renders a default "Details" label.</li>
+        </ul>
+        <p>Everything inside <code>&lt;details&gt;</code> that is <em>not</em> the summary is the disclosure content.</p>
+
+        <div class="demo-output">
+          <h4>Live demo</h4>
+          <details>
+            <summary>What is the capital of France?</summary>
+            <div>
+              Paris. The city has been the capital of France since 987 AD, when Hugh Capet was crowned king. Today it is the most populous city in the European Union.
+            </div>
+          </details>
+          <details open>
+            <summary>This one starts open</summary>
+            <div>
+              Add <code>open</code> to <code>&lt;details&gt;</code> to default-open. Click the summary to collapse.
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="open">
+        <h2><span class="num">2</span> The open Attribute</h2>
+        <p>The presence of the boolean <code>open</code> attribute on <code>&lt;details&gt;</code> means the content is expanded. Its absence means collapsed. The browser toggles this attribute automatically when the user clicks the summary — no JavaScript required.</p>
+        <pre><code>&lt;!-- Collapsed by default --&gt;
+&lt;details&gt;…&lt;/details&gt;
+
+&lt;!-- Expanded by default --&gt;
+&lt;details open&gt;…&lt;/details&gt;</code></pre>
+        <p>Because <code>open</code> is reflected as an IDL attribute, you can both read and set it from JavaScript:</p>
+        <pre><code>console.log(detailsEl.open);     // true or false
+detailsEl.open = true;          // expands
+detailsEl.open = false;        // collapses
+detailsEl.toggleAttribute('open');</code></pre>
+      </section>
+
+      <section id="toggle-event">
+        <h2><span class="num">3</span> The toggle Event</h2>
+        <p>Whenever the <code>open</code> state changes — by user click or programmatic toggle — the <code>toggle</code> event fires on the <code>&lt;details&gt;</code> element. This is non-cancelable and bubbles.</p>
+        <pre><code>const details = document.querySelector('details');
+details.addEventListener('toggle', () =&gt; {
+  console.log(`Now ${details.open ? 'open' : 'closed'}`);
+  // Update analytics, lazy-load images, save state to localStorage…
+});</code></pre>
+        <div class="callout info">
+          <strong>Pro Tip</strong>
+          The <code>toggle</code> event is perfect for deferring expensive work. Put charts, video embeds, and large images inside collapsed <code>&lt;details&gt;</code> blocks; only initialize them when the user expands — listen for the <code>toggle</code> event and render then.
+        </div>
+      </section>
+
+      <section id="js-control">
+        <h2><span class="num">4</span> JavaScript Control</h2>
+        <p>Three idiomatic patterns for controlling <code>&lt;details&gt;</code> from JS:</p>
+        <pre><code>// 1. Single exclusive accordion (one open at a time)
+const all = document.querySelectorAll('.accordion &gt; details');
+all.forEach(d =&gt; d.addEventListener('toggle', () =&gt; {
+  if (d.open) {
+    all.forEach(other =&gt; { if (other !== d) other.open = false; });
+  }
+}));
+
+// 2. "Expand all" / "Collapse all" buttons
+document.getElementById('expand-all').addEventListener('click', () =&gt; {
+  document.querySelectorAll('details').forEach(d =&gt; d.open = true);
+});
+
+// 3. Persist state across page loads
+const KEY = 'faq-state';
+const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+document.querySelectorAll('details[data-key]').forEach(d =&gt; {
+  if (saved[d.dataset.key]) d.open = true;
+  d.addEventListener('toggle', () =&gt; {
+    saved[d.dataset.key] = d.open;
+    localStorage.setItem(KEY, JSON.stringify(saved));
+  });
+});</code></pre>
+      </section>
+
+      <section id="styling">
+        <h2><span class="num">5</span> Styling the Disclosure Marker</h2>
+        <p>By default browsers render a triangle (▸) or arrow before the summary. You can hide, replace, or animate it.</p>
+
+        <h3>Hide the marker entirely</h3>
+        <pre><code>details &gt; summary {
+  list-style: none;             /* Standard */
+}
+details &gt; summary::-webkit-details-marker {
+  display: none;               /* Chrome / Safari */
+}</code></pre>
+        <div class="demo-output hide-marker">
+          <h4>Marker hidden</h4>
+          <details>
+            <summary>No triangle here</summary>
+            <div>Just the text label. Useful when you provide your own custom indicator.</div>
+          </details>
+        </div>
+
+        <h3>Custom marker with + / −</h3>
+        <pre><code>details &gt; summary {
+  list-style: none;
+  cursor: pointer;
+}
+details &gt; summary::-webkit-details-marker { display: none; }
+details &gt; summary::before {
+  content: "+";
+  color: #2563eb;
+  font-weight: 700;
+  margin-right: 8px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+details[open] &gt; summary::before {
+  content: "−";
+}</code></pre>
+        <div class="demo-output custom-marker">
+          <h4>Custom + / − marker</h4>
+          <details>
+            <summary>Click to expand</summary>
+            <div>The <code>+</code> becomes <code>−</code> when open.</div>
+          </details>
+        </div>
+
+        <h3>Animated rotating chevron</h3>
+        <pre><code>details &gt; summary {
+  list-style: none;
+  display: flex; align-items: center; gap: 8px;
+}
+details &gt; summary::-webkit-details-marker { display: none; }
+details &gt; summary::before {
+  content: "▶";
+  font-size: 0.75rem;
+  transition: transform 0.15s ease;
+}
+details[open] &gt; summary::before {
+  transform: rotate(90deg);
+}</code></pre>
+        <div class="demo-output">
+          <h4>Rotating chevron</h4>
+          <details>
+            <summary>Chevron rotates when open</summary>
+            <div>This pattern is the most common in modern design systems.</div>
+          </details>
+        </div>
+
+        <h3>The new ::marker pseudo-element</h3>
+        <p>Modern browsers also expose <code>::marker</code> on the summary, which can be styled directly:</p>
+        <pre><code>details &gt; summary::marker {
+  color: #7c3aed;
+  font-size: 1.2em;
+}</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Setting <code>list-style</code> alone does not work in Chromium-based browsers — the disclosure marker is implemented as a separate pseudo-element. Always pair <code>list-style: none</code> with <code>::-webkit-details-marker { display: none }</code> for cross-browser coverage.
+        </div>
+      </section>
+
+      <section id="nested">
+        <h2><span class="num">6</span> Nested Accordions</h2>
+        <p>You can nest <code>&lt;details&gt;</code> elements to build hierarchical disclosure UIs — perfect for table of contents, file trees, and product category filters.</p>
+        <pre><code>&lt;details&gt;
+  &lt;summary&gt;Front-end&lt;/summary&gt;
+  &lt;details&gt;
+    &lt;summary&gt;Frameworks&lt;/summary&gt;
+    &lt;ul&gt;
+      &lt;li&gt;React&lt;/li&gt;
+      &lt;li&gt;Vue&lt;/li&gt;
+      &lt;li&gt;Svelte&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/details&gt;
+  &lt;details&gt;
+    &lt;summary&gt;Styling&lt;/summary&gt;
+    &lt;ul&gt;&lt;li&gt;Tailwind&lt;/li&gt;&lt;li&gt;CSS Modules&lt;/li&gt;&lt;/ul&gt;
+  &lt;/details&gt;
+&lt;/details&gt;</code></pre>
+      </section>
+
+      <section id="faq">
+        <h2><span class="num">7</span> Building an FAQ Accordion</h2>
+        <pre><code>&lt;section aria-label="Frequently asked questions"&gt;
+  &lt;h2&gt;FAQ&lt;/h2&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;Do you offer refunds?&lt;/summary&gt;
+    &lt;p&gt;Yes, within 30 days of purchase. Just email support@example.com.&lt;/p&gt;
+  &lt;/details&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;Can I cancel anytime?&lt;/summary&gt;
+    &lt;p&gt;Absolutely. Cancel from your account page; no email or call needed.&lt;/p&gt;
+  &lt;/details&gt;
+
+  &lt;details&gt;
+    &lt;summary&gt;Do you support SSO?&lt;/summary&gt;
+    &lt;p&gt;Yes — SAML 2.0 and OIDC on Team and Enterprise plans.&lt;/p&gt;
+  &lt;/details&gt;
+&lt;/section&gt;</code></pre>
+
+        <p>Pair this with a matching <code>FAQPage</code> JSON-LD block (see the structured data page) so Google can render the questions directly in search results.</p>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          To make the FAQ keyboard-accessible without extra ARIA, just rely on <code>&lt;details&gt;</code>. The browser already exposes the summary as a button — Space and Enter toggle it. No <code>role="button"</code>, no <code>aria-expanded</code> needed.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">8</span> Browser Support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome 12+</span>
+          <span class="pill yes">Firefox 49+</span>
+          <span class="pill yes">Safari 6+</span>
+          <span class="pill yes">Edge 79+</span>
+          <span class="pill yes">Universal since 2016</span>
+        </div>
+        <p>The <code>toggle</code> event has slightly newer support (Chrome 36+, Firefox 60+). For older browsers you can fall back to a click handler on the summary.</p>
+      </section>
+
+      <section id="common-mistakes">
+        <h2><span class="num">9</span> Common Mistakes</h2>
+        <ul>
+          <li><strong>Putting <code>&lt;summary&gt;</code> anywhere except as the first child.</strong> The browser renders a default "Details" label instead of yours.</li>
+          <li><strong>Using <code>&lt;summary&gt;</code> outside <code>&lt;details&gt;</code>.</strong> It has no effect and may produce odd accessibility tree results.</li>
+          <li><strong>Adding <code>role="button"</code> or <code>aria-expanded</code> to the summary.</strong> Redundant — the platform already wires those up.</li>
+          <li><strong>Trying to style the marker with <code>list-style</code> alone.</strong> Doesn't work in Chrome/Safari; pair with <code>::-webkit-details-marker</code>.</li>
+          <li><strong>Animating <code>max-height</code> for smooth open/close.</strong> The native open/close is instant. If you want animation, you have to fully custom-build with <code>requestAnimationFrame</code> and override the native toggle — nontrivial.</li>
+          <li><strong>Naming the disclosure with <code>&lt;summary&gt;</code> containing only an icon.</strong> Always include a text label, even if visually hidden, for screen readers.</li>
+          <li><strong>Forgetting to test keyboard navigation.</strong> The summary should be reachable with Tab and toggleable with Enter or Space — verify this works.</li>
+        </ul>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — First disclosure</strong>
+          Create a <code>&lt;details&gt;</code> with a summary "Show answer" and a paragraph of body text. Verify it toggles with mouse and keyboard.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Default open</strong>
+          Add <code>open</code> so it starts expanded. Confirm you can still collapse it.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Custom chevron</strong>
+          Hide the default triangle and replace it with a rotating <code>▶</code> using <code>::before</code> and <code>transform: rotate(90deg)</code> when <code>[open]</code>.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Event log</strong>
+          Listen for the <code>toggle</code> event and log to console. Confirm it fires both when opening and closing, both via click and via JS-set <code>open</code> property.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 5 — Exclusive accordion</strong>
+          Build four <code>&lt;details&gt;</code> elements. Add JS so opening one closes the others — the classic accordion pattern.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 6 — Persisted FAQ</strong>
+          Add <code>data-key</code> attributes to each <code>&lt;details&gt;</code> and save each one's open state in <code>localStorage</code> on toggle. Reload the page — the open/closed state should be remembered.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card"><h4>FAQ pages</h4><p>The canonical use case. Pair with FAQPage schema for rich results.</p></div>
+          <div class="card"><h4>Advanced settings</h4><p>Hide rarely-used form sections behind "Advanced" disclosures.</p></div>
+          <div class="card"><h4>Table of contents</h4><p>Sidebars in docs sites that expand each chapter on demand.</p></div>
+          <div class="card"><h4>Code examples</h4><p>Reveal a long snippet only when the user wants to see it.</p></div>
+          <div class="card"><h4>Filter panels</h4><p>E-commerce category filters — collapse irrelevant groups.</p></div>
+          <div class="card"><h4>Debug info</h4><p>Stash error stack traces or technical details in a collapsed block.</p></div>
+          <div class="card"><h4>Release notes</h4><p>Each version as a collapsed section; latest one expanded.</p></div>
+          <div class="card"><h4>Long-form articles</h4><p>Sidebar "table of contents" linked to sections via anchors.</p></div>
+          <div class="card"><h4>Privacy &amp; cookie panels</h4><p>Detail each category of data you collect behind a disclosure.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../04-Drag-and-Drop/drag-events.html">← Previous: Drag Events</a>
+    <a class="next" href="dialog-element.html">Next: &lt;dialog&gt; Element →</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact Maya Chen — for freelance work, accessibility audits, speaking, or just to say hello.">
+  <title>Contact — Maya Chen</title>
+  <!--
+    Contact Page
+    Design decisions:
+    - Two-column layout: form on the left, info on the right (collapses on mobile).
+    - Form uses native HTML5 validation: required, type=email, minlength, pattern, aria-describedby.
+    - FAQ uses native <details>/<summary> so it works with zero JS and is keyboard accessible.
+    - Availability chip at the top sets expectations before the user types a message.
+  -->
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-text: #0f172a;
+      --color-muted: #64748b;
+      --color-accent: #4f46e5;
+      --color-accent-hover: #4338ca;
+      --color-accent-soft: #eef2ff;
+      --color-success: #16a34a;
+      --color-success-soft: #dcfce7;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --max-width: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--color-bg); color: var(--color-text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 20px; }
+
+    /* ===== Header (shared) ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .site-header .container {
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 64px;
+    }
+    .brand { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--color-text); }
+    .brand span { color: var(--color-accent); }
+    .nav-toggle { display: none; }
+    .nav-toggle-label { display: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 4px; background: none; border: none; }
+    .nav-toggle-label span { display: block; width: 22px; height: 2px; background: var(--color-text); }
+    .nav-menu { display: flex; gap: 28px; list-style: none; }
+    .nav-menu a { color: var(--color-muted); font-weight: 500; font-size: 0.95rem; }
+    .nav-menu a:hover, .nav-menu a[aria-current="page"] { color: var(--color-accent); text-decoration: none; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; transition: transform 0.15s ease, background 0.15s ease; }
+    .btn-primary { background: var(--color-accent); color: #fff; }
+    .btn-primary:hover { background: var(--color-accent-hover); text-decoration: none; transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+    @media (max-width: 768px) {
+      .nav-toggle-label { display: flex; }
+      .nav-menu {
+        position: absolute; top: 64px; left: 0; right: 0;
+        flex-direction: column; gap: 0; background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+      }
+      .nav-toggle:checked ~ .nav-menu { max-height: 320px; }
+      .nav-menu li { border-top: 1px solid var(--color-border); }
+      .nav-menu a { display: block; padding: 14px 20px; }
+      .header-cta { display: none; }
+    }
+
+    /* ===== Page hero ===== */
+    .page-hero { padding: 64px 0 24px; }
+    .breadcrumb { color: var(--color-muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .breadcrumb a { color: var(--color-muted); }
+    .page-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -0.02em; line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .page-hero p { color: var(--color-muted); max-width: 640px; font-size: 1.1rem; }
+    .availability {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--color-success-soft); color: var(--color-success);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; font-weight: 600; margin-top: 16px;
+    }
+    .availability::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--color-success);
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
+    }
+
+    /* ===== Contact layout ===== */
+    .contact-section { padding: 32px 0 64px; }
+    .contact-grid {
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    /* ===== Form ===== */
+    .form-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow-sm);
+    }
+    .form-card h2 { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .form-card .sub { color: var(--color-muted); font-size: 0.95rem; margin-bottom: 24px; }
+
+    .field { margin-bottom: 20px; }
+    .field label {
+      display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px;
+    }
+    .field .req { color: #dc2626; }
+    .field .hint {
+      font-size: 0.82rem; color: var(--color-muted); margin-top: 6px;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%; padding: 12px 14px; font-size: 0.95rem; font-family: inherit;
+      color: var(--color-text); background: #fff;
+      border: 1px solid var(--color-border); border-radius: 10px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      outline: none; border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px var(--color-accent-soft);
+    }
+    .field textarea { resize: vertical; min-height: 140px; }
+    .field input:invalid:not(:placeholder-shown) {
+      border-color: #dc2626;
+    }
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    @media (max-width: 540px) { .field-row { grid-template-columns: 1fr; } }
+
+    .inquiry-type legend {
+      font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;
+    }
+    .inquiry-options {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    @media (max-width: 540px) { .inquiry-options { grid-template-columns: 1fr; } }
+    .inquiry-options label {
+      display: block; padding: 14px 12px; text-align: center;
+      border: 1px solid var(--color-border); border-radius: 10px;
+      cursor: pointer; font-weight: 500; font-size: 0.9rem;
+      transition: all 0.15s ease;
+    }
+    .inquiry-options input { position: absolute; opacity: 0; pointer-events: none; }
+    .inquiry-options label:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .inquiry-options input:checked + label {
+      background: var(--color-accent); color: #fff; border-color: var(--color-accent);
+    }
+    .inquiry-options input:focus-visible + label {
+      outline: 2px solid var(--color-accent); outline-offset: 2px;
+    }
+
+    .form-actions {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-top: 8px;
+    }
+    .form-note { font-size: 0.82rem; color: var(--color-muted); }
+
+    /* ===== Sidebar ===== */
+    .info-card {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+    }
+    .info-card h3 {
+      font-size: 1.05rem; margin-bottom: 12px; letter-spacing: -0.01em;
+    }
+    .info-list { list-style: none; }
+    .info-list li {
+      display: flex; gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .ico {
+      width: 36px; height: 36px; flex: 0 0 36px;
+      border-radius: 8px; background: var(--color-accent-soft);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-accent); font-weight: 700; font-size: 0.95rem;
+    }
+    .info-list .lbl { font-size: 0.78rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .info-list .val { font-size: 0.95rem; font-weight: 500; }
+
+    .hours-list { list-style: none; }
+    .hours-list li {
+      display: flex; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid var(--color-border);
+      font-size: 0.92rem;
+    }
+    .hours-list li:last-child { border-bottom: none; }
+    .hours-list .day { color: var(--color-text); font-weight: 500; }
+    .hours-list .time { color: var(--color-muted); }
+
+    .social-list { display: flex; gap: 12px; flex-wrap: wrap; list-style: none; }
+    .social-list a {
+      padding: 8px 14px; border: 1px solid var(--color-border);
+      border-radius: 8px; font-size: 0.88rem; color: var(--color-text);
+      font-weight: 500;
+    }
+    .social-list a:hover { border-color: var(--color-accent); color: var(--color-accent); text-decoration: none; }
+
+    /* ===== FAQ ===== */
+    .faq-section { background: var(--color-surface); padding: 72px 0; }
+    .section-eyebrow { color: var(--color-accent); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .section-title { font-size: clamp(1.7rem, 3.5vw, 2.3rem); letter-spacing: -0.02em; margin-bottom: 32px; }
+    .faq-list { max-width: 760px; }
+    .faq-item {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
+    }
+    .faq-item summary {
+      padding: 18px 22px; cursor: pointer; font-weight: 600;
+      list-style: none; display: flex; justify-content: space-between; align-items: center;
+      gap: 12px;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after {
+      content: "+"; font-size: 1.4rem; font-weight: 400; color: var(--color-accent);
+      transition: transform 0.2s ease;
+    }
+    .faq-item[open] summary::after { content: "−"; }
+    .faq-item p {
+      padding: 0 22px 22px; color: var(--color-muted); font-size: 0.95rem;
+    }
+
+    /* ===== Footer (shared) ===== */
+    .site-footer { border-top: 1px solid var(--color-border); padding: 48px 0 32px; }
+    .footer-grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-start; }
+    .footer-brand p { color: var(--color-muted); max-width: 320px; margin-top: 8px; font-size: 0.95rem; }
+    .footer-social { display: flex; gap: 18px; list-style: none; }
+    .footer-social a { color: var(--color-muted); font-weight: 500; }
+    .footer-social a:hover { color: var(--color-accent); text-decoration: none; }
+    .footer-bottom {
+      margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-border);
+      color: var(--color-muted); font-size: 0.85rem;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle">
+      <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </label>
+      <nav aria-label="Primary">
+        <ul class="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html" aria-current="page">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="#contact-form" class="btn btn-primary header-cta">Send a message</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb"><a href="index.html">Home</a> / Contact</p>
+        <h1>Let's talk.</h1>
+        <p>
+          Whether you've got a project in mind, an accessibility question, or just want
+          to argue about CSS specificity — I'd love to hear from you.
+        </p>
+        <span class="availability">Currently booking for Q3 — 2 freelance slots open</span>
+      </div>
+    </section>
+
+    <section class="contact-section">
+      <div class="container">
+        <div class="contact-grid">
+          <!-- ===== Form ===== -->
+          <div class="form-card" id="contact-form">
+            <h2>Send a message</h2>
+            <p class="sub">I usually reply within one business day.</p>
+
+            <form action="https://httpbin.org/post" method="post" novalidate>
+              <!-- Honeypot field for spam bots, hidden from users -->
+              <div style="position:absolute; left:-9999px;" aria-hidden="true">
+                <label>Leave this empty: <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+              </div>
+
+              <fieldset class="inquiry-type">
+                <legend>What's this about?</legend>
+                <div class="inquiry-options">
+                  <input type="radio" name="inquiry" id="i-freelance" value="freelance" checked>
+                  <label for="i-freelance">Freelance work</label>
+                  <input type="radio" name="inquiry" id="i-speaking" value="speaking">
+                  <label for="i-speaking">Speaking</label>
+                  <input type="radio" name="inquiry" id="i-other" value="other">
+                  <label for="i-other">Other</label>
+                </div>
+              </fieldset>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
+                  <input type="text" id="name" name="name" required
+                    minlength="2" maxlength="80" autocomplete="name"
+                    placeholder="Ada Lovelace" aria-required="true">
+                </div>
+                <div class="field">
+                  <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+                  <input type="email" id="email" name="email" required
+                    autocomplete="email" placeholder="ada@example.com"
+                    aria-required="true" aria-describedby="email-hint">
+                  <p class="hint" id="email-hint">I'll only use this to reply — never shared.</p>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject">
+                  <option value="">Choose a topic…</option>
+                  <option value="freelance">Freelance project inquiry</option>
+                  <option value="audit">Accessibility audit</option>
+                  <option value="speaking">Speaking or workshop</option>
+                  <option value="mentorship">Mentorship / coffee chat</option>
+                  <option value="other">Something else</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="budget">Project budget <span style="color:var(--color-muted); font-weight:400;">(optional)</span></label>
+                <select id="budget" name="budget">
+                  <option value="">Prefer not to say</option>
+                  <option value="under-5k">Under $5k</option>
+                  <option value="5-15k">$5k – $15k</option>
+                  <option value="15-40k">$15k – $40k</option>
+                  <option value="40k+">$40k+</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+                <textarea id="message" name="message" required minlength="20" maxlength="2000"
+                  placeholder="Tell me a little about what you're building, the timeline, and anything you've already tried."
+                  aria-required="true"></textarea>
+                <p class="hint">Min 20 characters. Plain text is fine — no Markdown needed.</p>
+              </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" name="consent" required style="width:auto; margin-right:8px;">
+                  I agree to be contacted about my inquiry. (Required)
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Send message →</button>
+                <p class="form-note">Protected by basic honeypot filtering.</p>
+              </div>
+            </form>
+          </div>
+
+          <!-- ===== Sidebar info ===== -->
+          <aside>
+            <div class="info-card">
+              <h3>Other ways to reach me</h3>
+              <ul class="info-list">
+                <li>
+                  <span class="ico" aria-hidden="true">@</span>
+                  <div>
+                    <div class="lbl">Email</div>
+                    <a class="val" href="mailto:hello@mayachen.dev">hello@mayachen.dev</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">☏</span>
+                  <div>
+                    <div class="lbl">Phone</div>
+                    <a class="val" href="tel:+15035550199">+1 (503) 555-0199</a>
+                  </div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true">⌖</span>
+                  <div>
+                    <div class="lbl">Based in</div>
+                    <span class="val">Portland, OR · Pacific Time</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <h3>Office hours</h3>
+              <ul class="hours-list">
+                <li><span class="day">Mon – Thu</span><span class="time">9:00 – 17:00 PT</span></li>
+                <li><span class="day">Friday</span><span class="time">9:00 – 13:00 PT</span></li>
+                <li><span class="day">Sat – Sun</span><span class="time">Offline (mostly)</span></li>
+              </ul>
+            </div>
+
+            <div class="info-card">
+              <h3>Find me online</h3>
+              <ul class="social-list">
+                <li><a href="https://github.com/" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+                <li><a href="https://dribbble.com/" rel="noopener">Dribbble</a></li>
+                <li><a href="https://bsky.app/" rel="noopener">Bluesky</a></li>
+                <li><a href="https://www.mastodon.social/" rel="noopener">Mastodon</a></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="faq-section">
+      <div class="container">
+        <p class="section-eyebrow">FAQ</p>
+        <h2 class="section-title">Questions I get a lot</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>What does a typical freelance engagement look like?</summary>
+            <p>
+              Most engagements start with a paid discovery sprint (1–2 weeks) where I audit
+              what you have, talk to your team, and produce a written recommendation. If we
+              both feel good about it, we move into a 6–12 week build with weekly check-ins
+              and a shared Linear board. I work in fixed-scope sprints so you always know
+              what you're getting and when.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you offer accessibility audits?</summary>
+            <p>
+              Yes. I run a two-pass audit — automated (axe-core, Lighthouse) plus manual
+              keyboard and screen-reader review — and deliver a prioritized remediation
+              report you can hand directly to your engineers. Most audits take 1–2 weeks
+              depending on surface area.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>What's your rate?</summary>
+            <p>
+              I work on fixed-scope project pricing for builds and a day rate for audits
+              and consulting. Day rate is $1,400 USD with a three-day minimum. Project
+              pricing depends on scope — share what you're building in the form above and
+              I'll send a written estimate within 48 hours.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Will you sign an NDA?</summary>
+            <p>
+              Absolutely. I'm happy to sign a mutual NDA before we share anything
+              sensitive. I work with sensitive product and security information regularly
+              and treat client confidentiality as table stakes.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you mentor or do coffee chats?</summary>
+            <p>
+              I do — I currently mentor through ADPList and Built by Girls, and I keep two
+              30-minute slots open each week for early-career frontend folks. Use the
+              "Other" inquiry option and mention mentorship in the message.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Are you open to speaking at events?</summary>
+            <p>
+              Yes, especially for community conferences on accessibility, design systems,
+              or performance. For paid corporate keynotes I have a standard speaker rider
+              I'll send over once we've confirmed the date.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">Maya<span>.</span>Chen</a>
+          <p>Senior Frontend Engineer crafting accessible, performant interfaces from Portland, Oregon.</p>
+        </div>
+        <nav aria-label="Footer">
+          <ul class="footer-social">
+            <li><a href="https://github.com/" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+            <li><a href="https://dribbble.com/" rel="noopener">Dribbble</a></li>
+            <li><a href="https://bsky.app/" rel="noopener">Bluesky</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Maya Chen. Crafted with semantic HTML &amp; CSS.</span>
+        <span>Built mobile-first · Lighthouse 100/100</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

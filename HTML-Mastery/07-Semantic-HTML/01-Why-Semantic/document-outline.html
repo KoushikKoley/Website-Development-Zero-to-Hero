@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Outline — Heading Hierarchy &amp; the HTML5 Outline — HTML Mastery</title>
+  <meta name="description" content="The document outline: heading hierarchy (h1-h6), the HTML5 outline algorithm (deprecated but still useful), implicit sections, using section to scope headings, the one-h1-per-page rule of thumb, and how the accessibility tree differs from the DOM tree.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .outline-tree { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.85rem; line-height: 1.8; color: var(--ink); }
+    .outline-tree .h1 { color: #1e3a8a; font-weight: 700; }
+    .outline-tree .h2 { color: #2563eb; font-weight: 600; padding-left: 18px; }
+    .outline-tree .h3 { color: #7c3aed; font-weight: 500; padding-left: 36px; }
+    .outline-tree .h4 { color: #6b7280; padding-left: 54px; }
+    .outline-tree .bad { color: var(--warn); }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Why Semantic · Lesson 3</span>
+    <h1>The Document Outline</h1>
+    <p>Every HTML page has an invisible skeleton: its heading hierarchy. Get it right and screen readers, search engines, and reader modes all parse your content effortlessly. Get it wrong and the same tools see chaos. Here's how the document outline works — and the parts of the HTML5 outline algorithm you should ignore.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#hierarchy">Heading hierarchy (h1–h6)</a></li>
+        <li><a href="#implicit">Implicit sections</a></li>
+        <li><a href="#html5-outline">The HTML5 outline algorithm</a></li>
+        <li><a href="#section-scoping">Using &lt;section&gt; to scope headings</a></li>
+        <li><a href="#one-h1">The "one h1 per page" rule</a></li>
+        <li><a href="#a11y-vs-dom">Accessibility tree vs DOM tree</a></li>
+        <li><a href="#patterns">Outline patterns</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="hierarchy">
+        <h2><span class="num">1</span> Heading hierarchy (h1–h6)</h2>
+        <p>HTML gives you six heading levels: <code>&lt;h1&gt;</code> (most important) down to <code>&lt;h6&gt;</code> (least). These are not styling — they're <strong>structural</strong>. A heading opens a new implicit section that lasts until the next heading of equal or higher rank.</p>
+        <pre><code>&lt;h1&gt;Cooking for Beginners&lt;/h1&gt;
+  &lt;p&gt;Intro paragraph…&lt;/p&gt;
+
+  &lt;h2&gt;Pasta&lt;/h2&gt;
+    &lt;p&gt;About pasta…&lt;/p&gt;
+
+    &lt;h3&gt;Spaghetti Carbonara&lt;/h3&gt;
+      &lt;p&gt;Recipe…&lt;/p&gt;
+
+    &lt;h3&gt;Penne Arrabbiata&lt;/h3&gt;
+      &lt;p&gt;Recipe…&lt;/p&gt;
+
+  &lt;h2&gt;Desserts&lt;/h2&gt;
+    &lt;p&gt;About desserts…&lt;/p&gt;</code></pre>
+        <p>Notice how <code>&lt;h3&gt;</code> appears between two <code>&lt;h2&gt;</code> sections — it's automatically a subsection of <code>Pasta</code>, not of <code>Desserts</code>. This is the "implicit section" rule.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Don't skip levels. Going from <code>h2</code> straight to <code>h4</code> is technically valid but breaks screen reader navigation (which expects each level to nest inside the previous one). Always go <code>h2</code> → <code>h3</code> → <code>h4</code>.
+        </div>
+      </section>
+
+      <section id="implicit">
+        <h2><span class="num">2</span> Implicit sections</h2>
+        <p>A heading element implicitly opens a section that ends when:</p>
+        <ul>
+          <li>A heading of equal rank appears, <em>or</em></li>
+          <li>A heading of higher rank (lower number) appears, <em>or</em></li>
+          <li>The containing element ends</li>
+        </ul>
+        <p>So the structure of headings alone determines the outline — even without any <code>&lt;section&gt;</code> elements.</p>
+        <div class="demo-box">
+          <div class="demo-label">Implicit outline of the cooking example</div>
+          <div class="outline-tree">
+            <div class="h1">1. Cooking for Beginners</div>
+            <div class="h2">1.1 Pasta</div>
+            <div class="h3">1.1.1 Spaghetti Carbonara</div>
+            <div class="h3">1.1.2 Penne Arrabbiata</div>
+            <div class="h2">1.2 Desserts</div>
+          </div>
+        </div>
+        <p>The numbered version above is roughly what screen readers and search engines reconstruct from the heading tags alone. No <code>&lt;section&gt;</code> required — though wrapping them makes the source code clearer for humans.</p>
+      </section>
+
+      <section id="html5-outline">
+        <h2><span class="num">3</span> The HTML5 outline algorithm (deprecated but useful)</h2>
+        <p>When HTML5 was first drafted, the spec proposed a clever idea: each <code>&lt;section&gt;</code> would <em>reset</em> the heading counter. So you could write:</p>
+        <pre><code>&lt;h1&gt;Site Title&lt;/h1&gt;
+&lt;section&gt;
+  &lt;h1&gt;Blog Post Title&lt;/h1&gt;
+  &lt;section&gt;
+    &lt;h1&gt;Subsection&lt;/h1&gt;
+  &lt;/section&gt;
+&lt;/section&gt;</code></pre>
+        <p>…and the outline would be:</p>
+        <div class="outline-tree">
+          <div class="h1">1. Site Title</div>
+          <div class="h2">1.1 Blog Post Title</div>
+          <div class="h3">1.1.1 Subsection</div>
+        </div>
+        <p>This "outline algorithm" was meant to free authors from memorizing <code>h1</code>–<code>h6</code> levels. <strong>But it was never implemented by any browser.</strong> Screen readers and search engines fall back to the heading numbers themselves. The WHATWG removed the outline algorithm from the spec in 2022.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Using multiple <code>&lt;h1&gt;</code> tags inside nested <code>&lt;section&gt;</code>s expecting the browser to auto-rank them. It does not. Screen readers see three <code>&lt;h1&gt;</code>s and announce "heading level 1, heading level 1, heading level 1" — confusing.
+        </div>
+        <h3>What to do instead</h3>
+        <p>Use <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> by number, matching the visual depth of your content. Use <code>&lt;section&gt;</code> to group related content visually and semantically, but don't expect it to change heading levels.</p>
+        <pre><code>&lt;h1&gt;Site Title&lt;/h1&gt;
+&lt;section&gt;
+  &lt;h2&gt;Blog Post Title&lt;/h2&gt;
+  &lt;section&gt;
+    &lt;h3&gt;Subsection&lt;/h3&gt;
+  &lt;/section&gt;
+&lt;/section&gt;</code></pre>
+      </section>
+
+      <section id="section-scoping">
+        <h2><span class="num">4</span> Using <code>&lt;section&gt;</code> to scope headings</h2>
+        <p><code>&lt;section&gt;</code> is the thematic grouping element. It's appropriate when the content inside has a unifying theme and (ideally) a heading. Use it to make the implicit section explicit.</p>
+        <h3>When section helps</h3>
+        <ul>
+          <li>You have a long article and want to break it into thematic chunks</li>
+          <li>You want each chunk to be addressable via fragment links</li>
+          <li>You're building a tabbed interface where each tab is a section of related content</li>
+          <li>You're documenting API methods and each method is its own section</li>
+        </ul>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Getting Started with Fetch API&lt;/h1&gt;
+  &lt;p&gt;Intro…&lt;/p&gt;
+
+  &lt;section aria-labelledby="basic-heading"&gt;
+    &lt;h2 id="basic-heading"&gt;Basic Usage&lt;/h2&gt;
+    &lt;p&gt;…&lt;/p&gt;
+    &lt;pre&gt;&lt;code&gt;fetch('/api')…&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="error-heading"&gt;
+    &lt;h2 id="error-heading"&gt;Error Handling&lt;/h2&gt;
+    &lt;p&gt;…&lt;/p&gt;
+    &lt;pre&gt;&lt;code&gt;try { fetch... } catch(e) { ... }&lt;/code&gt;&lt;/pre&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="adv-heading"&gt;
+    &lt;h2 id="adv-heading"&gt;Advanced: Streaming&lt;/h2&gt;
+    &lt;p&gt;…&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>aria-labelledby</code> on <code>&lt;section&gt;</code> to give it an accessible name derived from its heading. Screen readers then announce the section name as a landmark — but only if there's a heading. A <code>&lt;section&gt;</code> without a heading is no more meaningful than a <code>&lt;div&gt;</code>.
+        </div>
+      </section>
+
+      <section id="one-h1">
+        <h2><span class="num">5</span> The "one h1 per page" rule</h2>
+        <p>The classic rule of thumb: <strong>exactly one <code>&lt;h1&gt;</code> per page</strong>. It represents the page's primary topic. Subtopics use <code>&lt;h2&gt;</code>; sub-subtopics use <code>&lt;h3&gt;</code>; and so on.</p>
+        <p>This isn't a hard spec rule — HTML technically allows multiple <code>&lt;h1&gt;</code>s. But every major consumer of your HTML — Google, screen readers, reader modes — assumes one <code>&lt;h1&gt;</code>. Don't fight them.</p>
+        <table class="info-table">
+          <thead><tr><th>Page type</th><th>Recommended structure</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Homepage</td>
+              <td>One <code>&lt;h1&gt;</code> = site tagline; <code>&lt;h2&gt;</code> per major section ("Features", "Pricing", "Testimonials")</td>
+            </tr>
+            <tr>
+              <td>Blog post</td>
+              <td>One <code>&lt;h1&gt;</code> = post title; <code>&lt;h2&gt;</code> per section; <code>&lt;h3&gt;</code> for sub-sections</td>
+            </tr>
+            <tr>
+              <td>Product page</td>
+              <td>One <code>&lt;h1&gt;</code> = product name; <code>&lt;h2&gt;</code> for "Description", "Specs", "Reviews"</td>
+            </tr>
+            <tr>
+              <td>Documentation page</td>
+              <td>One <code>&lt;h1&gt;</code> = page topic; <code>&lt;h2&gt;</code> per major concept; <code>&lt;h3&gt;</code> for sub-concepts</td>
+            </tr>
+            <tr>
+              <td>App dashboard</td>
+              <td>One <code>&lt;h1&gt;</code> = view name; <code>&lt;h2&gt;</code> per panel/widget</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>Special case: article cards on a listing page</h3>
+        <p>If your page is a blog index showing many post previews, each preview is an <code>&lt;article&gt;</code>. Each article's title is technically a heading. What level? <code>&lt;h2&gt;</code> — because the page already has an <code>&lt;h1&gt;</code> like "Blog".</p>
+        <pre><code>&lt;main&gt;
+  &lt;h1&gt;Blog&lt;/h1&gt;
+
+  &lt;article&gt;
+    &lt;h2&gt;&lt;a href="/posts/semantic"&gt;Why Semantic HTML Matters&lt;/a&gt;&lt;/h2&gt;
+    &lt;p&gt;Excerpt…&lt;/p&gt;
+  &lt;/article&gt;
+
+  &lt;article&gt;
+    &lt;h2&gt;&lt;a href="/posts/aria"&gt;ARIA in 2024&lt;/a&gt;&lt;/h2&gt;
+    &lt;p&gt;Excerpt…&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/main&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Marking each article preview title as <code>&lt;h1&gt;</code> thinking "it's the title of this article". Screen reader users navigating by <kbd>1</kbd> would hear ten <code>&lt;h1&gt;</code>s in a row and lose track of where they are. Use <code>&lt;h2&gt;</code> for previews; the actual article page itself uses <code>&lt;h1&gt;</code>.
+        </div>
+      </section>
+
+      <section id="a11y-vs-dom">
+        <h2><span class="num">6</span> Accessibility tree vs DOM tree</h2>
+        <p>These are two different trees built from the same HTML. Understanding the difference is the key to understanding how screen readers actually "see" your page.</p>
+        <table class="info-table">
+          <thead><tr><th>DOM tree</th><th>Accessibility tree</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Built from every HTML element</td>
+              <td>Built from elements that have semantic meaning</td>
+            </tr>
+            <tr>
+              <td>Includes <code>&lt;div&gt;</code>, <code>&lt;span&gt;</code>, presentational wrappers</td>
+              <td>Skips elements with no semantic role (unless they have ARIA)</td>
+            </tr>
+            <tr>
+              <td>Used by CSS, JavaScript, and DevTools</td>
+              <td>Used by screen readers, voice control, and other AT</td>
+            </tr>
+            <tr>
+              <td>Includes every node — visible or not</td>
+              <td>Excludes <code>display: none</code> and <code>visibility: hidden</code> content</td>
+            </tr>
+            <tr>
+              <td>A <code>&lt;div class="button" onclick&gt;</code> is a node</td>
+              <td>A <code>&lt;div class="button" onclick&gt;</code> is invisible (no role) — until you add <code>role="button"</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The practical implication: writing more DOM nodes doesn't help screen readers. Writing the <em>right</em> semantic elements does. One <code>&lt;button&gt;</code> in the DOM produces one node in the accessibility tree, fully wired. A div button requires three ARIA attributes and a JS event handler to even appear in the tree — and even then it's often buggy.</p>
+        <pre><code>&lt;!-- DOM: 1 node. A11y tree: 1 node, role=button, focusable --&gt;
+&lt;button&gt;Save&lt;/button&gt;
+
+&lt;!-- DOM: 1 node. A11y tree: 0 nodes by default. --&gt;
+&lt;!-- To appear: needs role=button + tabindex=0 + JS keyboard --&gt;
+&lt;div class="btn" onclick="save()"&gt;Save&lt;/div&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          You can inspect the accessibility tree directly in Chrome DevTools: Elements panel → Accessibility tab. Compare it side-by-side with the DOM tree. Anything in the DOM but not in the a11y tree is invisible to screen reader users.
+        </div>
+      </section>
+
+      <section id="patterns">
+        <h2><span class="num">7</span> Outline patterns</h2>
+
+        <h3>Pattern A: Classic article outline</h3>
+        <div class="compare" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <strong style="display:block;margin-bottom:8px;">HTML</strong>
+            <pre><code>&lt;article&gt;
+  &lt;h1&gt;GraphQL Schema Design&lt;/h1&gt;
+  &lt;p&gt;Intro…&lt;/p&gt;
+
+  &lt;h2&gt;Types&lt;/h2&gt;
+  &lt;p&gt;…&lt;/p&gt;
+
+  &lt;h3&gt;Object Types&lt;/h3&gt;
+  &lt;p&gt;…&lt;/p&gt;
+
+  &lt;h3&gt;Input Types&lt;/h3&gt;
+  &lt;p&gt;…&lt;/p&gt;
+
+  &lt;h2&gt;Queries&lt;/h2&gt;
+  &lt;p&gt;…&lt;/p&gt;
+
+  &lt;h2&gt;Mutations&lt;/h2&gt;
+  &lt;p&gt;…&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+          </div>
+          <div>
+            <strong style="display:block;margin-bottom:8px;">Outline</strong>
+            <div class="outline-tree">
+              <div class="h1">1. GraphQL Schema Design</div>
+              <div class="h2">1.1 Types</div>
+              <div class="h3">1.1.1 Object Types</div>
+              <div class="h3">1.1.2 Input Types</div>
+              <div class="h2">1.2 Queries</div>
+              <div class="h2">1.3 Mutations</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Pattern B: Nested article (comment on a post)</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Why I Switched to Vim&lt;/h1&gt;
+  &lt;p&gt;Body of the post…&lt;/p&gt;
+
+  &lt;section&gt;
+    &lt;h2&gt;Comments&lt;/h2&gt;
+
+    &lt;article&gt;
+      &lt;h3&gt;Great post!&lt;/h3&gt;
+      &lt;p&gt;I agree with everything.&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article&gt;
+      &lt;h3&gt;Disagree&lt;/h3&gt;
+      &lt;p&gt;Emacs is better.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Comments are themselves <code>&lt;article&gt;</code> elements — they're self-contained, distributable content. Nested them inside the post article and use <code>&lt;h3&gt;</code> because they're a sub-heading inside the "Comments" <code>&lt;h2&gt;</code> section.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">8</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Skipping heading levels (h2 → h4)</td>
+              <td>Screen reader users navigating by level get lost</td>
+              <td>Always go h2 → h3 → h4</td>
+            </tr>
+            <tr>
+              <td>Multiple <code>&lt;h1&gt;</code>s in nested sections (relying on outline algorithm)</td>
+              <td>The outline algorithm was never implemented; SR sees multiple level-1 headings</td>
+              <td>One h1 per page; use h2-h6 inside</td>
+            </tr>
+            <tr>
+              <td>Using headings for visual styling ("I want big text")</td>
+              <td>Pollutes the outline; SR users see junk headings</td>
+              <td>Use CSS for styling; reserve headings for actual section titles</td>
+            </tr>
+            <tr>
+              <td>Marking every preview card title as <code>&lt;h1&gt;</code></td>
+              <td>Ten level-1 headings on one page</td>
+              <td>Page gets one <code>&lt;h1&gt;</code>; previews are <code>&lt;h2&gt;</code> or <code>&lt;h3&gt;</code></td>
+            </tr>
+            <tr>
+              <td><code>&lt;section&gt;</code> without any heading</td>
+              <td>No semantic value over a div; doesn't appear in the a11y tree as a landmark</td>
+              <td>Either add a heading or use a div</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;h2&gt;</code> in the footer for "Copyright"</code></td>
+              <td>Adds noise to the outline; copyright isn't a section</td>
+              <td>Use <code>&lt;p&gt;</code> for copyright text</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Outline audit</strong>
+          Take any blog post you've written. Strip the CSS. Read just the headings top-to-bottom. Do they form a coherent summary of the post? If not, your outline is broken — fix the heading levels.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — DevTools accessibility tree</strong>
+          Open Chrome DevTools on any web page. Elements panel → Accessibility tab. Find the heading tree. Compare it to what's in the DOM. Are there "phantom" headings from divs? Are there missing headings where they should be?
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Rebuild with one h1</strong>
+          Find a page that uses multiple <code>&lt;h1&gt;</code>s (often a homepage with multiple "feature" sections). Rewrite with one <code>&lt;h1&gt;</code> and proper <code>&lt;h2&gt;</code>/<code>&lt;h3&gt;</code> nesting. Test with a screen reader — does heading navigation now make sense?
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Section labeling</strong>
+          Build a docs page with three sections. Add <code>aria-labelledby</code> to each <code>&lt;section&gt;</code> pointing at its heading's <code>id</code>. Use VoiceOver's rotor (VO+U) to verify that each section now appears as a named landmark.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">10</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">NVDA</span>
+          <span class="pill yes">JAWS</span>
+          <span class="pill yes">VoiceOver</span>
+        </div>
+        <p>Headings and the implicit-section behavior they create are part of HTML itself — universal support across every browser ever made. The HTML5 outline algorithm (section-scoped heading ranks) is the only feature that was <em>removed</em>: no current browser implements it. Treat it as historical and use explicit <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> by number.</p>
+        <p>Accessibility tree inspection is available in Chrome DevTools (Elements → Accessibility), Firefox DevTools (Accessibility tab), and Safari Web Inspector (Nodes → Accessibility). All three let you see exactly what screen readers will announce.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">11</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Blog posts</h4>
+            <p>One h1 for the title, h2 per section, h3 for sub-sections. Standard pattern across WordPress, Ghost, Medium.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation sites</h4>
+            <p>MDN, React docs, Vue docs — heavy use of section + aria-labelledby to make each topic a navigable landmark.</p>
+          </div>
+          <div class="card">
+            <h4>News articles</h4>
+            <p>h1 = headline, h2 = subhead/deck, h3 = section breaks within long-form pieces.</p>
+          </div>
+          <div class="card">
+            <h4>Legal documents</h4>
+            <p>Terms of Service, privacy policies — numbered sections, each with its own h2 for navigation.</p>
+          </div>
+          <div class="card">
+            <h4>Product detail pages</h4>
+            <p>h1 = product name, h2 = "Description", "Specifications", "Reviews".</p>
+          </div>
+          <div class="card">
+            <h4>Comment threads</h4>
+            <p>Each comment is an <code>&lt;article&gt;</code> with an <code>&lt;h3&gt;</code> (or h4 for replies to replies).</p>
+          </div>
+          <div class="card">
+            <h4>Documentation readers</h4>
+            <p>Reader Mode, Pocket, Instapaper all extract the heading outline to show as a table of contents.</p>
+          </div>
+          <div class="card">
+            <h4>Search results</h4>
+            <p>Google uses your heading outline for "Jump to section" links in SERPs.</p>
+          </div>
+          <div class="card">
+            <h4>Print PDFs</h4>
+            <p>Print-to-PDF engines generate bookmarks from headings. Skip a level and you get a broken bookmark tree.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="benefits.html">← Previous: Benefits of Semantic HTML</a>
+    <a class="next" href="../02-Sectioning/header-nav-footer.html">Next: Header, Nav &amp; Footer →</a>
+  </footer>
+</body>
+</html>

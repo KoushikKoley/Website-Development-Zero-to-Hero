@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Attributes — action, method, enctype &amp; more — HTML Mastery</title>
+  <meta name="description" content="Complete reference for HTML form attributes: action, method (GET/POST/dialog), enctype (urlencoded, multipart/form-data, text/plain), target, autocomplete, novalidate, accept-charset, name. When to use each one, with worked examples.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .demo-box { border: 1px dashed var(--line); border-radius: 12px;
+                padding: 18px; background: #fcfcfd; margin: 14px 0; }
+    .demo-box .demo-label { font-size: 0.75rem; text-transform: uppercase;
+                              letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 6 · Forms · Lesson 2</span>
+    <h1>Form Attributes</h1>
+    <p>Eight attributes on the <code>&lt;form&gt;</code> element control where data goes, how it's encoded, what happens to the result window, and whether the browser applies its built-in validation. Master them and you'll never write a broken form again.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#overview">Attribute overview</a></li>
+        <li><a href="#action">action</a></li>
+        <li><a href="#method">method (GET / POST / dialog)</a></li>
+        <li><a href="#enctype">enctype</a></li>
+        <li><a href="#target">target</a></li>
+        <li><a href="#autocomplete">autocomplete</a></li>
+        <li><a href="#novalidate">novalidate</a></li>
+        <li><a href="#accept-charset">accept-charset</a></li>
+        <li><a href="#name">name</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h2><span class="num">1</span> Attribute overview</h2>
+        <p>The <code>&lt;form&gt;</code> element accepts eight attributes that shape how it submits. None are mandatory — defaults cover many cases — but real-world forms almost always set <code>action</code> and <code>method</code> explicitly.</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Attribute</th><th>Default</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>action</code></td><td>Current URL</td><td>Where to submit the form</td></tr>
+            <tr><td><code>method</code></td><td><code>get</code></td><td>HTTP method: get / post / dialog</td></tr>
+            <tr><td><code>enctype</code></td><td><code>application/x-www-form-urlencoded</code></td><td>How the body is encoded (POST only)</td></tr>
+            <tr><td><code>target</code></td><td><code>_self</code></td><td>Where to display the response</td></tr>
+            <tr><td><code>autocomplete</code></td><td><code>on</code></td><td>Whether browser autofill is allowed</td></tr>
+            <tr><td><code>novalidate</code></td><td>false</td><td>Disable browser-native validation</td></tr>
+            <tr><td><code>accept-charset</code></td><td>Page encoding</td><td>Character encodings the server accepts</td></tr>
+            <tr><td><code>name</code></td><td>(none)</td><td>Form name (used in JS / older scripts)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="action">
+        <h2><span class="num">2</span> action</h2>
+        <p>The URL where the form submits. May be absolute, relative, or empty:</p>
+        <pre><code>&lt;!-- Absolute URL (cross-site) --&gt;
+&lt;form action="https://api.example.com/submit"&gt;
+
+&lt;!-- Relative URL (same site) --&gt;
+&lt;form action="/api/login"&gt;
+
+&lt;!-- Anchor (jump to element with id="results") --&gt;
+&lt;form action="#results"&gt;
+
+&lt;!-- Empty: submit to current URL --&gt;
+&lt;form action=""&gt;
+
+&lt;!-- Omitted entirely: same as empty --&gt;
+&lt;form&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Don't put user-controlled data directly into the <code>action</code> attribute via JavaScript — it's an open redirect vector. Always validate / sanitize before constructing the action URL.
+        </div>
+      </section>
+
+      <section id="method">
+        <h2><span class="num">3</span> method (GET / POST / dialog)</h2>
+        <p>The HTTP method the browser uses when submitting the form:</p>
+        <h3>GET (default)</h3>
+        <p>Appends form data to the action URL as a query string. The full URL becomes <code>action?name1=value1&amp;name2=value2</code>. Visible, bookmarkable, cached, length-limited.</p>
+        <h3>POST</h3>
+        <p>Sends form data in the HTTP request body. Hidden from URL, no practical length limit, supports file uploads, never cached. Use for any state-changing or sensitive operation.</p>
+        <h3>dialog (special)</h3>
+        <p>Not an HTTP method. When a form is inside a <code>&lt;dialog&gt;</code> element and <code>method="dialog"</code> is set, submitting the form closes the dialog (sets <code>dialog.returnValue</code> to the submit button's value) without any network request.</p>
+        <pre><code>&lt;dialog id="confirm"&gt;
+  &lt;form method="dialog"&gt;
+    &lt;p&gt;Delete this file?&lt;/p&gt;
+    &lt;button value="cancel"&gt;Cancel&lt;/button&gt;
+    &lt;button value="delete"&gt;Delete&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/dialog&gt;
+
+&lt;script&gt;
+  const d = document.getElementById('confirm');
+  d.showModal();
+  d.addEventListener('close', () =&gt; {
+    if (d.returnValue === 'delete') doDelete();
+  });
+&lt;/script&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          Some teams route all forms through JavaScript handlers via <code>fetch()</code> to use PUT / PATCH / DELETE. That's fine for SPAs, but it breaks progressive enhancement — users with JS disabled see nothing work. Default to native GET/POST where possible.
+        </div>
+      </section>
+
+      <section id="enctype">
+        <h2><span class="num">4</span> enctype</h2>
+        <p>Only applies to <code>method="post"</code>. Three values:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>enctype</th><th>When</th><th>Body format</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>application/x-www-form-urlencoded</code> (default)</td><td>Text fields, normal forms</td><td><code>name=value&amp;name2=value2</code>, with URL-encoding</td></tr>
+            <tr><td><code>multipart/form-data</code></td><td>File uploads (<code>&lt;input type="file"&gt;</code>)</td><td>MIME multipart boundary parts</td></tr>
+            <tr><td><code>text/plain</code></td><td>Debugging only — almost never used</td><td><code>name=value\nname2=value2</code> raw text</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- File upload REQUIRES multipart/form-data --&gt;
+&lt;form action="/upload" method="post" enctype="multipart/form-data"&gt;
+  &lt;input type="file" name="avatar"&gt;
+  &lt;button&gt;Upload&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Forgetting <code>enctype="multipart/form-data"</code> on a file upload form. The browser sends the filename as a string instead of the file bytes — the server sees <code>avatar="photo.jpg"</code> instead of the binary content.
+        </div>
+      </section>
+
+      <section id="target">
+        <h2><span class="num">5</span> target</h2>
+        <p>Like the <code>target</code> attribute on <code>&lt;a&gt;</code>, but for form submission results:</p>
+        <table class="info-table">
+          <thead>
+            <tr><th>Value</th><th>Behavior</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>_self</code> (default)</td><td>Replace current tab</td></tr>
+            <tr><td><code>_blank</code></td><td>Open in new tab/window</td></tr>
+            <tr><td><code>_parent</code></td><td>Replace parent frame (in iframes)</td></tr>
+            <tr><td><code>_top</code></td><td>Replace topmost window (breaks out of all iframes)</td></tr>
+            <tr><td>custom name</td><td>Submit to a named window/iframe, opening one if needed</td></tr>
+          </tbody>
+        </table>
+        <pre><code>&lt;!-- Submit to hidden iframe (legacy file upload pattern) --&gt;
+&lt;iframe name="upload-target" hidden&gt;&lt;/iframe&gt;
+&lt;form action="/upload" method="post"
+      enctype="multipart/form-data" target="upload-target"&gt;
+  &lt;input type="file" name="file"&gt;
+  &lt;button&gt;Upload&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          <code>target="_blank"</code> on form submissions opens the result in a new tab with <code>window.opener</code> access — a phishing vector if the response page is untrusted. Modern browsers add <code>rel="noopener"</code> by default for links, but form <code>target="_blank"</code> historically did not. Avoid unless you control the result page.
+        </div>
+      </section>
+
+      <section id="autocomplete">
+        <h2><span class="num">6</span> autocomplete</h2>
+        <p>Controls whether the browser may autofill form fields based on past values or the user's profile. Accepts <code>on</code>, <code>off</code>, or a token hint (or space-separated list of tokens).</p>
+        <pre><code>&lt;!-- Allow autofill --&gt;
+&lt;form action="/register" method="post" autocomplete="on"&gt;
+
+&lt;!-- Disable autofill for the entire form --&gt;
+&lt;form action="/checkout" method="post" autocomplete="off"&gt;
+
+&lt;!-- Hint specific categories (form-level) --&gt;
+&lt;form autocomplete="section-shipping street-address postal-code"&gt;</code></pre>
+        <p>Token values like <code>username</code>, <code>current-password</code>, <code>email</code>, <code>tel</code>, <code>given-name</code>, <code>family-name</code>, <code>address-line1</code>, <code>postal-code</code>, <code>cc-number</code>, <code>cc-exp</code> can be set per-control via the same attribute. We cover these in <a href="../02-Input-Types/input-attributes.html">Input Attributes</a>.</p>
+        <div class="callout warn">
+          <strong>Common mistake</strong>
+          Setting <code>autocomplete="off"</code> on password fields to "prevent saving passwords." Modern browsers ignore this for password managers because users should be allowed to use their password manager. Only use <code>autocomplete="new-password"</code> on a registration form to hint "don't autofill the existing password."
+        </div>
+      </section>
+
+      <section id="novalidate">
+        <h2><span class="num">7</span> novalidate</h2>
+        <p>A boolean attribute. When present, the browser skips native HTML5 validation (<code>required</code>, <code>type="email"</code>, <code>pattern</code>, etc.) and submits the form regardless of field validity. Useful when you want full JS control over validation, or for "Save draft" buttons.</p>
+        <pre><code>&lt;form action="/save-draft" method="post" novalidate&gt;
+  &lt;input type="email" name="email" required&gt;
+  &lt;!-- Submits even if email is blank or invalid --&gt;
+  &lt;button&gt;Save draft&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro tip</strong>
+          For per-button control, use <code>formnovalidate</code> on a submit button. This lets one form have a "Save draft (no validation)" button alongside a "Publish (with validation)" button.
+        </div>
+      </section>
+
+      <section id="accept-charset">
+        <h2><span class="num">8</span> accept-charset</h2>
+        <p>A space- or comma-separated list of character encodings the server accepts. Modern servers handle UTF-8 universally, so this attribute is rarely needed. Useful for legacy systems that require Latin-1 or Shift-JIS:</p>
+        <pre><code>&lt;form action="/legacy-api" method="post" accept-charset="Shift_JIS"&gt;
+  ...
+&lt;/form&gt;</code></pre>
+        <p>If omitted, the form uses the page's own encoding (typically UTF-8 via <code>&lt;meta charset="UTF-8"&gt;</code>).</p>
+      </section>
+
+      <section id="name">
+        <h2><span class="num">9</span> name</h2>
+        <p>Gives the form a name. Used in JavaScript via <code>document.forms.loginForm</code> and in older server-side frameworks. Largely superseded by <code>id</code> for direct DOM access, but still useful for forms collections.</p>
+        <pre><code>&lt;form name="loginForm" action="/login" method="post"&gt;
+  ...
+&lt;/form&gt;
+
+&lt;script&gt;
+  // Two equivalent ways to access:
+  const f1 = document.forms.loginForm;
+  const f2 = document.forms['loginForm'];
+  const f3 = document.querySelector('form[name="loginForm"]');
+&lt;/script&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">10</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Missing <code>enctype="multipart/form-data"</code> on file uploads</td><td>Server receives filename string, not file bytes</td><td>Always set when using <code>&lt;input type="file"&gt;</code></td></tr>
+            <tr><td><code>method="GET"</code> on a password form</td><td>Password visible in URL</td><td>Use <code>POST</code></td></tr>
+            <tr><td><code>autocomplete="off"</code> on username/password fields</td><td>Browsers ignore it; users can't use password manager</td><td>Use proper token values like <code>current-password</code></td></tr>
+            <tr><td><code>target="_blank"</code> on cross-domain form</td><td>Opens untrusted result in new tab with opener access</td><td>Don't use; or guarantee server response is trusted</td></tr>
+            <tr><td>Forgetting <code>novalidate</code> when handling validation via JS</td><td>Browser blocks submit before JS can run</td><td>Add <code>novalidate</code> and validate via Constraint Validation API</td></tr>
+            <tr><td>Submitting without <code>action</code> on a GET form</td><td>Submits to current URL — usually wrong for filter forms</td><td>Set explicit <code>action</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">11</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Pick the right enctype</strong>
+          You're building a profile editor with a text bio, a profile photo upload, and a username field. What <code>enctype</code> do you need? What <code>method</code>? Write the opening <code>&lt;form&gt;</code> tag.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Two buttons, different validation</strong>
+          Build a form with one "Publish" button (full validation) and one "Save draft" button (skips validation). Use the <code>formnovalidate</code> attribute on the draft button.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Dialog method</strong>
+          Create a <code>&lt;dialog&gt;</code> with a confirmation form using <code>method="dialog"</code>. Open it via <code>dialog.showModal()</code>, capture <code>returnValue</code>, and console.log the user's choice.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">12</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">action, method, enctype — universal</span>
+          <span class="pill yes">target — universal</span>
+          <span class="pill yes">autocomplete — universal (token values in modern browsers)</span>
+          <span class="pill yes">novalidate — universal</span>
+          <span class="pill yes">accept-charset — universal</span>
+          <span class="pill yes">name — universal</span>
+          <span class="pill yes">method="dialog" — Chrome 37+, Firefox 59+, Safari 15.4+</span>
+        </div>
+        <p>The <code>dialog</code> method is the only attribute value with non-universal support; all modern browsers handle it as of 2022+.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">13</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Login forms</h4>
+            <p><code>method="post"</code>, <code>autocomplete="username current-password"</code>, no enctype override.</p>
+          </div>
+          <div class="card">
+            <h4>Registration</h4>
+            <p><code>method="post"</code>, <code>autocomplete="new-password"</code> on password field to prevent autofill of existing.</p>
+          </div>
+          <div class="card">
+            <h4>File uploads</h4>
+            <p><code>method="post"</code> + <code>enctype="multipart/form-data"</code>. Multiple files via <code>multiple</code> attribute on input.</p>
+          </div>
+          <div class="card">
+            <h4>Search forms</h4>
+            <p><code>method="get"</code>, default enctype. Bookmarkable results.</p>
+          </div>
+          <div class="card">
+            <h4>Modal confirmations</h4>
+            <p><code>method="dialog"</code> inside <code>&lt;dialog&gt;</code>; capture button value on close event.</p>
+          </div>
+          <div class="card">
+            <h4>Save Draft / Publish</h4>
+            <p>Same form, two submit buttons; draft button uses <code>formnovalidate</code>.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="form-anatomy.html">← Previous: Form Anatomy</a>
+    <a class="next" href="form-submit.html">Next: Form Submission →</a>
+  </footer>
+</body>
+</html>

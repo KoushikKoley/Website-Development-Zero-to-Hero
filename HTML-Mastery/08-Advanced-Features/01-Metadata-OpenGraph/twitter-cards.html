@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twitter Card Meta Tags — summary, summary_large_image, player, app — HTML Mastery</title>
+  <meta name="description" content="Twitter Card meta tags: twitter:card (summary, summary_large_image, player, app), twitter:site, twitter:creator, twitter:title, twitter:description, twitter:image. How Twitter/X uses them, the fallback relationship with Open Graph, testing with Twitter Card Validator.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+      --twitter: #1d9bf0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, var(--twitter) 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .tag-table td:first-child { font-family: monospace; color: var(--twitter); font-weight: 600; }
+    .card-preview { border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+                    background: white; max-width: 504px; margin: 14px 0;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .card-preview .cp-img-lg { background: linear-gradient(135deg, var(--twitter), var(--brand-2));
+                                height: 263px; display: flex; align-items: center;
+                                justify-content: center; color: white; font-weight: 600; }
+    .card-preview .cp-img-sm { width: 125px; height: 125px;
+                                background: linear-gradient(135deg, var(--twitter), var(--brand-2));
+                                display: flex; align-items: center;
+                                justify-content: center; color: white; font-weight: 600;
+                                font-size: 0.8rem; text-align: center; flex-shrink: 0; }
+    .card-preview .cp-body { padding: 12px 14px; }
+    .card-preview .cp-domain { font-size: 0.8rem; color: var(--ink-soft); }
+    .card-preview .cp-title { font-size: 0.95rem; font-weight: 600; color: var(--ink); margin: 2px 0; }
+    .card-preview .cp-desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0; }
+    .card-preview.with-side { display: flex; align-items: stretch; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Metadata &amp; Open Graph · Lesson 2</span>
+    <h1>Twitter Card Meta Tags</h1>
+    <p>Twitter (now X) created its own meta tag protocol in 2012 called "Twitter Cards". Like Open Graph, it powers rich link previews — but with Twitter-specific tag names. The good news: if you've already set up OG tags, Twitter will fall back to them, so adding Twitter Card tags is often just one extra line.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What are Twitter Cards?</a></li>
+        <li><a href="#card-types">The four card types</a></li>
+        <li><a href="#tags">All Twitter Card tags</a></li>
+        <li><a href="#summary">summary card</a></li>
+        <li><a href="#large-image">summary_large_image card</a></li>
+        <li><a href="#player">player card (video)</a></li>
+        <li><a href="#app">app card</a></li>
+        <li><a href="#og-fallback">The OG fallback</a></li>
+        <li><a href="#image-specs">Image specs</a></li>
+        <li><a href="#testing">Testing with Card Validator</a></li>
+        <li><a href="#full-example">Full example</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What Are Twitter Cards?</h2>
+        <p>A "Twitter Card" is the rich preview that appears below a tweet when you include a link. Instead of just a bare URL, the tweet shows an image, title, and description — making the link much more engaging.</p>
+
+        <p>Twitter created its own meta protocol (rather than reusing Open Graph) because they wanted platform-specific features: video players embedded directly in the timeline, app-install cards with native deep links, and tighter image dimension constraints.</p>
+
+        <p>Twitter Card tags live in the <code>&lt;head&gt;</code>, using <code>name</code> (not <code>property</code> like OG) attributes prefixed with <code>twitter:</code>:</p>
+
+        <pre><code>&lt;head&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:site" content="@nytimes"&gt;
+  &lt;meta name="twitter:creator" content="@jane_doe"&gt;
+  &lt;meta name="twitter:title" content="The Hitchhiker's Guide to HTML"&gt;
+  &lt;meta name="twitter:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+  &lt;meta name="twitter:image" content="https://example.com/og/cover.jpg"&gt;
+&lt;/head&gt;</code></pre>
+
+        <div class="callout info">
+          <strong>Note on the X rebrand</strong>
+          Twitter rebranded to X in 2023, but the meta tag prefix remains <code>twitter:</code>. There has been no announcement of a switch to <code>x:</code> tags, and renaming would break billions of existing pages. Stick with <code>twitter:</code>.
+        </div>
+      </section>
+
+      <section id="card-types">
+        <h2><span class="num">2</span> The Four Card Types</h2>
+        <p>The <code>twitter:card</code> tag is required and must be the first Twitter Card tag in your <code>&lt;head&gt;</code>. It declares which card layout to use.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Card type</th><th>Layout</th><th>Use for</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>summary</code></td><td>Square thumbnail on the left, title + description on the right</td><td>Default for blog posts, articles, generic pages</td></tr>
+            <tr><td><code>summary_large_image</code></td><td>Large image on top, title + description below</td><td>Articles and pages where the image is the main draw (most common in 2024)</td></tr>
+            <tr><td><code>player</code></td><td>Embeds a video/audio player directly in the tweet</td><td>Video sites, podcast platforms, music services</td></tr>
+            <tr><td><code>app</code></td><td>Mobile-app install card with deep links to App Store / Google Play</td><td>Promoting a mobile app from a tweet</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          If you only ever use one card type, make it <code>summary_large_image</code>. The large image gets dramatically more engagement in timelines than the small thumbnail of plain <code>summary</code>.
+        </div>
+      </section>
+
+      <section id="tags">
+        <h2><span class="num">3</span> All Twitter Card Tags</h2>
+        <table class="info-table tag-table">
+          <thead>
+            <tr><th>Tag</th><th>Applies to</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>twitter:card</td><td>All</td><td>Required. The card type.</td></tr>
+            <tr><td>twitter:site</td><td>All</td><td>The Twitter @username of the website overall (e.g. <code>@nytimes</code>).</td></tr>
+            <tr><td>twitter:creator</td><td>All</td><td>The Twitter @username of the individual author (e.g. <code>@jane_doe</code>).</td></tr>
+            <tr><td>twitter:title</td><td>All</td><td>Title. Max 70 characters.</td></tr>
+            <tr><td>twitter:description</td><td>All</td><td>Description. Max 200 characters.</td></tr>
+            <tr><td>twitter:image</td><td>All</td><td>URL to the image. Absolute, HTTPS recommended.</td></tr>
+            <tr><td>twitter:image:alt</td><td>All</td><td>Alt text for the image. Max 420 chars. Strongly recommended for accessibility.</td></tr>
+            <tr><td>twitter:player</td><td>player</td><td>URL to the iframe player (HTTPS required).</td></tr>
+            <tr><td>twitter:player:width</td><td>player</td><td>Player width in pixels.</td></tr>
+            <tr><td>twitter:player:height</td><td>player</td><td>Player height in pixels.</td></tr>
+            <tr><td>twitter:player:stream</td><td>player</td><td>URL to a direct video stream (mp4). Optional, for platforms that don't support iframes.</td></tr>
+            <tr><td>twitter:app:name:iphone</td><td>app</td><td>iOS app name.</td></tr>
+            <tr><td>twitter:app:id:iphone</td><td>app</td><td>iOS app App Store ID.</td></tr>
+            <tr><td>twitter:app:url:iphone</td><td>app</td><td>iOS deep link.</td></tr>
+            <tr><td>twitter:app:name:googleplay</td><td>app</td><td>Android app name.</td></tr>
+            <tr><td>twitter:app:id:googleplay</td><td>app</td><td>Android app Play Store ID.</td></tr>
+            <tr><td>twitter:app:url:googleplay</td><td>app</td><td>Android deep link.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="summary">
+        <h2><span class="num">4</span> The <code>summary</code> Card</h2>
+        <p>The compact card with a square thumbnail on the left.</p>
+
+        <pre><code>&lt;meta name="twitter:card" content="summary"&gt;
+&lt;meta name="twitter:site" content="@exampledotcom"&gt;
+&lt;meta name="twitter:creator" content="@jane_doe"&gt;
+&lt;meta name="twitter:title" content="The Hitchhiker's Guide to HTML"&gt;
+&lt;meta name="twitter:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+&lt;meta name="twitter:image" content="https://example.com/og/cover-square.jpg"&gt;
+&lt;meta name="twitter:image:alt" content="Stylized cover showing the title over a starfield"&gt;</code></pre>
+
+        <h3>Preview</h3>
+        <div class="card-preview with-side">
+          <div class="cp-img-sm">125 × 125 thumbnail</div>
+          <div class="cp-body">
+            <div class="cp-domain">EXAMPLE.COM</div>
+            <div class="cp-title">The Hitchhiker's Guide to HTML</div>
+            <p class="cp-desc">A complete tutorial covering everything from DOCTYPE to Web Components.</p>
+          </div>
+        </div>
+
+        <h3>Image dimensions for summary</h3>
+        <p>For the <code>summary</code> card, the image must be a square. Recommended: <strong>512 × 512 px</strong>. Maximum: 4096 × 4096 px. Image must be ≤ 5 MB.</p>
+      </section>
+
+      <section id="large-image">
+        <h2><span class="num">5</span> The <code>summary_large_image</code> Card</h2>
+        <p>The hero image card — large image on top, title and description below. This is the most engaging card type for content sites.</p>
+
+        <pre><code>&lt;meta name="twitter:card" content="summary_large_image"&gt;
+&lt;meta name="twitter:site" content="@exampledotcom"&gt;
+&lt;meta name="twitter:creator" content="@jane_doe"&gt;
+&lt;meta name="twitter:title" content="The Hitchhiker's Guide to HTML"&gt;
+&lt;meta name="twitter:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+&lt;meta name="twitter:image" content="https://example.com/og/cover.jpg"&gt;
+&lt;meta name="twitter:image:alt" content="Stylized cover showing the title over a starfield"&gt;</code></pre>
+
+        <h3>Preview</h3>
+        <div class="card-preview">
+          <div class="cp-img-lg">1200 × 628 large image</div>
+          <div class="cp-body">
+            <div class="cp-domain">EXAMPLE.COM</div>
+            <div class="cp-title">The Hitchhiker's Guide to HTML</div>
+            <p class="cp-desc">A complete tutorial covering everything from DOCTYPE to Web Components.</p>
+          </div>
+        </div>
+
+        <h3>Image dimensions for summary_large_image</h3>
+        <p>Recommended: <strong>1200 × 628 px</strong> (a 1.91:1 ratio). Minimum: 300 × 157 px (will be upscaled, looking poor). Maximum: 4096 × 4096 px. File size ≤ 5 MB.</p>
+
+        <div class="callout tip">
+          <strong>Pro Tip — reuse the OG image</strong>
+          The OG image (1200 × 630) and the <code>summary_large_image</code> image (1200 × 628) are nearly identical in size — most people reuse the same image for both. The 2-pixel difference is irrelevant in practice.
+        </div>
+      </section>
+
+      <section id="player">
+        <h2><span class="num">6</span> The <code>player</code> Card</h2>
+        <p>For sites hosting video or audio, the player card embeds a working media player directly in the tweet — no click-through required.</p>
+
+        <pre><code>&lt;meta name="twitter:card" content="player"&gt;
+&lt;meta name="twitter:site" content="@yourtube"&gt;
+&lt;meta name="twitter:title" content="Behind the scenes: how we built our player"&gt;
+&lt;meta name="twitter:image" content="https://example.com/og/video-poster.jpg"&gt;
+&lt;meta name="twitter:image:alt" content="A still from the video showing the engineering team"&gt;
+&lt;meta name="twitter:player" content="https://example.com/embed/abc123"&gt;
+&lt;meta name="twitter:player:width" content="480"&gt;
+&lt;meta name="twitter:player:height" content="270"&gt;
+&lt;meta name="twitter:player:stream" content="https://example.com/video/abc123.mp4"&gt;</code></pre>
+
+        <h3>Player card requirements</h3>
+        <ul>
+          <li>The <code>twitter:player</code> URL must be HTTPS.</li>
+          <li>The iframe player must respond to Twitter's JavaScript postMessage API for play/pause.</li>
+          <li>Provide both <code>twitter:player</code> (iframe) AND <code>twitter:player:stream</code> (direct MP4) — some Twitter clients only support one or the other.</li>
+          <li>The <code>twitter:image</code> poster frame shows before the user taps to play.</li>
+        </ul>
+
+        <div class="callout warn">
+          <strong>Approval required</strong>
+          Player Cards used to require manual whitelisting by Twitter. As of 2023, the requirement has been relaxed for most accounts, but new domains may still need to be "validated" via the Card Validator before they render reliably.
+        </div>
+      </section>
+
+      <section id="app">
+        <h2><span class="num">7</span> The <code>app</code> Card</h2>
+        <p>For promoting mobile apps, the app card shows the app icon, name, description, and direct install buttons for iOS and/or Android.</p>
+
+        <pre><code>&lt;meta name="twitter:card" content="app"&gt;
+&lt;meta name="twitter:site" content="@acmeapp"&gt;
+&lt;meta name="twitter:title" content="Acme — Task management reimagined"&gt;
+&lt;meta name="twitter:description" content="Get things done, beautifully. Free to download."&gt;
+&lt;meta name="twitter:app:name:iphone" content="Acme"&gt;
+&lt;meta name="twitter:app:id:iphone" content="1234567890"&gt;
+&lt;meta name="twitter:app:url:iphone" content="acme://launch"&gt;
+&lt;meta name="twitter:app:name:googleplay" content="Acme"&gt;
+&lt;meta name="twitter:app:id:googleplay" content="com.acme.app"&gt;
+&lt;meta name="twitter:app:url:googleplay" content="acme://launch"&gt;
+&lt;meta name="twitter:app:name:ipad" content="Acme"&gt;
+&lt;meta name="twitter:app:id:ipad" content="1234567890"&gt;
+&lt;meta name="twitter:app:url:ipad" content="acme://launch"&gt;</code></pre>
+
+        <h3>How it appears</h3>
+        <p>The tweet shows the app icon (from the App Store / Play Store), the app name, rating, and an "INSTALL" or "OPEN" button that deep-links into the App Store / Play Store or directly into the app if already installed.</p>
+      </section>
+
+      <section id="og-fallback">
+        <h2><span class="num">8</span> The Open Graph Fallback</h2>
+        <p>This is the most important thing to know about Twitter Cards: <strong>Twitter falls back to OG tags when Twitter-specific tags are missing</strong>.</p>
+
+        <p>So if you set up Open Graph properly, you only need to add <em>one</em> Twitter Card tag to get a working card:</p>
+
+        <pre><code>&lt;!-- All OG tags already set --&gt;
+&lt;meta property="og:title" content="..."&gt;
+&lt;meta property="og:description" content="..."&gt;
+&lt;meta property="og:image" content="..."&gt;
+&lt;meta property="og:url" content="..."&gt;
+
+&lt;!-- This single Twitter tag enables the large-image card --&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;
+
+&lt;!-- Optional: add your Twitter handles --&gt;
+&lt;meta name="twitter:site" content="@yourbrand"&gt;
+&lt;meta name="twitter:creator" content="@yourauthor"&gt;</code></pre>
+
+        <p>Twitter will use <code>og:title</code>, <code>og:description</code>, <code>og:image</code>, and <code>og:url</code> for the card content, and the Twitter <code>twitter:card</code> tag for the layout choice.</p>
+
+        <h3>When to override OG</h3>
+        <p>If you want different content on Twitter vs Facebook (e.g., a square image for Twitter, wide image for Facebook), set both <code>og:*</code> and <code>twitter:*</code> tags. Twitter always prefers its own tags when present.</p>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Setting only <code>twitter:*</code> tags and forgetting OG. Then LinkedIn/Facebook/Slack previews break. Always set OG first, then layer Twitter on top.
+        </div>
+
+        <h3>The fallback hierarchy</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Twitter Card property</th><th>Falls back to</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>twitter:title</td><td>og:title</td></tr>
+            <tr><td>twitter:description</td><td>og:description</td></tr>
+            <tr><td>twitter:image</td><td>og:image</td></tr>
+            <tr><td>twitter:image:alt</td><td>og:image:alt</td></tr>
+            <tr><td>twitter:url</td><td>og:url</td></tr>
+            <tr><td>twitter:card</td><td>(no fallback — defaults to <code>summary</code> if missing)</td></tr>
+            <tr><td>twitter:site / twitter:creator</td><td>(no fallback)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="image-specs">
+        <h2><span class="num">9</span> Image Specs Reference</h2>
+        <table class="info-table">
+          <thead>
+            <tr><th>Card type</th><th>Recommended</th><th>Minimum</th><th>Aspect ratio</th><th>Max file size</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>summary</td><td>512 × 512</td><td>144 × 144</td><td>1:1 (square)</td><td>5 MB</td></tr>
+            <tr><td>summary_large_image</td><td>1200 × 628</td><td>300 × 157</td><td>1.91:1</td><td>5 MB</td></tr>
+            <tr><td>player (poster image)</td><td>1200 × 628</td><td>same as above</td><td>1.91:1</td><td>5 MB</td></tr>
+            <tr><td>app (icon from store)</td><td>(auto-fetched)</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <p>Supported formats: JPG, PNG, GIF, and WebP. Animated GIFs are supported but may not animate in all clients.</p>
+      </section>
+
+      <section id="testing">
+        <h2><span class="num">10</span> Testing with Card Validator</h2>
+
+        <h3>Twitter Card Validator (official)</h3>
+        <p>The official tool was at <code>cards-dev.twitter.com/validator</code>. In 2023, Twitter/X deprecated the standalone validator and folded the functionality into the main Tweet composer. To test today:</p>
+
+        <ul>
+          <li><strong>Method 1 — Tweet composer:</strong> Open <code>twitter.com/compose/post</code>, paste your URL. The card preview will render if your tags are correct.</li>
+          <li><strong>Method 2 — Draft a tweet:</strong> Add your URL to a draft tweet; the card appears below.</li>
+          <li><strong>Method 3 — Third-party tools:</strong> OpenGraph.xyz, MetaTags.io, HeyMeta all show Twitter card previews.</li>
+        </ul>
+
+        <h3>Common validation errors</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Error</th><th>Cause</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>"No card found"</td><td>Missing or wrong <code>twitter:card</code> tag</td><td>Ensure <code>twitter:card</code> is the first Twitter tag in <code>&lt;head&gt;</code></td></tr>
+            <tr><td>"Image not found"</td><td>Image URL is relative, HTTP, or 404</td><td>Use absolute HTTPS URL, ensure the file exists</td></tr>
+            <tr><td>"Image too small"</td><td>Image below minimum dimensions</td><td>Regenerate at the recommended size</td></tr>
+            <tr><td>"Card not rendering in timeline"</td><td>Domain not whitelisted (for player cards)</td><td>Submit domain for approval via Twitter support</td></tr>
+            <tr><td>Old card still showing after update</td><td>Twitter caches card data per URL</td><td>Cache typically expires in 7 days; for faster refresh, append a query string like <code>?v=2</code> to force a fresh fetch</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          To force Twitter to re-fetch your card, change the URL slightly (e.g., add <code>?v=2</code>). Twitter treats each unique URL as a separate cached object.
+        </div>
+      </section>
+
+      <section id="full-example">
+        <h2><span class="num">11</span> Full Example</h2>
+        <p>Complete Twitter Card setup with OG fallback for a blog article:</p>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;The Hitchhiker's Guide to HTML — The Daily Probe&lt;/title&gt;
+  &lt;meta name="description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+
+  &lt;!-- Open Graph (used by FB, LinkedIn, Slack, iMessage, etc.) --&gt;
+  &lt;meta property="og:type" content="article"&gt;
+  &lt;meta property="og:site_name" content="The Daily Probe"&gt;
+  &lt;meta property="og:title" content="The Hitchhiker's Guide to HTML"&gt;
+  &lt;meta property="og:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+  &lt;meta property="og:url" content="https://example.com/posts/html-guide"&gt;
+  &lt;meta property="og:image" content="https://example.com/og/html-guide-cover.jpg"&gt;
+  &lt;meta property="og:image:width" content="1200"&gt;
+  &lt;meta property="og:image:height" content="630"&gt;
+  &lt;meta property="og:image:alt" content="Stylized cover showing the title over a starfield"&gt;
+
+  &lt;!-- Twitter Card (uses OG fallback for title/description/image) --&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:site" content="@dailyprobe"&gt;
+  &lt;meta name="twitter:creator" content="@jane_doe"&gt;
+  &lt;!-- Optional overrides — uncomment to customize for Twitter --&gt;
+  &lt;!-- &lt;meta name="twitter:title" content="..."&gt; --&gt;
+  &lt;!-- &lt;meta name="twitter:description" content="..."&gt; --&gt;
+  &lt;!-- &lt;meta name="twitter:image" content="..."&gt; --&gt;
+  &lt;!-- &lt;meta name="twitter:image:alt" content="..."&gt; --&gt;
+
+  &lt;!-- Canonical --&gt;
+  &lt;link rel="canonical" href="https://example.com/posts/html-guide"&gt;
+&lt;/head&gt;</code></pre>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">12</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Add a Twitter Card with one line</strong>
+          If you already have OG tags on a page, add a single <code>&lt;meta name="twitter:card" content="summary_large_image"&gt;</code> tag and verify that Twitter now renders a large-image card. Test in the Tweet composer.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Author attribution</strong>
+          Add <code>twitter:site</code> (your brand's @handle) and <code>twitter:creator</code> (your personal @handle) to a blog post page. Tweet a link to the page. The tweet should show "By @yourhandle" attribution in some Twitter clients.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Add image alt text</strong>
+          Add <code>twitter:image:alt</code> (and the corresponding <code>og:image:alt</code>) to a page with an existing image. Verify in a screen reader or in the Twitter preview that the alt text is associated with the image.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Dual-stack: OG + Twitter</strong>
+          Build a page where Twitter shows a different image than Facebook. Set <code>og:image</code> to a wide image (1200×630) and add an explicit <code>twitter:image</code> pointing to a square image (512×512) with <code>twitter:card="summary"</code>. Test in both Facebook Debugger and the Twitter composer.
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">13</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>News &amp; media sites</h4>
+            <p>Every article page needs <code>summary_large_image</code> with a striking cover image to drive engagement in timelines.</p>
+          </div>
+          <div class="card">
+            <h4>Personal &amp; dev blogs</h4>
+            <p>Even hobbyist blogs benefit — Twitter Card previews measurably increase click-through rates.</p>
+          </div>
+          <div class="card">
+            <h4>Video platforms</h4>
+            <p>YouTube, Vimeo, Twitch all use <code>player</code> cards so videos play inline in the timeline.</p>
+          </div>
+          <div class="card">
+            <h4>Mobile app marketing</h4>
+            <p>App developers use <code>app</code> cards for app-install campaigns on Twitter.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce</h4>
+            <p>Product pages benefit from <code>summary_large_image</code> with the product photo as the cover.</p>
+          </div>
+          <div class="card">
+            <h4>Podcasts</h4>
+            <p>Podcast episode pages often use <code>player</code> cards so episodes play inline.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="og-tags.html">← Previous: Open Graph Tags</a>
+    <a class="next" href="#">Next: coming soon →</a>
+  </footer>
+</body>
+</html>

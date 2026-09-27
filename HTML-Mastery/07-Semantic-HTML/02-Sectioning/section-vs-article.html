@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;section&gt; vs &lt;article&gt; — Decision Matrix &amp; Real Examples — HTML Mastery</title>
+  <meta name="description" content="Section vs Article: section is a thematic grouping (chapter, tab, themed region), article is self-contained distributable content. Decision matrix, when both apply (nested), when neither applies (use div), real-world examples.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .decision-matrix th { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; }
+    .decision-matrix td:first-child { font-weight: 600; color: var(--ink); }
+    .decision-matrix .yes { color: #15803d; font-weight: 600; }
+    .decision-matrix .no  { color: #b91c1c; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Sectioning · Lesson 6</span>
+    <h1><code>&lt;section&gt;</code> vs <code>&lt;article&gt;</code></h1>
+    <p>The most asked question in semantic HTML. Both have headings. Both group content. Both can nest inside each other. The difference comes down to one question: <em>is this content self-contained and distributable?</em> If yes — <code>&lt;article&gt;</code>. If it's just a thematic grouping — <code>&lt;section&gt;</code>. Here's the full decision framework.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#definitions">Definitions</a></li>
+        <li><a href="#key-difference">The key difference</a></li>
+        <li><a href="#decision-matrix">Decision matrix</a></li>
+        <li><a href="#when-both">When both apply (nesting)</a></li>
+        <li><a href="#when-neither">When neither applies (use div)</a></li>
+        <li><a href="#real-examples">Real-world examples</a></li>
+        <li><a href="#flowchart">The decision flowchart</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="definitions">
+        <h2><span class="num">1</span> Definitions</h2>
+        <table class="info-table">
+          <thead><tr><th>Element</th><th>Spec definition</th><th>Plain English</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;section&gt;</code></td>
+              <td>"A thematic grouping of content, typically with a heading."</td>
+              <td>A chapter, a tab, a themed region. It belongs with the rest of the page.</td>
+            </tr>
+            <tr>
+              <td><code>&lt;article&gt;</code></td>
+              <td>"A self-contained composition that is, in principle, independently distributable or reusable."</td>
+              <td>A blog post, a news story, a product card. It stands on its own.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Both elements accept headings, both create implicit sections, both can be nested. The difference is purely about <strong>portability</strong>: would this content make sense pulled out and shown on its own?</p>
+      </section>
+
+      <section id="key-difference">
+        <h2><span class="num">2</span> The key difference</h2>
+        <p>The syndication test:</p>
+        <pre><code>Would this content make sense if I put it
+in an RSS feed or republished it on
+another site, alone?</code></pre>
+        <div class="grid-2">
+          <div class="card" style="border-left: 4px solid var(--success);">
+            <h4>Yes — use <code>&lt;article&gt;</code></h4>
+            <p>A blog post. A news story. A product card. A recipe. A forum thread. A user comment.</p>
+            <p style="margin-top:8px;">These all stand alone. You could RSS-feed them or embed them on a partner site and they'd still make sense.</p>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--brand);">
+            <h4>No — use <code>&lt;section&gt;</code></h4>
+            <p>The "Features" section of a homepage. The "About" section of a homepage. The "Ingredients" section of a recipe. The "Comments" wrapper around an article's comments.</p>
+            <p style="margin-top:8px;">These only make sense in the context of the surrounding content. Pull them out alone and they lose meaning.</p>
+          </div>
+        </div>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          A useful reframe: <code>&lt;article&gt;</code> answers "what is this?" (a post, a product, a comment). <code>&lt;section&gt;</code> answers "where does this fit?" (chapter 3, the ingredients list, the comments area). Both can have headings; the difference is portability.
+        </div>
+      </section>
+
+      <section id="decision-matrix">
+        <h2><span class="num">3</span> Decision matrix</h2>
+        <table class="info-table decision-matrix">
+          <thead>
+            <tr>
+              <th>Content</th>
+              <th>Self-contained?</th>
+              <th>Syndicatable?</th>
+              <th>Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Blog post</td><td class="yes">Yes</td><td class="yes">Yes (RSS)</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>News story</td><td class="yes">Yes</td><td class="yes">Yes</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>Product card</td><td class="yes">Yes</td><td class="yes">Yes (affiliate embed)</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>Product detail page</td><td class="yes">Yes</td><td class="yes">Yes</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>Recipe</td><td class="yes">Yes</td><td class="yes">Yes</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>Documentation page</td><td class="yes">Yes</td><td class="yes">Yes</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>User comment</td><td class="yes">Yes</td><td class="yes">Yes</td><td><code>&lt;article&gt;</code> (nested in parent article)</td></tr>
+            <tr><td>Forum thread</td><td class="yes">Yes</td><td class="yes">Yes</td><td><code>&lt;article&gt;</code></td></tr>
+            <tr><td>Homepage hero section</td><td class="no">No</td><td class="no">No</td><td><code>&lt;section&gt;</code> or just <code>&lt;header&gt;</code></td></tr>
+            <tr><td>"Features" section on landing page</td><td class="no">No</td><td class="no">No</td><td><code>&lt;section&gt;</code></td></tr>
+            <tr><td>"Pricing" section on landing page</td><td class="no">No</td><td class="no">No</td><td><code>&lt;section&gt;</code></td></tr>
+            <tr><td>"Ingredients" inside a recipe article</td><td class="no">No (depends on parent)</td><td class="no">No</td><td><code>&lt;section&gt;</code></td></tr>
+            <tr><td>"Steps" inside a recipe article</td><td class="no">No</td><td class="no">No</td><td><code>&lt;section&gt;</code></td></tr>
+            <tr><td>"Comments" wrapper around article comments</td><td class="no">No</td><td class="no">No</td><td><code>&lt;section&gt;</code></td></tr>
+            <tr><td>Tab panel content in a tabbed UI</td><td class="no">No (just one of many)</td><td class="no">No</td><td><code>&lt;section&gt;</code> with <code>aria-labelledby</code></td></tr>
+            <tr><td>A flexbox/grid wrapper that exists purely for layout</td><td class="no">No</td><td class="no">No</td><td><code>&lt;div&gt;</code></td></tr>
+            <tr><td>A button, icon, badge</td><td class="no">No</td><td class="no">No</td><td>Use specific semantic elements</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="when-both">
+        <h2><span class="num">4</span> When both apply (nesting)</h2>
+        <p>It's common for a page to contain an <code>&lt;article&gt;</code> with multiple <code>&lt;section&gt;</code>s inside it, or for an <code>&lt;article&gt;</code> to contain other <code>&lt;article&gt;</code>s.</p>
+
+        <h3>Pattern A: Article with thematic sections</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;How to Brew Coffee&lt;/h1&gt;
+  &lt;p&gt;Intro…&lt;/p&gt;
+
+  &lt;section aria-labelledby="ingredients-h"&gt;
+    &lt;h2 id="ingredients-h"&gt;Ingredients&lt;/h2&gt;
+    &lt;ul&gt;…&lt;/ul&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="steps-h"&gt;
+    &lt;h2 id="steps-h"&gt;Steps&lt;/h2&gt;
+    &lt;ol&gt;…&lt;/ol&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="tips-h"&gt;
+    &lt;h2 id="tips-h"&gt;Pro Tips&lt;/h2&gt;
+    &lt;p&gt;…&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+        <p>The whole article is syndicatable (RSS-able). Inside, sections organize it into themes. Sections wouldn't make sense alone — "Steps" without "Ingredients" and the article title would be useless.</p>
+
+        <h3>Pattern B: Article with nested comment articles</h3>
+        <pre><code>&lt;article&gt;
+  &lt;h1&gt;Blog Post Title&lt;/h1&gt;
+  &lt;p&gt;Body…&lt;/p&gt;
+
+  &lt;section aria-labelledby="comments-h"&gt;
+    &lt;h2 id="comments-h"&gt;Comments&lt;/h2&gt;
+
+    &lt;article&gt;
+      &lt;h3&gt;Comment by Bob&lt;/h3&gt;
+      &lt;p&gt;Great post!&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;article&gt;
+      &lt;h3&gt;Comment by Carol&lt;/h3&gt;
+      &lt;p&gt;I disagree because…&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+        <p>The comments are wrapped in a <code>&lt;section&gt;</code> (it's a thematic group: "the comments area"). Inside, each comment is its own <code>&lt;article&gt;</code> — because each comment is independently distributable (you could quote it elsewhere).</p>
+
+        <h3>Pattern C: Article inside a section inside an article</h3>
+        <p>Deeply nested structures are legal. Don't go more than 3 levels deep without good reason — it confuses both authors and assistive tech.</p>
+        <pre><code>&lt;article&gt;                  &lt;!-- blog post --&gt;
+  &lt;h1&gt;Title&lt;/h1&gt;
+
+  &lt;section&gt;                &lt;!-- comments area --&gt;
+    &lt;h2&gt;Comments&lt;/h2&gt;
+
+    &lt;article&gt;              &lt;!-- a comment --&gt;
+      &lt;h3&gt;Bob's reply&lt;/h3&gt;
+      &lt;p&gt;…&lt;/p&gt;
+
+      &lt;article&gt;            &lt;!-- a reply to that comment --&gt;
+        &lt;h4&gt;Carol's reply&lt;/h4&gt;
+        &lt;p&gt;…&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="when-neither">
+        <h2><span class="num">5</span> When neither applies (use <code>&lt;div&gt;</code>)</h2>
+        <p>If the content is purely for layout or styling — a flex container, a CSS Grid wrapper, a card that holds three icon+label pairs for visual reasons — use a <code>&lt;div&gt;</code>. Neither <code>&lt;section&gt;</code> nor <code>&lt;article&gt;</code> should be your default wrapper.</p>
+        <table class="info-table">
+          <thead><tr><th>Situation</th><th>Use</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Two-column grid wrapper around main + sidebar</td>
+              <td><code>&lt;div class="layout"&gt;</code></td>
+              <td>No semantic content of its own; just a layout shell</td>
+            </tr>
+            <tr>
+              <td>Card grid of three icon+text features</td>
+              <td><code>&lt;section&gt;</code> wrapping the grid; <code>&lt;div&gt;</code> per card</td>
+              <td>The section has a heading; the cards are just visual units (no individual heading)</td>
+            </tr>
+            <tr>
+              <td>A row of buttons in a toolbar</td>
+              <td><code>&lt;div role="toolbar"&gt;</code></td>
+              <td>A toolbar is a UI pattern; use ARIA role + div, not section/article</td>
+            </tr>
+            <tr>
+              <td>A modal dialog body</td>
+              <td><code>&lt;div&gt;</code> inside <code>&lt;dialog&gt;</code></td>
+              <td>The dialog itself is the semantic container; inner divs are layout</td>
+            </tr>
+            <tr>
+              <td>An icon library sprite</td>
+              <td><code>&lt;svg&gt;</code> hidden, or <code>&lt;div hidden&gt;</code></td>
+              <td>No content to group semantically</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Replacing every <code>&lt;div&gt;</code> with <code>&lt;section&gt;</code> "to be more semantic". A <code>&lt;section&gt;</code> without a heading is no more semantic than a div — and worse, it pollutes the a11y tree with phantom "region" landmarks that screen readers will try (and fail) to name. Use <code>&lt;section&gt;</code> only when there's a heading; otherwise stick with <code>&lt;div&gt;</code>.
+        </div>
+      </section>
+
+      <section id="real-examples">
+        <h2><span class="num">6</span> Real-world examples</h2>
+
+        <h3>Example A: Landing page</h3>
+        <pre><code>&lt;main&gt;
+  &lt;!-- Hero: a themed region with heading --&gt;
+  &lt;section aria-labelledby="hero-h"&gt;
+    &lt;h1 id="hero-h"&gt;Build Better Websites&lt;/h1&gt;
+    &lt;p&gt;Tagline…&lt;/p&gt;
+    &lt;a href="/signup" class="cta"&gt;Get started&lt;/a&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Features: a themed region --&gt;
+  &lt;section aria-labelledby="features-h"&gt;
+    &lt;h2 id="features-h"&gt;Features&lt;/h2&gt;
+    &lt;div class="feature-grid"&gt;
+      &lt;div class="feature"&gt;…&lt;/div&gt;
+      &lt;div class="feature"&gt;…&lt;/div&gt;
+      &lt;div class="feature"&gt;…&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Testimonials: each one is an article --&gt;
+  &lt;section aria-labelledby="testimonials-h"&gt;
+    &lt;h2 id="testimonials-h"&gt;Testimonials&lt;/h2&gt;
+    &lt;article class="testimonial"&gt;
+      &lt;blockquote&gt;Acme saved us 40 hours a week.&lt;/blockquote&gt;
+      &lt;p&gt;— Bob, CTO at Startup&lt;/p&gt;
+    &lt;/article&gt;
+    &lt;article class="testimonial"&gt;
+      &lt;blockquote&gt;Best decision we made.&lt;/blockquote&gt;
+      &lt;p&gt;— Carol, Founder&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</code></pre>
+        <p>Each section is themed (hero, features, testimonials). Each testimonial is an article because it's a self-contained, quotable unit.</p>
+
+        <h3>Example B: Blog post page</h3>
+        <pre><code>&lt;main&gt;
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Why Semantic HTML Matters&lt;/h1&gt;
+      &lt;p&gt;By Ada on &lt;time datetime="2024-03-12"&gt;March 12&lt;/time&gt;&lt;/p&gt;
+    &lt;/header&gt;
+
+    &lt;section aria-labelledby="intro-h"&gt;
+      &lt;h2 id="intro-h"&gt;Introduction&lt;/h2&gt;
+      &lt;p&gt;…&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;section aria-labelledby="why-h"&gt;
+      &lt;h2 id="why-h"&gt;Why It Matters&lt;/h2&gt;
+      &lt;p&gt;…&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;section aria-labelledby="how-h"&gt;
+      &lt;h2 id="how-h"&gt;How To Do It&lt;/h2&gt;
+      &lt;p&gt;…&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;footer&gt;Tags: …&lt;/footer&gt;
+  &lt;/article&gt;
+&lt;/main&gt;</code></pre>
+
+        <h3>Example C: Product listing</h3>
+        <pre><code>&lt;main&gt;
+  &lt;h1&gt;Coffee Makers&lt;/h1&gt;
+
+  &lt;section aria-label="Filters"&gt;
+    &lt;h2 class="visually-hidden"&gt;Filters&lt;/h2&gt;
+    &lt;form&gt;…&lt;/form&gt;
+  &lt;/section&gt;
+
+  &lt;section aria-labelledby="products-h"&gt;
+    &lt;h2 id="products-h" class="visually-hidden"&gt;Products&lt;/h2&gt;
+    &lt;div class="grid"&gt;
+      &lt;article&gt;
+        &lt;h3&gt;&lt;a href="/p/1"&gt;French Press&lt;/a&gt;&lt;/h3&gt;
+        &lt;p&gt;$24.99&lt;/p&gt;
+      &lt;/article&gt;
+      &lt;article&gt;
+        &lt;h3&gt;&lt;a href="/p/2"&gt;Pour Over&lt;/a&gt;&lt;/h3&gt;
+        &lt;p&gt;$39.99&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</code></pre>
+        <p>Each product card is an <code>&lt;article&gt;</code> — self-contained, could be embedded on a partner site. The grid wrapper is a <code>&lt;section&gt;</code> (themed region: "the products"). The grid itself is a <code>&lt;div&gt;</code> (purely visual).</p>
+      </section>
+
+      <section id="flowchart">
+        <h2><span class="num">7</span> The decision flowchart</h2>
+        <pre><code>1. Does this content have a heading?
+   No  → use &lt;div&gt;
+   Yes → continue
+
+2. Is this content self-contained — could you put it
+   in an RSS feed alone and it would make sense?
+   Yes → use &lt;article&gt;
+   No  → continue
+
+3. Is this content a thematic grouping — a chapter,
+   tab, themed region inside a larger piece?
+   Yes → use &lt;section&gt;
+   No  → continue
+
+4. Does this content need to be addressable as a
+   fragment (#section-name) for navigation?
+   Yes → use &lt;section&gt;
+   No  → use &lt;div&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          When in doubt, default to <code>&lt;div&gt;</code>. An unsemantic div is recoverable; an article-wrapping-everything page creates phantom landmarks that confuse screen reader users. Reach for <code>&lt;section&gt;</code> and <code>&lt;article&gt;</code> only when they genuinely fit.
+        </div>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">8</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Using <code>&lt;section&gt;</code> as a generic wrapper (no heading inside)</td>
+              <td>Creates unnamed "region" landmarks that screen readers try to label and fail</td>
+              <td>Use <code>&lt;div&gt;</code> for wrappers without headings</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;article&gt;</code> for the entire page body</td>
+              <td>A page is not a syndicatable composition</td>
+              <td>Use <code>&lt;main&gt;</code>; reserve <code>&lt;article&gt;</code> for the actual article content</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;article&gt;</code> for every card on a homepage</td>
+              <td>Not every card is syndicatable. A "newsletter signup" card is not an article.</td>
+              <td>Use <code>&lt;section&gt;</code> for non-syndicatable themed cards</td>
+            </tr>
+            <tr>
+              <td>Nesting <code>&lt;section&gt;</code> inside <code>&lt;section&gt;</code> inside <code>&lt;section&gt;</code></td>
+              <td>Levels of nesting obscure the outline; harder for SR users to track depth</td>
+              <td>Keep nesting shallow; use headings, not section nesting, to convey depth</td>
+            </tr>
+            <tr>
+              <td>Forgetting <code>aria-labelledby</code> on <code>&lt;section&gt;</code></td>
+              <td>Section becomes an unnamed landmark; SR users can't distinguish multiple sections</td>
+              <td>Always pair <code>&lt;section&gt;</code> with a heading that has an <code>id</code>, referenced via <code>aria-labelledby</code></td>
+            </tr>
+            <tr>
+              <td>Replacing all <code>&lt;div&gt;</code>s with <code>&lt;section&gt;</code>s "for semantics"</td>
+              <td>Creates a flood of unnamed region landmarks</td>
+              <td>Keep <code>&lt;div&gt;</code> for layout-only wrappers</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;article&gt;</code> for a single image</td>
+              <td>A bare image isn't a composition</td>
+              <td>Use <code>&lt;figure&gt;</code> instead</td>
+            </tr>
+            <tr>
+              <td>Wrapping comment threads in <code>&lt;section&gt;</code> but each comment in <code>&lt;div&gt;</code></td>
+              <td>Each comment IS a self-contained piece — should be <code>&lt;article&gt;</code></td>
+              <td>Wrap each comment in <code>&lt;article&gt;</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">9</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Syndication audit</strong>
+          Take a homepage or landing page. For each major block, ask: "Would this make sense in an RSS feed alone?" Mark each as article, section, or div. Refactor the markup to match.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Recipe page</strong>
+          Build a recipe as an <code>&lt;article&gt;</code> with <code>&lt;section&gt;</code>s inside: Ingredients, Steps, Tips. Add <code>aria-labelledby</code> to each section pointing at its heading's id. Verify the heading outline in DevTools' Accessibility tab.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Product listing</strong>
+          Build a product listing with three products. Wrap each in <code>&lt;article&gt;</code> (they're self-contained — could be embedded on a partner site). Wrap the whole list in <code>&lt;section&gt;</code>. Wrap each card image+text in a <code>&lt;div&gt;</code> for layout. Verify the structure makes sense when CSS is disabled.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Blog with comments</strong>
+          Build a blog post as <code>&lt;article&gt;</code> with a "Comments" <code>&lt;section&gt;</code> containing three comment <code>&lt;article&gt;</code>s (one of which has a nested reply article). Test the heading outline — does it form a coherent tree?
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">10</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">All modern mobile browsers</span>
+        </div>
+        <p>Both <code>&lt;section&gt;</code> and <code>&lt;article&gt;</code> have universal support in every modern browser. They are block-level by default with no built-in styling — same as <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, and <code>&lt;footer&gt;</code>.</p>
+        <p>The implicit ARIA roles differ:</p>
+        <ul>
+          <li><code>&lt;section&gt;</code> exposes role <code>region</code> <em>only if</em> it has an accessible name (via <code>aria-label</code> or <code>aria-labelledby</code>). Without a name, it has no role — just a generic element.</li>
+          <li><code>&lt;article&gt;</code> exposes role <code>article</code> always, regardless of whether it has a name.</li>
+        </ul>
+        <p>This is why naming your <code>&lt;section&gt;</code>s matters: an unnamed section is invisible to the accessibility tree as a landmark.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">11</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Blog posts</h4>
+            <p><code>&lt;article&gt;</code> wraps the post; <code>&lt;section&gt;</code>s divide it into chapters.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation sites</h4>
+            <p>Each doc page is an <code>&lt;article&gt;</code>; sub-topics are <code>&lt;section&gt;</code>s.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce listings</h4>
+            <p>Each product card is <code>&lt;article&gt;</code>; the listing wrapper is <code>&lt;section&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>News sites</h4>
+            <p>Article is <code>&lt;article&gt;</code>; "Related coverage" sidebar is <code>&lt;aside&gt;</code>; each related story inside it is <code>&lt;article&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Forums</h4>
+            <p>Thread is <code>&lt;article&gt;</code>; each reply is a nested <code>&lt;article&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>SaaS dashboards</h4>
+            <p>Each panel/widget is a <code>&lt;section&gt;</code> with its own heading; rare to use <code>&lt;article&gt;</code> in dashboards.</p>
+          </div>
+          <div class="card">
+            <h4>Tutorials / courses</h4>
+            <p>Course module is <code>&lt;section&gt;</code>; lesson is <code>&lt;article&gt;</code>.</p>
+          </div>
+          <div class="card">
+            <h4>Recipe sites</h4>
+            <p>Recipe is <code>&lt;article&gt;</code>; ingredients/steps/nutrition are <code>&lt;section&gt;</code>s.</p>
+          </div>
+          <div class="card">
+            <h4>Email newsletters</h4>
+            <p>Each story teaser is an <code>&lt;article&gt;</code>; newsletter masthead is <code>&lt;header&gt;</code>.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="main-article-aside.html">← Previous: Main, Article &amp; Aside</a>
+    <a class="next" href="hgroup.html">Next: hgroup →</a>
+  </footer>
+</body>
+</html>

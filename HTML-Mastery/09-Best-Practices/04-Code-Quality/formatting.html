@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Code Formatting — Indentation, Attribute Order, Prettier, Quotes — HTML Mastery</title>
+  <meta name="description" content="HTML code formatting in depth: indentation (2 vs 4 spaces, tabs vs spaces), line length, attribute ordering (id, class, then alphabetical), Prettier and ESLint configuration for HTML, semantic line breaks, attributes on separate lines for readability, and when to use single vs double quotes.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 14px 0;
+                  border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .comparison > div { padding: 16px; }
+    .comparison > div:first-child { border-right: 1px solid var(--line); background: #fef2f2; }
+    .comparison > div:last-child { background: #f0fdf4; }
+    .comparison h4 { margin: 0 0 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .comparison.bad h4 { color: #b91c1c; }
+    .comparison.good h4 { color: #15803d; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       flex-wrap: wrap; }
+    footer.page-nav a { background: var(--card); border: 1px solid var(--line); padding: 12px 18px;
+                        border-radius: 10px; text-decoration: none; color: var(--ink);
+                        font-weight: 600; box-shadow: 0 4px 12px rgba(2,6,23,0.05); }
+    footer.page-nav a:hover { border-color: var(--brand); color: var(--brand); }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      .comparison, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .comparison > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<header class="hero">
+  <span class="badge">Section 9 · Best Practices · Code Quality</span>
+  <h1>Code <code>Formatting</code></h1>
+  <p>Consistency beats correctness. Pick indentation, attribute order, line length, and quote style — then automate enforcement with Prettier and ESLint. Stop debating style in code review; let machines handle it.</p>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of Contents">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#why">Why Formatting Matters</a></li>
+      <li><a href="#indentation">Indentation</a></li>
+      <li><a href="#line-length">Line Length</a></li>
+      <li><a href="#attribute-order">Attribute Order</a></li>
+      <li><a href="#multiline">Multiline Attributes</a></li>
+      <li><a href="#quotes">Single vs Double Quotes</a></li>
+      <li><a href="#semantic-breaks">Semantic Line Breaks</a></li>
+      <li><a href="#prettier">Prettier Configuration</a></li>
+      <li><a href="#eslint">ESLint for HTML</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#exercise">Exercise</a></li>
+      <li><a href="#support">Tooling Support</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="why">
+      <h2><span class="num">1</span> Why Formatting Matters</h2>
+      <p>Developers spend more time reading code than writing it. Consistent formatting reduces cognitive load — your brain doesn't have to context-switch between different styles. Inconsistent formatting creates "noise" that hides real bugs and triggers unproductive debates in code review.</p>
+
+      <p>The professional approach: pick a style once, automate it, never argue about it again.</p>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        The best formatting rule is the one your team can agree to enforce automatically. Prettier, ESLint, and editor configs make style debates obsolete — the formatter just runs on save.
+      </div>
+    </section>
+
+    <section id="indentation">
+      <h2><span class="num">2</span> Indentation</h2>
+      <p>Two choices: 2 spaces or 4 spaces. Tabs vs spaces. The actual choice matters less than consistency — but each has practical tradeoffs.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Style</th><th>Pros</th><th>Cons</th></tr></thead>
+        <tbody>
+          <tr><td><strong>2 spaces</strong></td><td>Most popular in modern JS/HTML ecosystems; allows deeper nesting without running off screen; matches Prettier default</td><td>Less visually distinct at shallow depths</td></tr>
+          <tr><td><strong>4 spaces</strong></td><td>More visually distinct; traditional in Python/Java</td><td>Deep nesting overflows narrow viewports</td></tr>
+          <tr><td><strong>Tabs</strong></td><td>Accessible — screen reader users can configure tab width; one character per indent level; smaller file size</td><td>Some tools render tabs inconsistently; mix with spaces = chaos</td></tr>
+          <tr><td><strong>Spaces (any)</strong></td><td>Always renders identically across editors</td><td>Larger files; can't be customized per viewer</td></tr>
+        </tbody>
+      </table>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Mixed</h4>
+          <pre><code>&lt;div&gt;
+    &lt;p&gt;Indented 4 spaces&lt;/p&gt;
+  &lt;p&gt;Indented 2 spaces&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+        <div class="good">
+          <h4>✓ Consistent (2 spaces)</h4>
+          <pre><code>&lt;div&gt;
+  &lt;p&gt;First paragraph&lt;/p&gt;
+  &lt;p&gt;Second paragraph&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        The <a href="https://github.com/prettier/prettier">Prettier project</a> surveyed thousands of OSS repos and found 2-space indentation dominates modern HTML/JS (~85%). Prettier defaults to 2 spaces — most teams just go with the default and stop thinking about it.
+      </div>
+    </section>
+
+    <section id="line-length">
+      <h2><span class="num">3</span> Line Length</h2>
+      <p>Long lines force horizontal scrolling and obscure structure. The convention in modern HTML is <strong>80 characters</strong> soft limit, <strong>120</strong> hard limit. Prettier defaults to 80.</p>
+
+      <pre><code>&lt;!-- Good: under 80 chars --&gt;
+&lt;a href="/blog/seo-meta-tags" class="card-link"&gt;Read more&lt;/a&gt;
+
+&lt;!-- Borderline: ~80 chars --&gt;
+&lt;button type="button" class="btn btn-primary" data-action="submit"&gt;Save&lt;/button&gt;
+
+&lt;!-- Too long: split across lines --&gt;
+&lt;button
+  type="button"
+  class="btn btn-primary btn-large"
+  data-action="submit"
+  data-track="form-submit"
+  aria-label="Save and submit the form"
+&gt;
+  Save
+&lt;/button&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Prettier automatically breaks long attribute lists across multiple lines when they exceed the print width. You don't have to think about it — just write your HTML normally and let Prettier decide when to wrap.
+      </div>
+    </section>
+
+    <section id="attribute-order">
+      <h2><span class="num">4</span> Attribute Order</h2>
+      <p>There's no official HTML spec for attribute order, but a strong convention has emerged from the Vue.js, React, and HTML communities:</p>
+
+      <ol>
+        <li><code>id</code> — unique identifier (most important for selectors)</li>
+        <li><code>class</code> — styling hooks</li>
+        <li><code>data-*</code> — custom data attributes</li>
+        <li><code>src</code>, <code>href</code>, <code>type</code> — primary resource/behavior</li>
+        <li><code>name</code>, <code>value</code>, <code>placeholder</code> — form-related</li>
+        <li><code>role</code>, <code>aria-*</code> — accessibility</li>
+        <li><code>style</code>, <code>title</code>, <code>tabindex</code> — presentation & misc</li>
+        <li>Everything else, alphabetical</li>
+      </ol>
+
+      <div class="comparison">
+        <div class="bad">
+          <h4>✗ Random order</h4>
+          <pre><code>&lt;button
+  data-action="submit"
+  class="btn"
+  id="save-button"
+  aria-label="Save"
+  type="button"
+&gt;Save&lt;/button&gt;</code></pre>
+        </div>
+        <div class="good">
+          <h4>✓ Convention</h4>
+          <pre><code>&lt;button
+  id="save-button"
+  class="btn"
+  data-action="submit"
+  type="button"
+  aria-label="Save"
+&gt;Save&lt;/button&gt;</code></pre>
+        </div>
+      </div>
+
+      <p>Within each group, order alphabetically for predictability. The order isn't about correctness — it's about making attributes easy to find when scanning unfamiliar markup.</p>
+    </section>
+
+    <section id="multiline">
+      <h2><span class="num">5</span> Multiline Attributes</h2>
+      <p>When an element has many attributes or a single attribute (like <code>srcset</code>) is very long, break across lines. Prettier's default behavior:</p>
+
+      <pre><code>&lt;!-- Single line if short --&gt;
+&lt;img src="hero.webp" alt="Sunrise" width="1600" height="900"&gt;
+
+&lt;!-- Multiline when over print width --&gt;
+&lt;img
+  src="hero.webp"
+  alt="Sunrise over the mountains, casting long shadows across the valley"
+  width="1600"
+  height="900"
+  loading="lazy"
+  decoding="async"
+  fetchpriority="low"
+&gt;
+
+&lt;!-- Long srcset broken into one source per line --&gt;
+&lt;img
+  srcset="
+    /img/small.webp   480w,
+    /img/medium.webp  960w,
+    /img/large.webp  1600w
+  "
+  sizes="(max-width: 600px) 100vw, 50vw"
+  src="/img/large.webp"
+  alt="..."
+&gt;</code></pre>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Notice the closing <code>&gt;</code> on its own line in the multiline case. This is Prettier's default — it makes diffs cleaner when adding attributes (the closing bracket line doesn't change). Some teams prefer the <code>&gt;</code> on the last attribute line; either is fine, just be consistent.
+      </div>
+    </section>
+
+    <section id="quotes">
+      <h2><span class="num">6</span> Single vs Double Quotes</h2>
+      <p>HTML allows both single (<code>'</code>) and double (<code>"</code>) quotes for attribute values. The WHATWG spec treats them identically. The choice is purely stylistic.</p>
+
+      <table class="info-table">
+        <thead><tr><th>Convention</th><th>Used by</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Double quotes</strong></td><td>HTML spec examples, most legacy HTML, Prettier default for HTML</td><td>Matches what most developers expect; safer when value contains apostrophes</td></tr>
+          <tr><td><strong>Single quotes</strong></td><td>JSX (React), some Vue style guides</td><td>Allows apostrophes in values without escaping</td></tr>
+          <tr><td><strong>No quotes</strong></td><td>Allowed for unambiguous attribute values per spec</td><td>Never do this — fragile and confusing</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code>&lt;!-- Don't mix styles --&gt;
+&lt;a href='/' class="nav-link"&gt;Home&lt;/a&gt;
+
+&lt;!-- Pick one (Prettier default: double) --&gt;
+&lt;a href="/" class="nav-link"&gt;Home&lt;/a&gt;
+
+&lt;!-- When value contains a quote, switch or escape --&gt;
+&lt;a href="/" title="User's profile"&gt;Profile&lt;/a&gt;
+&lt;a href="/" title='User "jane" profile'&gt;Profile&lt;/a&gt;
+&lt;a href="/" title="User \"jane\" profile"&gt;Profile&lt;/a&gt;  &lt;!-- invalid HTML! --&gt;</code></pre>
+
+      <div class="callout warn">
+        <strong>Common Mistake</strong>
+        Trying to escape double quotes inside double-quoted attributes with <code>\"</code>. That's JavaScript syntax — HTML uses <code>&amp;quot;</code> for escaped double quotes. Or just switch to single quotes for that attribute.
+      </div>
+    </section>
+
+    <section id="semantic-breaks">
+      <h2><span class="num">7</span> Semantic Line Breaks</h2>
+      <p>The <a href="https://sembr.org">Semantic Line Breaks</a> convention suggests breaking lines at natural semantic boundaries — between clauses, sentences, list items — even when there's no technical need to wrap. This makes diffs cleaner and code easier to read in plain text.</p>
+
+      <pre><code>&lt;p&gt;
+  This is a long paragraph
+  that has been broken into lines
+  at natural semantic boundaries.
+  Each line is a complete thought
+  that can be reviewed independently.
+&lt;/p&gt;</code></pre>
+
+      <p>Pros:</p>
+      <ul>
+        <li>Git diffs are line-based — semantic breaks mean a single word change only affects one line</li>
+        <li>Easier to scan in narrow terminals or side-by-side diffs</li>
+        <li>Plain-text editors show structure naturally</li>
+      </ul>
+
+      <p>Cons:</p>
+      <ul>
+        <li>Source has more lines than the rendered output (visual mismatch)</li>
+        <li>Some tools (linters, minifiers) may complain or reflow</li>
+        <li>Not always intuitive to new contributors</li>
+      </ul>
+
+      <p>Most teams don't enforce semantic breaks for HTML — they're more common in Markdown. Use them in HTML when content is hand-written prose, skip them when content is short or templated.</p>
+    </section>
+
+    <section id="prettier">
+      <h2><span class="num">8</span> Prettier Configuration</h2>
+      <p>Prettier is the de facto HTML formatter. Install and configure once; never think about formatting again.</p>
+
+      <pre><code># Install
+npm install --save-dev prettier
+
+# Run on save (VS Code)
+# Install "Prettier - Code formatter" extension, then:
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
+}</code></pre>
+
+      <pre><code>// .prettierrc — the standard config most teams use
+{
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "css",
+  "bracketSameLine": false,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "html",
+        "singleQuote": false,
+        "printWidth": 120
+      }
+    }
+  ]
+}</code></pre>
+
+      <h3>Key HTML-specific options</h3>
+      <table class="info-table">
+        <thead><tr><th>Option</th><th>Default</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>printWidth</code></td><td>80</td><td>Max chars before wrapping</td></tr>
+          <tr><td><code>tabWidth</code></td><td>2</td><td>Spaces per indent level</td></tr>
+          <tr><td><code>useTabs</code></td><td>false</td><td>Use tab characters instead of spaces</td></tr>
+          <tr><td><code>singleQuote</code></td><td>false</td><td>Use single quotes (most teams set true for JS, false for HTML)</td></tr>
+          <tr><td><code>htmlWhitespaceSensitivity</code></td><td>"css"</td><td>How to handle inline vs block whitespace — "css" (default), "strict", or "ignore"</td></tr>
+          <tr><td><code>bracketSameLine</code></td><td>false</td><td>Whether to put <code>&gt;</code> on the same line as the last attribute</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>Pro Tip</strong>
+        Use the <code>.prettierignore</code> file to skip generated HTML, vendor files, and template partials that don't fit Prettier's expectations. Example: <code>dist/**</code>, <code>vendor/**</code>, <code>*.hbs</code>.
+      </div>
+    </section>
+
+    <section id="eslint">
+      <h2><span class="num">9</span> ESLint for HTML</h2>
+      <p>ESLint is primarily a JavaScript linter, but with the <code>eslint-plugin-html</code> plugin, it lints JavaScript inside <code>&lt;script&gt;</code> tags. For pure HTML structural linting, use <code>htmlhint</code> or <code>html-validate</code> (covered in the validation file).</p>
+
+      <pre><code># Install
+npm install --save-dev eslint eslint-plugin-html
+
+# .eslintrc.json
+{
+  "env": { "browser": true, "es2024": true },
+  "parserOptions": { "ecmaVersion": "latest" },
+  "plugins": ["html"],
+  "rules": {
+    "no-undef": "error",
+    "no-unused-vars": "warn",
+    "no-console": "warn"
+  },
+  "settings": {
+    "html/indent": "+2"
+  }
+}</code></pre>
+
+      <h3>htmlhint for structural rules</h3>
+      <pre><code># .htmlhintrc
+{
+  "tag-pair": true,
+  "tagname-lowercase": true,
+  "attr-lowercase": true,
+  "attr-value-double-quotes": true,
+  "attr-value-not-empty": true,
+  "attr-no-duplication": true,
+  "doctype-first": true,
+  "id-unique": true,
+  "src-not-empty": true,
+  "title-tag-required": true,
+  "alt-require": true,
+  "inline-style-disabled": false,
+  "inline-script-disabled": false,
+  "space-tab-mixed-disabled": "space",
+  "id-class-value": "dash",
+  "style-disabled": false,
+  "img-alt-require": true
+}</code></pre>
+
+      <p>Run with <code>npx htmlhint "**/*.html"</code> or via a pre-commit hook.</p>
+    </section>
+
+    <section id="mistakes">
+      <h2><span class="num">10</span> Common Mistakes</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Mixing tabs and spaces</h4>
+          <p>Causes "phantom" indentation bugs. Configure editor to insert spaces for tabs; Prettier normalizes on save.</p>
+        </div>
+        <div class="card">
+          <h4>Manually aligning attributes</h4>
+          <p>Looks tidy but breaks the moment you add a longer attribute. Let Prettier handle it.</p>
+        </div>
+        <div class="card">
+          <h4>Unquoted attribute values</h4>
+          <p><code>class=btn</code> works in HTML but is fragile. Always quote.</p>
+        </div>
+        <div class="card">
+          <h4>No formatter on save</h4>
+          <p>Manual formatting wastes time. Set <code>editor.formatOnSave</code> and forget about it.</p>
+        </div>
+        <div class="card">
+          <h4>Long lines (300+ chars)</h4>
+          <p>Force horizontal scrolling, hide structure. Cap at 80–120 chars.</p>
+        </div>
+        <div class="card">
+          <h4>Style debates in code review</h4>
+          <p>If Prettier produced it, it's by definition correct. Don't review formatting — review logic.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercise">
+      <h2><span class="num">11</span> Exercise</h2>
+      <div class="callout exercise">
+        <strong>Exercise: Format and Standardize</strong>
+        <p>Take this inconsistent HTML and (1) manually reformat it according to the conventions in this page, then (2) run Prettier on it and compare your result.</p>
+        <pre><code>&lt;div class='container' id='main'&gt;
+        &lt;header&gt;
+&lt;h1&gt;Welcome&lt;/h1&gt;
+   &lt;nav class='main-nav'&gt;
+&lt;a href='/'&gt;Home&lt;/a&gt;&lt;a href='/blog'&gt;Blog&lt;/a&gt;&lt;a href='/about'&gt;About&lt;/a&gt;
+            &lt;/nav&gt;
+&lt;/header&gt;
+    &lt;main&gt;
+&lt;article class="post" id="post-1" data-author="jane"&gt;
+&lt;h2&gt;First Post&lt;/h2&gt;
+&lt;p&gt;This is a paragraph that goes on for a very long time without any obvious reason to break it across multiple lines, which makes it hard to read in narrow editors and terminals.&lt;/p&gt;
+&lt;img src='/img/cover.webp' alt='Cover image' width=1600 height=900&gt;
+&lt;/article&gt;
+&lt;/main&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>Tasks:</strong></p>
+        <ol>
+          <li>Standardize on 2-space indentation.</li>
+          <li>Use double quotes for all attribute values.</li>
+          <li>Reorder attributes: <code>id</code>, <code>class</code>, <code>data-*</code>, then the rest.</li>
+          <li>Break long lines and put each link in the nav on its own line.</li>
+          <li>Add quotes to the <code>width</code> and <code>height</code> attributes.</li>
+          <li>Install Prettier and run it on the result. Diff your manual formatting against Prettier's output.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="support">
+      <h2><span class="num">12</span> Tooling Support</h2>
+      <div class="browser-support">
+        <span class="pill yes">Prettier: VS Code, JetBrains, Sublime, Vim, Emacs — all major editors</span>
+        <span class="pill yes">ESLint + eslint-plugin-html: all editors via CLI</span>
+        <span class="pill yes">HTMLHint: CLI + VS Code extension</span>
+        <span class="pill yes">html-validate: CLI + VS Code extension</span>
+        <span class="pill yes">EditorConfig: universal — all editors respect .editorconfig</span>
+      </div>
+
+      <h3>The .editorconfig safety net</h3>
+      <p>Even without Prettier, a <code>.editorconfig</code> file enforces basic indentation across every editor that supports it (which is all of them, via built-in or plugin).</p>
+
+      <pre><code># .editorconfig
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{html,htm}]
+indent_style = space
+indent_size = 2
+max_line_length = 80
+
+[*.md]
+trim_trailing_whitespace = false  # preserve Markdown line breaks</code></pre>
+
+      <div class="callout">
+        <strong>Real-World Use Case</strong>
+        A 40-developer team standardized on Prettier with 2-space indentation, double quotes for HTML, single for JS. Code review comments about formatting dropped 92% (measured over 6 months). Reviewers focused on logic, not style. New hires stopped asking "what style should I use" — they just ran the formatter and shipped.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="page-nav">
+  <a href="commenting.html">← Previous: HTML Comments</a>
+  <a href="#">Section Complete ↑</a>
+</footer>
+</body>
+</html>

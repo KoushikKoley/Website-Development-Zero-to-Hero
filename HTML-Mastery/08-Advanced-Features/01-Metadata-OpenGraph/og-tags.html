@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Graph Protocol — og:title, og:image, og:url &amp; More — HTML Mastery</title>
+  <meta name="description" content="Open Graph protocol meta tags: og:title, og:description, og:image, og:url, og:type (website/article/product/profile), og:site_name, og:locale, video/audio OG tags. How Facebook, LinkedIn, Slack, iMessage use them. Image dimensions. Testing with Facebook Sharing Debugger.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .tag-table td:first-child { font-family: monospace; color: var(--brand); font-weight: 600; }
+    .preview-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+                    background: white; max-width: 500px; margin: 14px 0;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .preview-card .preview-img { background: linear-gradient(135deg, #2563eb, #7c3aed);
+                                  height: 240px; display: flex; align-items: center;
+                                  justify-content: center; color: white; font-weight: 600; }
+    .preview-card .preview-body { padding: 14px 16px; }
+    .preview-card .preview-domain { font-size: 0.8rem; color: var(--ink-soft);
+                                    text-transform: uppercase; letter-spacing: 0.04em; }
+    .preview-card .preview-title { font-size: 1.05rem; font-weight: 600; margin: 4px 0; color: var(--ink); }
+    .preview-card .preview-desc { font-size: 0.9rem; color: var(--ink-soft); margin: 0; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 8 · Metadata &amp; Open Graph · Lesson 1</span>
+    <h1>Open Graph Protocol</h1>
+    <p>When you paste a link into Facebook, LinkedIn, Slack, Discord, iMessage, or Telegram, the platform scrapes the URL and renders a rich "preview card" — image, title, description, site name. That data comes from <strong>Open Graph</strong> meta tags. Originally Facebook's invention, OG has become the de facto standard for social-media link previews across the web.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#what">What is Open Graph?</a></li>
+        <li><a href="#core-tags">The four required tags</a></li>
+        <li><a href="#type">og:type</a></li>
+        <li><a href="#optional">Optional tags</a></li>
+        <li><a href="#image">og:image deep dive</a></li>
+        <li><a href="#video-audio">Video &amp; audio OG tags</a></li>
+        <li><a href="#consumers">Who uses OG tags</a></li>
+        <li><a href="#testing">Testing &amp; debugging</a></li>
+        <li><a href="#full-example">Full example</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#use-cases">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2><span class="num">1</span> What is Open Graph?</h2>
+        <p>Open Graph (OG) is a metadata protocol introduced by Facebook in 2010. It lets any web page become a "rich object" in social graphs — meaning when someone shares the URL, the platform displays a card with title, description, and image instead of just a bare link.</p>
+
+        <p>The protocol lives entirely in <code>&lt;meta&gt;</code> tags inside the <code>&lt;head&gt;</code>, using <code>property</code> (not <code>name</code>) attributes prefixed with <code>og:</code>:</p>
+
+        <pre><code>&lt;head&gt;
+  &lt;meta property="og:title" content="The Hitchhiker's Guide to HTML"&gt;
+  &lt;meta property="og:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+  &lt;meta property="og:image" content="https://example.com/images/og-cover.jpg"&gt;
+  &lt;meta property="og:url" content="https://example.com/html-guide"&gt;
+  &lt;meta property="og:type" content="article"&gt;
+&lt;/head&gt;</code></pre>
+
+        <p>The original spec at <code>ogp.me</code> is just a few pages and well worth a read.</p>
+
+        <div class="callout info">
+          <strong>property vs name</strong>
+          OG tags use <code>property="og:..."</code>, not <code>name="og:..."</code>. The <code>property</code> attribute was RDFa's invention; OG borrowed it for its extensibility (so <code>og:image:url</code> and <code>og:image:width</code> work as structured sub-properties). All major crawlers correctly read both, but the spec uses <code>property</code>.
+        </div>
+      </section>
+
+      <section id="core-tags">
+        <h2><span class="num">2</span> The Four Required Tags</h2>
+        <p>The OG spec calls these "the four required properties" — every page using OG should set them all.</p>
+
+        <table class="info-table tag-table">
+          <thead>
+            <tr><th>Tag</th><th>Purpose</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>og:title</td><td>The title of the page as it should appear in the preview card. Without any branding or site name — that's separate.</td><td><code>The Hitchhiker's Guide to HTML</code></td></tr>
+            <tr><td>og:type</td><td>The type of object. <code>website</code> is the catchall. <code>article</code> for news/blog posts, <code>profile</code> for people, <code>book</code>, <code>video.movie</code>, etc.</td><td><code>article</code></td></tr>
+            <tr><td>og:image</td><td>URL to the image used in the preview. Should be at least 1200×630px, JPG or PNG, under 8 MB.</td><td><code>https://example.com/og/cover.jpg</code></td></tr>
+            <tr><td>og:url</td><td>The canonical URL of the page. Always set this even if it equals the current URL, so previews are consistent across share paths.</td><td><code>https://example.com/post/123</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Forgetting <code>og:url</code>. If your page is reachable via multiple URLs (e.g., <code>example.com/post</code> and <code>www.example.com/post</code>), platforms may treat them as separate share objects, splitting your engagement metrics. <code>og:url</code> makes the canonical URL explicit.
+        </div>
+      </section>
+
+      <section id="type">
+        <h2><span class="num">3</span> og:type — Beyond "website"</h2>
+        <p>The <code>og:type</code> tag tells the platform what kind of object the page represents. <code>website</code> is the default, but specifying a more precise type enables type-specific properties.</p>
+
+        <table class="info-table">
+          <thead>
+            <tr><th>Type</th><th>Use for</th><th>Type-specific properties</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>website</code></td><td>Homepages, landing pages, generic pages</td><td>—</td></tr>
+            <tr><td><code>article</code></td><td>News stories, blog posts</td><td><code>article:published_time</code>, <code>article:author</code>, <code>article:section</code>, <code>article:tag</code></td></tr>
+            <tr><td><code>product</code></td><td>E-commerce product pages</td><td><code>product:price:amount</code>, <code>product:price:currency</code>, <code>product:availability</code></td></tr>
+            <tr><td><code>profile</code></td><td>User profile pages</td><td><code>profile:first_name</code>, <code>profile:last_name</code>, <code>profile:username</code>, <code>profile:gender</code></td></tr>
+            <tr><td><code>book</code></td><td>Book detail pages</td><td><code>book:author</code>, <code>book:isbn</code>, <code>book:release_date</code></td></tr>
+            <tr><td><code>video.movie</code>, <code>video.episode</code>, <code>video.tv_show</code>, <code>video.other</code></td><td>Video content</td><td><code>video:duration</code>, <code>video:release_date</code>, <code>video:tag</code></td></tr>
+            <tr><td><code>music.song</code>, <code>music.album</code></td><td>Music content</td><td><code>music:duration</code>, <code>music:musician</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Article example</h3>
+        <pre><code>&lt;meta property="og:type" content="article"&gt;
+&lt;meta property="og:title" content="How browsers render CSS"&gt;
+&lt;meta property="og:url" content="https://example.com/posts/css-render"&gt;
+&lt;meta property="og:image" content="https://example.com/og/css-render.jpg"&gt;
+&lt;meta property="article:published_time" content="2024-03-15T08:00:00Z"&gt;
+&lt;meta property="article:modified_time" content="2024-03-16T10:30:00Z"&gt;
+&lt;meta property="article:author" content="https://example.com/authors/jane"&gt;
+&lt;meta property="article:section" content="Browsers"&gt;
+&lt;meta property="article:tag" content="CSS"&gt;
+&lt;meta property="article:tag" content="performance"&gt;</code></pre>
+
+        <h3>Product example</h3>
+        <pre><code>&lt;meta property="og:type" content="product"&gt;
+&lt;meta property="og:title" content="Acme Wireless Headphones"&gt;
+&lt;meta property="og:image" content="https://shop.example.com/og/headphones.jpg"&gt;
+&lt;meta property="product:price:amount" content="199.00"&gt;
+&lt;meta property="product:price:currency" content="USD"&gt;
+&lt;meta property="product:availability" content="oos"&gt;
+&lt;!-- availability values: "in stock", "oos" (out of stock), "pending" --&gt;</code></pre>
+
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          For products, also add JSON-LD schema.org <code>Product</code> markup. The two systems complement each other: OG powers social-media previews; schema.org powers Google rich results.
+        </div>
+      </section>
+
+      <section id="optional">
+        <h2><span class="num">4</span> Optional Tags</h2>
+
+        <table class="info-table tag-table">
+          <thead>
+            <tr><th>Tag</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>og:site_name</td><td>The name of the overall site (not the page). e.g. "The New York Times" — different from <code>og:title</code> which is the article title.</td></tr>
+            <tr><td>og:description</td><td>A one- or two-sentence description. Typically shown below the title in preview cards.</td></tr>
+            <tr><td>og:locale</td><td>The page's locale, e.g. <code>en_US</code> or <code>fr_FR</code>. Defaults to <code>en_US</code>.</td></tr>
+            <tr><td>og:locale:alternate</td><td>Other locales this page is available in. Repeat for each.</td></tr>
+            <tr><td>og:determiner</td><td>The word that should precede the title in a sentence: "a", "an", "the", "auto", "". Almost never used in practice.</td></tr>
+          </tbody>
+        </table>
+
+        <pre><code>&lt;meta property="og:site_name" content="The Daily Probe"&gt;
+&lt;meta property="og:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+&lt;meta property="og:locale" content="en_US"&gt;
+&lt;meta property="og:locale:alternate" content="fr_FR"&gt;
+&lt;meta property="og:locale:alternate" content="es_ES"&gt;
+&lt;meta property="og:locale:alternate" content="ja_JP"&gt;</code></pre>
+      </section>
+
+      <section id="image">
+        <h2><span class="num">5</span> og:image Deep Dive</h2>
+        <p>The image is the most impactful OG tag — it's what catches the eye in a feed full of links. Get it right.</p>
+
+        <h3>Recommended dimensions</h3>
+        <table class="info-table">
+          <thead>
+            <tr><th>Use case</th><th>Recommended</th><th>Minimum</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Standard OG image (1.91:1 ratio)</td><td>1200 × 630 px</td><td>600 × 315 px</td></tr>
+            <tr><td>Square OG image (1:1 ratio, for small previews)</td><td>1080 × 1080 px</td><td>200 × 200 px</td></tr>
+            <tr><td>Large OG image (for summary_large_image Twitter Card)</td><td>1200 × 628 px</td><td>same as standard</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Structured image properties</h3>
+        <p>For best results, declare the image's dimensions and MIME type so platforms don't have to fetch the image to know its size:</p>
+        <pre><code>&lt;meta property="og:image" content="https://example.com/og/cover.jpg"&gt;
+&lt;meta property="og:image:secure_url" content="https://example.com/og/cover.jpg"&gt;
+&lt;meta property="og:image:type" content="image/jpeg"&gt;
+&lt;meta property="og:image:width" content="1200"&gt;
+&lt;meta property="og:image:height" content="630"&gt;
+&lt;meta property="og:image:alt" content="Stylized book cover showing a planet with the title overlay"&gt;</code></pre>
+
+        <h3>Multiple images</h3>
+        <p>You can declare multiple <code>og:image</code> tags. Some platforms (notably Facebook) let the user pick from them; others just use the first.</p>
+        <pre><code>&lt;meta property="og:image" content="https://example.com/og/cover.jpg"&gt;
+&lt;meta property="og:image" content="https://example.com/og/cover-square.jpg"&gt;
+&lt;meta property="og:image" content="https://example.com/og/author-photo.jpg"&gt;</code></pre>
+
+        <div class="callout warn">
+          <strong>Common Mistakes</strong>
+          <ul style="margin: 6px 0 0; padding-left: 20px;">
+            <li>Using a relative URL like <code>/images/cover.jpg</code> — most platforms require absolute URLs.</li>
+            <li>Using HTTP for <code>og:image</code> when the page is HTTPS — many platforms refuse to embed mixed-content images. Use <code>og:image:secure_url</code> with HTTPS.</li>
+            <li>Image too small (&lt; 200px in either dimension) — Facebook ignores these.</li>
+            <li>Image too big (&gt; 8 MB) — most platforms time out and fall back to no image.</li>
+            <li>Image is a PNG with transparency — the alpha channel often renders as black on platforms that don't composite against a background.</li>
+          </ul>
+        </div>
+
+        <div class="callout tip">
+          <strong>Pro Tip — og:image:alt</strong>
+          <code>og:image:alt</code> is supported by Facebook and a few others. Add it whenever the image conveys information not present in the title/description. Screen-reader users on social platforms will thank you.
+        </div>
+      </section>
+
+      <section id="video-audio">
+        <h2><span class="num">6</span> Video &amp; Audio OG Tags</h2>
+        <p>If your page is about a video or audio resource, you can declare it as part of OG so platforms embed the media directly in the feed rather than just an image.</p>
+
+        <h3>Video</h3>
+        <pre><code>&lt;meta property="og:video" content="https://example.com/videos/intro.mp4"&gt;
+&lt;meta property="og:video:secure_url" content="https://example.com/videos/intro.mp4"&gt;
+&lt;meta property="og:video:type" content="video/mp4"&gt;
+&lt;meta property="og:video:width" content="1280"&gt;
+&lt;meta property="og:video:height" content="720"&gt;</code></pre>
+
+        <p>For richer semantics, pair with <code>og:type</code> of <code>video.movie</code>, <code>video.episode</code>, <code>video.tv_show</code>, or <code>video.other</code>.</p>
+
+        <h3>Audio</h3>
+        <pre><code>&lt;meta property="og:audio" content="https://example.com/audio/podcast-ep-12.mp3"&gt;
+&lt;meta property="og:audio:secure_url" content="https://example.com/audio/podcast-ep-12.mp3"&gt;
+&lt;meta property="og:audio:type" content="audio/mpeg"&gt;</code></pre>
+
+        <div class="callout info">
+          <strong>Reality check</strong>
+          In practice, very few platforms render <code>og:video</code> or <code>og:audio</code> as inline players in the feed. Facebook and LinkedIn will often pick up the video. Twitter uses its own Twitter Player Card instead. Consider these tags as progressive enhancement.
+        </div>
+      </section>
+
+      <section id="consumers">
+        <h2><span class="num">7</span> Who Uses OG Tags</h2>
+
+        <div class="grid-3">
+          <div class="card">
+            <h4>Facebook</h4>
+            <p>The original creator. Reads all OG tags; renders full preview card with image.</p>
+          </div>
+          <div class="card">
+            <h4>LinkedIn</h4>
+            <p>Full OG support. Particularly strict about image dimensions (must be ≥ 200×200).</p>
+          </div>
+          <div class="card">
+            <h4>Slack</h4>
+            <p>Unfurls links using OG tags. Renders image, title, description in the channel.</p>
+          </div>
+          <div class="card">
+            <h4>Discord</h4>
+            <p>Reads OG tags. Uses <code>og:site_name</code> as a footer label.</p>
+          </div>
+          <div class="card">
+            <h4>iMessage / Apple Messages</h4>
+            <p>Renders rich preview when a URL is sent in a message bubble.</p>
+          </div>
+          <div class="card">
+            <h4>Telegram</h4>
+            <p>Reads OG tags, including video tags for inline preview.</p>
+          </div>
+          <div class="card">
+            <h4>WhatsApp</h4>
+            <p>Renders preview cards from OG tags.</p>
+          </div>
+          <div class="card">
+            <h4>Twitter/X</h4>
+            <p>Reads OG tags as a fallback when Twitter Card tags aren't present.</p>
+          </div>
+          <div class="card">
+            <h4>Microsoft Teams</h4>
+            <p>Unfurls links via OG tags in chat.</p>
+          </div>
+          <div class="card">
+            <h4>Pinterest</h4>
+            <p>Uses <code>og:image</code> as the pin image when users save the page.</p>
+          </div>
+          <div class="card">
+            <h4>Reddit</h4>
+            <p>Uses OG tags for link previews in posts.</p>
+          </div>
+          <div class="card">
+            <h4>GitHub</h4>
+            <p>Uses OG tags for repository README links shared in issues.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="testing">
+        <h2><span class="num">8</span> Testing &amp; Debugging</h2>
+
+        <h3>Facebook Sharing Debugger</h3>
+        <p>Facebook's official tool at <code>developers.facebook.com/tools/debug/</code> is the gold-standard OG tester. Paste your URL and it will:</p>
+        <ul>
+          <li>Show the preview card exactly as Facebook will render it.</li>
+          <li>Report which OG tags were detected.</li>
+          <li>Report warnings (e.g., "image too small", "missing og:url").</li>
+          <li>Let you force a re-scrape (Facebook caches OG data aggressively — sometimes for days).</li>
+        </ul>
+
+        <h3>Other testing tools</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4>LinkedIn Post Inspector</h4>
+            <p><code>linkedin.com/post-inspector/</code> — shows the LinkedIn preview and forces a re-scrape.</p>
+          </div>
+          <div class="card">
+            <h4>Twitter Card Validator</h4>
+            <p><code>cards-dev.twitter.com/validator</code> — also validates OG fallbacks.</p>
+          </div>
+          <div class="card">
+            <h4>OpenGraph.xyz</h4>
+            <p>A free meta-tag previewer that shows how your URL looks across 10+ platforms.</p>
+          </div>
+          <div class="card">
+            <h4>HeyMeta.com</h4>
+            <p>Quick OG tag visualizer.</p>
+          </div>
+          <div class="card">
+            <h4>MetaTags.io</h4>
+            <p>Live previewer with side-by-side mockups for FB, Twitter, LinkedIn, Slack.</p>
+          </div>
+          <div class="card">
+            <h4>curl + grep</h4>
+            <p>The fastest debugging: <code>curl -s example.com | grep 'og:'</code> shows what's actually being served.</p>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>Common Mistake — stale cache</strong>
+          You updated your OG tags but Facebook still shows the old preview? Facebook caches aggressively. Visit the Sharing Debugger and click <strong>"Scrape Again"</strong> to force a refresh. Same with LinkedIn Post Inspector.
+        </div>
+      </section>
+
+      <section id="full-example">
+        <h2><span class="num">9</span> Full Example</h2>
+        <p>A complete OG setup for a blog article:</p>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;The Hitchhiker's Guide to HTML — The Daily Probe&lt;/title&gt;
+  &lt;meta name="description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+
+  &lt;!-- Open Graph --&gt;
+  &lt;meta property="og:type" content="article"&gt;
+  &lt;meta property="og:site_name" content="The Daily Probe"&gt;
+  &lt;meta property="og:title" content="The Hitchhiker's Guide to HTML"&gt;
+  &lt;meta property="og:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+  &lt;meta property="og:url" content="https://example.com/posts/html-guide"&gt;
+  &lt;meta property="og:image" content="https://example.com/og/html-guide-cover.jpg"&gt;
+  &lt;meta property="og:image:secure_url" content="https://example.com/og/html-guide-cover.jpg"&gt;
+  &lt;meta property="og:image:type" content="image/jpeg"&gt;
+  &lt;meta property="og:image:width" content="1200"&gt;
+  &lt;meta property="og:image:height" content="630"&gt;
+  &lt;meta property="og:image:alt" content="Stylized cover showing the title over a starfield"&gt;
+  &lt;meta property="og:locale" content="en_US"&gt;
+  &lt;meta property="og:locale:alternate" content="fr_FR"&gt;
+  &lt;meta property="article:published_time" content="2024-03-15T08:00:00Z"&gt;
+  &lt;meta property="article:modified_time" content="2024-03-16T10:30:00Z"&gt;
+  &lt;meta property="article:author" content="https://example.com/authors/jane"&gt;
+  &lt;meta property="article:section" content="Web"&gt;
+  &lt;meta property="article:tag" content="HTML"&gt;
+  &lt;meta property="article:tag" content="tutorial"&gt;
+
+  &lt;!-- Twitter Card (covered in next lesson) --&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:title" content="The Hitchhiker's Guide to HTML"&gt;
+  &lt;meta name="twitter:description" content="A complete tutorial covering everything from DOCTYPE to Web Components."&gt;
+  &lt;meta name="twitter:image" content="https://example.com/og/html-guide-cover.jpg"&gt;
+
+  &lt;!-- Canonical --&gt;
+  &lt;link rel="canonical" href="https://example.com/posts/html-guide"&gt;
+&lt;/head&gt;</code></pre>
+
+        <h3>What the preview card looks like</h3>
+        <div class="preview-card">
+          <div class="preview-img">1200 × 630 image</div>
+          <div class="preview-body">
+            <div class="preview-domain">EXAMPLE.COM</div>
+            <div class="preview-title">The Hitchhiker's Guide to HTML</div>
+            <p class="preview-desc">A complete tutorial covering everything from DOCTYPE to Web Components.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try It Yourself</h2>
+
+        <div class="callout exercise">
+          <strong>Exercise 1 — Add OG to a page</strong>
+          Pick any page you've built. Add the four required OG tags (<code>og:title</code>, <code>og:type</code>, <code>og:image</code>, <code>og:url</code>) plus <code>og:description</code> and <code>og:site_name</code>. Validate it at <code>developers.facebook.com/tools/debug/</code>.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 2 — Build an OG image</strong>
+          Create an image at exactly 1200 × 630 px in your favorite image editor (or use a tool like Cloudinary, Bannerbear, or imgix). The image should include the article title prominently — most users will see it thumbnail-sized in their feed, so 60pt+ text is recommended.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 3 — Article-specific tags</strong>
+          Add <code>article:published_time</code>, <code>article:modified_time</code>, <code>article:author</code>, and two <code>article:tag</code> entries to your page. Re-test in the Facebook debugger to confirm they appear.
+        </div>
+
+        <div class="callout exercise">
+          <strong>Exercise 4 — Product page OG</strong>
+          Build a simple product page with <code>og:type="product"</code> plus <code>product:price:amount</code>, <code>product:price:currency</code>, and <code>product:availability</code>. Test that the price shows up in the Facebook preview (note: Facebook has been de-emphasizing product OG support; LinkedIn is more reliable here).
+        </div>
+      </section>
+
+      <section id="use-cases">
+        <h2><span class="num">11</span> Real-World Use Cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Blog posts &amp; news articles</h4>
+            <p>Every content site needs OG tags so articles look good when shared on social media.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce product pages</h4>
+            <p>OG image shows the product; product OG tags carry price and availability.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation sites</h4>
+            <p>Each doc page should have unique OG tags so links shared in Slack/Discord show useful context.</p>
+          </div>
+          <div class="card">
+            <h4>Marketing landing pages</h4>
+            <p>Brand campaigns live or die by shareable preview cards.</p>
+          </div>
+          <div class="card">
+            <h4>Event pages</h4>
+            <p>Conference, webinar, or meetup landing pages need eye-catching OG images to drive registrations via social shares.</p>
+          </div>
+          <div class="card">
+            <h4>User profiles</h4>
+            <p>Profile pages with <code>og:type="profile"</code> render nicely when shared on social platforms.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../../07-Semantic-HTML/04-Accessibility/aria-patterns.html">← Previous: ARIA Patterns</a>
+    <a class="next" href="twitter-cards.html">Next: Twitter Cards →</a>
+  </footer>
+</body>
+</html>

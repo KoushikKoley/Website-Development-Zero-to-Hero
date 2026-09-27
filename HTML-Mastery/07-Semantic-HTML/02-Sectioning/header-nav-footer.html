@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;header&gt;, &lt;nav&gt; &amp; &lt;footer&gt; — Site Structure Elements — HTML Mastery</title>
+  <meta name="description" content="Master the three site-structure semantic elements: header (introductory content per section), nav (only for major navigation blocks), footer (copyright, contact, related links). Multiple headers and footers per page are legal. Browser default styling is none — you bring the CSS.">
+  <style>
+    :root {
+      --card: #ffffff; --ink: #0f172a; --ink-soft: #475569;
+      --brand: #2563eb; --brand-2: #7c3aed; --accent: #f59e0b;
+      --success: #16a34a; --warn: #dc2626;
+      --code-bg: #1e1e2e; --code-fg: #cdd6f4; --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--ink); line-height: 1.7;
+    }
+    header.hero {
+      background: radial-gradient(1000px 400px at 10% -10%, #7c3aed 0%, transparent 60%),
+                  radial-gradient(1000px 400px at 90% -20%, #2563eb 0%, transparent 60%),
+                  linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc; padding: 56px 24px 72px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .hero h1 code { background: transparent; color: #fbbf24; padding: 0; font-size: inherit; }
+    .hero p { max-width: 720px; margin: 0 auto; color: #cbd5e1; }
+    .hero .badge {
+      display: inline-block; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 0.85rem; margin-bottom: 18px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .layout { max-width: 1200px; margin: -40px auto 0; padding: 0 24px 80px;
+              display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    nav.toc { position: sticky; top: 16px; align-self: start; background: var(--card);
+              border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.06);
+              max-height: calc(100vh - 32px); overflow: auto; }
+    nav.toc h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 0 0 12px; }
+    nav.toc ol { margin: 0; padding-left: 18px; list-style: decimal; }
+    nav.toc ol li { margin: 6px 0; font-size: 0.95rem; }
+    nav.toc a { color: var(--ink); text-decoration: none; }
+    nav.toc a:hover { color: var(--brand); }
+    main { min-width: 0; }
+    section { background: var(--card); border: 1px solid var(--line);
+              border-radius: 16px; padding: 28px 32px; margin-bottom: 24px;
+              box-shadow: 0 10px 30px rgba(2,6,23,0.04); }
+    section h2 { margin: 0 0 14px; font-size: 1.7rem; display: flex; align-items: center; gap: 10px; }
+    section h2 .num { display: inline-flex; align-items: center; justify-content: center;
+                       width: 34px; height: 34px; border-radius: 10px;
+                       background: linear-gradient(135deg, var(--brand), var(--brand-2));
+                       color: white; font-size: 1rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.2rem; }
+    p { margin: 0 0 14px; }
+    code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: #eef2ff; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 18px 20px;
+          border-radius: 12px; overflow-x: auto; font-size: 0.86rem; line-height: 1.6;
+          border: 1px solid #1e293b; }
+    pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; }
+    .callout { border-left: 4px solid var(--brand); background: #eff6ff;
+                padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+    .callout.tip { border-left-color: var(--success); background: #f0fdf4; }
+    .callout.warn { border-left-color: var(--warn); background: #fef2f2; }
+    .callout.exercise { border-left-color: var(--accent); background: #fffbeb; }
+    .callout strong { display: block; margin-bottom: 6px; text-transform: uppercase;
+                      letter-spacing: 0.04em; font-size: 0.8rem; color: var(--ink-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc); }
+    .card h4 { margin: 0 0 8px; color: var(--brand); font-size: 1.05rem; }
+    .card p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    .info-table th, .info-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.95rem; vertical-align: top; }
+    .info-table th { background: #f1f5f9; font-weight: 600; }
+    .browser-support { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .browser-support .pill { background: #f1f5f9; border: 1px solid var(--line);
+                              border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; }
+    .browser-support .pill.yes { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    footer.page-nav { max-width: 1200px; margin: 0 auto; padding: 24px;
+                       display: flex; justify-content: space-between; gap: 16px;
+                       border-top: 1px solid var(--line); }
+    footer.page-nav a { color: var(--brand); text-decoration: none; font-weight: 500;
+                        padding: 10px 16px; border-radius: 10px; background: #eff6ff;
+                        border: 1px solid #dbeafe; }
+    footer.page-nav a:hover { background: #dbeafe; }
+    footer.page-nav .next { margin-left: auto; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; }
+      section { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="badge">Section 7 · Sectioning · Lesson 4</span>
+    <h1><code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code> &amp; <code>&lt;footer&gt;</code></h1>
+    <p>Three elements that frame every section of every page. <code>&lt;header&gt;</code> holds introductory content. <code>&lt;nav&gt;</code> holds major navigation. <code>&lt;footer&gt;</code> holds closing information. They aren't restricted to the top and bottom of the page — they can appear inside any sectioning element, which means a single page often has many of them.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#header">The <code>&lt;header&gt;</code> element</a></li>
+        <li><a href="#multiple-headers">Multiple headers per page</a></li>
+        <li><a href="#nav">The <code>&lt;nav&gt;</code> element</a></li>
+        <li><a href="#nav-limits">When NOT to use <code>&lt;nav&gt;</code></a></li>
+        <li><a href="#footer">The <code>&lt;footer&gt;</code> element</a></li>
+        <li><a href="#footer-contents">Footer contents</a></li>
+        <li><a href="#default-styling">Browser default styling</a></li>
+        <li><a href="#patterns">Real-world patterns</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#exercises">Try it yourself</a></li>
+        <li><a href="#browser-support">Browser support</a></li>
+        <li><a href="#real-world">Real-world use cases</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <section id="header">
+        <h2><span class="num">1</span> The <code>&lt;header&gt;</code> element</h2>
+        <p><code>&lt;header&gt;</code> represents introductory content for its nearest sectioning ancestor (the page's <code>&lt;body&gt;</code>, or an <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, or <code>&lt;nav&gt;</code>). It typically contains:</p>
+        <ul>
+          <li>A heading (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>)</li>
+          <li>A logo or wordmark</li>
+          <li>Search form, primary navigation</li>
+          <li>Author byline, publish date, social links</li>
+          <li>Introductory paragraph or tagline</li>
+        </ul>
+        <pre><code>&lt;!-- Page-level header --&gt;
+&lt;header&gt;
+  &lt;a href="/" class="logo"&gt;Acme Corp&lt;/a&gt;
+  &lt;nav aria-label="Primary"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+  &lt;form role="search"&gt;
+    &lt;input type="search" placeholder="Search…" aria-label="Search"&gt;
+  &lt;/form&gt;
+&lt;/header&gt;</code></pre>
+        <p>A page-level header is announced by screen readers as a "banner" landmark — the top-of-page region users can jump to with a single key.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          The HTML5 spec says a <code>&lt;header&gt;</code> that is a direct child of <code>&lt;body&gt;</code> gets the implicit ARIA role <code>banner</code>. A <code>&lt;header&gt;</code> inside an <code>&lt;article&gt;</code> or <code>&lt;section&gt;</code> does <em>not</em> get <code>banner</code> — it's just an introductory chunk within that section.
+        </div>
+      </section>
+
+      <section id="multiple-headers">
+        <h2><span class="num">2</span> Multiple headers per page</h2>
+        <p>A common misconception: <strong>"you can only have one <code>&lt;header&gt;</code> per page"</strong>. Wrong. The spec allows one <code>&lt;header&gt;</code> per sectioning element. So a page with a main article and two sidebars can legitimately have four headers:</p>
+        <pre><code>&lt;body&gt;
+
+  &lt;!-- 1. Page header (becomes the "banner" landmark) --&gt;
+  &lt;header&gt;
+    &lt;nav&gt;…&lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;!-- 2. Article header (just intro content, NOT a banner) --&gt;
+      &lt;header&gt;
+        &lt;h1&gt;How to Brew Coffee&lt;/h1&gt;
+        &lt;p&gt;By Ada on &lt;time datetime="2024-03-12"&gt;March 12&lt;/time&gt;&lt;/p&gt;
+      &lt;/header&gt;
+
+      &lt;p&gt;Body…&lt;/p&gt;
+    &lt;/article&gt;
+
+    &lt;aside&gt;
+      &lt;!-- 3. Sidebar header --&gt;
+      &lt;header&gt;
+        &lt;h2&gt;Related Posts&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;ul&gt;…&lt;/ul&gt;
+    &lt;/aside&gt;
+  &lt;/main&gt;
+
+  &lt;!-- 4. Page footer --&gt;
+  &lt;footer&gt;…&lt;/footer&gt;
+
+&lt;/body&gt;</code></pre>
+        <p>Only the top-level <code>&lt;header&gt;</code> (the one that's a direct child of <code>&lt;body&gt;</code>) becomes the <code>banner</code> landmark. The others are simply introductory content within their respective sections.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Wrapping every "top of section" content in a <code>&lt;header&gt;</code>. If the section has just a heading and no other introductory content, the heading alone is enough — you don't need a header wrapper. <code>&lt;section&gt;&lt;h2&gt;…&lt;/h2&gt;&lt;p&gt;…&lt;/p&gt;&lt;/section&gt;</code> is perfectly fine.
+        </div>
+      </section>
+
+      <section id="nav">
+        <h2><span class="num">3</span> The <code>&lt;nav&gt;</code> element</h2>
+        <p><code>&lt;nav&gt;</code> is for <strong>major navigation blocks</strong>: collections of links that let users navigate the site or page. It is <em>not</em> for every group of links — only for the ones that are themselves navigation.</p>
+        <h3>Appropriate uses</h3>
+        <ul>
+          <li>Primary site navigation (top menu, main nav bar)</li>
+          <li>Secondary navigation (sidebar menus, section sub-nav)</li>
+          <li>Footer link lists (about, contact, legal — if grouped as navigation)</li>
+          <li>Table of contents within a long article</li>
+          <li>Breadcrumb trails</li>
+          <li>Pagination controls</li>
+        </ul>
+        <pre><code>&lt;!-- Primary nav --&gt;
+&lt;nav aria-label="Primary"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;!-- Breadcrumbs --&gt;
+&lt;nav aria-label="Breadcrumb"&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/blog"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;li aria-current="page"&gt;This Post&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;
+
+&lt;!-- Pagination --&gt;
+&lt;nav aria-label="Pagination"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="?page=1" rel="prev"&gt;← Previous&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=3" rel="next"&gt;Next →&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Always add an <code>aria-label</code> to <code>&lt;nav&gt;</code> when there's more than one on the page. Without it, screen readers announce all of them simply as "navigation" — users can't tell which is which. With labels, they hear "primary", "breadcrumb", "pagination" — instantly distinguishable.
+        </div>
+      </section>
+
+      <section id="nav-limits">
+        <h2><span class="num">4</span> When NOT to use <code>&lt;nav&gt;</code></h2>
+        <p>The HTML spec is explicit: "Not all groups of links on a page need to be in a <code>&lt;nav&gt;</code> element — the element is intended only for major navigation blocks."</p>
+        <table class="info-table">
+          <thead><tr><th>Use <code>&lt;nav&gt;</code></th><th>Don't use <code>&lt;nav&gt;</code></th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Primary site nav, footer nav, breadcrumbs, pagination, table of contents</td>
+              <td>A list of "related articles" inside a blog post body</td>
+            </tr>
+            <tr>
+              <td>Tab navigation that switches view inside a section</td>
+              <td>A list of social-media links in an author bio</td>
+            </tr>
+            <tr>
+              <td>Sidebar category filter for an e-commerce section</td>
+              <td>A list of links inside a paragraph of body text</td>
+            </tr>
+            <tr>
+              <td>Category navigation in product listings</td>
+              <td>Tag clouds (they're links, but not navigation in the user's mental model)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>For non-navigation link groups, use a plain <code>&lt;ul&gt;</code> inside whatever sectioning element makes sense — usually <code>&lt;aside&gt;</code> for related links, or just <code>&lt;ul&gt;</code> directly inside the article body.</p>
+        <div class="callout warn">
+          <strong>Common Mistake</strong>
+          Wrapping every list of links in <code>&lt;nav&gt;</code>. The result is screen reader users navigating past dozens of "navigation" landmarks. Save <code>&lt;nav&gt;</code> for the navigations that users would actually want to jump to.
+        </div>
+      </section>
+
+      <section id="footer">
+        <h2><span class="num">5</span> The <code>&lt;footer&gt;</code> element</h2>
+        <p><code>&lt;footer&gt;</code> represents closing content for its nearest sectioning ancestor. Like <code>&lt;header&gt;</code>, it can appear multiple times per page — once per sectioning element that needs one.</p>
+        <h3>Appropriate contents</h3>
+        <ul>
+          <li>Copyright notices and legal links</li>
+          <li>Author info, contact details, social media</li>
+          <li>Related links, "see also" sections</li>
+          <li>Sitemap links, "back to top" anchor</li>
+          <li>Citation list, references, appendix</li>
+          <li>Post meta: tags, categories, share buttons</li>
+        </ul>
+        <pre><code>&lt;!-- Page-level footer (becomes "contentinfo" landmark) --&gt;
+&lt;footer&gt;
+  &lt;p&gt;© 2024 Acme Corp. All rights reserved.&lt;/p&gt;
+  &lt;nav aria-label="Footer"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/privacy"&gt;Privacy&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/terms"&gt;Terms&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/footer&gt;</code></pre>
+        <pre><code>&lt;!-- Article-level footer (just closing info, NOT contentinfo) --&gt;
+&lt;article&gt;
+  &lt;h1&gt;Post Title&lt;/h1&gt;
+  &lt;p&gt;Body…&lt;/p&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;Tags:
+      &lt;a href="/tag/html"&gt;html&lt;/a&gt;,
+      &lt;a href="/tag/a11y"&gt;a11y&lt;/a&gt;
+    &lt;/p&gt;
+    &lt;p&gt;By &lt;a href="/author/ada"&gt;Ada&lt;/a&gt; ·
+       Published &lt;time datetime="2024-03-12"&gt;March 12&lt;/time&gt;
+    &lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+      </section>
+
+      <section id="footer-contents">
+        <h2><span class="num">6</span> Footer contents</h2>
+        <table class="info-table">
+          <thead><tr><th>Content type</th><th>Element</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Copyright</td><td><code>&lt;p&gt;</code></td><td><code>&lt;p&gt;© 2024 Acme&lt;/p&gt;</code></td></tr>
+            <tr><td>Legal links</td><td><code>&lt;nav&gt;</code> + <code>&lt;ul&gt;</code></td><td>Privacy, Terms, Cookies</td></tr>
+            <tr><td>Contact info</td><td><code>&lt;address&gt;</code></td><td>Email, postal address (use only for actual contact info)</td></tr>
+            <tr><td>Social media</td><td><code>&lt;ul&gt;</code> (or <code>&lt;nav&gt;</code> if you consider it navigation)</td><td>Twitter, GitHub, LinkedIn icons</td></tr>
+            <tr><td>Newsletter signup</td><td><code>&lt;form&gt;</code></td><td>Email input + subscribe button</td></tr>
+            <tr><td>Sitemap</td><td><code>&lt;nav&gt;</code> + nested <code>&lt;ul&gt;</code></td><td>Multi-level nav tree</td></tr>
+            <tr><td>Author bio</td><td><code>&lt;div&gt;</code> or <code>&lt;aside&gt;</code></td><td>Avatar + name + short bio</td></tr>
+            <tr><td>Back to top</td><td><code>&lt;a href="#top"&gt;</code></td><td>Single link, no wrapper needed</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Use <code>&lt;address&gt;</code> inside a footer for actual contact information (email, phone, postal). The element doesn't italicize for styling — it's semantic: "this is contact info for the author/owner of the article or page". Don't use it for arbitrary postal addresses in body content; only for the contact info of the page/article owner.
+        </div>
+      </section>
+
+      <section id="default-styling">
+        <h2><span class="num">7</span> Browser default styling</h2>
+        <p><code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, and <code>&lt;footer&gt;</code> all have <strong>no default styling</strong>. They are block-level elements (display: block) but browsers apply zero padding, margin, color, or typography to them. They're a completely blank canvas — which is exactly the point.</p>
+        <table class="info-table">
+          <thead><tr><th>Element</th><th>Default display</th><th>Default margin</th><th>Default role</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;header&gt;</code> (child of body)</td><td>block</td><td>0</td><td><code>banner</code></td></tr>
+            <tr><td><code>&lt;header&gt;</code> (inside article/section)</td><td>block</td><td>0</td><td>none (just generic)</td></tr>
+            <tr><td><code>&lt;nav&gt;</code></td><td>block</td><td>0</td><td><code>navigation</code></td></tr>
+            <tr><td><code>&lt;footer&gt;</code> (child of body)</td><td>block</td><td>0</td><td><code>contentinfo</code></td></tr>
+            <tr><td><code>&lt;footer&gt;</code> (inside article/section)</td><td>block</td><td>0</td><td>none (just generic)</td></tr>
+          </tbody>
+        </table>
+        <p>Compare with <code>&lt;h1&gt;</code> which has default <code>font-size: 2em; margin: 0.67em 0;</code>, or <code>&lt;p&gt;</code> which has <code>margin: 1em 0</code>. The structural elements are intentionally unstyled so you can build any visual treatment on top.</p>
+        <div class="callout tip">
+          <strong>Pro Tip</strong>
+          Because these elements have no default styles, your CSS reset doesn't need to touch them. But your design system <em>does</em> need to define what they look like. Many starter stylesheets add <code>header, nav, footer { display: block; }</code> purely for ancient Internet Explorer — modern browsers don't need this.
+        </div>
+      </section>
+
+      <section id="patterns">
+        <h2><span class="num">8</span> Real-world patterns</h2>
+
+        <h3>Pattern A: Classic three-region page</h3>
+        <pre><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;a href="/" class="logo"&gt;…&lt;/a&gt;
+    &lt;nav aria-label="Primary"&gt;…&lt;/nav&gt;
+    &lt;form role="search"&gt;…&lt;/form&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;article&gt;…&lt;/article&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;© 2024 Acme&lt;/p&gt;
+    &lt;nav aria-label="Footer"&gt;…&lt;/nav&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+        <h3>Pattern B: Article with full chrome</h3>
+        <pre><code>&lt;article&gt;
+  &lt;header&gt;
+    &lt;h1&gt;Why Semantic HTML Matters&lt;/h1&gt;
+    &lt;p class="byline"&gt;
+      By &lt;a rel="author" href="/authors/ada"&gt;Ada Lovelace&lt;/a&gt; ·
+      &lt;time datetime="2024-03-12"&gt;March 12, 2024&lt;/time&gt; ·
+      8 min read
+    &lt;/p&gt;
+  &lt;/header&gt;
+
+  &lt;p&gt;Body…&lt;/p&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;Tags: &lt;a href="/tag/html"&gt;html&lt;/a&gt;,
+              &lt;a href="/tag/a11y"&gt;a11y&lt;/a&gt;&lt;/p&gt;
+    &lt;address&gt;
+      Contact: &lt;a href="mailto:ada@acme.com"&gt;ada@acme.com&lt;/a&gt;
+    &lt;/address&gt;
+  &lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+
+        <h3>Pattern C: Sidebar with sub-nav</h3>
+        <pre><code>&lt;aside aria-label="Sidebar"&gt;
+  &lt;header&gt;
+    &lt;h2&gt;Documentation&lt;/h2&gt;
+  &lt;/header&gt;
+  &lt;nav aria-label="Documentation sections"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="/docs/intro"&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/docs/install"&gt;Installation&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="/docs/api"&gt;API Reference&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/aside&gt;</code></pre>
+      </section>
+
+      <section id="mistakes">
+        <h2><span class="num">9</span> Common mistakes</h2>
+        <table class="info-table">
+          <thead><tr><th>Mistake</th><th>Why it's wrong</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Wrapping every section's heading in <code>&lt;header&gt;</code></td>
+              <td>Unnecessary; the heading alone is enough</td>
+              <td>Use <code>&lt;header&gt;</code> only when there's other intro content (byline, date, logo)</td>
+            </tr>
+            <tr>
+              <td>Multiple <code>&lt;nav&gt;</code>s without <code>aria-label</code></td>
+              <td>SR users can't tell them apart</td>
+              <td>Add <code>aria-label="Primary"</code>, <code>"Footer"</code>, <code>"Breadcrumb"</code> etc.</td>
+            </tr>
+            <tr>
+              <td>Putting all body content in <code>&lt;nav&gt;</code> "to make it accessible"</td>
+              <td>Wrong element; <code>&lt;main&gt;</code> is the right one</td>
+              <td>Use <code>&lt;main&gt;</code> for primary content</td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;footer&gt;</code> for any content at the bottom of a div</td>
+              <td><code>&lt;footer&gt;</code> only makes sense inside a sectioning element</td>
+              <td>Wrap your bottom content in <code>&lt;section&gt;</code> or use it inside <code>&lt;article&gt;</code>/<code>&lt;main&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Skipping <code>&lt;address&gt;</code> for contact info</td>
+              <td>Loses the "this is contact info" semantic</td>
+              <td>Use <code>&lt;address&gt;</code> for author/owner contact details</td>
+            </tr>
+            <tr>
+              <td>Putting primary nav inside <code>&lt;main&gt;</code></td>
+              <td>Nav belongs outside main; main is for unique content</td>
+              <td>Place <code>&lt;nav&gt;</code> in <code>&lt;header&gt;</code> or sibling to <code>&lt;main&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Using <code>&lt;nav&gt;</code> for a list of tags or social-media icons in body</td>
+              <td>Not "major navigation"</td>
+              <td>Use plain <code>&lt;ul&gt;</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="exercises">
+        <h2><span class="num">10</span> Try it yourself</h2>
+        <div class="callout exercise">
+          <strong>Exercise 1 — Landmark scan</strong>
+          Open a website you use daily. Using VoiceOver's rotor (VO+U) or NVDA's landmark key (D), count how many "banner", "navigation", and "contentinfo" landmarks it has. If the count is wrong (zero or way too many), diagnose why and write down the fix.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 2 — Label your navs</strong>
+          Take any page you've built with multiple <code>&lt;nav&gt;</code> elements (primary, footer, breadcrumb). Add <code>aria-label</code> to each one with a distinguishing name. Test in a screen reader — verify each is announced distinctly.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 3 — Article chrome</strong>
+          Build a full blog post with <code>&lt;header&gt;</code> (h1, byline, date), body, and <code>&lt;footer&gt;</code> (tags, author contact via <code>&lt;address&gt;</code>). Validate that the article footer is NOT announced as "contentinfo" — only the page-level footer should be.
+        </div>
+        <div class="callout exercise">
+          <strong>Exercise 4 — Naked HTML</strong>
+          Disable CSS on a page you've built. Does the header still look like a header (logo + nav links)? Does the footer still read like a footer? If not, your structure is relying on CSS to convey meaning — fix the markup.
+        </div>
+      </section>
+
+      <section id="browser-support">
+        <h2><span class="num">11</span> Browser support</h2>
+        <div class="browser-support">
+          <span class="pill yes">Chrome</span>
+          <span class="pill yes">Firefox</span>
+          <span class="pill yes">Safari</span>
+          <span class="pill yes">Edge</span>
+          <span class="pill yes">All modern mobile browsers</span>
+        </div>
+        <p>All three elements are universally supported in every modern browser. The implicit ARIA roles — <code>banner</code> for page-level header, <code>navigation</code> for nav, <code>contentinfo</code> for page-level footer — are exposed correctly to all screen readers (NVDA, JAWS, VoiceOver, TalkBack).</p>
+        <p>The only historical quirk: in Internet Explorer 8 and earlier, these elements weren't recognized as block-level by default. You needed the "HTML5 shiv" — a tiny JS snippet that called <code>document.createElement('header')</code> etc. IE8 has been end-of-life since 2016; you don't need this.</p>
+      </section>
+
+      <section id="real-world">
+        <h2><span class="num">12</span> Real-world use cases</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Marketing sites</h4>
+            <p>Every marketing page: one <code>&lt;header&gt;</code> with logo + nav, one <code>&lt;footer&gt;</code> with legal links, one <code>&lt;main&gt;</code> in between.</p>
+          </div>
+          <div class="card">
+            <h4>Blog themes</h4>
+            <p>WordPress, Ghost, Hugo themes — header with site nav, footer with categories, post header with byline.</p>
+          </div>
+          <div class="card">
+            <h4>E-commerce</h4>
+            <p>Header: logo + search + cart. Footer: customer service, returns, payment methods, social.</p>
+          </div>
+          <div class="card">
+            <h4>Documentation sites</h4>
+            <p>Header: product name + version selector. Sidebar: table of contents in <code>&lt;nav&gt;</code>. Footer: edit on GitHub link.</p>
+          </div>
+          <div class="card">
+            <h4>SaaS dashboards</h4>
+            <p>Header: app name + user menu. Sidebar: app navigation in <code>&lt;nav&gt;</code>. Footer: usually omitted (admin screens).</p>
+          </div>
+          <div class="card">
+            <h4>News articles</h4>
+            <p>Article <code>&lt;header&gt;</code> with headline + byline + dateline; article <code>&lt;footer&gt;</code> with related coverage and tags.</p>
+          </div>
+          <div class="card">
+            <h4>Reader apps</h4>
+            <p>Pocket, Instapaper, Safari Reader all key off <code>&lt;header&gt;</code> + <code>&lt;footer&gt;</code> to strip chrome when extracting article text.</p>
+          </div>
+          <div class="card">
+            <h4>Government sites</h4>
+            <p>WCAG 2.1 AA mandates "bypass blocks" — a skip link OR proper landmark structure. Header/nav/main/footer satisfies the requirement for free.</p>
+          </div>
+          <div class="card">
+            <h4>SPA route changes</h4>
+            <p>In React/Vue SPAs, keep <code>&lt;header&gt;</code> and <code>&lt;footer&gt;</code> stable across routes; only swap content inside <code>&lt;main&gt;</code>. SR users retain their place in the document.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-nav">
+    <a class="prev" href="../01-Why-Semantic/document-outline.html">← Previous: Document Outline</a>
+    <a class="next" href="main-article-aside.html">Next: Main, Article &amp; Aside →</a>
+  </footer>
+</body>
+</html>
