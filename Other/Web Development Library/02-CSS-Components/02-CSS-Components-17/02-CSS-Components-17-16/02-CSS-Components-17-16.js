@@ -1,0 +1,10 @@
+// ==================================================
+// 02-CSS-Components-17-16
+// JavaScript
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript functionality here
+
+});

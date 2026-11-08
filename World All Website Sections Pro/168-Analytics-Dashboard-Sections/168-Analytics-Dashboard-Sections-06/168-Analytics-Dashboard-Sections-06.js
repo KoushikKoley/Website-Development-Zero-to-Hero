@@ -1,0 +1,9 @@
+// ==================================================
+// 168-Analytics-Dashboard-Sections-06
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});

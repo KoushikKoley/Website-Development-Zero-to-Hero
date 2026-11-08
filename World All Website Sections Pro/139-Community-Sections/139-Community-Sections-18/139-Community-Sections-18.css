@@ -1,0 +1,37 @@
+/* ==================================================
+   139-Community-Sections-18
+   ================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+}
+
+.website-section {
+    width: 100%;
+}
+
+/* Add your section styles here */
+
+@media (max-width: 1024px) {
+    /* Tablet */
+}
+
+@media (max-width: 768px) {
+    /* Mobile */
+}
+
+@media (max-width: 480px) {
+    /* Small mobile */
+}

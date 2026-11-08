@@ -1,0 +1,10 @@
+// ==================================================
+// 33-Blog-Sections-01
+// JavaScript
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Add section-specific JavaScript here
+
+});

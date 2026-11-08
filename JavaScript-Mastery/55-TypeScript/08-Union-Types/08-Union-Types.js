@@ -1,0 +1,17 @@
+/*
+ * 08-Union-Types.js
+ * JavaScript practice file
+ */
+
+"use strict";
+
+console.log("08-Union-Types loaded successfully.");
+
+const output = document.getElementById("output");
+
+if (output) {
+    output.textContent = "Start practicing 08-Union-Types here.";
+}
+
+// Write your JavaScript practice code below.
+

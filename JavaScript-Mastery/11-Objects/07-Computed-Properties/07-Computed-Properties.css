@@ -1,0 +1,36 @@
+/*
+ * 07-Computed-Properties.css
+ * JavaScript Learning Path
+ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+}
+
+.container {
+    width: min(1100px, 90%);
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+.lesson {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+#output {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f0f2f5;
+    border-radius: 8px;
+}

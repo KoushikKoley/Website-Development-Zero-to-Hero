@@ -1,0 +1,14 @@
+/*
+============================================
+09-CSS-Performance-DevTools
+============================================
+*/
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}

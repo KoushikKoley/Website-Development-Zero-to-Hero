@@ -1,0 +1,9 @@
+// ==================================================
+// 090-Payment-Security-Sections-04
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});

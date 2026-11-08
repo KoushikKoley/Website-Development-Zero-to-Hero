@@ -1,0 +1,9 @@
+// ==================================================
+// 232-Music-Sections-12
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});

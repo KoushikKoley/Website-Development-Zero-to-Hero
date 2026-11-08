@@ -1,0 +1,14 @@
+/*
+============================================
+01-Background-Color
+============================================
+*/
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}

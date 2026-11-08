@@ -1,0 +1,9 @@
+// ==================================================
+// 006-Alert-Sections-20
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});

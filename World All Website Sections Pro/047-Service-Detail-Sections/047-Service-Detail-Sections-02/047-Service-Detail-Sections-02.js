@@ -1,0 +1,9 @@
+// ==================================================
+// 047-Service-Detail-Sections-02
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});

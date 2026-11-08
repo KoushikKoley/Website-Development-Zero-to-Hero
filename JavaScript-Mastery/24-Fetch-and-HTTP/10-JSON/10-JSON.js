@@ -1,0 +1,17 @@
+/*
+ * 10-JSON.js
+ * JavaScript practice file
+ */
+
+"use strict";
+
+console.log("10-JSON loaded successfully.");
+
+const output = document.getElementById("output");
+
+if (output) {
+    output.textContent = "Start practicing 10-JSON here.";
+}
+
+// Write your JavaScript practice code below.
+

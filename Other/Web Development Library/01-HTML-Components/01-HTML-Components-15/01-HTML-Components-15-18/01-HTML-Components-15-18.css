@@ -1,0 +1,28 @@
+/* ==================================================
+   01-HTML-Components-15-18
+   CSS
+   ================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+}
+
+/* Component styles */
+
+/* Add your CSS here */
+
+@media (max-width: 768px) {
+    /* Mobile styles */
+}

@@ -1,0 +1,17 @@
+/*
+ * 06-removeItem.js
+ * JavaScript practice file
+ */
+
+"use strict";
+
+console.log("06-removeItem loaded successfully.");
+
+const output = document.getElementById("output");
+
+if (output) {
+    output.textContent = "Start practicing 06-removeItem here.";
+}
+
+// Write your JavaScript practice code below.
+

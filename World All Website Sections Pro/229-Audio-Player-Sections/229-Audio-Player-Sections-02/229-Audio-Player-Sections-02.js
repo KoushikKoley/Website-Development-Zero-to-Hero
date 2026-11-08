@@ -1,0 +1,9 @@
+// ==================================================
+// 229-Audio-Player-Sections-02
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});

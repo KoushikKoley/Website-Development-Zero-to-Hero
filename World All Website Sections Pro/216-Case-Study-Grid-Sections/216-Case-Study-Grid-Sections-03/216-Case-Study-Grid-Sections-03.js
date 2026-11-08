@@ -1,0 +1,9 @@
+// ==================================================
+// 216-Case-Study-Grid-Sections-03
+// ==================================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Add JavaScript for this section here.
+
+});
