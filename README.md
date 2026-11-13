@@ -11,7 +11,7 @@ A massive open-source journey from **Zero → Hero** in modern web development.
 **Learn • Build • Experiment • Create • Ship**
 
 [![Status](https://img.shields.io/badge/Status-Under%20Development-orange?style=for-the-badge)](https://github.com/Koushikkoley)
-[![Launch](https://img.shields.io/badge/Launch-November%201%2C%202026-blue?style=for-the-badge)](https://github.com/Koushikkoley)
+[![Launch](https://img.shields.io/badge/Launch-January%201%2C%202027-blue?style=for-the-badge)](https://github.com/Koushikkoley)
 [![License](https://img.shields.io/badge/License-GPL--3.0-red?style=for-the-badge)](LICENSE)
 
 </div>
